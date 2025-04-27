@@ -1,0 +1,25 @@
+---
+import IndexLayout from '@www/layouts/IndexLayout/IndexLayout.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '@www/shared/constants';
+---
+
+<IndexLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+  <main class="flex h-full w-full justify-center p-4">
+    <div>
+      <h2>Welcome to my page!</h2>
+      <p>
+        If you see this page, my website is successfuly installed and working.
+        <br />
+        It will be further configured.
+      </p>
+      <p>
+        For the source code and support please refer to <a href="https://github.com/deytenit"
+          >github.com</a
+        >.
+        <br />
+        Pictures of mine is available at <a href="https://instagram.com/deytenit">instagram.com</a>.
+      </p>
+      <p><em>Thank you for visiting!</em></p>
+    </div>
+  </main>
+</IndexLayout>

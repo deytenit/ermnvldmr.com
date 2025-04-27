@@ -1,0 +1,315 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  @layer base defaults inspired by shadcn UI Typography
+  Provides opinionated, utility-driven defaults for HTML elements.
+*/
+@layer base {
+  /* Headings */
+  h1 {
+    @apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl;
+  }
+  h2 {
+    @apply mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0;
+  }
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply mt-8 scroll-m-20 text-2xl font-semibold tracking-tight;
+  }
+
+  /* Paragraphs */
+  p {
+    @apply leading-7 [&:not(:first-child)]:mt-6;
+  }
+
+  /* Links */
+  a {
+    @apply text-ring font-medium underline underline-offset-2;
+  }
+
+  /* Blockquotes */
+  blockquote {
+    @apply mt-6 border-l-2 pl-6 italic;
+  }
+
+  /* Code */
+  code {
+    @apply bg-muted rounded px-1 font-mono text-sm;
+  }
+  pre {
+    @apply bg-muted overflow-auto rounded-lg p-4 font-mono text-sm;
+  }
+
+  /* Images and Media */
+  img,
+  video {
+    @apply max-w-full rounded-lg;
+  }
+
+  /* Horizontal rules */
+  hr {
+    @apply border-border my-6 border-t;
+  }
+}
+
+@theme {
+  --font-sans: 'Lato', sans-serif;
+  --font-serif: 'EB Garamond', serif;
+}
+
+@theme {
+  --color-rainby-red-50: #fef4f2;
+  --color-rainby-red-100: #ffe7e1;
+  --color-rainby-red-200: #ffd2c8;
+  --color-rainby-red-300: #ffb4a3;
+  --color-rainby-red-400: #fd876c;
+  --color-rainby-red-500: #f5603e;
+  --color-rainby-red-600: #e24420;
+  --color-rainby-red-700: #be3617;
+  --color-rainby-red-800: #9d3017;
+  --color-rainby-red-900: #822d1a;
+  --color-rainby-red-950: #471408;
+
+  --color-rainby-orange-50: #fff8ed;
+  --color-rainby-orange-100: #ffefd5;
+  --color-rainby-orange-200: #fedbaa;
+  --color-rainby-orange-300: #fdc175;
+  --color-rainby-orange-400: #fb9b3c;
+  --color-rainby-orange-500: #f97e16;
+  --color-rainby-orange-600: #ea630c;
+  --color-rainby-orange-700: #c24a0c;
+  --color-rainby-orange-800: #9a3b12;
+  --color-rainby-orange-900: #7c3212;
+  --color-rainby-orange-950: #431707;
+
+  --color-rainby-yellow-50: #fefde8;
+  --color-rainby-yellow-100: #fefdc3;
+  --color-rainby-yellow-200: #fef9a3;
+  --color-rainby-yellow-300: #fdec47;
+  --color-rainby-yellow-400: #f9db16;
+  --color-rainby-yellow-500: #e9c209;
+  --color-rainby-yellow-600: #ca9704;
+  --color-rainby-yellow-700: #a16c07;
+  --color-rainby-yellow-800: #85550e;
+  --color-rainby-yellow-900: #714512;
+  --color-rainby-yellow-950: #422406;
+
+  --color-rainby-green-50: #f8faeb;
+  --color-rainby-green-100: #edf4d3;
+  --color-rainby-green-200: #ddebab;
+  --color-rainby-green-300: #c4dc7a;
+  --color-rainby-green-400: #b6d167;
+  --color-rainby-green-500: #8daf33;
+  --color-rainby-green-600: #6e8b25;
+  --color-rainby-green-700: #546b20;
+  --color-rainby-green-800: #44551f;
+  --color-rainby-green-900: #3a491e;
+  --color-rainby-green-950: #1e280b;
+
+  --color-rainby-cyan-50: #effbfc;
+  --color-rainby-cyan-100: #d7f2f6;
+  --color-rainby-cyan-200: #b4e6ed;
+  --color-rainby-cyan-300: #81d3e0;
+  --color-rainby-cyan-400: #45b6cb;
+  --color-rainby-cyan-500: #2a9ab0;
+  --color-rainby-cyan-600: #257d95;
+  --color-rainby-cyan-700: #24657a;
+  --color-rainby-cyan-800: #265464;
+  --color-rainby-cyan-900: #234756;
+  --color-rainby-cyan-950: #122e3a;
+
+  --color-rainby-blue-50: #eff5ff;
+  --color-rainby-blue-100: #dbe8fe;
+  --color-rainby-blue-200: #bfd8fe;
+  --color-rainby-blue-300: #a2c9fe;
+  --color-rainby-blue-400: #5f9efb;
+  --color-rainby-blue-500: #3a79f7;
+  --color-rainby-blue-600: #2358ed;
+  --color-rainby-blue-700: #1c44d9;
+  --color-rainby-blue-800: #1d38b0;
+  --color-rainby-blue-900: #1d358b;
+  --color-rainby-blue-950: #172254;
+
+  --color-rainby-violet-50: #eef0ff;
+  --color-rainby-violet-100: #dfe3ff;
+  --color-rainby-violet-200: #bdc2ff;
+  --color-rainby-violet-300: #a3a8fe;
+  --color-rainby-violet-400: #837ffa;
+  --color-rainby-violet-500: #6e60f4;
+  --color-rainby-violet-600: #6043e8;
+  --color-rainby-violet-700: #5435cd;
+  --color-rainby-violet-800: #442ea5;
+  --color-rainby-violet-900: #3b2c83;
+  --color-rainby-violet-950: #231a4c;
+
+  --color-rainby-neutral-50: #f6f6f6;
+  --color-rainby-neutral-100: #e7e7e7;
+  --color-rainby-neutral-200: #d1d1d1;
+  --color-rainby-neutral-300: #b0b0b0;
+  --color-rainby-neutral-400: #888888;
+  --color-rainby-neutral-500: #737373;
+  --color-rainby-neutral-600: #5d5d5d;
+  --color-rainby-neutral-700: #4f4f4f;
+  --color-rainby-neutral-800: #454545;
+  --color-rainby-neutral-900: #3d3d3d;
+  --color-rainby-neutral-950: #262626;
+}
+
+:root {
+  /* Core palette */
+  --background: var(--color-rainby-neutral-50);
+  --border: var(--color-rainby-neutral-500);
+  --input: var(--color-rainby-neutral-800);
+  --foreground: var(--color-rainby-neutral-950);
+  --ring: var(--color-rainby-cyan-700);
+
+  /* Surfaces */
+  --card: var(--color-rainby-neutral-50);
+  --card-foreground: var(--color-rainby-neutral-950);
+  --popover: var(--color-rainby-neutral-50);
+  --popover-foreground: var(--color-rainby-neutral-950);
+
+  /* Semantic */
+  --primary: var(--color-rainby-cyan-200);
+  --primary-foreground: var(--color-rainby-cyan-950);
+  --secondary: var(--color-rainby-green-200);
+  --secondary-foreground: var(--color-rainby-green-950);
+  --muted: var(--color-rainby-neutral-300);
+  --muted-foreground: var(--color-rainby-neutral-600);
+  --accent: var(--color-rainby-violet-200);
+  --accent-foreground: var(--color-rainby-violet-950);
+  --destructive: var(--color-rainby-red-200);
+  --destructive-foreground: var(--color-rainby-red-950);
+
+  /* Charts (e.g. Recharts in ShadCN examples) */
+  --chart-1: var(--color-rainby-blue-500);
+  --chart-2: var(--color-rainby-green-500);
+  --chart-3: var(--color-rainby-yellow-500);
+  --chart-4: var(--color-rainby-orange-500);
+  --chart-5: var(--color-rainby-red-500);
+
+  /* Sidebar (if you use ShadCN’s sidebar components) */
+  --sidebar: var(--color-rainby-neutral-50);
+  --sidebar-foreground: var(--color-rainby-neutral-950);
+  --sidebar-primary: var(--color-rainby-cyan-200);
+  --sidebar-primary-foreground: var(--color-rainby-cyan-950);
+  --sidebar-accent: var(--color-rainby-violet-200);
+  --sidebar-accent-foreground: var(--color-rainby-violet-950);
+  --sidebar-border: var(--color-rainby-neutral-500);
+  --sidebar-ring: var(--color-rainby-cyan-700);
+
+  /* Radii */
+  --radius: 0.625rem;
+}
+
+/* ──────────────── Dark Mode Override ──────────────── */
+.dark {
+  /* Core palette flips */
+  --background: var(--color-rainby-neutral-950);
+  --ring: var(--color-rainby-cyan-300);
+  --border: var(--color-rainby-neutral-500);
+  --input: var(--color-rainby-neutral-300);
+  --foreground: var(--color-rainby-neutral-50);
+
+  /* Surfaces */
+  --card: var(--color-rainby-neutral-950);
+  --card-foreground: var(--color-rainby-neutral-50);
+  --popover: var(--color-rainby-neutral-950);
+  --popover-foreground: var(--color-rainby-neutral-50);
+
+  /* Semantic */
+  --primary: var(--color-rainby-cyan-800);
+  --primary-foreground: var(--color-rainby-cyan-50);
+  --secondary: var(--color-rainby-green-800);
+  --secondary-foreground: var(--color-rainby-green-50);
+  --muted: var(--color-rainby-neutral-600);
+  --muted-foreground: var(--color-rainby-neutral-100);
+  --accent: var(--color-rainby-violet-800);
+  --accent-foreground: var(--color-rainby-violet-50);
+  --destructive: var(--color-rainby-red-800);
+  --destructive-foreground: var(--color-rainby-red-50);
+
+  /* Charts */
+  --chart-1: var(--color-rainby-blue-400);
+  --chart-2: var(--color-rainby-green-400);
+  --chart-3: var(--color-rainby-yellow-400);
+  --chart-4: var(--color-rainby-orange-400);
+  --chart-5: var(--color-rainby-red-400);
+
+  /* Sidebar */
+  --sidebar: var(--color-rainby-neutral-950);
+  --sidebar-foreground: var(--color-rainby-neutral-50);
+  --sidebar-primary: var(--color-rainby-cyan-800);
+  --sidebar-primary-foreground: var(--color-rainby-cyan-50);
+  --sidebar-accent: var(--color-rainby-violet-800);
+  --sidebar-accent-foreground: var(--color-rainby-violet-50);
+  --sidebar-border: var(--color-rainby-neutral-500);
+  --sidebar-ring: var(--color-rainby-cyan-700);
+
+  /* Radii stays same */
+  --radius: 0.625rem;
+}
+
+@utility frosted-glass {
+  @apply bg-background/30 rounded-lg shadow-lg backdrop-blur-md backdrop-opacity-75 backdrop-filter;
+}
+
+@utility vstack {
+  @apply flex flex-col;
+}
+
+@utility hstack {
+  @apply flex flex-row;
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
