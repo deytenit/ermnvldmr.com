@@ -1,4 +1,4 @@
-name: origin/deploy-production
+name: release/deploy-production
 
 on:
   release:

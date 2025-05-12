@@ -1,9 +1,9 @@
-name: origin/release-dispatch
+name: next/semantic-dispatch
 
 on:
   workflow_run:
-    workflows: ['origin/required']
-    branches: [main, next]
+    workflows: ['next/required']
+    branches: [next]
     types:
       - completed
 
@@ -65,7 +65,7 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Build Stage
         run: pnpm build
-      - name: Release
+      - name: Pre-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pnpm exec semantic-release
+        run: pnpm exec semantic-release --prerelease
