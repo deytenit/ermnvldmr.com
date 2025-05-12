@@ -2,7 +2,7 @@ name: origin/required
 
 on:
   push:
-    branches: [ main, next ]
+    branches: [main, next]
 
 concurrency:
   group: ci-${{ github.ref_name }}

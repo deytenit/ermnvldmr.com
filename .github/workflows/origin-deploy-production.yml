@@ -3,7 +3,7 @@ name: origin/deploy-production
 on:
   release:
     types: [published]
- 
+
   workflow_dispatch:
 
 permissions:
@@ -12,11 +12,11 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: 'pages'
   cancel-in-progress: false
 
 env:
-  BUILD_PATH: "."
+  BUILD_PATH: '.'
 
 jobs:
   setup:
@@ -49,7 +49,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
 
   build:
     name: Setup stage
@@ -88,4 +87,3 @@ jobs:
       - name: Deploy in production
         id: deployment
         uses: actions/deploy-pages@v4
-

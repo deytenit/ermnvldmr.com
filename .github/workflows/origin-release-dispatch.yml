@@ -2,7 +2,7 @@ name: origin/release-dispatch
 
 on:
   workflow_run:
-    workflows: ["origin/required"]
+    workflows: ['origin/required']
     branches: [main, next]
     types:
       - completed
