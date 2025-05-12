@@ -1,5 +1,8 @@
 export default {
-  branches: [{ name: 'next', prerelease: true }, 'release/*'],
+  branches: [
+    { name: 'next', prerelease: true },
+    { name: 'release/*', channel: false },
+  ],
   plugins: [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
