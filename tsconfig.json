@@ -1,14 +1,28 @@
 {
   "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"],
+  "include": [".astro/types.d.ts", "src/**/*", ".storybook/**/*"],
+  "exclude": [
+    "dist", 
+    "coverage",
+    "*.config.*",
+    "eslint.config.mjs",
+    "astro.config.mjs",
+    "release.config.mjs",
+    ".config/**/*"
+  ],
   "compilerOptions": {
     "strictNullChecks": true,
     "baseUrl": ".",
     "paths": {
-      "@*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@www/*": ["./src/www/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@test/*": ["./.config/jest/*"]
     },
     "jsx": "react-jsx",
-    "jsxImportSource": "react"
+    "jsxImportSource": "react",
+    "types": ["jest", "@testing-library/jest-dom"],
+    "allowJs": true
   }
 }
