@@ -1,0 +1,69 @@
+# Codecov configuration for www.ermnvldmr.com
+# Documentation: https://docs.codecov.com/docs/codecovyml-reference
+
+# Coverage reporting settings
+coverage:
+  # Set precision for coverage percentage (0-5 decimal places)
+  precision: 2
+  
+  # Round coverage percentage (up, down, nearest)
+  round: nearest
+  
+  # Coverage range (red to green)
+  range: 70..90
+  
+  # Status checks configuration
+  status:
+    # Overall project coverage
+    project:
+      default:
+        # Require coverage to be within 1% of base branch
+        threshold: 1%
+        # Target minimum coverage
+        target: 80%
+        # Allow coverage to drop by at most 1%
+        if_ci_failed: error
+    
+    # Patch coverage (for new code in PRs)
+    patch:
+      default:
+        # Require 80% coverage on new code
+        target: 80%
+        # Only post status if coverage changes
+        only_pulls: true
+
+# Comment settings for PRs
+comment:
+  # Customize the PR comment layout
+  layout: "header, diff, flags, files"
+  # Show coverage for files with changes
+  behavior: default
+  # Require changes to post comment
+  require_changes: true
+  # Hide complexity metrics
+  hide:
+    - "search"
+
+# Coverage collection
+codecov:
+  # Require CI to pass before processing coverage
+  require_ci_to_pass: true
+  
+  # Maximum number of reports to wait for
+  max_report_age: "24h"
+
+# File path adjustments
+fixes:
+  - "src/::" # Remove src/ prefix from file paths in reports
+
+# Ignore certain files from coverage
+ignore:
+  - "**/*.stories.tsx"     # Storybook files
+  - "**/*.test.tsx"        # Test files themselves
+  - "**/*.test.ts"         # Test files themselves
+  - "**/test-utils.*"      # Test utilities
+  - ".storybook/**"        # Storybook config
+  - ".config/**"           # Configuration files
+  - "dist/**"              # Build output
+  - "coverage/**"          # Coverage reports
+  - "**/*.d.ts"           # Type definitions

@@ -109,8 +109,8 @@ export default tseslint.config(
           contexts: [
             'ExportNamedDeclaration > FunctionDeclaration',
             'ExportDefaultDeclaration > FunctionDeclaration',
-            'ExportNamedDeclaration > VariableDeclaration',
-            'ExportDefaultDeclaration > VariableDeclaration',
+            // Exclude VariableDeclaration for React components (memo wrapped)
+            // React components should document via Props interface instead
             'TSInterfaceDeclaration',
             'TSTypeAliasDeclaration',
           ],
