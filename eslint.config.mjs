@@ -27,7 +27,8 @@ export default tseslint.config(
       'astro.config.mjs',
       'eslint.config.mjs', 
       'jest.config.cjs',
-      'release.config.mjs'
+      'release.config.mjs',
+      '!.storybook', // Allow linting of .storybook directory
     ],
   },
 
@@ -132,11 +133,8 @@ export default tseslint.config(
   // Astro
   ...eslintPluginAstro.configs.recommended,
 
-  // Storybook
-  {
-    files: ['**/*.stories.@(js|jsx|ts|tsx|mdx)'],
-    ...storybook.configs.recommended,
-  },
+  // Storybook - recommended configuration for flat config
+  ...storybook.configs['flat/recommended'],
 
   // Set globals for Node scripts.
   {
