@@ -410,12 +410,31 @@ pnpm test:watch        # Run tests in watch mode
 pnpm test:coverage     # Run tests with coverage report
 ```
 
-### Testing Rules
-1. **Focus on Public API**: Test exported functionality, not implementation details
-2. **Module-Level Testing**: Test the main export of each module, not sub-dependencies
-3. **Integration Over Unit**: Test how complete modules work together
-4. **Accessibility Testing**: Use screen reader queries and accessibility matchers
-5. **User-Centric**: Test from the user's perspective (what they see and interact with)
+### Testing Guidelines
+- **Focus on Public API**: Test exported functionality, not implementation details
+- **Module-Level Testing**: Test the main export of each module, not sub-dependencies
+- **Integration Over Unit**: Test how complete modules work together
+- **Accessibility Testing**: Use screen reader queries and accessibility matchers
+- **User-Centric**: Test from the user's perspective (what they see and interact with)
+
+### Naming Conventions for Tests and Stories
+- **Test describe blocks**: Use full component path format: `components/paper-kit/ComponentName/ComponentName`
+- **Storybook titles**: Use full component path format: `components/paper-kit/ComponentName`
+- **Consistency**: Both tests and stories should use the same path-based naming for organization
+
+Example:
+```typescript
+// In Component.test.tsx
+describe('components/paper-kit/Button/Button', () => {
+  // tests
+});
+
+// In Component.stories.tsx
+const meta: Meta<typeof Component> = {
+  title: 'components/paper-kit/Button',
+  component: Component,
+};
+```
 
 ---
 

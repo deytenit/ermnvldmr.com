@@ -16,7 +16,7 @@ import type { Meta, StoryObj } from '@storybook/react';
  * - Responsive hover and focus states
  */
 const meta: Meta<typeof Button> = {
-  title: 'Paper Kit/Button',
+  title: 'components/paper-kit/Button',
   component: Button,
   parameters: {
     layout: 'centered',
