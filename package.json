@@ -37,9 +37,11 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:storybook": "test-storybook --coverage",
+    "test:storybook:ci": "concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"http-server storybook-static --port 6006 --silent\" \"wait-on tcp:127.0.0.1:6006 && pnpm run test:storybook\"",
     "check": "npm run lint && npm run typecheck && npm run test",
     "clean": "rm -rf dist .turbo node_modules coverage",
     "storybook": "storybook dev -p 6006",
+    "storybook:preview": "http-server storybook-static --port 6006",
     "build-storybook": "storybook build"
   },
   "dependencies": {
@@ -83,6 +85,7 @@
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@types/suncalc": "^1.9.2",
+    "concurrently": "^9.1.2",
     "eslint": "^9.25.1",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-astro": "^1.3.1",
@@ -94,6 +97,7 @@
     "eslint-plugin-react-refresh": "^0.4.26",
     "eslint-plugin-storybook": "^0.10.2",
     "globals": "^16.0.0",
+    "http-server": "^14.1.1",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
     "playwright": "^1.57.0",
@@ -107,6 +111,7 @@
     "tw-animate-css": "^1.2.8",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.31.1",
-    "vite": "^7.2.2"
+    "vite": "^7.2.2",
+    "wait-on": "^8.0.3"
   }
 }

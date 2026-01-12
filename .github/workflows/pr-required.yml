@@ -80,9 +80,34 @@ jobs:
       - name: Run TypeScript compiler
         run: pnpm exec tsc --noEmit
 
+  storybook-build:
+    name: Build Storybook
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build Storybook
+        run: pnpm run build-storybook --quiet
+      - name: Upload Storybook build
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          path: storybook-static/
+          retention-days: 1
+
   test:
     name: Test
-    needs: setup
+    needs: [setup, storybook-build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -100,10 +125,13 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
       - name: Run unit tests with coverage
         run: pnpm run test:coverage
-      - name: Build Storybook
-        run: pnpm run build-storybook --quiet
-      - name: Run Storybook tests with coverage
-        run: pnpm run test:storybook
+      - name: Download Storybook build
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-static
+          path: storybook-static/
+      - name: Serve Storybook and run tests with coverage
+        run: pnpm run test:storybook:ci
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
