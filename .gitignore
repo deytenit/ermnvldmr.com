@@ -15,6 +15,9 @@ pnpm-debug.log*
 # testing
 coverage/
 *.lcov
+storybook-static/
+test-results/
+playwright-report/
 
 # environment variables
 .env

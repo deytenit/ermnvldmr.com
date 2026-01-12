@@ -1,7 +1,8 @@
 import React, { memo } from 'react';
 
-import { cn } from '@/shared/helpers';
 import type { ClassNameProps, TestIdProps } from '@/shared/types';
+
+import { cn } from '@/shared/helpers';
 
 /**
  * Tailwind gap spacing scale values.

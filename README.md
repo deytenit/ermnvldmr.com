@@ -1,68 +1,75 @@
-# Astro Starter Kit: Blog
+# [www.ermnvldmr.com](https://www.ermnvldmr.com)
 
-```sh
-pnpm create astro@latest -- --template blog
-```
+The front page of my own.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/blog)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/blog)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/blog/devcontainer.json)
+## Quick Start
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+- Visit the live site: <https://www.ermnvldmr.com>
+- Report an issue: <https://github.com/deytenit/www.ermnvldmr.com/issues>
+- View the component library: `pnpm storybook`
+- Development guide: [AGENTS.md](./AGENTS.md)
 
-![blog](https://github.com/withastro/astro/assets/2244813/ff10799f-a816-4703-b967-c78997e8323d)
+## Essential Information
 
-Features:
+You should learn the following, before exploring the project:
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and OpenGraph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+- **License**: Composite (see [Copyright & License](#copyright--license))
 
-## 🚀 Project Structure
+## Who Are You?
 
-Inside of your Astro project, you'll see the following folders and files:
+### Visitor
 
-```text
-├── public/
-├── src/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
-```
+Just browsing or interested in the content.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+- **Live Website**: <https://www.ermnvldmr.com>
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+### Developer
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+Want to contribute or understand the codebase.
 
-Any static assets, like images, can be placed in the `public/` directory.
+- **Setup**: `pnpm install` then `pnpm dev`
+- **Development Guide**: [AGENTS.md](./AGENTS.md)
+- **Component Development**: `pnpm storybook`
+- **Testing**: `pnpm test` or `pnpm test:coverage`
+- **Code Quality**: `pnpm check` (runs lint, typecheck, and tests)
 
-## 🧞 Commands
+### Designer
 
-All commands are run from the root of the project, from a terminal:
+Interested in the design system and components.
 
-| Command                | Action                                           |
-| :--------------------- | :----------------------------------------------- |
-| `pnpm install`         | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+- **Components**: Run `pnpm storybook` to explore components
+- **Design System**: See [src/global.css](./src/global.css)
+for the color palette and theme
+- **Theme Structure**: CSS variables with light/dark mode support
 
-## 👀 Want to learn more?
+### Contributor
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Want to submit improvements.
 
-## Credit
+- **Workflow**: Fork, branch from `next`, submit pull request
+- **Code Standards**: See [AGENTS.md](./AGENTS.md) for conventions
+- **Testing Required**: All changes must include tests
+- **Documentation**: TSDoc required for all public exports
+- **CI Requirements**: Pull requests must pass all checks
 
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+## Communication & Support
+
+- **Issues**: <https://github.com/deytenit/www.ermnvldmr.com/issues>
+- **Email**: <personal@ermnvldmr.com>
+
+## Copyright & License
+
+**Source Code**: Licensed under the [MIT License](./LICENSE).
+
+**Content**: Text content in the `content/` directory is licensed under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), *excluding*
+referenced artworks and projects which are *licensed separately* in their
+respective repositories or are individually copyrighted unless stated otherwise.
+
+---
+
+**AI Assistance**:
+Significant portions of this project's *source code* were developed with
+the assistance of AI code generation tools.
+
+Copyright © 2026 Vladimir Eremin

@@ -96,10 +96,19 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Run tests with coverage
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Run unit tests with coverage
         run: pnpm run test:coverage
+      - name: Build Storybook
+        run: pnpm run build-storybook --quiet
+      - name: Run Storybook tests with coverage
+        run: pnpm run test:storybook
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/coverage-final.json,./coverage/storybook/coverage-storybook.json
+          flags: unittests,storybook
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 

@@ -59,10 +59,13 @@ const meta: Meta<typeof Stack> = {
 };
 
 export default meta;
+/**
+ *
+ */
 type Story = StoryObj<typeof meta>;
 
 // Sample content components for demonstrations
-const SampleBox = ({ children, color = 'bg-primary' }: { children: React.ReactNode; color?: string }) => (
+const SampleBox = ({ children, color = 'bg-primary' }: { children: React.ReactNode; color?: string }): React.JSX.Element => (
   <div className={`${color} text-primary-foreground px-4 py-2 rounded text-sm font-medium min-w-16 text-center`}>
     {children}
   </div>
@@ -261,7 +264,7 @@ export const AlignmentVariations: Story = {
       <div>
         <h3 className="text-sm font-semibold mb-2">Align: Start</h3>
         <div className="h-20 border-2 border-dashed border-border">
-          <Stack align="start" gap={2} className="h-full">
+          <Stack align="start" className="h-full" gap={2}>
             <SampleBox>Short</SampleBox>
             <div className="bg-secondary text-secondary-foreground px-4 py-6 rounded text-sm">Tall</div>
             <SampleBox>Short</SampleBox>
@@ -272,7 +275,7 @@ export const AlignmentVariations: Story = {
       <div>
         <h3 className="text-sm font-semibold mb-2">Align: Center</h3>
         <div className="h-20 border-2 border-dashed border-border">
-          <Stack align="center" gap={2} className="h-full">
+          <Stack align="center" className="h-full" gap={2}>
             <SampleBox>Short</SampleBox>
             <div className="bg-secondary text-secondary-foreground px-4 py-6 rounded text-sm">Tall</div>
             <SampleBox>Short</SampleBox>
@@ -283,7 +286,7 @@ export const AlignmentVariations: Story = {
       <div>
         <h3 className="text-sm font-semibold mb-2">Align: Stretch</h3>
         <div className="h-20 border-2 border-dashed border-border">
-          <Stack align="stretch" gap={2} className="h-full">
+          <Stack align="stretch" className="h-full" gap={2}>
             <SampleBox>Stretched</SampleBox>
             <SampleBox color="bg-secondary">Stretched</SampleBox>
             <SampleBox color="bg-accent">Stretched</SampleBox>
