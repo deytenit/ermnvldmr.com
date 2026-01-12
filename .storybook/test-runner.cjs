@@ -1,9 +1,9 @@
-import { getStoryContext } from '@storybook/test-runner';
-
-import type { TestRunnerConfig } from '@storybook/test-runner';
-
-const config: TestRunnerConfig = {
+/** @type {import('@storybook/test-runner').TestRunnerConfig} */
+module.exports = {
   async postVisit(page, context) {
+    // Dynamically import ESM module
+    const { getStoryContext } = await import('@storybook/test-runner');
+    
     // Get story context for debugging
     await getStoryContext(page, context);
     
@@ -12,5 +12,3 @@ const config: TestRunnerConfig = {
     await element.waitFor();
   },
 };
-
-export default config;

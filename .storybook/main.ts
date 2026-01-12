@@ -11,6 +11,7 @@ const config: StorybookConfig = {
     '@storybook/addon-interactions',
     '@storybook/addon-a11y',
     '@storybook/addon-themes',
+    '@storybook/addon-coverage',
   ],
   framework: {
     name: '@storybook/react-vite',
@@ -18,8 +19,20 @@ const config: StorybookConfig = {
   },
   viteFinal: async (config) => {
     const tailwindcss = (await import('@tailwindcss/vite')).default;
+    const istanbul = (await import('vite-plugin-istanbul')).default;
+    
     return mergeConfig(config, {
-      plugins: [tailwindcss()],
+      plugins: [
+        tailwindcss(),
+        istanbul({
+          include: 'src/**/*',
+          exclude: ['node_modules', 'test/', '**/*.stories.tsx', '**/*.test.tsx'],
+          extension: ['.js', '.jsx', '.ts', '.tsx'],
+          requireEnv: false,
+          cypress: false,
+          forceBuildInstrument: true,
+        }),
+      ],
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '../src'),

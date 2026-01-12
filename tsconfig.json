@@ -8,7 +8,8 @@
     "eslint.config.mjs",
     "astro.config.mjs",
     "release.config.mjs",
-    ".config/**/*"
+    ".config/**/*",
+    ".storybook/*.cjs"
   ],
   "compilerOptions": {
     "strictNullChecks": true,

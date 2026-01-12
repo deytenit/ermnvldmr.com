@@ -35,10 +35,13 @@ export default tseslint.config(
   // JavaScript
   eslint.configs.recommended,
 
-  // TypeScript - Strict Configuration
-  ...tseslint.configs.recommendedTypeChecked,
-  ...tseslint.configs.stylisticTypeChecked,
+  // TypeScript - Strict Configuration (only for .ts/.tsx files)
   {
+    files: ['**/*.{ts,tsx,mts,cts}'],
+    extends: [
+      ...tseslint.configs.recommendedTypeChecked,
+      ...tseslint.configs.stylisticTypeChecked,
+    ],
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -165,9 +168,15 @@ export default tseslint.config(
     },
   },
 
+  // CommonJS files - disable all TypeScript rules
+  {
+    files: ['**/*.cjs'],
+    ...tseslint.configs.disableTypeChecked,
+  },
+
   // Config files and tooling
   {
-    files: ['*.config.{js,ts,mjs,cjs}', '.storybook/**/*.{js,ts}'],
+    files: ['*.config.{js,ts,mjs,cjs}', '.storybook/**/*.{js,ts,cjs,mjs}'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
