@@ -40,9 +40,6 @@ comment:
   behavior: default
   # Require changes to post comment
   require_changes: true
-  # Hide complexity metrics
-  hide:
-    - "search"
 
 # Coverage collection
 codecov:
