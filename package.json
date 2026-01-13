@@ -106,6 +106,7 @@
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "semantic-release": "^24.2.3",
+    "semantic-release-export-data": "^1.2.0",
     "storybook": "^8.6.15",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
