@@ -105,9 +105,8 @@ jobs:
           images: ghcr.io/deytenit/www.ermnvldmr.com
           tags: |
             type=raw,value=${{ needs.release.outputs.new-release-version }}
-            type=raw,value=${{ needs.release.outputs.new-release-version }}-next
-            type=raw,value={{major}}.{{minor}}-next,enable={{is_default_branch}}
-            type=raw,value={{major}}-next,enable={{is_default_branch}}
+            type=semver,pattern={{major}}.{{minor}},suffix=-next,value=${{ needs.release.outputs.new-release-version }},match=(\d+\.\d+\.\d+),enable={{is_default_branch}}
+            type=semver,pattern={{major}},suffix=-next,value=${{ needs.release.outputs.new-release-version }},match=(\d+\.\d+\.\d+),enable={{is_default_branch}}
             type=raw,value=latest-next
             type=sha,prefix={{branch}}-
 
@@ -118,9 +117,8 @@ jobs:
           images: ghcr.io/deytenit/www.ermnvldmr.com/storybook
           tags: |
             type=raw,value=${{ needs.release.outputs.new-release-version }}
-            type=raw,value=${{ needs.release.outputs.new-release-version }}-next
-            type=raw,value={{major}}.{{minor}}-next,enable={{is_default_branch}}
-            type=raw,value={{major}}-next,enable={{is_default_branch}}
+            type=semver,pattern={{major}}.{{minor}},suffix=-next,value=${{ needs.release.outputs.new-release-version }},match=(\d+\.\d+\.\d+),enable={{is_default_branch}}
+            type=semver,pattern={{major}},suffix=-next,value=${{ needs.release.outputs.new-release-version }},match=(\d+\.\d+\.\d+),enable={{is_default_branch}}
             type=raw,value=latest-next
             type=sha,prefix={{branch}}-
 

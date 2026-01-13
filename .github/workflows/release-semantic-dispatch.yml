@@ -100,8 +100,8 @@ jobs:
           images: ghcr.io/deytenit/www.ermnvldmr.com
           tags: |
             type=raw,value=${{ needs.release.outputs.new-release-version }}
-            type=raw,value={{major}}.{{minor}},enable={{is_default_branch}}
-            type=raw,value={{major}},enable={{is_default_branch}}
+            type=semver,pattern={{major}}.{{minor}},value=${{ needs.release.outputs.new-release-version }},enable={{is_default_branch}}
+            type=semver,pattern={{major}},value=${{ needs.release.outputs.new-release-version }},enable={{is_default_branch}}
             type=raw,value=latest
             type=sha,prefix={{branch}}-
 
@@ -112,8 +112,8 @@ jobs:
           images: ghcr.io/deytenit/www.ermnvldmr.com/storybook
           tags: |
             type=raw,value=${{ needs.release.outputs.new-release-version }}
-            type=raw,value={{major}}.{{minor}},enable={{is_default_branch}}
-            type=raw,value={{major}},enable={{is_default_branch}}
+            type=semver,pattern={{major}}.{{minor}},value=${{ needs.release.outputs.new-release-version }},enable={{is_default_branch}}
+            type=semver,pattern={{major}},value=${{ needs.release.outputs.new-release-version }},enable={{is_default_branch}}
             type=raw,value=latest
             type=sha,prefix={{branch}}-
 
