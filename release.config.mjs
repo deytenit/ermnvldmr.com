@@ -5,8 +5,8 @@ export default {
   ],
   plugins: [
     '@semantic-release/commit-analyzer',
-    'semantic-release-export-data',
     '@semantic-release/release-notes-generator',
     '@semantic-release/github',
+    'semantic-release-export-data',
   ],
 };
