@@ -1,46 +1,59 @@
 # Docker Compose for local development and testing
-# Use: docker-compose up to start both services locally
+# Use: docker-compose up to start services locally
 
 version: '3.8'
 
 services:
-  # Astro static site
-  astro:
+  # WWW service (Astro static site)
+  www:
     build:
       context: .
       dockerfile: docker/astro/Dockerfile
       target: production
     ports:
       - "3000:8080"
-    container_name: www-ermnvldmr-astro
+    container_name: ermnvldmr-www
     environment:
       - NODE_ENV=production
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
-  # Storybook component library
-  storybook:
+  # WWW Storybook
+  www-storybook:
     build:
       context: .
       dockerfile: docker/storybook/Dockerfile
       target: production
     ports:
       - "6006:8080"
-    container_name: www-ermnvldmr-storybook
+    container_name: ermnvldmr-www-storybook
     environment:
       - NODE_ENV=production
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  # Docs service (Hugo static site) - Future implementation
+  # docs:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/hugo/Dockerfile
+  #     target: production
+  #   ports:
+  #     - "3001:8080"
+  #   container_name: ermnvldmr-docs
+  #   environment:
+  #     - NODE_ENV=production
+  #   restart: unless-stopped
 
 # Optional: Add a reverse proxy for unified access
   # nginx-proxy:
@@ -50,10 +63,10 @@ services:
   #   volumes:
   #     - ./docker/nginx/proxy.conf:/etc/nginx/conf.d/default.conf:ro
   #   depends_on:
-  #     - astro
-  #     - storybook
-  #   container_name: www-ermnvldmr-proxy
+  #     - www
+  #     - www-storybook
+  #   container_name: ermnvldmr-proxy
 
 networks:
   default:
-    name: www-ermnvldmr-network
+    name: ermnvldmr-infrastructure

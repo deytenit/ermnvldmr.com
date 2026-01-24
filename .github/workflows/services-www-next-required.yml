@@ -1,0 +1,207 @@
+name: services/www - next/required
+
+on:
+  push:
+    branches: [next]
+    paths: 
+      - 'services/www/**'
+      - 'packages/ui/**'
+      - 'packages/stl/**'
+      - 'pnpm-lock.yaml'
+
+concurrency:
+  group: ci-www-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  setup:
+    name: Setup stage
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache-pnpm-store.outputs.cache-hit }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+
+      - name: Setup Node.js with pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Cache pnpm store
+        id: cache-pnpm-store
+        uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+  build-dependencies:
+    name: Build Dependencies (STL → UI)
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build STL package
+        run: pnpm --filter @ermnvldmr/stl build
+      - name: Build UI package
+        run: pnpm --filter @ermnvldmr/ui build
+
+  lint:
+    name: Lint WWW & Dependencies
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint STL package
+        run: pnpm --filter @ermnvldmr/stl lint
+      - name: Lint UI package
+        run: pnpm --filter @ermnvldmr/ui lint
+      - name: Lint WWW service
+        run: pnpm --filter @ermnvldmr/www lint
+
+  type-check:
+    name: Typecheck WWW & Dependencies
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck STL package
+        run: pnpm --filter @ermnvldmr/stl typecheck
+      - name: Typecheck UI package
+        run: pnpm --filter @ermnvldmr/ui typecheck
+      - name: Typecheck WWW service
+        run: pnpm --filter @ermnvldmr/www typecheck
+
+  storybook-build:
+    name: Build Storybook
+    needs: [setup, build-dependencies]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build STL package
+        run: pnpm --filter @ermnvldmr/stl build
+      - name: Build UI package
+        run: pnpm --filter @ermnvldmr/ui build
+      - name: Build WWW Storybook
+        run: pnpm --filter @ermnvldmr/www build-storybook
+      - name: Upload Storybook build
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          path: services/www/storybook-static/
+          retention-days: 1
+
+  test:
+    name: Test
+    needs: [setup, storybook-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Build STL package
+        run: pnpm --filter @ermnvldmr/stl build
+      - name: Build UI package
+        run: pnpm --filter @ermnvldmr/ui build
+      - name: Test STL package
+        run: pnpm --filter @ermnvldmr/stl test:coverage
+      - name: Test UI package
+        run: pnpm --filter @ermnvldmr/ui test:coverage
+      - name: Test WWW service
+        run: pnpm --filter @ermnvldmr/www test:coverage
+      - name: Download Storybook build
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-static
+          path: services/www/storybook-static/
+      - name: Serve Storybook and run tests with coverage
+        run: pnpm --filter @ermnvldmr/www test:storybook:ci
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./services/www/coverage/lcov.info,./services/www/coverage/storybook/coverage-storybook.json
+          flags: unittests,storybook
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  build:
+    name: Build WWW Service
+    needs: [setup, build-dependencies]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build STL package
+        run: pnpm --filter @ermnvldmr/stl build
+      - name: Build UI package
+        run: pnpm --filter @ermnvldmr/ui build
+      - name: Build WWW service
+        run: pnpm --filter @ermnvldmr/www build

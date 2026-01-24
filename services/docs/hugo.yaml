@@ -1,0 +1,134 @@
+baseURL: 'https://docs.root.ermnvldmr.com'
+defaultContentLanguage: 'en'
+defaultContentLanguageInSubdir: true
+title: 'root.ermnvldmr.com'
+description: 'Documentation for the root.ermnvldmr.com infrastructure'
+
+# Multilingual configuration
+languages:
+  en:
+    languageCode: 'en-us'
+    languageName: 'English'
+    title: 'root.ermnvldmr.com'
+    description: 'Documentation for the root.ermnvldmr.com infrastructure'
+    weight: 1
+    contentDir: 'content/en'
+    menu:
+      main:
+#        - name: Architecture
+#          url: /en/architecture/
+#          weight: 10
+#        - name: Operations
+#          url: /en/operations/
+#          weight: 20
+#        - name: Concepts
+#          url: /en/concepts/
+#          weight: 30
+        - name: Recipes
+          url: /en/recipes/
+          weight: 40
+        - name: Search
+          weight: 50
+          params:
+            type: search
+  ru:
+    languageCode: 'ru'
+    languageName: 'Русский'
+    title: 'root.ermnvldmr.com'
+    description: 'Документация для инфраструктуры root.ermnvldmr.com'
+    weight: 2
+    contentDir: 'content/ru'
+    menu:
+      main:
+        - name: Архитектура
+          url: /ru/architecture/
+          weight: 10
+        - name: Операции
+          url: /ru/operations/
+          weight: 20
+        - name: Концепции
+          url: /ru/concepts/
+          weight: 30
+        - name: Рецепты
+          url: /ru/recipes/
+          weight: 40
+        - name: Поиск
+          weight: 50
+          params:
+            type: search
+
+# Theme configuration
+theme: hextra
+
+enableGitInfo: true
+
+# Hextra theme parameters
+params:
+  description: "Documentation for the root.ermnvldmr.com infrastructure"
+  
+  # Search configuration
+  search:
+    enable: true
+    type: flexsearch
+    flexsearch:
+      # index page by: content | summary | heading | title
+      index: content
+      # full | forward | reverse | strict
+      # https://github.com/nextapps-de/flexsearch/#tokenizer-prefix-search
+      tokenize: forward
+
+  displayUpdatedDate: true
+  dateFormat: "January 2, 2006"
+    
+  # Navigation configuration
+  navbar:
+    displayTitle: true
+    width: wide
+    displayLogo: false
+    
+  # Footer configuration
+  footer:
+    displayCopyright: true
+    displayPoweredBy: true
+    
+  # Edit page configuration
+  editURL:
+    enable: true
+    base: "https://github.com/deytenit/root.ermnvldmr.com/edit/trunk/docs/content"
+
+  page:
+    width: wide
+
+  theme:
+    default: system
+    displayToggle: true
+
+# Markdown configuration
+markup:
+  highlight:
+    style: github
+    lineNos: true
+    noClasses: false
+  goldmark:
+    renderer:
+      unsafe: true
+
+# Output formats
+outputs:
+  home: [HTML]
+  page: [HTML]
+  section: [HTML]
+
+# URL configuration to preserve existing structure
+permalinks:
+  architecture: /architecture/:slug/
+  operations: /operations/:slug/
+  reference: /reference/:slug/
+  troubleshooting: /troubleshooting/:slug/
+
+# Deployment configuration
+deployment:
+  targets:
+    - name: production
+      URL: docs.root.ermnvldmr.com
+      cloudFrontDistributionID: # TBD during deployment

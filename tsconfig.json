@@ -1,29 +1,34 @@
 {
-  "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "src/**/*", ".storybook/**/*"],
+  "include": ["packages/**/*", "services/**/*"],
   "exclude": [
     "dist", 
     "coverage",
-    "*.config.*",
-    "eslint.config.mjs",
-    "astro.config.mjs",
-    "release.config.mjs",
+    "node_modules",
+    "**/dist",
+    "**/coverage",
+    "**/node_modules",
     ".config/**/*",
-    ".storybook/*.cjs"
+    "eslint.config.mjs"
   ],
   "compilerOptions": {
-    "strictNullChecks": true,
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "useDefineForClassFields": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@components/*": ["./src/components/*"],
-      "@www/*": ["./src/www/*"],
-      "@shared/*": ["./src/shared/*"],
-      "@test/*": ["./.config/jest/*"]
+      "@ermnvldmr/stl": ["./packages/stl/src"],
+      "@ermnvldmr/ui": ["./packages/ui/src"],
+      "@ermnvldmr/ui/*": ["./packages/ui/src/*"]
     },
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    "types": ["jest", "@testing-library/jest-dom"],
     "allowJs": true
   }
 }

@@ -1,0 +1,49 @@
+name: services/docs - next/required
+
+on:
+  push:
+    branches: [next]
+    paths: 
+      - 'services/docs/**'
+
+concurrency:
+  group: ci-docs-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  setup:
+    name: Setup Hugo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: 'latest'
+          extended: true
+
+  build:
+    name: Build Hugo Site
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: 'latest'
+          extended: true
+
+      - name: Build Hugo site
+        working-directory: services/docs
+        run: hugo --gc --minify

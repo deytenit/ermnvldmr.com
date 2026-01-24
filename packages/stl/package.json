@@ -1,0 +1,41 @@
+{
+  "name": "@ermnvldmr/stl",
+  "version": "1.0.0",
+  "description": "Common reusable dependencies",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && vite build",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist coverage"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.2.0"
+  },
+  "devDependencies": {
+    "@ermnvldmr/eslint-config": "workspace:*",
+    "@ermnvldmr/jest-config": "workspace:*",
+    "@ermnvldmr/vite-config": "workspace:*",
+    "jest": "^30.2.0",
+    "typescript": "^5.8.3",
+    "vite": "^7.2.2"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^4.1.4"
+  }
+}

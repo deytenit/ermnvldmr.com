@@ -1,0 +1,179 @@
+name: packages/ui - next/required
+
+on:
+  push:
+    branches: [next]
+    paths: 
+      - 'packages/ui/**'
+      - 'packages/stl/**'
+      - 'pnpm-lock.yaml'
+
+concurrency:
+  group: ci-ui-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  setup:
+    name: Setup stage
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache-pnpm-store.outputs.cache-hit }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+
+      - name: Setup Node.js with pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Cache pnpm store
+        id: cache-pnpm-store
+        uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+  lint:
+    name: Lint UI & Dependencies
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint STL package
+        run: pnpm --filter @ermnvldmr/stl lint
+      - name: Lint UI package
+        run: pnpm --filter @ermnvldmr/ui lint
+
+  type-check:
+    name: Typecheck UI & Dependencies
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck STL package
+        run: pnpm --filter @ermnvldmr/stl typecheck
+      - name: Typecheck UI package
+        run: pnpm --filter @ermnvldmr/ui typecheck
+
+  build-dependencies:
+    name: Build Dependencies (STL)
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build STL package
+        run: pnpm --filter @ermnvldmr/stl build
+
+  test:
+    name: Test UI & Dependencies
+    needs: [setup, build-dependencies]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build STL package
+        run: pnpm --filter @ermnvldmr/stl build
+      - name: Test STL package
+        run: pnpm --filter @ermnvldmr/stl test:coverage
+      - name: Test UI package
+        run: pnpm --filter @ermnvldmr/ui test:coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./packages/stl/coverage/lcov.info,./packages/ui/coverage/lcov.info
+          flags: stl,ui
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  storybook-build:
+    name: Build UI Storybook
+    needs: [setup, build-dependencies]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build STL package
+        run: pnpm --filter @ermnvldmr/stl build
+      - name: Build UI package
+        run: pnpm --filter @ermnvldmr/ui build
+      - name: Build UI Storybook
+        run: pnpm --filter @ermnvldmr/ui build-storybook
+
+  build:
+    name: Build UI Package
+    needs: [setup, build-dependencies]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build STL package
+        run: pnpm --filter @ermnvldmr/stl build
+      - name: Build UI package
+        run: pnpm --filter @ermnvldmr/ui build
