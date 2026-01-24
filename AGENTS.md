@@ -2,335 +2,288 @@
 
 ## 📋 Project Overview
 
-**www.ermnvldmr.com** is Vladimir Eremin's personal website built with modern web technologies. The project serves as a platform for sharing thoughts, creations, and personal content through a carefully crafted design system.
+**ermnvldmr.com** is Vladimir Eremin's personal ecosystem of services delivered through a modern monorepo architecture. The project encompasses personal websites, documentation sites, and shared infrastructure for web-based content and services.
 
-### Core Architecture
-- **Framework**: Astro.js v5+ (Static Site Generator)
-- **UI Library**: React 19+ (Islands Architecture)
-- **Styling**: Tailwind CSS v4+ with custom design system
-- **Language**: TypeScript (Strict mode)
-- **Build Tool**: Vite 7+
-- **Package Manager**: pnpm
-- **Deployment**: GitHub Pages with automated CI/CD
+### Monorepo Architecture
+- **Repository Structure**: pnpm workspace monorepo
+- **Package Manager**: pnpm v9.12.3+
+- **Core Technology**: TypeScript (Strict mode)
+- **Services**: Independent web services with shared dependencies
+- **Packages**: Reusable configurations and component libraries
+- **Build System**: Distributed builds with dependency management
+- **CI/CD**: GitHub Actions with path-based triggers
 
 ### Design Philosophy
-- **Component-First**: All UI elements are developed as isolated, reusable components
-- **Design System**: Custom "rainby" color palette with consistent theming
-- **Performance-First**: Static generation with minimal JavaScript islands
+- **Component-First**: All UI elements developed as isolated, reusable components
+- **Configuration Sharing**: Centralized tooling configurations across services
 - **TypeScript-First**: Strict typing for all public APIs and components
 - **Documentation-Driven**: TSDoc required for all exported elements
+- **Dependency Isolation**: Clear separation between packages and services
+- **Build Optimization**: Efficient dependency building and caching
 
-## 🏗️ Directory Structure
+## 🏗️ Repository Structure
 
 ```
-├── src/
-│   ├── components/              # React component library
-│   │   ├── shared/             # Common reusable components
-│   │   └── {theme_name}/       # Theme-specific components
-│   ├── www/                    # Astro application (custom srcDir)
-│   │   ├── layouts/            # Page layout templates (.astro)
-│   │   ├── pages/              # File-based routing (.astro)
-│   │   ├── shared/             # Utilities and constants
-│   │   └── widgets/            # Feature-specific components
-│   └── global.css              # Design system + Tailwind configuration
-├── content/                    # Astro Content Collections
-│   └── {collections}/          # Blog posts, articles, etc.
-├── .storybook/                 # Component development environment
-├── .github/workflows/          # CI/CD automation
-├── public/                     # Static assets
-└── [config files]              # Various configuration files
+├── packages/                   # Shared packages and configurations
+│   ├── eslint-config/         # Shared ESLint configurations
+│   ├── jest-config/           # Shared Jest configurations  
+│   ├── storybook-config/      # Shared Storybook configurations
+│   ├── vite-config/           # Shared Vite configurations
+│   ├── stl/                   # Standard Type Library (utilities)
+│   └── ui/                    # Shared React component library
+├── services/                   # Independent web services
+│   ├── www/                   # Main website (Astro + React)
+│   └── docs/                  # Documentation site (Hugo)
+├── .github/workflows/         # CI/CD automation
+├── pnpm-workspace.yaml        # Workspace configuration
+└── [root config files]        # Global configurations
 ```
+
+### Package Organization
+
+#### Configuration Packages (`packages/`)
+- **eslint-config**: Shared ESLint rules for TypeScript, React, and Astro
+- **jest-config**: Shared Jest configurations for different project types
+- **storybook-config**: Shared Storybook setup and configurations
+- **vite-config**: Shared Vite configurations for library builds
+
+#### Library Packages (`packages/`)
+- **stl** (Standard Type Library): Common utilities, types, and helper functions
+- **ui**: React component library with design system and Storybook stories
+
+#### Service Packages (`services/`)
+- **www**: Main website built with Astro.js, React, and Tailwind CSS
+- **docs**: Documentation site built with Hugo and Hextra theme
 
 ### Key Directory Rules
 
-#### `/src/components/`
-- **Purpose**: Reusable React components developed in isolation
-- **Structure**: Organized by usage scope (`shared/` for common, `{theme}/` for themed)
-- **Requirements**: All components must have Storybook stories
-- **Exports**: Only manually developed components, no external UI library dependencies
+#### `/packages/`
+- **Purpose**: Shared configurations and reusable libraries
+- **Dependencies**: Can depend on each other following build order (configs → stl → ui)
+- **Exports**: Must provide proper TypeScript declarations
+- **Building**: Required before dependent services can build
+- **Testing**: Individual test suites for each package
 
-#### `/src/www/`
-- **Purpose**: Astro application code (set as custom srcDir in config)
-- **Constraint**: Only use manually developed components from `/src/components/`
-- **Organization**: Standard Astro structure with layouts, pages, and utilities
-
-#### `/src/www/widgets/`
-- **Purpose**: Feature-specific components tied to particular functionality
-- **Usage**: Components that don't fit in shared or themed categories
-
-#### `/content/`
-- **Purpose**: Content management using Astro Content Collections
-- **Structure**: Organized by content type (blog, projects, etc.)
-- **Format**: Markdown/MDX files with frontmatter validation
+#### `/services/`
+- **Purpose**: Independent web applications and sites
+- **Dependencies**: Can consume packages but not other services
+- **Deployment**: Independent deployment pipelines
+- **Development**: Can be developed and tested in isolation
+- **Configuration**: Inherit from shared packages but can override
 
 ## 🛠️ Development Workflow
 
-### Component Development
-1. **Storybook-First**: All components must be developed and tested in Storybook
-2. **Isolation**: Components should work independently without page context
-3. **Documentation**: Each component requires comprehensive Storybook stories
-4. **Manual Development**: No external UI library components in `/src/www/`
+### Monorepo Development Principles
+- **Root-Level Scripts**: Check `package.json` at repository root for monorepo-wide operations
+- **Service-Specific Scripts**: Each service in `services/` has its own development commands
+- **Package Filtering**: Use pnpm workspace filtering to target specific packages/services
+- **Dependency-Aware Building**: UI components must be built before dependent services
+
+### Package Development Workflow
+The monorepo follows a strict dependency hierarchy that must be respected:
+
+#### 1. Configuration Packages First
+Configuration packages provide shared tooling setups and must be built before anything else. Look for packages ending in `-config` in the `packages/` directory.
+
+#### 2. Library Packages
+Library packages (`stl`, `ui`) provide reusable code and components. They depend on configuration packages and must be built in dependency order (check their `package.json` dependencies).
+
+#### 3. Services
+Services consume packages but are independent of each other. They can be developed and deployed separately. Check `services/` directory for available services and their individual `package.json` files for available scripts.
 
 ### Code Organization Principles
-- **Single Responsibility**: Each component serves one clear purpose
-- **Composition Over Inheritance**: Build complex UIs by composing simple components
-- **TypeScript-First**: All public APIs must be properly typed
-- **Documentation-Required**: TSDoc for all exported elements
+- **Dependency Order**: configs → stl → ui → services
+- **Single Responsibility**: Each package serves one clear purpose
+- **Explicit Dependencies**: All inter-package dependencies declared in package.json
+- **Build Isolation**: Each package can be built independently
+- **Configuration Inheritance**: Services inherit from shared configurations
 
 ## 📝 Coding Conventions
+
+### Package Naming Convention
+All packages use the `@ermnvldmr/` namespace:
+- `@ermnvldmr/eslint-config` - Shared ESLint configurations
+- `@ermnvldmr/jest-config` - Shared Jest configurations  
+- `@ermnvldmr/storybook-config` - Shared Storybook configurations
+- `@ermnvldmr/vite-config` - Shared Vite configurations
+- `@ermnvldmr/stl` - Standard Type Library
+- `@ermnvldmr/ui` - Component library
+- `@ermnvldmr/www` - Main website service
+- `@ermnvldmr/docs` - Documentation service
 
 ### TypeScript Guidelines
 - **Strict Mode**: All TypeScript strict checks must pass
 - **Explicit Types**: Avoid `any` and prefer explicit type definitions
 - **Interface First**: Use interfaces for component props and public APIs
-- **Generic Constraints**: Properly constrain generic types
+- **Cross-Package Types**: Export types from packages for service consumption
 
 ### TSDoc Documentation Requirements
 **MANDATORY for all exported elements**: types, functions, constants, components
 
 ```typescript
 /**
- * Formats a date string or timestamp into human-readable format.
+ * Combines class names using clsx and tailwind-merge for consistent styling.
  * 
- * @param input - The date to format (string or number timestamp)
- * @returns Formatted date string in "Month Day, Year" format
+ * @param inputs - Class name inputs to combine
+ * @returns Combined and deduplicated class string
  * 
  * @example
  * \`\`\`typescript
- * formatDate('2024-01-15') // "January 15, 2024"
- * formatDate(1705276800000) // "January 15, 2024"
+ * cn('px-4 py-2', 'bg-blue-500', 'px-6') // 'py-2 bg-blue-500 px-6'
+ * cn('text-lg', condition && 'font-bold') // 'text-lg font-bold'
  * \`\`\`
  */
-export function formatDate(input: string | number): string {
-  // implementation
-}
-
-/**
- * Props for the PageHead component.
- */
-export interface PageHeadProps {
-  /** The main title displayed in the header */
-  title: string;
-  /** Array of breadcrumbs, displayed above the title */
-  breadcrumbs?: Breadcrumb[];
-  /** Navigation items displayed on the right */
-  navItems?: NavItem[];
+export function cn(...inputs: ClassValue[]): string {
+  return twMerge(clsx(inputs));
 }
 ```
 
-### React Component Patterns
-- **Functional Components**: Use function declarations with explicit typing
-- **Props Interfaces**: Define props as separate interfaces with TSDoc
-- **Memo Usage**: Wrap components with `memo()` for performance when appropriate
-- **Event Handlers**: Type event handlers explicitly
-
+### Component Development Patterns
+#### UI Package Components
 ```typescript
 /**
- * A reusable button component with consistent styling and behavior.
+ * Props for the Button component.
  */
 export interface ButtonProps {
-  /** The button text content */
+  /** The button content */
   children: React.ReactNode;
-  /** Click event handler */
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   /** Visual style variant */
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+  /** Button size */
+  size?: 'default' | 'sm' | 'lg' | 'icon';
 }
 
 /**
- * Button component following the design system patterns.
+ * Versatile button component with multiple variants and sizes.
  */
-export const Button = memo(function Button({ 
-  children, 
-  onClick, 
-  variant = 'primary' 
-}: ButtonProps) {
-  // implementation
-});
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant = 'default', size = 'default', ...props }, ref) => {
+    return (
+      <button
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
+    );
+  }
+);
 ```
 
 ### File Naming Conventions
-- **Components**: PascalCase (e.g., `PageHead.tsx`, `NavigationMenu.tsx`)
-- **Utilities**: camelCase (e.g., `formatDate.ts`, `apiHelpers.ts`)
-- **Constants**: UPPER_SNAKE_CASE for exports (e.g., `SITE_TITLE`)
+- **Components**: PascalCase (e.g., `Button.tsx`, `NavigationMenu.tsx`)
+- **Utilities**: camelCase (e.g., `cn.ts`, `formatters.ts`)
+- **Constants**: UPPER_SNAKE_CASE for exports (e.g., `API_ENDPOINTS`)
 - **Types**: PascalCase with descriptive suffixes (e.g., `ButtonProps`, `ApiResponse`)
+- **Config Files**: kebab-case (e.g., `jest-config`, `eslint-config`)
 
 ### Module Structure Patterns
 
-Each module in the project follows a consistent internal structure to maintain organization and scalability.
-
-#### Component Modules
-For widgets and shared components:
-
+#### Package Structure
 ```
-src/widgets/SomeComponent/
-├── hooks/
-│   └── someHook/ 
-│       └── someHook.tsx
-├── helpers/
-│   └── someHelper/
-│       └── someHelper.ts 
-├── components/
-│   └── SomeSubComponent/
-│       └── SomeSubComponent.tsx
-├── SomeComponent.tsx
-├── SomeComponent.test.tsx (if needed)
-└── SomeComponent.stories.tsx
+packages/ui/
+├── src/
+│   ├── components/           # Component categories
+│   │   ├── generic/         # Layout and generic components
+│   │   └── paper/           # Themed component variants
+│   ├── styles/              # Global styles and CSS
+│   ├── test-utils.tsx       # Testing utilities
+│   └── index.ts            # Main package exports
+├── package.json
+├── vite.config.ts
+├── tsconfig.json
+└── .storybook/             # Storybook configuration
 ```
 
-#### Shared Helper Modules
-For standalone utility functions:
-
+#### Service Structure (www example)
 ```
-src/shared/helpers/someHelper/
-├── helpers/
-│   └── someSubHelper/
-│       └── someSubHelper.ts 
-├── someHelper.ts
-└── someHelper.test.ts
-```
-
-#### Shared Hook Modules
-For reusable React hooks:
-
-```
-src/shared/hooks/someHook/
-├── hooks/
-│   └── someSubHook/
-│       └── someSubHook.ts
-├── someHook.ts
-└── someHook.test.ts
+services/www/
+├── src/
+│   ├── layouts/            # Astro layout components
+│   ├── pages/              # Astro pages (file-based routing)
+│   ├── shared/             # Shared utilities and constants
+│   └── global.css          # Service-specific styles
+├── public/                 # Static assets
+├── astro.config.mjs        # Astro configuration
+├── package.json
+└── tailwind.config.mjs     # Tailwind configuration
 ```
 
-#### Module Organization Rules
+## 🎨 Design System (UI Package)
 
-1. **Single Entry Point**: Each module exports its main functionality from the root file
-2. **Internal Dependencies**: Sub-modules (helpers/, hooks/, components/) are implementation details
-3. **Testing Strategy**: Test only the final exported component/function, not internal dependencies
-4. **Story Strategy**: Create Storybook stories only for the main exported component
-5. **Naming Consistency**: Directory names match the main export name
-6. **Isolation**: Each module should be self-contained and independently testable
+### Component Organization
+- **Generic Components**: Layout utilities (Stack, VStack, HStack)
+- **Themed Components**: Paper-themed variants with consistent styling
+- **Radix Integration**: Accessibility-first components using Radix UI
+- **Storybook Stories**: Every component has comprehensive documentation
 
-#### Testing Guidelines
+### Styling Approach
+- **Tailwind CSS v4+**: Utility-first CSS framework
+- **Class Variance Authority**: Type-safe variant generation
+- **Custom Design Tokens**: Consistent spacing, colors, typography
+- **Responsive Design**: Mobile-first responsive patterns
 
-- **Focus on Public API**: Test the main exported functionality, not internal helpers
-- **Integration Over Unit**: Test how the complete module works, not individual pieces
-- **Story-Driven Testing**: Use Storybook stories as living documentation and manual testing
-- **Avoid Over-Testing**: Don't create separate tests for internal sub-modules
-
-#### Import/Export Patterns
-
+### Component Categories
 ```typescript
-// Main module file (SomeComponent.tsx)
-import { someHelper } from './helpers/someHelper/someHelper';
-import { useSomeHook } from './hooks/someHook/someHook';
-import SomeSubComponent from './components/SomeSubComponent/SomeSubComponent';
+// Generic Layout Components
+export { Stack } from './components/generic/Stack/Stack';
+export { VStack } from './components/generic/VStack/VStack';
+export { HStack } from './components/generic/HStack/HStack';
 
-// Export only the main component
-export default SomeComponent;
-export type { SomeComponentProps };
+// Themed Components (Paper)
+export { Button } from './components/paper/PaperButton/Button';
+export { Separator } from './components/paper/PaperSeparator/Separator';
 ```
 
-## 🎨 Design System
+## ⚙️ Configuration Management
 
-### Color Palette
-The project uses a custom "rainby" color palette with semantic color mapping:
-- **Core Colors**: Red, Orange, Yellow, Green, Cyan, Blue, Violet, Neutral
-- **Each Color**: 50-950 scale following Tailwind conventions
-- **Semantic Mapping**: Primary (cyan), Secondary (green), Accent (violet), etc.
+### Shared Configurations
+Each configuration package provides standardized setups:
 
-### Theme Structure
-```css
-:root {
-  /* Light mode variables */
-  --color-background: var(--color-rainby-neutral-50);
-  --color-foreground: var(--color-rainby-neutral-950);
-  /* ... */
-}
-
-.dark {
-  /* Dark mode overrides */
-  --color-background: var(--color-rainby-neutral-950);
-  --color-foreground: var(--color-rainby-neutral-50);
-  /* ... */
-}
+#### ESLint Configuration
+```javascript
+// Provides: base, react, astro configurations
+import { base } from '@ermnvldmr/eslint-config';
+import { react } from '@ermnvldmr/eslint-config/react';
+import { astro } from '@ermnvldmr/eslint-config/astro';
 ```
 
-### Custom Utilities
-- **`frosted-glass`**: Backdrop blur effect for overlays
-- **`vstack`**: Vertical flex layout utility
-- **`hstack`**: Horizontal flex layout utility
-
-### Typography
-- **Sans**: Lato (headings, UI text)
-- **Serif**: EB Garamond (body text, content)
-- **Responsive**: Tailwind responsive typography classes
-
-## ⚙️ Configuration Files
-
-### Path Mapping (tsconfig.json)
-```json
-{
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@*": ["./src/*"]
-    }
-  }
-}
+#### Jest Configuration
+```typescript
+// Provides: base, react configurations
+import { base } from '@ermnvldmr/jest-config/base';
+import { react } from '@ermnvldmr/jest-config/react';
 ```
 
-### Astro Configuration
-- **Custom srcDir**: `./src/www` (Astro application code)
-- **Integrations**: MDX, Sitemap, React
-- **Vite Plugins**: Tailwind CSS integration
+#### Vite Configuration
+```typescript
+// Provides: library build configurations
+import { defineLibConfig } from '@ermnvldmr/vite-config/lib';
+```
 
-### Development Tools
-- **ESLint**: Astro + React + TypeScript configurations
-- **Prettier**: Astro + React + Tailwind plugins
-- **Storybook**: React-Vite with Tailwind integration
+### Service Configuration Inheritance
+Services inherit from shared configs but can override:
+```typescript
+// In service package.json devDependencies
+"@ermnvldmr/eslint-config": "workspace:*"
+"@ermnvldmr/jest-config": "workspace:*"
+```
 
 ## 🚀 Build & Deployment
 
-### Scripts
-```json
-{
-  "dev": "astro dev",          // Development server
-  "build": "astro build",      // Production build
-  "preview": "astro preview",  // Preview built site
-  "storybook": "storybook dev", // Component development
-  "check": "lint + typecheck"  // Code quality checks
-}
-```
+### Build Dependencies
+The monorepo must respect a strict build order due to package dependencies:
 
-### CI/CD Pipeline
-1. **Semantic Release**: Automated versioning and changelog generation
-2. **GitHub Actions**: Automated build and deployment to GitHub Pages
-3. **Quality Gates**: ESLint, TypeScript checking, build verification
+1. **Configuration packages** (eslint-config, jest-config, etc.) - Foundation tooling
+2. **STL package** - Shared utilities and types
+3. **UI package** - Component library (depends on STL)
+4. **Services** - Applications that consume packages (www, docs)
 
-### Release Process
-- **Branches**: `next` (prerelease), `release/*` (stable releases)
-- **Triggers**: Release creation automatically deploys to production
-- **Versioning**: Semantic versioning with conventional commits
-
-## 📚 Content Management
-
-### Astro Content Collections
-Content is managed through Astro's Content Collections system in the `/content/` directory:
-- **Type Safety**: Schema validation for frontmatter
-- **Organization**: Content organized by collection type
-- **Processing**: Automatic type generation and content APIs
-
-### Content Structure Example
-```
-content/
-├── blog/           # Blog posts
-│   ├── post-1.md
-│   └── post-2.mdx
-└── projects/       # Project showcases
-    ├── project-1.md
-    └── project-2.md
-```
+### CI/CD Pipeline Structure
+The repository uses path-based CI/CD triggers - each package and service has dedicated workflows in `.github/workflows/`. Examine the workflow files to understand:
+- **Trigger Patterns**: Which file changes activate each pipeline
+- **Build Dependencies**: How packages are built in sequence
+- **Quality Gates**: Linting, type-checking, and testing requirements
+- **Deployment Targets**: Where each service is deployed
 
 ## 🔧 Development Environment
 
@@ -338,104 +291,57 @@ content/
 - **Node.js**: v20+
 - **pnpm**: v9.12.3+
 - **TypeScript**: v5.8+
+- **Hugo**: v0.110.0+ (for docs service)
 
-### Setup Commands
-```bash
-pnpm install          # Install dependencies
-pnpm dev              # Start development server
-pnpm storybook        # Start component development
-pnpm check            # Run all quality checks
-```
+### Initial Setup
+To start development, follow the dependency hierarchy:
 
-### Development Guidelines
-1. **Component-First**: Develop components in Storybook before integration
-2. **Type Safety**: All public APIs must be properly typed with TSDoc
-3. **Manual Components**: Only use manually developed components in www
-4. **Design System**: Follow the established color palette and utilities
-5. **Performance**: Leverage Astro's static generation with minimal client-side JavaScript
-6. **Testing**: Write tests for utilities, hooks, and interactive components
+1. **Install dependencies** using the root `package.json` scripts
+2. **Build configuration packages** first (check packages ending in `-config`)
+3. **Build library packages** in dependency order (STL before UI)
+4. **Start services** after dependencies are built
+
+### Development Commands
+The monorepo provides scripts at multiple levels:
+
+- **Root Level**: Check root `package.json` for monorepo-wide operations
+- **Package Level**: Each package has its own build, test, and development scripts
+- **Service Level**: Services have development servers, build commands, and testing
+
+Use pnpm workspace filtering (`--filter`) to target specific packages or services. Examine individual `package.json` files to discover available scripts for each component.
 
 ## 🧪 Testing Strategy
 
-### Testing Framework
-- **Test Runner**: Jest with TypeScript support
-- **Component Testing**: React Testing Library for component interactions
-- **Utilities**: Jest for unit testing of pure functions and hooks
-- **Coverage**: HTML and LCOV reports for coverage tracking
+### Testing Framework Distribution
+- **Shared Configuration**: Jest configs in `@ermnvldmr/jest-config`
+- **Package Testing**: Each package has its own test suite
+- **Service Testing**: Services test their specific functionality
+- **Component Testing**: UI package uses React Testing Library
+- **Storybook Testing**: Visual regression and interaction testing
 
-### Testing Patterns
-
-#### Component Testing
+### Test Organization
 ```typescript
-import { render, screen } from '@/test/test-utils';
-import { SomeComponent } from './SomeComponent';
+// Package-level testing (packages/stl/src/functions/cn/cn.test.ts)
+describe('cn function', () => {
+  it('combines class names correctly', () => {
+    expect(cn('px-4', 'py-2')).toBe('px-4 py-2');
+  });
+});
 
-/**
- * Test suite for SomeComponent
- */
-describe('SomeComponent', () => {
-  const defaultProps = {
-    title: 'Test Title',
-  };
-
-  it('renders correctly', () => {
-    render(<SomeComponent {...defaultProps} />);
-    expect(screen.getByText('Test Title')).toBeInTheDocument();
+// Component testing (packages/ui/src/components/paper/Button/Button.test.tsx)
+describe('components/paper/Button/Button', () => {
+  it('renders with correct variant', () => {
+    render(<Button variant="destructive">Test</Button>);
+    expect(screen.getByRole('button')).toHaveClass('destructive');
   });
 });
 ```
 
-#### Utility Testing
-```typescript
-import { someUtility } from './someUtility';
-
-/**
- * Test suite for utility functions
- */
-describe('someUtility', () => {
-  it('handles expected inputs correctly', () => {
-    expect(someUtility('input')).toBe('expected');
-  });
-
-  it('handles edge cases', () => {
-    expect(someUtility('')).toBe('');
-  });
-});
-```
-
-### Testing Commands
-```bash
-pnpm test              # Run all tests
-pnpm test:watch        # Run tests in watch mode
-pnpm test:coverage     # Run tests with coverage report
-```
-
-### Testing Guidelines
-- **Focus on Public API**: Test exported functionality, not implementation details
-- **Module-Level Testing**: Test the main export of each module, not sub-dependencies
-- **Integration Over Unit**: Test how complete modules work together
-- **Accessibility Testing**: Use screen reader queries and accessibility matchers
-- **User-Centric**: Test from the user's perspective (what they see and interact with)
-
-### Naming Conventions for Tests and Stories
-- **Test describe blocks**: Use full component path format: `components/paper-kit/ComponentName/ComponentName`
-- **Storybook titles**: Use full component path format: `components/paper-kit/ComponentName`
-- **Consistency**: Both tests and stories should use the same path-based naming for organization
-
-Example:
-```typescript
-// In Component.test.tsx
-describe('components/paper-kit/Button/Button', () => {
-  // tests
-});
-
-// In Component.stories.tsx
-const meta: Meta<typeof Component> = {
-  title: 'components/paper-kit/Button',
-  component: Component,
-};
-```
+### Coverage Strategy
+- **Package Coverage**: Individual coverage reports per package
+- **Service Coverage**: Service-specific coverage including Storybook tests
+- **Aggregated Coverage**: Combined reporting for the entire monorepo
 
 ---
 
-*This guide serves as the architectural foundation for the project. Focus on these stable patterns and structures rather than specific implementation details that may change over time.*
+*This guide serves as the architectural foundation for the monorepo. Focus on these stable patterns and structures rather than specific implementation details that may change over time.*
