@@ -1,12 +1,11 @@
 ---
-title: "Ermnvldmr Root Documentation"
-description: "Documentation for the root.ermnvldmr.com infrastructure"
-type: docs
+title: "ermnvldmr.com Documentation"
 ---
 
-Various notes made during the development of personal infrastructure.
+# Documentation Portal
 
-## Sections
+Welcome to the unified documentation for ermnvldmr.com services and infrastructure.
 
-- **[Recipes](/recipes/)** -- Step-by-step instructions,
-that I don't want to remember each time I need one.
+{{< cards >}}
+  {{< card link="root" title="root.ermnvldmr.com" icon="server" subtitle="Documentation for root.ermnvldmr.com infrastructure" >}}
+{{< /cards >}}

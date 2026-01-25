@@ -1,12 +1,11 @@
 ---
-title: "root.ermnvldmr.com"
-description: "Документация к инфраструктуре root.ermnvldmr.com"
-type: docs
+title: "Документация ermnvldmr.com"
 ---
 
-Различные заметки, сделанные в процессе разработки этой инфраструктуры.
+# Портал документации
 
-## Разделы
+Добро пожаловать в единую документацию сервисов и инфраструктуры ermnvldmr.com.
 
-- **[Рецепты](/recipes/)** -- Пошаговые инструкции,
-которые мне не хочется изобретать каждый раз снова.
+{{< cards >}}
+  {{< card link="root" title="root.ermnvldmr.com" icon="server" subtitle="Документация инфраструктуры root.ermnvldmr.com" >}}
+{{< /cards >}}

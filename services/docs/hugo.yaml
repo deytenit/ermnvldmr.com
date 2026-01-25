@@ -1,32 +1,20 @@
-baseURL: 'https://docs.root.ermnvldmr.com'
+baseURL: 'https://docs.ermnvldmr.com'
 defaultContentLanguage: 'en'
 defaultContentLanguageInSubdir: true
-title: 'root.ermnvldmr.com'
-description: 'Documentation for the root.ermnvldmr.com infrastructure'
+title: 'ermnvldmr.com'
+description: 'Documentation for ermnvldmr.com services and infrastructure'
 
 # Multilingual configuration
 languages:
   en:
     languageCode: 'en-us'
     languageName: 'English'
-    title: 'root.ermnvldmr.com'
-    description: 'Documentation for the root.ermnvldmr.com infrastructure'
+    title: 'ermnvldmr.com'
+    description: 'Documentation for ermnvldmr.com services and infrastructure'
     weight: 1
     contentDir: 'content/en'
     menu:
       main:
-#        - name: Architecture
-#          url: /en/architecture/
-#          weight: 10
-#        - name: Operations
-#          url: /en/operations/
-#          weight: 20
-#        - name: Concepts
-#          url: /en/concepts/
-#          weight: 30
-        - name: Recipes
-          url: /en/recipes/
-          weight: 40
         - name: Search
           weight: 50
           params:
@@ -34,25 +22,13 @@ languages:
   ru:
     languageCode: 'ru'
     languageName: 'Русский'
-    title: 'root.ermnvldmr.com'
-    description: 'Документация для инфраструктуры root.ermnvldmr.com'
+    title: 'ermnvldmr.com'
+    description: 'Документация для сервисов и инфраструктуры ermnvldmr.com'
     weight: 2
     contentDir: 'content/ru'
     menu:
       main:
-        - name: Архитектура
-          url: /ru/architecture/
-          weight: 10
-        - name: Операции
-          url: /ru/operations/
-          weight: 20
-        - name: Концепции
-          url: /ru/concepts/
-          weight: 30
-        - name: Рецепты
-          url: /ru/recipes/
-          weight: 40
-        - name: Поиск
+        - name: Search
           weight: 50
           params:
             type: search
@@ -64,7 +40,7 @@ enableGitInfo: true
 
 # Hextra theme parameters
 params:
-  description: "Documentation for the root.ermnvldmr.com infrastructure"
+  description: "Documentation for ermnvldmr.com services and infrastructure"
   
   # Search configuration
   search:
@@ -94,7 +70,7 @@ params:
   # Edit page configuration
   editURL:
     enable: true
-    base: "https://github.com/deytenit/root.ermnvldmr.com/edit/trunk/docs/content"
+    base: "https://github.com/deytenit/www.ermnvldmr.com/edit/main/services/docs/content"
 
   page:
     width: wide
