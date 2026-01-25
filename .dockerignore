@@ -2,7 +2,7 @@
 # Exclude development and build artifacts
 
 # Version control
-.git/
+!.git/
 .gitignore
 
 # Dependencies
