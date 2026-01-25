@@ -1,0 +1,45 @@
+name: com-ermnvldmr
+
+services:
+  nginx:
+    image: nginx:stable-alpine
+    container_name: com-ermnvldmr-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    networks:
+      - com-ermnvldmr-direct
+      - com-ermnvldmr-enclave
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+    security_opt:
+      - no-new-privileges:true
+
+  docs:
+    image: ghcr.io/deytenit/www.ermnvldmr.com/docs:${DOCS_TAG}
+    container_name: com-ermnvldmr-docs
+    restart: always
+    networks:
+      - com-ermnvldmr-enclave
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  com-ermnvldmr-direct:
+    driver: bridge
+  com-ermnvldmr-enclave:
+    internal: true
+    driver: bridge
