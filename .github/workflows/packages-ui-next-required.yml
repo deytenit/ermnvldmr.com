@@ -13,8 +13,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  setup:
-    name: Setup stage
+  setup-stage:
+    name: Setup - Stage
     runs-on: ubuntu-latest
     outputs:
       cache-hit: ${{ steps.cache-pnpm-store.outputs.cache-hit }}
@@ -43,51 +43,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-  lint:
-    name: Lint UI & Dependencies
-    needs: [setup, build-configs]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.12.3
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Lint STL package
-        run: pnpm --filter @ermnvldmr/stl lint
-      - name: Lint UI package
-        run: pnpm --filter @ermnvldmr/ui lint
-
-  type-check:
-    name: Typecheck UI & Dependencies
-    needs: [setup, build-configs]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.12.3
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Typecheck STL package
-        run: pnpm --filter @ermnvldmr/stl typecheck
-      - name: Typecheck UI package
-        run: pnpm --filter @ermnvldmr/ui typecheck
-
   build-configs:
-    name: Build Config Packages
-    needs: setup
+    name: Build - Configs
+    needs: setup-stage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -109,8 +67,8 @@ jobs:
         run: pnpm --filter @ermnvldmr/storybook-config build
 
   build-dependencies:
-    name: Build Dependencies (STL)
-    needs: [setup, build-configs]
+    name: Build - Dependencies
+    needs: build-configs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -133,9 +91,51 @@ jobs:
       - name: Build STL package
         run: pnpm --filter @ermnvldmr/stl build
 
-  test:
-    name: Test UI & Dependencies
-    needs: [setup, build-dependencies]
+  lint-ui:
+    name: Lint - UI
+    needs: build-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint STL package
+        run: pnpm --filter @ermnvldmr/stl lint
+      - name: Lint UI package
+        run: pnpm --filter @ermnvldmr/ui lint
+
+  typecheck-ui:
+    name: Typecheck - UI
+    needs: build-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck STL package
+        run: pnpm --filter @ermnvldmr/stl typecheck
+      - name: Typecheck UI package
+        run: pnpm --filter @ermnvldmr/ui typecheck
+
+  test-ui:
+    name: Test - UI & Storybook
+    needs: build-dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -169,9 +169,9 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  storybook-build:
-    name: Build UI Storybook
-    needs: [setup, build-dependencies]
+  build-storybook:
+    name: Build - Storybook
+    needs: build-dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -198,9 +198,9 @@ jobs:
       - name: Build UI Storybook
         run: pnpm --filter @ermnvldmr/ui build-storybook
 
-  build:
-    name: Build UI Package
-    needs: [setup, build-dependencies]
+  build-ui:
+    name: Build - UI
+    needs: build-dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

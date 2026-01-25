@@ -12,8 +12,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  setup:
-    name: Setup stage
+  setup-stage:
+    name: Setup - Stage
     runs-on: ubuntu-latest
     outputs:
       cache-hit: ${{ steps.cache-pnpm-store.outputs.cache-hit }}
@@ -42,47 +42,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-  lint:
-    name: Lint STL
-    needs: [setup, build-configs]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.12.3
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Lint STL package
-        run: pnpm --filter @ermnvldmr/stl lint
-
-  type-check:
-    name: Typecheck STL
-    needs: [setup, build-configs]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.12.3
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Typecheck STL package
-        run: pnpm --filter @ermnvldmr/stl typecheck
-
   build-configs:
-    name: Build Config Packages
-    needs: setup
+    name: Build - Configs
+    needs: setup-stage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -101,9 +63,47 @@ jobs:
       - name: Build Vite config
         run: pnpm --filter @ermnvldmr/vite-config build
 
-  test:
-    name: Test STL
-    needs: [setup, build-configs]
+  lint-stl:
+    name: Lint - STL
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint STL package
+        run: pnpm --filter @ermnvldmr/stl lint
+
+  typecheck-stl:
+    name: Typecheck - STL
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck STL package
+        run: pnpm --filter @ermnvldmr/stl typecheck
+
+  test-stl:
+    name: Test - STL
+    needs: build-configs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -131,9 +131,9 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  build:
-    name: Build STL Package
-    needs: [setup, build-configs]
+  build-stl:
+    name: Build - STL
+    needs: build-configs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

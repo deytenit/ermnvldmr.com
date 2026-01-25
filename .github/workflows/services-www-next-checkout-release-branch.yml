@@ -1,0 +1,27 @@
+name: services/www - next/checkout-release-branch
+
+on:
+  workflow_dispatch:
+
+jobs:
+  workflow-create-release-branch:
+    name: Workflow - Create Release Branch
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine Branch Name
+        id: branch
+        run: |
+          BRANCH_NAME=$(bash ci/scripts/semantic-release.sh checkout services/www)
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      - name: Create and Push Branch
+        run: |
+          git checkout -b ${{ steps.branch.outputs.branch_name }}
+          git push origin ${{ steps.branch.outputs.branch_name }}

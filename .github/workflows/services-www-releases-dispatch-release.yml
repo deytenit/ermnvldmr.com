@@ -1,0 +1,62 @@
+name: services/www - releases/dispatch-release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release-tag-docker:
+    name: Release - Tag & Docker
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Calculate Release Version
+        id: version
+        run: |
+          RELEASE_VERSION=$(bash ci/scripts/semantic-release.sh release ${{ github.ref_name }})
+          # Extract MAJOR.MINOR for tagging
+          MAJOR_MINOR=$(echo "${{ github.ref_name }}" | cut -d/ -f3 | sed 's/^v//')
+          MAJOR=$(echo "$MAJOR_MINOR" | cut -d. -f1)
+          echo "version=$RELEASE_VERSION" >> $GITHUB_OUTPUT
+          echo "major_minor=$MAJOR_MINOR" >> $GITHUB_OUTPUT
+          echo "major=$MAJOR" >> $GITHUB_OUTPUT
+
+      - name: Create and Push Tag
+        run: |
+          TAG_NAME="releases/www/v${{ steps.version.outputs.version }}"
+          git tag $TAG_NAME
+          git push origin $TAG_NAME
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/www
+          tags: |
+            type=raw,value=v${{ steps.version.outputs.version }}
+            type=raw,value=v${{ steps.version.outputs.major_minor }}
+            type=raw,value=v${{ steps.version.outputs.major }}
+            type=raw,value=latest
+            type=sha,format=short
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ci/docker/www/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

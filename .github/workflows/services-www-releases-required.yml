@@ -1,0 +1,172 @@
+name: services/www - releases/required
+
+on:
+  push:
+    branches: ['releases/www/**']
+
+concurrency:
+  group: ci-www-rel-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  setup-stage:
+    name: Setup - Stage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - name: Setup Node.js with pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+  build-configs:
+    name: Build - Configs
+    needs: setup-stage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build configs
+        run: |
+          pnpm --filter @ermnvldmr/jest-config build
+          pnpm --filter @ermnvldmr/vite-config build
+          pnpm --filter @ermnvldmr/storybook-config build
+
+  build-dependencies:
+    name: Build - Dependencies
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build dependencies
+        run: |
+          pnpm --filter @ermnvldmr/jest-config build
+          pnpm --filter @ermnvldmr/vite-config build
+          pnpm --filter @ermnvldmr/storybook-config build
+          pnpm --filter @ermnvldmr/stl build
+          pnpm --filter @ermnvldmr/ui build
+
+  test-www:
+    name: Test - WWW & Deps
+    needs: build-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build dependencies
+        run: |
+          pnpm --filter @ermnvldmr/jest-config build
+          pnpm --filter @ermnvldmr/vite-config build
+          pnpm --filter @ermnvldmr/storybook-config build
+          pnpm --filter @ermnvldmr/stl build
+          pnpm --filter @ermnvldmr/ui build
+      - name: Run tests
+        run: |
+          pnpm --filter @ermnvldmr/stl test:coverage
+          pnpm --filter @ermnvldmr/ui test:coverage
+          pnpm --filter @ermnvldmr/www test:coverage
+
+  build-www:
+    name: Build - WWW Service
+    needs: build-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build WWW service
+        run: |
+          pnpm --filter @ermnvldmr/jest-config build
+          pnpm --filter @ermnvldmr/vite-config build
+          pnpm --filter @ermnvldmr/storybook-config build
+          pnpm --filter @ermnvldmr/stl build
+          pnpm --filter @ermnvldmr/ui build
+          pnpm --filter @ermnvldmr/www build
+
+  release-rc-docker:
+    name: Release - RC Docker Image
+    needs: build-www
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Calculate RC Version
+        id: version
+        run: |
+          RC_VERSION=$(bash ci/scripts/semantic-release.sh rc ${{ github.ref_name }})
+          echo "rc_version=$RC_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/www
+          tags: |
+            type=raw,value=${{ steps.version.outputs.rc_version }}
+            type=sha,format=short
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ci/docker/www/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
