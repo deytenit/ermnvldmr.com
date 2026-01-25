@@ -14,6 +14,8 @@ fi
 
 # Override with new tags provided via env (passed from GitHub)
 # The variables DOCS_TAG and WWW_TAG should already be in the environment
+export DOCS_TAG=${DOCS_TAG:-latest}
+export WWW_TAG=${WWW_TAG:-latest}
 
 # Generate new .env from template
 echo "Generating .env from template..."
