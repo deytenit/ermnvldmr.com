@@ -85,3 +85,24 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    name: Deploy to VPS
+    needs: release-docker
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/next'
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_VPS_HOST }}
+          username: ${{ secrets.DEPLOY_VPS_USER }}
+          key: ${{ secrets.DEPLOY_VPS_SSH_KEY }}
+          script: |
+            cd /srv/ermnvldmr.com
+            git pull
+            chmod +x ci/scripts/deploy-new-tags.sh
+            # Use the short SHA to match the tag from release-docker
+            export DOCS_TAG="sha-$(echo ${{ github.sha }} | cut -c1-7)"
+            ./ci/scripts/deploy-new-tags.sh
+
