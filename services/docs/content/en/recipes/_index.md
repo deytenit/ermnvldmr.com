@@ -10,7 +10,7 @@ that I don't want to remember each time I need one.
 
 ## What's in here
 
-### [Initial Host Setup](/recipes/initial-setup)
+### [Initial Host Setup](/recipes/initial-setup) (EN only)
 
 Setting up a new host on Debian from scratch.
 
