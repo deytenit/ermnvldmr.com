@@ -27,6 +27,9 @@ echo "Pulling images..."
 docker compose pull
 
 echo "Starting containers..."
-docker compose up -d --remove-orphans
+docker compose up --force-recreate --build -d --remove-orphans
+
+echo "Pruning unused images..."
+docker image prune -f
 
 echo "Deployment complete."

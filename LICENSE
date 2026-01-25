@@ -1,4 +1,4 @@
-GNU GENERAL PUBLIC LICENSE
+                    GNU GENERAL PUBLIC LICENSE
                        Version 2, June 1991
 
  Copyright (C) 1989, 1991 Free Software Foundation, Inc.,
@@ -281,20 +281,19 @@ POSSIBILITY OF SUCH DAMAGES.
 
 ---
 
-### Clarification on Content Licensing
+                  Clarification on Content Licensing
 
-While the source code of this project is licensed under the GNU General Public 
-License version 2.0, this license does not necessarily apply to all content 
+  While the source code of this project is licensed under the GNU General Public
+License version 2.0, this license does not necessarily apply to all content
 hosted within this repository.
 
-1. **Documentation & Informational Content**: Technical documentation and 
-   informational guides are generally licensed under Creative Commons 
-   Attribution 4.0 International (CC BY 4.0) unless otherwise specified.
+1. **Documentation & Informational Content**: Technical documentation, guides,
+   and informational articles within `services/docs/content/` and
+   `services/www/src/` are licensed under Creative Commons Attribution 4.0
+   International (CC BY 4.0).
 
-2. **Creative Literature & Art**: Poems, personal essays, artworks, 
-   photography, and other purely creative works are NOT covered by the 
-   GPL or CC BY 4.0 licenses. These works are individually copyrighted 
-   by their respective owners and remain under full copyright protection.
-
-For specific licensing details on any asset, please refer to the README 
-in the respective directory or contact the author.
+2. **Creative Literature & Art**: Poems, essays, artworks,
+   photography, and other purely creative, scientific or literary works are NOT covered by
+   the GPL or CC BY 4.0 licenses. These works are individually copyrighted by
+   their respective owners and remain under full copyright protection unless
+   explicitly stated otherwise within their specific file metadata or directory.
