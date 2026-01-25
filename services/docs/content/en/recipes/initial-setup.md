@@ -29,6 +29,12 @@ Fill file with the content:
 %wheel         ALL = (ALL) NOPASSWD: ALL
 ```
 
+Then add _Adam_ user to the group
+
+```bash
+usermod -a -G wheel adam
+```
+
 ## Configure SSH
 
 Hardening SSHD,
