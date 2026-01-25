@@ -2,7 +2,7 @@ name: com-ermnvldmr
 
 services:
   nginx:
-    image: nginx:stable-alpine
+    image: nginx:1.28-alpine
     container_name: com-ermnvldmr-nginx
     restart: always
     ports:
@@ -24,7 +24,7 @@ services:
       - no-new-privileges:true
 
   docs:
-    image: ghcr.io/deytenit/www.ermnvldmr.com/docs:${DOCS_TAG}
+    image: ghcr.io/deytenit/ermnvldmr.com/docs:${DOCS_TAG}
     container_name: com-ermnvldmr-docs
     restart: always
     networks:
