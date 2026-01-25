@@ -1,12 +1,28 @@
 # [www.ermnvldmr.com](https://www.ermnvldmr.com)
 
-The front page of my own.
+The monorepo powering my personal brand and projects.
+
+## Monorepo Structure
+
+### Services
+
+- **[www](./services/www)**: Main website, built with Astro and React.
+- **[docs](./services/docs)**: Documentation site, built with Hugo and the Hextra theme.
+
+### Packages
+
+- **[@ermnvldmr/ui](./packages/ui)**: Shared React component library and design system.
+- **[@ermnvldmr/stl](./packages/stl)**: Standard Template Library – common utilities and reusable logic.
+- **[@ermnvldmr/eslint-config](./packages/eslint-config)**: Shared linting configurations.
+- **[@ermnvldmr/jest-config](./packages/jest-config)**: Shared testing configurations.
+- **[@ermnvldmr/vite-config](./packages/vite-config)**: Shared build configurations.
+- **[@ermnvldmr/storybook-config](./packages/storybook-config)**: Shared Storybook configurations.
 
 ## Quick Start
 
 - Visit the live site: <https://www.ermnvldmr.com>
 - Report an issue: <https://github.com/deytenit/www.ermnvldmr.com/issues>
-- View the component library: `pnpm storybook`
+- View UI components: `pnpm ui:storybook`
 - Development guide: [AGENTS.md](./AGENTS.md)
 
 ## Essential Information
@@ -27,18 +43,22 @@ Just browsing or interested in the content.
 
 Want to contribute or understand the codebase.
 
-- **Setup**: `pnpm install` then `pnpm dev`
+- **Setup**: `pnpm install`
+- **Development**:
+    - Website: `pnpm www:dev`
+    - Documentation: `pnpm docs:dev`
+    - UI Library: `pnpm ui:dev`
 - **Development Guide**: [AGENTS.md](./AGENTS.md)
-- **Component Development**: `pnpm storybook`
+- **Component Development**: `pnpm ui:storybook`
 - **Testing**: `pnpm test` or `pnpm test:coverage`
-- **Code Quality**: `pnpm check` (runs lint, typecheck, and tests)
+- **Code Quality**: `pnpm lint` and `pnpm typecheck`
 
 ### Designer
 
 Interested in the design system and components.
 
-- **Components**: Run `pnpm storybook` to explore components
-- **Design System**: See [src/global.css](./src/global.css)
+- **Components**: Run `pnpm ui:storybook` to explore components
+- **Design System**: See [packages/ui/src/styles/index.css](./packages/ui/src/styles/index.css)
 for the color palette and theme
 - **Theme Structure**: CSS variables with light/dark mode support
 
@@ -59,12 +79,11 @@ Want to submit improvements.
 
 ## Copyright & License
 
-**Source Code**: Licensed under the [MIT License](./LICENSE).
+**Source Code**: Licensed under the [GNU GPL 2.0](./LICENSE).
 
-**Content**: Text content in the `content/` directory is licensed under
-[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), *excluding*
-referenced artworks and projects which are *licensed separately* in their
-respective repositories or are individually copyrighted unless stated otherwise.
+**Documentation & Informational Content**: Technical documentation, guides, and informational articles within `services/docs/content/` and `services/www/src/` are licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
+
+**Creative Literature & Art**: Poems, personal essays, artworks, photography, and other purely creative or literary works are **individually copyrighted by their respective owners**. These works are *not* open-source and are *not* covered by the GPL or CC BY 4.0 licenses. They remain under full copyright protection unless explicitly stated otherwise within their specific file metadata or directory.
 
 ---
 

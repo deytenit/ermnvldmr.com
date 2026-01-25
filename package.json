@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "ermnvldmr.com monorepo",
   "author": "Vladimir Eremin <personal@ermnvldmr.com> (https://ermnvldmr.com)",
-  "license": "MIT",
+  "license": "GPL-2.0-only",
   "type": "module",
   "repository": {
     "type": "git",
