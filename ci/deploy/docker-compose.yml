@@ -39,7 +39,9 @@ services:
 
 networks:
   com-ermnvldmr-direct:
+    name: com-ermnvldmr-direct
     driver: bridge
   com-ermnvldmr-enclave:
+    name: com-ermnvldmr-enclave
     internal: true
     driver: bridge
