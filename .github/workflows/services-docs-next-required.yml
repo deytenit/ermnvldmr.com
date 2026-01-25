@@ -87,7 +87,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   deploy:
-    name: Deploy to VPS
+    name: Deploy - VPS
     needs: release-docker
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/next'
@@ -98,6 +98,7 @@ jobs:
           host: ${{ secrets.DEPLOY_VPS_HOST }}
           username: ${{ secrets.DEPLOY_VPS_USER }}
           key: ${{ secrets.DEPLOY_VPS_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_VPS_SSH_PORT || 22 }}
           script: |
             cd /srv/ermnvldmr.com
             git pull
