@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM klakegg/hugo:ext-alpine AS builder
+FROM ghcr.io/gohugoio/hugo:v0.154.5 AS builder
 
 WORKDIR /src
 COPY services/docs /src
