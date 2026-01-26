@@ -1,0 +1,134 @@
+name: services/static - next/required
+
+on:
+  push:
+    branches: [next]
+    paths:
+      - 'services/static/**'
+      - 'packages/ui/**'
+      - 'pnpm-lock.yaml'
+
+concurrency:
+  group: ci-static-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  setup-stage:
+    name: Setup - Stage
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache-pnpm-store.outputs.cache-hit }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+
+      - name: Setup Node.js with pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Cache pnpm store
+        id: cache-pnpm-store
+        uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+  lint-static:
+    name: Lint - Static
+    needs: setup-stage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint static service
+        run: pnpm --filter @ermnvldmr/static lint
+
+  typecheck-static:
+    name: Typecheck - Static
+    needs: setup-stage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck static service
+        run: pnpm --filter @ermnvldmr/static typecheck
+
+  build-static:
+    name: Build - Static Site
+    needs: setup-stage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build static service
+        run: pnpm --filter @ermnvldmr/static build
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: static-dist
+          path: services/static/dist/
+          retention-days: 1
+
+  deploy-s3:
+    name: Deploy - S3
+    needs: [lint-static, typecheck-static, build-static]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/next'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: static-dist
+          path: services/static/dist/
+
+      - name: Deploy to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.STATIC_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.STATIC_AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.STATIC_AWS_REGION }}
+          S3_BUCKET: ${{ secrets.STATIC_S3_BUCKET }}
+          AWS_REGION: ${{ secrets.STATIC_AWS_REGION }}
+          S3_ENDPOINT_URL: ${{ secrets.STATIC_S3_ENDPOINT_URL }}
+        run: |
+          chmod +x ci/scripts/deploy-static.sh
+          ./ci/scripts/deploy-static.sh

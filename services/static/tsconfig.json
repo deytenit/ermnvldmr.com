@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "#*": ["./*"],
+      "@ermnvldmr/stl": ["../../../packages/stl/src"],
+      "@ermnvldmr/ui": ["../../../packages/ui/src"],
+      "@ermnvldmr/ui/*": ["../../../packages/ui/src/*"]
+    }
+  },
+  "include": [".astro/types.d.ts", "src/**/*"],
+  "exclude": ["dist", "node_modules", "**/*.config.*"]
+}

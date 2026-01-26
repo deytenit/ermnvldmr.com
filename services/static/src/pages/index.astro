@@ -1,0 +1,35 @@
+---
+import { VStack, HStack } from '@ermnvldmr/ui';
+
+import StaticLayout from '#layouts/StaticLayout/StaticLayout.astro';
+import {
+  AUTHOR_EMAIL,
+  AUTHOR_NAME,
+  SITE_DESCRIPTION,
+  SITE_TITLE,
+  SITE_URL,
+} from '#shared/constants';
+import { getCurrentYear } from '#shared/utils';
+import '#global.css';
+---
+
+<StaticLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+  <main class="h-screen w-screen">
+    <VStack className="w-full h-full" align="center" justify="center">
+      <VStack align="start" gap={8}>
+        <h1>Static Content Dwells Here</h1>
+        <p>
+          Other pages direct you down specific paths to the content that resides here
+        </p>
+        <HStack justify="between" className="w-full">
+          <span>
+            <a href={`mailto:${AUTHOR_EMAIL}`}>{AUTHOR_NAME}</a>, {getCurrentYear()}
+          </span>
+          <span>
+            <a href={SITE_URL}>ermnvldmr.com</a>
+          </span>
+        </HStack>
+      </VStack>
+    </VStack>
+  </main>
+</StaticLayout>
