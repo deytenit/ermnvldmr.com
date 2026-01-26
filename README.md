@@ -1,22 +1,6 @@
 # [ermnvldmr.com](https://ermnvldmr.com)
 
-The monorepo powering front pages of my own.
-
-## Monorepo Structure
-
-### Services
-
-- **[www](./services/www)**: Main website, built with Astro and React.
-- **[docs](./services/docs)**: Documentation site, built with Hugo and the Hextra theme.
-
-### Packages
-
-- **[@ermnvldmr/ui](./packages/ui)**: Shared React component library and design system.
-- **[@ermnvldmr/stl](./packages/stl)**: Standard Template Library – common utilities and reusable logic.
-- **[@ermnvldmr/eslint-config](./packages/eslint-config)**: Shared linting configurations.
-- **[@ermnvldmr/jest-config](./packages/jest-config)**: Shared testing configurations.
-- **[@ermnvldmr/vite-config](./packages/vite-config)**: Shared build configurations.
-- **[@ermnvldmr/storybook-config](./packages/storybook-config)**: Shared Storybook configurations.
+The monorepo powering the front pages of my own
 
 ## Quick Start
 
@@ -29,7 +13,25 @@ The monorepo powering front pages of my own.
 
 You should learn the following, before exploring the project:
 
-- **License**: Composite (see [Copyright & License](#copyright--license))
+### License
+
+Composite (see [Copyright & License](#copyright--license))
+
+### Monorepo Structure
+
+#### Services
+
+- **[www](./services/www)**: Main website, built with Astro and React.
+- **[docs](./services/docs)**: Documentation site, built with Hugo and the Hextra theme.
+
+#### Packages
+
+- **[@ermnvldmr/ui](./packages/ui)**: Shared React component library and design system.
+- **[@ermnvldmr/stl](./packages/stl)**: Standard Template Library – common utilities and reusable logic.
+- **[@ermnvldmr/eslint-config](./packages/eslint-config)**: Shared linting configurations.
+- **[@ermnvldmr/jest-config](./packages/jest-config)**: Shared testing configurations.
+- **[@ermnvldmr/vite-config](./packages/vite-config)**: Shared build configurations.
+- **[@ermnvldmr/storybook-config](./packages/storybook-config)**: Shared Storybook configurations.
 
 ## Who Are You?
 
