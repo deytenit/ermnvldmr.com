@@ -1,6 +1,6 @@
 # [www.ermnvldmr.com](https://www.ermnvldmr.com)
 
-The monorepo powering my personal brand and projects.
+The monorepo powering front pages of my own.
 
 ## Monorepo Structure
 
@@ -81,7 +81,7 @@ Want to submit improvements.
 
 **Source Code**: Licensed under the [GNU GPL 2.0](./LICENSE).
 
-**Documentation & Informational Content**: Technical documentation, guides, and informational articles within `services/docs/content/` and `services/www/src/` are licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
+**Documentation & Informational Content**: Technical documentation, guides, and informational articles within `services/docs/content/` and `services/www/content/` are licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
 
 **Creative Literature & Art**: Poems, personal essays, artworks, photography, and other purely creative or literary works are **individually copyrighted by their respective owners**. These works are *not* open-source and are *not* covered by the GPL or CC BY 4.0 licenses. They remain under full copyright protection unless explicitly stated otherwise within their specific file metadata or directory.
 
