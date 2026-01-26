@@ -24,11 +24,7 @@ RUN pnpm install --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Build dependencies and then the website
-RUN pnpm --filter @ermnvldmr/jest-config build
-RUN pnpm --filter @ermnvldmr/vite-config build
-RUN pnpm --filter @ermnvldmr/stl build
-RUN pnpm --filter @ermnvldmr/ui build
+# Build the website
 RUN pnpm --filter @ermnvldmr/www build
 
 # Stage 2: Runtime

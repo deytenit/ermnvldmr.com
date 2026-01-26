@@ -22,7 +22,7 @@ export default tseslint.config(
   // Astro
   ...eslintPluginAstro.configs.recommended,
   {
-    files: ['services/www/**/*.astro'],
+    files: ['services/www/**/*.astro', 'services/static/**/*.astro'],
     rules: {
       // Astro specific rules can go here
     },
