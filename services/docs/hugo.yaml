@@ -70,7 +70,7 @@ params:
   # Edit page configuration
   editURL:
     enable: true
-    base: "https://github.com/deytenit/www.ermnvldmr.com/edit/main/services/docs/content"
+    base: "https://github.com/deytenit/ermnvldmr.com/edit/next/services/docs/content"
 
   page:
     width: wide

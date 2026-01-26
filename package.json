@@ -7,12 +7,12 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deytenit/www.ermnvldmr.com.git"
+    "url": "git+https://github.com/deytenit/ermnvldmr.com.git"
   },
   "bugs": {
-    "url": "https://github.com/deytenit/www.ermnvldmr.com/issues"
+    "url": "https://github.com/deytenit/ermnvldmr.com/issues"
   },
-  "homepage": "https://github.com/deytenit/www.ermnvldmr.com#readme",
+  "homepage": "https://github.com/deytenit/ermnvldmr.com#readme",
   "packageManager": "pnpm@9.12.3",
   "engines": {
     "node": ">=20",

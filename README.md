@@ -1,4 +1,4 @@
-# [www.ermnvldmr.com](https://www.ermnvldmr.com)
+# [ermnvldmr.com](https://ermnvldmr.com)
 
 The monorepo powering front pages of my own.
 
@@ -20,8 +20,8 @@ The monorepo powering front pages of my own.
 
 ## Quick Start
 
-- Visit the live site: <https://www.ermnvldmr.com>
-- Report an issue: <https://github.com/deytenit/www.ermnvldmr.com/issues>
+- Visit the live site: <https://ermnvldmr.com>
+- Report an issue: <https://github.com/deytenit/ermnvldmr.com/issues>
 - View UI components: `pnpm ui:storybook`
 - Development guide: [AGENTS.md](./AGENTS.md)
 
@@ -37,7 +37,7 @@ You should learn the following, before exploring the project:
 
 Just browsing or interested in the content.
 
-- **Live Website**: <https://www.ermnvldmr.com>
+- **Live Website**: <https://ermnvldmr.com>
 
 ### Developer
 
@@ -74,7 +74,7 @@ Want to submit improvements.
 
 ## Communication & Support
 
-- **Issues**: <https://github.com/deytenit/www.ermnvldmr.com/issues>
+- **Issues**: <https://github.com/deytenit/ermnvldmr.com/issues>
 - **Email**: <personal@ermnvldmr.com>
 
 ## Copyright & License
