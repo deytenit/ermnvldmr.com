@@ -31,23 +31,12 @@ fi
 export AWS_DEFAULT_REGION="$AWS_REGION"
 ENDPOINT_URL="$S3_ENDPOINT_URL"
 
-# Upload index.html
-echo "Uploading index.html..."
-aws s3 cp "$DIST_DIR/index.html" "s3://$S3_BUCKET/index.html" \
+# Upload all static files
+echo "Uploading static files..."
+aws s3 cp "$DIST_DIR/" "s3://$S3_BUCKET/" \
+  --recursive \
   --endpoint-url="$ENDPOINT_URL" \
-  --content-type "text/html; charset=utf-8" \
-  --cache-control "max-age=300" \
-  --metadata-directive REPLACE
-
-# Upload error.html
-echo "Uploading error.html..."
-aws s3 cp "$DIST_DIR/error.html" "s3://$S3_BUCKET/error.html" \
-  --endpoint-url="$ENDPOINT_URL" \
-  --content-type "text/html; charset=utf-8" \
   --cache-control "max-age=300" \
   --metadata-directive REPLACE
 
 echo "Static files deployed successfully!"
-echo "Deployed files:"
-echo "  - index.html"
-echo "  - error.html"
