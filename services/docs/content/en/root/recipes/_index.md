@@ -14,10 +14,6 @@ that I don't want to remember each time I need one.
 
 Setting up a new host on Debian from scratch.
 
-### [Xray Client Setup](/ru/root/recipes/xray-setup/) (RU only)
-
-Setting up xray client without any further usage in mind.
-
 ## Why “Recipes”?
 
 These are not abstract troubleshooting guides.

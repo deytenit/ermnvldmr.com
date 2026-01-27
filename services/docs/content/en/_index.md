@@ -1,10 +1,10 @@
 ---
-title: "ermnvldmr.com Documentation"
+title: "Ermnvldmr's Documentation"
 ---
 
-# Documentation Portal
+<br />
 
-Welcome to the unified documentation for ermnvldmr.com services and infrastructure.
+Welcome to the unified documentation for my own projects
 
 {{< cards >}}
   {{< card link="root" title="root.ermnvldmr.com" icon="server" subtitle="Documentation for root.ermnvldmr.com infrastructure" >}}

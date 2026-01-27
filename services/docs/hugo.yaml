@@ -97,14 +97,11 @@ outputs:
 
 # URL configuration to preserve existing structure
 permalinks:
-  architecture: /architecture/:slug/
-  operations: /operations/:slug/
-  reference: /reference/:slug/
-  troubleshooting: /troubleshooting/:slug/
+  root: /root/:slug/
 
 # Deployment configuration
 deployment:
   targets:
     - name: production
-      URL: docs.root.ermnvldmr.com
+      URL: docs.ermnvldmr.com
       cloudFrontDistributionID: # TBD during deployment

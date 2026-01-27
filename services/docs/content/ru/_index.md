@@ -2,9 +2,9 @@
 title: "Документация ermnvldmr.com"
 ---
 
-# Портал документации
+<br />
 
-Добро пожаловать в единую документацию сервисов и инфраструктуры ermnvldmr.com.
+Добро пожаловать в единую документацию для моих собственных проектов
 
 {{< cards >}}
   {{< card link="root" title="root.ermnvldmr.com" icon="server" subtitle="Документация инфраструктуры root.ermnvldmr.com" >}}
