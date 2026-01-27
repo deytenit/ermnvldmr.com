@@ -5,131 +5,156 @@ weight: 1
 type: docs
 ---
 
-How to set up a fresh Debian host from zero to deployment.
+# Initial Host Setup
 
-## Add Adam User and Wheel Group
+**Description:** Hardened setup for a fresh Debian host from zero to deployment.
 
-Adam is a core user on each of the system.
-It does not has password,
-hence only connection via ssh is available,
-providing a password-less sudo.
+---
+
+## 1. System User & Privileges
+
+We use the `adam` user for all administrative tasks. To minimize friction while maintaining security, we utilize SSH-key authentication and passwordless `sudo` via the `wheel` group.
+
+### Create the Admin User
 
 ```bash
-# Add adam user
-useradd -m -s '/bin/bash' adam
+# Create the user with a bash shell
+useradd -m -s /bin/bash adam
 
-# Add wheel group for password-less sudo
+# Create the wheel group (common for cross-distro consistency)
 groupadd wheel
-vi /etc/sudoers.d/99-root-ermnvldmr
+
+# Create a modular sudoers file with safety checks
+# This allows members of 'wheel' to run sudo without a password
+echo "%wheel ALL=(ALL) NOPASSWD: ALL" | sudo visudo -c -f /etc/sudoers.d/99-root-ermnvldmr
+
+# Add adam to the necessary groups
+usermod -aG wheel,docker adam
+
 ```
 
-Fill file with the content:
+---
 
-```visudo
-%wheel         ALL = (ALL) NOPASSWD: ALL
-```
+## 2. SSH Hardening & Key Management
 
-Then add _Adam_ user to the group
+Passwords are disabled. Access is strictly via SSH keys.
+
+### Secure SSH Directory
+
+We set strict permissions immediately to prevent the SSH daemon from rejecting the keys.
 
 ```bash
-usermod -a -G wheel adam
+# Setup directories as root for the adam user
+mkdir -p /home/adam/.ssh
+chmod 700 /home/adam/.ssh
+
+# Add your public key (Replace [PASTE_PUB_KEY_HERE])
+echo "[PASTE_PUB_KEY_HERE]" > /home/adam/.ssh/authorized_keys
+chmod 600 /home/adam/.ssh/authorized_keys
+chown -R adam:adam /home/adam/.ssh
+
 ```
 
-## Configure SSH
+### Harden SSH Daemon
 
-Hardening SSHD,
-even stupidly changing port.
+Modify the SSH configuration to change the default port and disable password entry.
 
 ```bash
-# Move public ssh key of user adam to the server
-vi /home/adam/.ssh/authorized_keys
-
-# Create additional ssh rules
-vi /etc/ssh/sshd_config.d/99-root-ermnvldmr.conf
-```
-
-With the following content:
-
-```conf
+# Create a dedicated override config
+cat <<EOF > /etc/ssh/sshd_config.d/99-root-ermnvldmr.conf
 Port 2222
 PasswordAuthentication no
 PermitEmptyPasswords no
 AllowUsers adam
+EOF
+
+# Validate syntax before restarting to avoid lockout
+sshd -t && systemctl restart ssh
+
 ```
 
-## Install Docker
+---
 
-Follow the official Docker installation guide for Debian --
-[docs.docker.com](https://docs.docker.com/engine/install/debian/)
+## 3. GitHub Access (Deploy Key)
 
-Test Docker installation:
+Since the repository is hosted on GitHub, the host needs its own identity to pull updates.
 
 ```bash
-docker --version
-docker compose version
+# Generate a host-specific SSH key (no passphrase for automation)
+ssh-keygen -t ed25519 -f /home/adam/.ssh/adam-at-deytenit_github_com_ed25519 -N ""
+
+# Display the public key to be added to GitHub (Settings > Deploy Keys)
+cat /home/adam/.ssh/adam-at-deytenit_github_com_ed25519.pub
+
 ```
 
-## Clone the root.ermnvldmr.com Repository
+> [!TIP]
+> Add the output above to your [GitHub Repository Deploy Keys](https://www.google.com/search?q=https://github.com/deytenit/root.ermnvldmr.com/settings/keys) with **read access**.
+
+---
+
+## 4. Install Docker Engine
+
+Standard Docker installation for Debian - [Docs: Docker - Install on Debian](https://docs.docker.com/engine/install/debian/).
 
 ```bash
-# Clone to your preferred location
-cd /srv
-sudo mkdir root.ermnvldmr.com
-sudo chown adam:adam root.ermnvldmr.com
+# Follow official guide: https://docs.docker.com/engine/install/debian/
+# Once installed, verify (Adam can run this without sudo now)
+docker run --rm hello-world
 
-# Clone the repository
-git clone git@github.com:deytenit/root.ermnvldmr.com.git root.ermnvldmr.com
-
-# Run the repository initialization
-./init.sh
 ```
 
-## Setup node
+---
 
-> [!IMPORTANT]
-> From now on `$NODE` equals node name of the server you are setting up.
+## 5. Repository Deployment
 
-> [!NOTE]
-> More about root.ermnvldmr.com compositions repository -- [github.com](https://github.com/)
-
-Run node-specific scripts in $NODE/.host/.scripts
-in order of their numbering:
+Clone the infrastructure repository and initialize the node.
 
 ```bash
-# For example for node daedalus
+# Setup the service directory
+export REPO_DIR="/srv/root.ermnvldmr.com"
+sudo mkdir -p $REPO_DIR
+sudo chown adam:adam $REPO_DIR
 
-# Setting up the base components
-./daedalus/.host/.scripts/00-base
-# Setting up ufw with rules defined in ./daedalus/.host/ufw
-./daedalus/.host/.scripts/10-ufw
-# Setting up crowdsec with rules defined in ./daedalus/.host/crowd
-./daedalus/.host/.scripts/20-crowd
-# Setting up cron with tasks defined in ./daedalus/.host/cron
-./daedalus/.host/.scripts/30-cron
+# Clone as the adam user
+sudo -u adam git clone git@github.com:deytenit/root.ermnvldmr.com.git $REPO_DIR
+
+# Initialize node (Set your node name, e.g., daedalus)
+export NODE="daedalus"
+cd $REPO_DIR
+sudo -u adam ./init.sh
+
 ```
 
-## Setup Storage Tiers
+### Node-Specific Configuration
 
-You need to decide where to store your data tiers:
+Run the staged initialization scripts in order:
 
 ```bash
-# Create storage directories
+# Run the sequence for your specific node
+./$NODE/.host/.scripts/00-base
+./$NODE/.host/.scripts/10-ufw
+./$NODE/.host/.scripts/20-crowd
+./$NODE/.host/.scripts/30-cron
+
+```
+
+---
+
+## 6. Storage & Hardening
+
+Define the data tiers and secure the environment by creating non-root users for containerized services.
+
+```bash
+# Create (or mount) storage directories
 sudo mkdir -p /srv/com-ermnvldmr-root-$NODE-{tier1,tier2,tier3}
 
-# Setup tiers for the node
-.scripts/ops/setup-tiers $NODE \
+# Setup tiers and non-root users
+sudo -u adam .scripts/ops/setup-tiers $NODE \
   /srv/com-ermnvldmr-root-$NODE-tier1 \
   /srv/com-ermnvldmr-root-$NODE-tier2 \
   /srv/com-ermnvldmr-root-$NODE-tier3
-```
 
-## Setup noroot-users
+sudo -u adam .scripts/ops/setup-noroot-users $NODE
 
-To harden the containers running on the node,
-we create series of noroot-users and shared group
-for each project in the compose repository node directory.
-
-```bash
-# Setup noroot-users for the node
-.scripts/ops/setup-noroot-users $NODE
 ```
