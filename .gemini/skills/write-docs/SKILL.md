@@ -45,7 +45,9 @@ You must adhere to the following strict stylistic rules. There are no exceptions
 * *Good:* "Module A Configuration Settings"
 
 
-* **MUST** ensure the H1 title corresponds exactly to the content's scope.
+* **MUST NOT** write a top-level H1 header (e.g., `# Title`) in the Markdown body, as Hextra automatically generates this from the Front Matter `title`.
+
+
 * **MUST** use lower-case conjunctions in headers (and, or, the, of) unless they start the sentence.
 
 ### 1.4 Tone & Audience
@@ -189,7 +191,7 @@ The glossary is the "Source of Truth" for terminology. It resides in `(en/ru)/{p
 Every document MUST end with a "See Also" block containing external references and last update metadata.
 
 * **Location:** Always at the very bottom of the file.
-* **Format:** Use a generic Markdown Blockquote or GitHub Alert (`> [!NOTE]`).
+* **Format:** Use a horizontal rule (`---`) followed by bold text.
 * **Content:**
 * **MUST** contain only a bulleted list of Markdown links.
 * **MUST NOT** contain paths to files as inline code.
@@ -198,10 +200,11 @@ Every document MUST end with a "See Also" block containing external references a
 
 * **Template:**
 ```markdown
-> [!NOTE]
-> **See Also:**
-> - [Doc: Related Component A](https://docs.example.com/comp-a)
-> - [Wiki: Legacy Architecture](https://wiki.example.com/arch)
+---
+
+**See also:**
+- [Doc: Related Component A](https://docs.example.com/comp-a)
+- [Wiki: Legacy Architecture](https://wiki.example.com/arch)
 
 ```
 
@@ -349,16 +352,15 @@ Use GitHub-flavored alerts for emphasis.
 ## 6. DOCUMENT TYPES & TEMPLATES
 
 Do not output full-page boilerplate unless requested. Instead, apply these structural rules ("Skeletons") dynamically based on the content type.
-This is also serves as the fixed categories which should populate every project's doc: Getting Started, Guides, Recipes, Concepts, Troubleshooting.
+This is also serves as the fixed categories which should populate every project's docs: Getting Started, Guides, Recipes, Concepts, Troubleshooting.
 
 ### 6.1 General Skeleton (All Docs)
 
 1. **Front Matter:** `title`, `weight`, `date` (optional).
-2. **H1 Title:** Descriptive.
-3. **Brief:** 1-2 sentences summarizing the "What" and "Why".
-4. **Body Sections:** (See specific types below).
-5. **Glossary Tooltips:** Use `[Term](/glossary#term)` for first mentions.
-6. **Footer:** The `> [!NOTE]` "See Also" block.
+2. **Brief:** 1-2 sentences summarizing the "What" and "Why".
+3. **Body Sections:** (See specific types below).
+4. **Glossary Tooltips:** Use `[Term](/glossary#term)` for first mentions.
+5. **Footer:** The `> [!NOTE]` "See Also" block.
 
 ### 6.2 Quick Start (Beginner)
 
