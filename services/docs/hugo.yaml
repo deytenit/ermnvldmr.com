@@ -95,10 +95,6 @@ outputs:
   page: [HTML]
   section: [HTML]
 
-# URL configuration to preserve existing structure
-permalinks:
-  root: /root/:slug/
-
 # Deployment configuration
 deployment:
   targets:

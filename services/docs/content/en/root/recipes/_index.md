@@ -2,7 +2,6 @@
 title: "Recipes"
 description: "Collection of step-by-step procedures for infrastructure maintenance and deployment."
 weight: 50
-type: docs
 ---
 
 Step-by-step instructions for reproducible tasks and infrastructure maintenance.
