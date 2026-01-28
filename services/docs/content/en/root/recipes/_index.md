@@ -1,20 +1,19 @@
 ---
 title: "Recipes"
-description: "Step-by-step instructions, that I don't want to remember each time I need one."
+description: "Collection of step-by-step procedures for infrastructure maintenance and deployment."
 weight: 50
 type: docs
 ---
 
-Step-by-step instructions,
-that I don't want to remember each time I need one.
+Step-by-step instructions for reproducible tasks and infrastructure maintenance.
 
-## What's in here
+## Available Recipes
 
-### [Initial Host Setup](initial-setup/) (EN only)
+{{% cards %}}
+  {{< card link="initial-setup" title="Initial Host Setup" icon="server" subtitle="Hardened setup for a fresh Debian host from zero to deployment." >}}
+{{% /cards %}}
 
-Setting up a new host on Debian from scratch.
+---
 
-## Why “Recipes”?
-
-These are not abstract troubleshooting guides.
-These are specific actions you will need to perform.
+**See also:**
+- [GitHub: root.ermnvldmr.com](https://github.com/deytenit/root.ermnvldmr.com)

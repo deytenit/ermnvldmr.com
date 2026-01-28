@@ -1,21 +1,20 @@
 ---
 title: "Initial Host Setup"
-description: "Setting up a fresh Debian host from scratch"
+description: "Setting up a fresh Debian host from scratch."
 weight: 1
-type: docs
 ---
 
-# Initial Host Setup
+Hardened setup for a fresh Debian host from zero to deployment.
 
-**Description:** Hardened setup for a fresh Debian host from zero to deployment.
+## Setup Procedure
 
----
+{{% steps %}}
 
-## 1. System User & Privileges
+### System User & Privileges
 
-We use the `adam` user for all administrative tasks. To minimize friction while maintaining security, we utilize SSH-key authentication and passwordless `sudo` via the `wheel` group.
+The `adam` user handles all administrative tasks. SSH-key authentication and passwordless `sudo` via the `wheel` group minimize friction while maintaining security.
 
-### Create the Admin User
+**Create the Admin User**
 
 ```bash
 # Create the user with a bash shell
@@ -30,18 +29,15 @@ echo "%wheel ALL=(ALL) NOPASSWD: ALL" | sudo visudo -c -f /etc/sudoers.d/99-root
 
 # Add adam to the necessary groups
 usermod -aG wheel,docker adam
-
 ```
 
----
-
-## 2. SSH Hardening & Key Management
+### SSH Hardening & Key Management
 
 Passwords are disabled. Access is strictly via SSH keys.
 
-### Secure SSH Directory
+**Secure SSH Directory**
 
-We set strict permissions immediately to prevent the SSH daemon from rejecting the keys.
+Set strict permissions immediately to prevent the SSH daemon from rejecting the keys.
 
 ```bash
 # Setup directories as root for the adam user
@@ -52,10 +48,9 @@ chmod 700 /home/adam/.ssh
 echo "[PASTE_PUB_KEY_HERE]" > /home/adam/.ssh/authorized_keys
 chmod 600 /home/adam/.ssh/authorized_keys
 chown -R adam:adam /home/adam/.ssh
-
 ```
 
-### Harden SSH Daemon
+**Harden SSH Daemon**
 
 Modify the SSH configuration to change the default port and disable password entry.
 
@@ -70,14 +65,11 @@ EOF
 
 # Validate syntax before restarting to avoid lockout
 sshd -t && systemctl restart ssh
-
 ```
 
----
+### GitHub Access (Deploy Key)
 
-## 3. GitHub Access (Deploy Key)
-
-Since the repository is hosted on GitHub, the host needs its own identity to pull updates.
+The host requires its own identity to pull updates from the GitHub repository.
 
 ```bash
 # Generate a host-specific SSH key (no passphrase for automation)
@@ -85,28 +77,22 @@ ssh-keygen -t ed25519 -f /home/adam/.ssh/adam-at-deytenit_github_com_ed25519 -N 
 
 # Display the public key to be added to GitHub (Settings > Deploy Keys)
 cat /home/adam/.ssh/adam-at-deytenit_github_com_ed25519.pub
-
 ```
 
 > [!TIP]
-> Add the output above to your [GitHub Repository Deploy Keys](https://www.google.com/search?q=https://github.com/deytenit/root.ermnvldmr.com/settings/keys) with **read access**.
+> Add the output above to the [GitHub: Repository Deploy Keys](https://github.com/deytenit/root.ermnvldmr.com/settings/keys) with **read access**.
 
----
+### Install Docker Engine
 
-## 4. Install Docker Engine
-
-Standard Docker installation for Debian - [Docs: Docker - Install on Debian](https://docs.docker.com/engine/install/debian/).
+Install the standard Docker Engine for Debian.
 
 ```bash
 # Follow official guide: https://docs.docker.com/engine/install/debian/
 # Once installed, verify (Adam can run this without sudo now)
 docker run --rm hello-world
-
 ```
 
----
-
-## 5. Repository Deployment
+### Repository Deployment
 
 Clone the infrastructure repository and initialize the node.
 
@@ -123,10 +109,9 @@ sudo -u adam git clone git@github.com:deytenit/root.ermnvldmr.com.git $REPO_DIR
 export NODE="daedalus"
 cd $REPO_DIR
 sudo -u adam ./init.sh
-
 ```
 
-### Node-Specific Configuration
+**Node-Specific Configuration**
 
 Run the staged initialization scripts in order:
 
@@ -136,12 +121,9 @@ Run the staged initialization scripts in order:
 ./$NODE/.host/.scripts/10-ufw
 ./$NODE/.host/.scripts/20-crowd
 ./$NODE/.host/.scripts/30-cron
-
 ```
 
----
-
-## 6. Storage & Hardening
+### Storage & Hardening
 
 Define the data tiers and secure the environment by creating non-root users for containerized services.
 
@@ -156,5 +138,12 @@ sudo -u adam .scripts/ops/setup-tiers $NODE \
   /srv/com-ermnvldmr-root-$NODE-tier3
 
 sudo -u adam .scripts/ops/setup-noroot-users $NODE
-
 ```
+
+{{% /steps %}}
+
+---
+
+**See also:**
+- [Doc: Docker - Install on Debian](https://docs.docker.com/engine/install/debian/)
+- [GitHub: root.ermnvldmr.com](https://github.com/deytenit/root.ermnvldmr.com)
