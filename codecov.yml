@@ -1,0 +1,47 @@
+codecov:
+  notify:
+    wait_for_ci: true
+
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+      stl:
+        target: auto
+        flags:
+          - stl
+      ui:
+        target: auto
+        flags:
+          - ui
+      ui-storybook:
+        target: auto
+        flags:
+          - ui-storybook
+      www:
+        target: auto
+        flags:
+          - www
+      www-storybook:
+        target: auto
+        flags:
+          - www-storybook
+
+flags:
+  stl:
+    paths:
+      - packages/stl
+  ui:
+    paths:
+      - packages/ui
+  ui-storybook:
+    paths:
+      - packages/ui
+  www:
+    paths:
+      - services/www
+  www-storybook:
+    paths:
+      - services/www

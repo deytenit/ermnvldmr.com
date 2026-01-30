@@ -130,15 +130,13 @@ jobs:
         run: pnpm --filter @ermnvldmr/vite-config build
       - name: Build Storybook config
         run: pnpm --filter @ermnvldmr/storybook-config build
-      - name: Test STL package
-        run: pnpm --filter @ermnvldmr/stl test:coverage
       - name: Test UI package
         run: pnpm --filter @ermnvldmr/ui test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          files: ./packages/stl/coverage/lcov.info,./packages/ui/coverage/lcov.info
-          flags: stl,ui
+          files: ./packages/ui/coverage/lcov.info
+          flags: ui
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -168,6 +166,36 @@ jobs:
         run: pnpm --filter @ermnvldmr/ui build
       - name: Build UI Storybook
         run: pnpm --filter @ermnvldmr/ui build-storybook
+
+  test-storybook:
+    name: Test - Storybook
+    needs: build-storybook
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Build UI Storybook
+        run: pnpm --filter @ermnvldmr/ui build-storybook
+      - name: Test Storybook
+        run: pnpm --filter @ermnvldmr/ui test:storybook:ci
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./packages/ui/coverage/storybook/lcov.info
+          flags: ui-storybook
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   build-ui:
     name: Build - UI
