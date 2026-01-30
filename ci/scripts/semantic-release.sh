@@ -47,16 +47,17 @@ case $MODE in
         if [ "$MODE" == "release" ]; then
             echo "$VERSION_TAG"
         else
-            # Find the latest RC for THIS specific version
-            RC_PREFIX="$TAG_PREFIX.$VERSION_TAG-rc"
-            LATEST_RC_TAG=$(git tag -l "$RC_PREFIX.*" | sort -V | tail -n1 || echo "")
-            
-            if [ -z "$LATEST_RC_TAG" ]; then
-                RC=1
+            # Calculate RC based on commit count since last tag
+            # This ensures unique, increasing RC numbers without needing to tag every RC
+            LAST_SERVICE_TAG=$(git describe --tags --match "releases/$SERVICE_NAME/*" --abbrev=0 HEAD 2>/dev/null || echo "")
+
+            if [ -z "$LAST_SERVICE_TAG" ]; then
+                COMMITS_COUNT=$(git rev-list --count HEAD)
             else
-                LATEST_RC=${LATEST_RC_TAG#"$RC_PREFIX."}
-                RC=$((LATEST_RC + 1))
+                COMMITS_COUNT=$(git rev-list --count "$LAST_SERVICE_TAG"..HEAD)
             fi
+
+            RC=$((COMMITS_COUNT + 1))
             echo "$VERSION_TAG-rc.$RC"
         fi
         ;;
