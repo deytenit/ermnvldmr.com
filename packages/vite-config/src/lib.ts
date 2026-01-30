@@ -2,6 +2,11 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import dts from 'vite-plugin-dts';
 import type { UserConfig } from 'vite';
+import type { PluginOptions as DtsPluginOptions } from 'vite-plugin-dts';
+
+export interface LibConfigOptions {
+  dts?: DtsPluginOptions;
+}
 
 /**
  * Base Vite configuration for library packages.
@@ -9,6 +14,7 @@ import type { UserConfig } from 'vite';
  * @param packageName - The name for the library build
  * @param entry - Entry point file path (relative to package root)
  * @param external - Array of external dependencies to exclude from bundle
+ * @param options - Additional configuration options
  * @returns Vite configuration object
  * 
  * @example
@@ -21,12 +27,14 @@ import type { UserConfig } from 'vite';
 export function createLibConfig(
   packageName: string,
   entry: string = 'src/index.ts',
-  external: string[] = []
+  external: string[] = [],
+  options: LibConfigOptions = {}
 ): UserConfig {
   return defineConfig({
     plugins: [
       dts({
         insertTypesEntry: true,
+        ...options.dts,
       }),
     ],
     build: {

@@ -7,9 +7,9 @@ import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
 
 
 /**
- * Props for the newspaper-style Separator component.
+ * Props for the newspaper-style PaperSeparator component.
  */
-export interface SeparatorProps extends ClassNameProps, TestIdProps {
+export interface PaperSeparatorProps extends ClassNameProps, TestIdProps {
   /** Type of separator line styling */
   type?: 'single' | 'double';
   /** Color variant following newspaper design patterns */
@@ -37,26 +37,26 @@ export interface SeparatorProps extends ClassNameProps, TestIdProps {
  * @example
  * ```tsx
  * // Basic horizontal separator
- * <Separator />
+ * <PaperSeparator />
  * 
  * // Double-line separator with black color
- * <Separator type="double" color="black" />
+ * <PaperSeparator type="double" color="black" />
  * 
  * // Vertical separator without thinned ends
- * <Separator direction="vertical" thinned={false} />
+ * <PaperSeparator direction="vertical" thinned={false} />
  * 
  * // Light separator for subtle content division
- * <Separator color="outline-light" />
+ * <PaperSeparator color="outline-light" />
  * ```
  */
-export const Separator = memo(function Separator({ 
+export const PaperSeparator = memo(function PaperSeparator({ 
   type = 'single',
   color,
   direction = 'horizontal',
   thinned = true,
   className,
   'data-testid': testId,
-}: SeparatorProps) {
+}: PaperSeparatorProps) {
   // Default color based on type as specified
   const defaultColor = type === 'single' ? 'outline-light' : 'outline';
   const finalColor = color ?? defaultColor;

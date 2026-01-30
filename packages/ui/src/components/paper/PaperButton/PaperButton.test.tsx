@@ -1,27 +1,27 @@
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
-import { Button } from './Button';
+import { PaperButton } from './PaperButton';
 import { render, screen } from '../../../test-utils';
 
 /**
- * Test suite for the newspaper-style Button component
+ * Test suite for the newspaper-style PaperButton component
  */
-describe('components/paper-kit/Button/Button', () => {
+describe('components/paper/PaperButton/PaperButton', () => {
   const defaultProps = {
-    children: 'Test Button',
+    children: 'Test PaperButton',
   };
 
   it('renders correctly with default props', () => {
-    render(<Button {...defaultProps} />);
+    render(<PaperButton {...defaultProps} />);
     
-    const button = screen.getByRole('button', { name: 'Test Button' });
+    const button = screen.getByRole('button', { name: 'Test PaperButton' });
     expect(button).toBeInTheDocument();
-    expect(button).toHaveTextContent('Test Button');
+    expect(button).toHaveTextContent('Test PaperButton');
   });
 
   it('applies correct styling classes', () => {
-    render(<Button {...defaultProps} />);
+    render(<PaperButton {...defaultProps} />);
     
     const button = screen.getByRole('button');
     
@@ -37,7 +37,7 @@ describe('components/paper-kit/Button/Button', () => {
     const user = userEvent.setup();
     const handlePress = jest.fn();
     
-    render(<Button onPress={handlePress}>{defaultProps.children}</Button>);
+    render(<PaperButton onPress={handlePress}>{defaultProps.children}</PaperButton>);
     
     const button = screen.getByRole('button');
     await user.click(button);
@@ -47,19 +47,19 @@ describe('components/paper-kit/Button/Button', () => {
 
   it('supports different variants', () => {
     const { rerender } = render(
-      <Button variant="primary">{defaultProps.children}</Button>
+      <PaperButton variant="primary">{defaultProps.children}</PaperButton>
     );
     
     let button = screen.getByRole('button');
     expect(button).toHaveClass('bg-primary');
     
-    rerender(<Button variant="secondary">{defaultProps.children}</Button>);
+    rerender(<PaperButton variant="secondary">{defaultProps.children}</PaperButton>);
     button = screen.getByRole('button');
     expect(button).toHaveClass('bg-secondary');
   });
 
   it('handles disabled state correctly', () => {
-    render(<Button isDisabled>{defaultProps.children}</Button>);
+    render(<PaperButton isDisabled>{defaultProps.children}</PaperButton>);
     
     const button = screen.getByRole('button');
     expect(button).toBeDisabled();
@@ -72,9 +72,9 @@ describe('components/paper-kit/Button/Button', () => {
     const handlePress = jest.fn();
     
     render(
-      <Button isDisabled onPress={handlePress}>
+      <PaperButton isDisabled onPress={handlePress}>
         {defaultProps.children}
-      </Button>
+      </PaperButton>
     );
     
     const button = screen.getByRole('button');
@@ -86,7 +86,7 @@ describe('components/paper-kit/Button/Button', () => {
   it('supports custom className prop', () => {
     const customClass = 'custom-button-class';
     
-    render(<Button className={customClass}>{defaultProps.children}</Button>);
+    render(<PaperButton className={customClass}>{defaultProps.children}</PaperButton>);
     
     const button = screen.getByRole('button');
     expect(button).toHaveClass(customClass);
@@ -95,27 +95,27 @@ describe('components/paper-kit/Button/Button', () => {
   it('supports data-testid prop', () => {
     const testId = 'my-test-button';
     
-    render(<Button data-testid={testId}>{defaultProps.children}</Button>);
+    render(<PaperButton data-testid={testId}>{defaultProps.children}</PaperButton>);
     
     const button = screen.getByTestId(testId);
     expect(button).toBeInTheDocument();
-    expect(button).toHaveTextContent('Test Button');
+    expect(button).toHaveTextContent('Test PaperButton');
   });
 
   it('only accepts string children', () => {
     // This test verifies TypeScript constraint - should compile without error
-    render(<Button>Simple string</Button>);
+    render(<PaperButton>Simple string</PaperButton>);
     expect(screen.getByText('Simple string')).toBeInTheDocument();
   });
 
   it('maintains accessibility attributes', () => {
     render(
-      <Button 
+      <PaperButton 
         aria-describedby="button-description"
         aria-label="Custom accessibility label"
       >
         {defaultProps.children}
-      </Button>
+      </PaperButton>
     );
     
     const button = screen.getByRole('button');
@@ -127,7 +127,7 @@ describe('components/paper-kit/Button/Button', () => {
     const user = userEvent.setup();
     const handlePress = jest.fn();
     
-    render(<Button onPress={handlePress}>{defaultProps.children}</Button>);
+    render(<PaperButton onPress={handlePress}>{defaultProps.children}</PaperButton>);
     
     const button = screen.getByRole('button');
     button.focus();
@@ -142,7 +142,7 @@ describe('components/paper-kit/Button/Button', () => {
   });
 
   it('renders string content correctly', () => {
-    render(<Button>Simple text content</Button>);
+    render(<PaperButton>Simple text content</PaperButton>);
     expect(screen.getByText('Simple text content')).toBeInTheDocument();
   });
 });

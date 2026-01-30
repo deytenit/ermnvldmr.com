@@ -1,2 +1,3 @@
-export { Button } from './PaperButton/Button'
-export { Separator } from './PaperSeparator/Separator'
+export { PaperButton } from './PaperButton/PaperButton';
+
+export { PaperSeparator } from './PaperSeparator/PaperSeparator'
