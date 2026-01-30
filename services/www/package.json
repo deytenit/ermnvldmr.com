@@ -53,6 +53,8 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@testing-library/user-event": "^14.6.1",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
     "@types/suncalc": "^1.9.2",
     "concurrently": "^9.1.2",
     "eslint": "^9.25.1",
