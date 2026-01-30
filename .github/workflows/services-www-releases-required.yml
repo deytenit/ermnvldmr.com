@@ -3,6 +3,7 @@ name: services/www - releases/required
 on:
   push:
     branches: ['releases/www/**']
+  workflow_dispatch:
 
 concurrency:
   group: ci-www-rel-${{ github.ref_name }}

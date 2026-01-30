@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,3 +26,9 @@ jobs:
         run: |
           git checkout -b ${{ steps.branch.outputs.branch_name }}
           git push origin ${{ steps.branch.outputs.branch_name }}
+
+      - name: Trigger Release Workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run services-www-releases-required.yml --ref ${{ steps.branch.outputs.branch_name }}
