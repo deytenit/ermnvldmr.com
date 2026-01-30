@@ -273,7 +273,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}/www
           tags: |
-            type=raw,value=${{ steps.version.outputs.rc_version }}
+            type=raw,value=v${{ steps.version.outputs.rc_version }}
             type=sha,format=short
 
       - name: Build and push Docker image
