@@ -37,6 +37,20 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  www:
+    image: ghcr.io/deytenit/ermnvldmr.com/www:${WWW_TAG}
+    container_name: com-ermnvldmr-www
+    restart: always
+    networks:
+      - com-ermnvldmr-enclave
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+    security_opt:
+      - no-new-privileges:true
+
 networks:
   com-ermnvldmr-direct:
     name: com-ermnvldmr-direct
