@@ -163,7 +163,42 @@ jobs:
           retention-days: 1
 
   test-www:
-    name: Test - WWW & Storybook
+    name: Test - Unit
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
+      - name: Test STL package
+        run: pnpm --filter @ermnvldmr/stl test:coverage
+      - name: Test UI package
+        run: pnpm --filter @ermnvldmr/ui test:coverage
+      - name: Test WWW service
+        run: pnpm --filter @ermnvldmr/www test:coverage
+      - name: Upload Unit coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./services/www/coverage/lcov.info
+          flags: www
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  test-storybook:
+    name: Test - Storybook
     needs: build-storybook
     runs-on: ubuntu-latest
     steps:
@@ -185,19 +220,6 @@ jobs:
           path: packages
       - name: Install Playwright browsers
         run: pnpm --filter @ermnvldmr/www exec playwright install --with-deps chromium
-      - name: Test STL package
-        run: pnpm --filter @ermnvldmr/stl test:coverage
-      - name: Test UI package
-        run: pnpm --filter @ermnvldmr/ui test:coverage
-      - name: Test WWW service
-        run: pnpm --filter @ermnvldmr/www test:coverage
-      - name: Upload Unit coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          files: ./services/www/coverage/lcov.info
-          flags: www
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: Download Storybook build
         uses: actions/download-artifact@v4
         with:

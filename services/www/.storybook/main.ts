@@ -25,6 +25,16 @@ const config: StorybookConfig = {
       propFilter: (prop) => (prop.parent ? !/node_modules/.test(prop.parent.fileName) : true),
     },
   },
+  async viteFinal(config) {
+    config.resolve = config.resolve || {};
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '#': path.resolve(__dirname, '../src'),
+      '@ermnvldmr/stl': path.resolve(__dirname, '../../../packages/stl/src'),
+      '@ermnvldmr/ui': path.resolve(__dirname, '../../../packages/ui/src'),
+    };
+    return config;
+  },
 };
 
 export default config;

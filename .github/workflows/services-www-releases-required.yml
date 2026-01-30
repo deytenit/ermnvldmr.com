@@ -12,18 +12,30 @@ jobs:
   setup-stage:
     name: Setup - Stage
     runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache-pnpm-store.outputs.cache-hit }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 9.12.3
+
       - name: Setup Node.js with pnpm cache
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
+
+      - name: Cache pnpm store
+        id: cache-pnpm-store
+        uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -43,14 +55,24 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build configs
-        run: |
-          pnpm --filter @ermnvldmr/jest-config build
-          pnpm --filter @ermnvldmr/vite-config build
-          pnpm --filter @ermnvldmr/storybook-config build
+      - name: Build Jest config
+        run: pnpm --filter @ermnvldmr/jest-config build
+      - name: Build Vite config
+        run: pnpm --filter @ermnvldmr/vite-config build
+      - name: Build Storybook config
+        run: pnpm --filter @ermnvldmr/storybook-config build
+      - name: Upload Config Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: config-artifacts
+          path: |
+            packages/jest-config/dist
+            packages/vite-config/dist
+            packages/storybook-config/dist
+          retention-days: 1
 
-  build-dependencies:
-    name: Build - Dependencies
+  lint-www:
+    name: Lint - WWW & Deps
     needs: build-configs
     runs-on: ubuntu-latest
     steps:
@@ -65,17 +87,21 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build dependencies
-        run: |
-          pnpm --filter @ermnvldmr/jest-config build
-          pnpm --filter @ermnvldmr/vite-config build
-          pnpm --filter @ermnvldmr/storybook-config build
-          pnpm --filter @ermnvldmr/stl build
-          pnpm --filter @ermnvldmr/ui build
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
+      - name: Lint STL package
+        run: pnpm --filter @ermnvldmr/stl lint
+      - name: Lint UI package
+        run: pnpm --filter @ermnvldmr/ui lint
+      - name: Lint WWW service
+        run: pnpm --filter @ermnvldmr/www lint
 
-  test-www:
-    name: Test - WWW & Deps
-    needs: build-dependencies
+  typecheck-www:
+    name: Typecheck - WWW & Deps
+    needs: build-configs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -89,22 +115,110 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build dependencies
-        run: |
-          pnpm --filter @ermnvldmr/jest-config build
-          pnpm --filter @ermnvldmr/vite-config build
-          pnpm --filter @ermnvldmr/storybook-config build
-          pnpm --filter @ermnvldmr/stl build
-          pnpm --filter @ermnvldmr/ui build
-      - name: Run tests
-        run: |
-          pnpm --filter @ermnvldmr/stl test:coverage
-          pnpm --filter @ermnvldmr/ui test:coverage
-          pnpm --filter @ermnvldmr/www test:coverage
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
+      - name: Typecheck STL package
+        run: pnpm --filter @ermnvldmr/stl typecheck
+      - name: Typecheck UI package
+        run: pnpm --filter @ermnvldmr/ui typecheck
+      - name: Typecheck WWW service
+        run: pnpm --filter @ermnvldmr/www typecheck
+
+  build-storybook:
+    name: Build - Storybook
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
+      - name: Build WWW Storybook
+        run: pnpm --filter @ermnvldmr/www build-storybook
+      - name: Upload Storybook build
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          path: services/www/storybook-static/
+          retention-days: 1
+
+  test-www:
+    name: Test - Unit
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
+      - name: Test STL package
+        run: pnpm --filter @ermnvldmr/stl test:coverage
+      - name: Test UI package
+        run: pnpm --filter @ermnvldmr/ui test:coverage
+      - name: Test WWW service
+        run: pnpm --filter @ermnvldmr/www test:coverage
+
+  test-storybook:
+    name: Test - Storybook
+    needs: build-storybook
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
+      - name: Install Playwright browsers
+        run: pnpm --filter @ermnvldmr/www exec playwright install --with-deps chromium
+      - name: Download Storybook build
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-static
+          path: services/www/storybook-static/
+      - name: Serve Storybook and run tests
+        run: pnpm --filter @ermnvldmr/www test:storybook:ci
 
   build-www:
     name: Build - WWW Service
-    needs: build-dependencies
+    needs: build-configs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -118,14 +232,13 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
       - name: Build WWW service
-        run: |
-          pnpm --filter @ermnvldmr/jest-config build
-          pnpm --filter @ermnvldmr/vite-config build
-          pnpm --filter @ermnvldmr/storybook-config build
-          pnpm --filter @ermnvldmr/stl build
-          pnpm --filter @ermnvldmr/ui build
-          pnpm --filter @ermnvldmr/www build
+        run: pnpm --filter @ermnvldmr/www build
 
   release-rc-docker:
     name: Release - RC Docker Image
