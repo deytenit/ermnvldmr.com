@@ -62,6 +62,14 @@ jobs:
         run: pnpm --filter @ermnvldmr/jest-config build
       - name: Build Vite config
         run: pnpm --filter @ermnvldmr/vite-config build
+      - name: Upload Config Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: config-artifacts
+          path: |
+            packages/jest-config/dist
+            packages/vite-config/dist
+          retention-days: 1
 
   lint-stl:
     name: Lint - STL
@@ -79,6 +87,11 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
       - name: Lint STL package
         run: pnpm --filter @ermnvldmr/stl lint
 
@@ -98,6 +111,11 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
       - name: Typecheck STL package
         run: pnpm --filter @ermnvldmr/stl typecheck
 
@@ -117,10 +135,11 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build Jest config
-        run: pnpm --filter @ermnvldmr/jest-config build
-      - name: Build Vite config
-        run: pnpm --filter @ermnvldmr/vite-config build
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
       - name: Test STL package
         run: pnpm --filter @ermnvldmr/stl test:coverage
       - name: Upload coverage to Codecov
@@ -147,9 +166,10 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build Jest config
-        run: pnpm --filter @ermnvldmr/jest-config build
-      - name: Build Vite config
-        run: pnpm --filter @ermnvldmr/vite-config build
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
       - name: Build STL package
         run: pnpm --filter @ermnvldmr/stl build

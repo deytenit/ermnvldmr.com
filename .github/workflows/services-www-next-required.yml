@@ -66,6 +66,15 @@ jobs:
         run: pnpm --filter @ermnvldmr/vite-config build
       - name: Build Storybook config
         run: pnpm --filter @ermnvldmr/storybook-config build
+      - name: Upload Config Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: config-artifacts
+          path: |
+            packages/jest-config/dist
+            packages/vite-config/dist
+            packages/storybook-config/dist
+          retention-days: 1
 
   lint-www:
     name: Lint - WWW & Deps
@@ -83,6 +92,11 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
       - name: Lint STL package
         run: pnpm --filter @ermnvldmr/stl lint
       - name: Lint UI package
@@ -106,6 +120,11 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
       - name: Typecheck STL package
         run: pnpm --filter @ermnvldmr/stl typecheck
       - name: Typecheck UI package
@@ -129,12 +148,11 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build Jest config
-        run: pnpm --filter @ermnvldmr/jest-config build
-      - name: Build Vite config
-        run: pnpm --filter @ermnvldmr/vite-config build
-      - name: Build Storybook config
-        run: pnpm --filter @ermnvldmr/storybook-config build
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
       - name: Build WWW Storybook
         run: pnpm --filter @ermnvldmr/www build-storybook
       - name: Upload Storybook build
@@ -160,14 +178,13 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium
-      - name: Build Jest config
-        run: pnpm --filter @ermnvldmr/jest-config build
-      - name: Build Vite config
-        run: pnpm --filter @ermnvldmr/vite-config build
-      - name: Build Storybook config
-        run: pnpm --filter @ermnvldmr/storybook-config build
+        run: pnpm --filter @ermnvldmr/www exec playwright install --with-deps chromium
       - name: Test STL package
         run: pnpm --filter @ermnvldmr/stl test:coverage
       - name: Test UI package
@@ -212,12 +229,11 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build Jest config
-        run: pnpm --filter @ermnvldmr/jest-config build
-      - name: Build Vite config
-        run: pnpm --filter @ermnvldmr/vite-config build
-      - name: Build Storybook config
-        run: pnpm --filter @ermnvldmr/storybook-config build
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
       - name: Build WWW service
         run: pnpm --filter @ermnvldmr/www build
 

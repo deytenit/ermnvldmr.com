@@ -65,6 +65,15 @@ jobs:
         run: pnpm --filter @ermnvldmr/vite-config build
       - name: Build Storybook config
         run: pnpm --filter @ermnvldmr/storybook-config build
+      - name: Upload Config Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: config-artifacts
+          path: |
+            packages/jest-config/dist
+            packages/vite-config/dist
+            packages/storybook-config/dist
+          retention-days: 1
 
   lint-ui:
     name: Lint - UI
@@ -82,6 +91,11 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
       - name: Lint STL package
         run: pnpm --filter @ermnvldmr/stl lint
       - name: Lint UI package
@@ -103,13 +117,18 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
       - name: Typecheck STL package
         run: pnpm --filter @ermnvldmr/stl typecheck
       - name: Typecheck UI package
         run: pnpm --filter @ermnvldmr/ui typecheck
 
   test-ui:
-    name: Test - UI & Storybook
+    name: Test - Unit
     needs: build-configs
     runs-on: ubuntu-latest
     steps:
@@ -124,12 +143,11 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build Jest config
-        run: pnpm --filter @ermnvldmr/jest-config build
-      - name: Build Vite config
-        run: pnpm --filter @ermnvldmr/vite-config build
-      - name: Build Storybook config
-        run: pnpm --filter @ermnvldmr/storybook-config build
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
       - name: Test UI package
         run: pnpm --filter @ermnvldmr/ui test:coverage
       - name: Upload coverage to Codecov
@@ -156,12 +174,11 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build Jest config
-        run: pnpm --filter @ermnvldmr/jest-config build
-      - name: Build Vite config
-        run: pnpm --filter @ermnvldmr/vite-config build
-      - name: Build Storybook config
-        run: pnpm --filter @ermnvldmr/storybook-config build
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
       - name: Build UI package
         run: pnpm --filter @ermnvldmr/ui build
       - name: Build UI Storybook
@@ -183,8 +200,13 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm --filter @ermnvldmr/ui exec playwright install --with-deps chromium
       - name: Build UI Storybook
         run: pnpm --filter @ermnvldmr/ui build-storybook
       - name: Test Storybook
@@ -213,11 +235,10 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build Jest config
-        run: pnpm --filter @ermnvldmr/jest-config build
-      - name: Build Vite config
-        run: pnpm --filter @ermnvldmr/vite-config build
-      - name: Build Storybook config
-        run: pnpm --filter @ermnvldmr/storybook-config build
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: packages
       - name: Build UI package
         run: pnpm --filter @ermnvldmr/ui build
