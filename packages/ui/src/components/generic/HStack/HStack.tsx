@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, forwardRef } from 'react';
 
 import { Stack } from '../Stack/Stack';
 
@@ -37,6 +37,6 @@ export interface HStackProps extends Omit<StackProps, 'direction'> {
  * </HStack>
  * ```
  */
-export const HStack = memo(function HStack(props: HStackProps) {
-  return <Stack direction="row" {...props} />;
-});
+export const HStack = memo(forwardRef<HTMLElement, HStackProps>(function HStack(props, ref) {
+  return <Stack direction="row" {...props} ref={ref} />;
+}));

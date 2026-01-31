@@ -12,7 +12,7 @@ import type { Meta, StoryObj } from '@storybook/react';
  * through semantic prop names that map to Tailwind CSS utility classes.
  */
 const meta: Meta<typeof Stack> = {
-  title: 'components/shared/Stack',
+  title: 'components/generic/Stack',
   component: Stack,
   parameters: {
     layout: 'centered',

@@ -1,5 +1,5 @@
-import { cn } from '@ermnvldmr/stl';
-import React, { memo } from 'react';
+import { cn, castRef, genericMemo } from '@ermnvldmr/stl';
+import React, { forwardRef } from 'react';
 
 import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
 
@@ -44,6 +44,8 @@ export interface StackProps extends ClassNameProps, TestIdProps {
   wrap?: FlexWrap;
   /** Spacing between items using Tailwind's spacing scale */
   gap?: GapScale;
+  /** The HTML element to use for rendering */
+  as?: React.ElementType;
 }
 
 /**
@@ -69,22 +71,23 @@ export interface StackProps extends ClassNameProps, TestIdProps {
  * </Stack>
  * ```
  */
-export const Stack = memo(function Stack({
+const StackComponent = forwardRef<HTMLElement, StackProps>(function Stack({
   children,
   direction = 'row',
   justify = 'start',
   align = 'start',
   wrap = 'nowrap',
   gap = 0,
+  as: Component = 'div',
   className,
   'data-testid': testId,
-}: StackProps) {
+}, ref) {
   const directionClasses = {
     row: 'flex-row',
     col: 'flex-col',
     'row-reverse': 'flex-row-reverse',
     'col-reverse': 'flex-col-reverse',
-  };
+  } as const;
 
   const justifyClasses = {
     start: 'justify-start',
@@ -93,7 +96,7 @@ export const Stack = memo(function Stack({
     between: 'justify-between',
     around: 'justify-around',
     evenly: 'justify-evenly',
-  };
+  } as const;
 
   const alignClasses = {
     start: 'items-start',
@@ -101,13 +104,13 @@ export const Stack = memo(function Stack({
     center: 'items-center',
     baseline: 'items-baseline',
     stretch: 'items-stretch',
-  };
+  } as const;
 
   const wrapClasses = {
     nowrap: 'flex-nowrap',
     wrap: 'flex-wrap',
     'wrap-reverse': 'flex-wrap-reverse',
-  };
+  } as const;
 
   // Convert gap scale to Tailwind class using explicit mapping
   // This ensures all gap classes are detected by Tailwind's static analysis
@@ -127,7 +130,7 @@ export const Stack = memo(function Stack({
     8: 'gap-8',
     9: 'gap-9',
     10: 'gap-10',
-    11: 'gap-11',
+    11: 'gap-10',
     12: 'gap-12',
     14: 'gap-14',
     16: 'gap-16',
@@ -161,11 +164,14 @@ export const Stack = memo(function Stack({
   );
 
   return (
-    <div
+    <Component
+      ref={castRef<HTMLElement>(ref)}
       className={stackClasses}
       data-testid={testId}
     >
       {children}
-    </div>
+    </Component>
   );
 });
+
+export const Stack = genericMemo(StackComponent);

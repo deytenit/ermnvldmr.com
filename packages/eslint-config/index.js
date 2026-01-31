@@ -53,6 +53,12 @@ export const baseConfig = tseslint.config(
         'error',
         { prefer: 'type-imports', disallowTypeAnnotations: false },
       ],
+      '@typescript-eslint/consistent-type-assertions': [
+        'error',
+        {
+          assertionStyle: 'never',
+        },
+      ],
       '@typescript-eslint/explicit-function-return-type': [
         'error',
         { allowExpressions: true, allowTypedFunctionExpressions: true },
@@ -139,6 +145,7 @@ export const baseConfig = tseslint.config(
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/consistent-type-assertions': 'off',
       'jsdoc/require-jsdoc': 'off',
     },
   },
@@ -159,6 +166,7 @@ export const baseConfig = tseslint.config(
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/consistent-type-assertions': 'off',
       'jsdoc/require-jsdoc': 'off',
       'no-undef': 'off', // For CommonJS files
     },

@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, forwardRef } from 'react';
 
 import { Stack } from '../Stack/Stack';
 
@@ -37,6 +37,6 @@ export interface VStackProps extends Omit<StackProps, 'direction'> {
  * </VStack>
  * ```
  */
-export const VStack = memo(function VStack(props: VStackProps) {
-  return <Stack direction="col" {...props} />;
-});
+export const VStack = memo(forwardRef<HTMLElement, VStackProps>(function VStack(props, ref) {
+  return <Stack direction="col" {...props} ref={ref} />;
+}));

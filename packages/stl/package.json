@@ -31,12 +31,18 @@
     "@ermnvldmr/eslint-config": "workspace:*",
     "@ermnvldmr/jest-config": "workspace:*",
     "@ermnvldmr/vite-config": "workspace:*",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
     "jest": "^30.2.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "ts-jest": "^29.4.6",
     "typescript": "^5.8.3",
     "vite": "^7.2.2"
   },
   "peerDependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "tailwindcss": "^4.1.4"
   }
 }
