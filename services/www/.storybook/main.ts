@@ -1,5 +1,7 @@
 import path from 'path';
 import type { StorybookConfig } from '@storybook/react-vite';
+import { mergeConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
 
 const config: StorybookConfig = {
   stories: [
@@ -25,14 +27,16 @@ const config: StorybookConfig = {
     },
   },
   async viteFinal(config) {
-    config.resolve = config.resolve || {};
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '#': path.resolve(__dirname, '../src'),
-      '@ermnvldmr/stl': path.resolve(__dirname, '../../../packages/stl/src'),
-      '@ermnvldmr/ui': path.resolve(__dirname, '../../../packages/ui/src'),
-    };
-    return config;
+    return mergeConfig(config, {
+      plugins: [tailwindcss()],
+      resolve: {
+        alias: {
+          '#': path.resolve(__dirname, '../src'),
+          '@ermnvldmr/stl': path.resolve(__dirname, '../../../packages/stl/src'),
+          '@ermnvldmr/ui': path.resolve(__dirname, '../../../packages/ui/src'),
+        },
+      },
+    });
   },
 };
 

@@ -1,0 +1,53 @@
+---
+import { getCollection } from 'astro:content';
+
+import IndexLayout from '#layouts/IndexLayout/IndexLayout.astro';
+import { SITE_TITLE } from '#shared/constants';
+import '#global.css';
+
+const articles = (await getCollection('articles')).sort(
+  (a, b) => b.data.createdDate.valueOf() - a.data.createdDate.valueOf()
+);
+---
+
+<IndexLayout title={`Articles | ${SITE_TITLE}`} description="Browse all articles and projects.">
+  <main class="mx-auto max-w-3xl px-6 py-20">
+    <h1 class="mb-12">Articles</h1>
+    <ul class="space-y-12">
+      {
+        articles.map((article) => (
+          <li>
+            <a href={`/articles/${article.id}`} class="group block no-underline">
+              <article class="space-y-3">
+                <time class="text-muted-foreground text-sm font-medium">
+                  {article.data.createdDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </time>
+                <h2 class="group-hover:text-primary mt-0 border-none pb-0 text-3xl transition-colors">
+                  {article.data.title}
+                </h2>
+                {article.data.description && (
+                  <p class="text-muted-foreground line-clamp-3 text-lg leading-relaxed">
+                    {article.data.description}
+                  </p>
+                )}
+                {article.data.tags && (
+                  <div class="flex gap-2">
+                    {article.data.tags.map((tag) => (
+                      <span class="text-muted-foreground text-xs before:content-['#']">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </article>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </main>
+</IndexLayout>
