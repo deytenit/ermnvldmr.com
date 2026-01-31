@@ -5,9 +5,9 @@ import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
 import type { AriaButtonProps } from 'react-aria';
 
 /**
- * Props for the newspaper-style PaperButton component.
+ * Props for the Button component.
  */
-export interface PaperButtonProps extends AriaButtonProps, ClassNameProps, TestIdProps {
+export interface ButtonProps extends AriaButtonProps, ClassNameProps, TestIdProps {
   /** The button text content */
   children: string;
   /** Visual style variant */
@@ -15,7 +15,7 @@ export interface PaperButtonProps extends AriaButtonProps, ClassNameProps, TestI
 }
 
 /**
- * A newspaper-style button component with italic Lato font and underlined text.
+ * A button component with italic Lato font and underlined text.
  * 
  * Features:
  * - Rectangular design with subtle background
@@ -26,18 +26,18 @@ export interface PaperButtonProps extends AriaButtonProps, ClassNameProps, TestI
  * 
  * @example
  * ```tsx
- * <PaperButton onPress={() => console.log('Clicked!')}>
+ * <Button onPress={() => console.log('Clicked!')}>
  *   Explore all the articles
- * </PaperButton>
+ * </Button>
  * ```
  */
-export const PaperButton = memo(function PaperButton({ 
+export const Button = memo(function Button({ 
   children,
   variant = 'default',
   className = '',
   'data-testid': testId,
   ...buttonProps
-}: PaperButtonProps) {
+}: ButtonProps) {
   const ref = React.useRef<HTMLButtonElement>(null);
   const { buttonProps: ariaButtonProps } = useButton(buttonProps, ref);
 

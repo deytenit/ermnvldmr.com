@@ -1,17 +1,17 @@
 import React, { memo } from 'react';
 
-import { Container } from '../../generic/Container/Container';
-import { Header } from '../../generic/Header/Header';
-import { Text } from '../../generic/Text/Text';
-import { VStack } from '../../generic/VStack/VStack';
-import { PaperSeparator } from '../PaperSeparator/PaperSeparator';
+import { Container } from '../Container/Container';
+import { Header } from '../Header/Header';
+import { Separator } from '../Separator/Separator';
+import { Text } from '../Text/Text';
+import { VStack } from '../VStack/VStack';
 
-import type { ContainerProps } from '../../generic/Container/Container';
+import type { ContainerProps } from '../Container/Container';
 
 /**
- * Props for the newspaper-style PaperArticle component.
+ * Props for the Article component.
  */
-export interface PaperArticleProps {
+export interface ArticleProps {
   /** The main article headline */
   headline: string;
   /** Optional sub-headline displayed between separators */
@@ -25,7 +25,7 @@ export interface PaperArticleProps {
 }
 
 /**
- * A newspaper-style article component with a structured layout.
+ * A article component with a structured layout.
  * 
  * Features:
  * - Centered medium headline (headline-m)
@@ -35,13 +35,13 @@ export interface PaperArticleProps {
  * - Optional bottom gray italic label (label-s)
  * - Interactive wrapper via Container
  */
-export const PaperArticle = memo(function PaperArticle({
+export const Article = memo(function Article({
   headline,
   subHeadline,
   additionalText,
   onPress,
   children,
-}: PaperArticleProps) {
+}: ArticleProps) {
   return (
     <Container padding={4} onPress={onPress}>
       <VStack align="stretch" gap={4}>
@@ -52,13 +52,13 @@ export const PaperArticle = memo(function PaperArticle({
           <VStack align="center" gap={2}>
             {subHeadline ? (
               <>
-                  <PaperSeparator className="w-3/4" type="single" />
+                  <Separator className="w-3/4" type="single" />
                   <Text italic className="text-center" size="m" type="label">
                     {subHeadline}
                   </Text>
-                  <PaperSeparator className="w-3/4" type="single" />
+                  <Separator className="w-3/4" type="single" />
               </>
-            ) : <PaperSeparator className="w-3/4" type="single" />}
+            ) : <Separator className="w-3/4" type="single" />}
           </VStack>
 
         <Text size="m" type="body">

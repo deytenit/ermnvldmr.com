@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { PaperButton } from './PaperButton';
+import { Button } from './Button';
 
 import type { Meta, StoryObj } from '@storybook/react';
 
@@ -15,9 +15,9 @@ import type { Meta, StoryObj } from '@storybook/react';
  * - Accessible interaction patterns via react-aria
  * - Responsive hover and focus states
  */
-const meta: Meta<typeof PaperButton> = {
-  title: 'components/paper/PaperButton',
-  component: PaperButton,
+const meta: Meta<typeof Button> = {
+  title: 'components/Button',
+  component: Button,
   parameters: {
     layout: 'centered',
     docs: {
@@ -111,18 +111,18 @@ export const LongText: Story = {
 export const AllVariants: Story = {
   render: () => (
     <div className="flex flex-col gap-4 items-start">
-      <PaperButton variant="default" onPress={() => console.log('Default')}>
+      <Button variant="default" onPress={() => console.log('Default')}>
         Default Style
-      </PaperButton>
-      <PaperButton variant="primary" onPress={() => console.log('Primary')}>
+      </Button>
+      <Button variant="primary" onPress={() => console.log('Primary')}>
         Primary Style  
-      </PaperButton>
-      <PaperButton variant="secondary" onPress={() => console.log('Secondary')}>
+      </Button>
+      <Button variant="secondary" onPress={() => console.log('Secondary')}>
         Secondary Style
-      </PaperButton>
-      <PaperButton isDisabled>
+      </Button>
+      <Button isDisabled>
         Disabled State
-      </PaperButton>
+      </Button>
     </div>
   ),
 };

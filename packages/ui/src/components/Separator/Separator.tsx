@@ -1,15 +1,15 @@
 import { cn } from '@ermnvldmr/stl';
 import React, { memo } from 'react';
 
-import { VStack } from '../../generic/VStack/VStack';
+import { VStack } from '../VStack/VStack';
 
 import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
 
 
 /**
- * Props for the newspaper-style PaperSeparator component.
+ * Props for the Separator component.
  */
-export interface PaperSeparatorProps extends ClassNameProps, TestIdProps {
+export interface SeparatorProps extends ClassNameProps, TestIdProps {
   /** Type of separator line styling */
   type?: 'single' | 'double';
   /** Color variant following newspaper design patterns */
@@ -21,7 +21,7 @@ export interface PaperSeparatorProps extends ClassNameProps, TestIdProps {
 }
 
 /**
- * A newspaper-style separator component for dividing content sections.
+ * A separator component for dividing content sections.
  * 
  * Features:
  * - Single or double line variants inspired by newspaper layout traditions
@@ -37,26 +37,26 @@ export interface PaperSeparatorProps extends ClassNameProps, TestIdProps {
  * @example
  * ```tsx
  * // Basic horizontal separator
- * <PaperSeparator />
+ * <Separator />
  * 
  * // Double-line separator with black color
- * <PaperSeparator type="double" color="black" />
+ * <Separator type="double" color="black" />
  * 
  * // Vertical separator without thinned ends
- * <PaperSeparator direction="vertical" thinned={false} />
+ * <Separator direction="vertical" thinned={false} />
  * 
  * // Light separator for subtle content division
- * <PaperSeparator color="outline-light" />
+ * <Separator color="outline-light" />
  * ```
  */
-export const PaperSeparator = memo(function PaperSeparator({ 
+export const Separator = memo(function Separator({ 
   type = 'single',
   color,
   direction = 'horizontal',
   thinned = true,
   className,
   'data-testid': testId,
-}: PaperSeparatorProps) {
+}: SeparatorProps) {
   // Default color based on type as specified
   const defaultColor = type === 'single' ? 'outline-light' : 'outline';
   const finalColor = color ?? defaultColor;

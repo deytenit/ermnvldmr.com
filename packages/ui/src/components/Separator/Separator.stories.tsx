@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { PaperSeparator } from './PaperSeparator';
+import { Separator } from './Separator';
 
 import type { Meta, StoryObj } from '@storybook/react';
 
@@ -15,9 +15,9 @@ import type { Meta, StoryObj } from '@storybook/react';
  * - 2px stroke width following print design standards
  * - Semantic div elements with proper ARIA separator role for accessibility
  */
-const meta: Meta<typeof PaperSeparator> = {
-  title: 'components/paper/PaperSeparator',
-  component: PaperSeparator,
+const meta: Meta<typeof Separator> = {
+  title: 'components/Separator',
+  component: Separator,
   parameters: {
     layout: 'centered',
     docs: {
@@ -56,7 +56,7 @@ const meta: Meta<typeof PaperSeparator> = {
 
 export default meta;
 /**
- * Story type for PaperSeparator component stories.
+ * Story type for Separator component stories.
  */
 type Story = StoryObj<typeof meta>;
 
@@ -201,7 +201,7 @@ export const VerticalDouble: Story = {
 };
 
 /**
- * PaperSeparator without thinned ends showing clean, sharp line edges.
+ * Separator without thinned ends showing clean, sharp line edges.
  * Compare with default to see the gradient fade difference.
  */
 export const NonThinned: Story = {
@@ -232,15 +232,15 @@ export const AllColors: Story = {
     <div className="space-y-8 w-96">
       <div>
         <h3 className="text-sm font-medium mb-2">Black</h3>
-        <PaperSeparator color="black" />
+        <Separator color="black" />
       </div>
       <div>
         <h3 className="text-sm font-medium mb-2">Outline (Default for Double)</h3>
-        <PaperSeparator color="outline" />
+        <Separator color="outline" />
       </div>
       <div>
         <h3 className="text-sm font-medium mb-2">Outline Light (Default for Single)</h3>
-        <PaperSeparator color="outline-light" />
+        <Separator color="outline-light" />
       </div>
     </div>
   ),
@@ -255,11 +255,11 @@ export const AllTypes: Story = {
     <div className="space-y-8 w-96">
       <div>
         <h3 className="text-sm font-medium mb-2">Single (Default: Outline Light)</h3>
-        <PaperSeparator type="single" />
+        <Separator type="single" />
       </div>
       <div>
         <h3 className="text-sm font-medium mb-2">Double (Default: Outline)</h3>
-        <PaperSeparator type="double" />
+        <Separator type="double" />
       </div>
     </div>
   ),
@@ -274,11 +274,11 @@ export const ThinnedComparison: Story = {
     <div className="space-y-8 w-96">
       <div>
         <h3 className="text-sm font-medium mb-2">With Thinned Ends (Default)</h3>
-        <PaperSeparator thinned />
+        <Separator thinned />
       </div>
       <div>
         <h3 className="text-sm font-medium mb-2">Without Thinned Ends</h3>
-        <PaperSeparator thinned={false} />
+        <Separator thinned={false} />
       </div>
     </div>
   ),
@@ -296,7 +296,7 @@ export const VerticalShowcase: Story = {
           Short
         </div>
         <div className="px-2">
-          <PaperSeparator direction="vertical" />
+          <Separator direction="vertical" />
         </div>
         <div className="flex items-center justify-center w-20 text-xs text-muted-foreground">
           Content
@@ -308,7 +308,7 @@ export const VerticalShowcase: Story = {
           Medium
         </div>
         <div className="px-2">
-          <PaperSeparator direction="vertical" type="double" />
+          <Separator direction="vertical" type="double" />
         </div>
         <div className="flex items-center justify-center w-20 text-xs text-muted-foreground">
           Content
@@ -320,7 +320,7 @@ export const VerticalShowcase: Story = {
           Tall
         </div>
         <div className="px-2">
-          <PaperSeparator color="black" direction="vertical" />
+          <Separator color="black" direction="vertical" />
         </div>
         <div className="flex items-center justify-center w-20 text-xs text-muted-foreground">
           Content

@@ -1,11 +1,11 @@
-import { PaperArticle } from './PaperArticle';
+import { Article } from './Article';
 
 
 import type { Meta, StoryObj } from '@storybook/react';
 
-const meta: Meta<typeof PaperArticle> = {
-  title: 'Components/Paper/PaperArticle',
-  component: PaperArticle,
+const meta: Meta<typeof Article> = {
+  title: 'components/Article',
+  component: Article,
   tags: ['autodocs'],
   argTypes: {
     onPress: { action: 'pressed' },
@@ -16,7 +16,7 @@ export default meta;
 /**
  *
  */
-type Story = StoryObj<typeof PaperArticle>;
+type Story = StoryObj<typeof Article>;
 
 export const Default: Story = {
   args: {

@@ -1,5 +1,5 @@
 import { cn } from '@ermnvldmr/stl';
-import { VStack, HStack } from '@ermnvldmr/ui';
+import { VStack, HStack, Markdown } from '@ermnvldmr/ui';
 import React from 'react';
 
 /**
@@ -100,7 +100,9 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
         </VStack>
       </header>
 
-      <section className="article-content">{children}</section>
+      <section className="article-content">
+        <Markdown>{children}</Markdown>
+      </section>
     </article>
   );
 };

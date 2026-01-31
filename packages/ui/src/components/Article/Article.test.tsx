@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { PaperArticle } from './PaperArticle';
-import { render, screen } from '../../../test-utils';
+import { Article } from './Article';
+import { render, screen } from '../../test-utils';
 
-describe('components/paper/PaperArticle', () => {
+describe('components/paper/Article', () => {
   const props = {
     headline: 'Breaking News',
     subHeadline: 'Local cat saves city',
@@ -11,7 +11,7 @@ describe('components/paper/PaperArticle', () => {
   };
 
   it('renders all parts of the article', () => {
-    render(<PaperArticle {...props}>Article body content</PaperArticle>);
+    render(<Article {...props}>Article body content</Article>);
     
     expect(screen.getByText('Breaking News')).toBeInTheDocument();
     expect(screen.getByText('Local cat saves city')).toBeInTheDocument();
@@ -20,11 +20,11 @@ describe('components/paper/PaperArticle', () => {
   });
 
   it('renders separators only when appropriate', () => {
-    const { rerender } = render(<PaperArticle headline="Title">Body</PaperArticle>);
+    const { rerender } = render(<Article headline="Title">Body</Article>);
     // Should have 1 separator (between title and body)
     expect(screen.getAllByRole('separator')).toHaveLength(1);
 
-    rerender(<PaperArticle headline="Title" subHeadline="Sub">Body</PaperArticle>);
+    rerender(<Article headline="Title" subHeadline="Sub">Body</Article>);
     // Should have 2 separators (Title-Sub and Sub-Body)
     expect(screen.getAllByRole('separator')).toHaveLength(2);
   });

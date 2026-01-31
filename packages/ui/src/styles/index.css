@@ -1,62 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
 @custom-variant dark (&:where(.dark, .dark *));
-
-/*
-  @layer base defaults inspired by shadcn UI Typography
-  Provides opinionated, utility-driven defaults for HTML elements.
-*/
-@layer base {
-  /* Headings */
-  h1 {
-    @apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl;
-  }
-  h2 {
-    @apply mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0;
-  }
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply mt-8 scroll-m-20 text-2xl font-semibold tracking-tight;
-  }
-
-  /* Paragraphs */
-  p {
-    @apply leading-7 [&:not(:first-child)]:mt-6;
-  }
-
-  /* Links */
-  a {
-    @apply text-ring font-medium underline underline-offset-2;
-  }
-
-  /* Blockquotes */
-  blockquote {
-    @apply mt-6 border-l-2 pl-6 italic;
-  }
-
-  /* Code */
-  code {
-    @apply bg-muted rounded px-1 font-mono text-sm;
-  }
-  pre {
-    @apply bg-muted overflow-auto rounded-lg p-4 font-mono text-sm;
-  }
-
-  /* Images and Media */
-  img,
-  video {
-    @apply max-w-full rounded-lg;
-  }
-
-  /* Horizontal rules */
-  hr {
-    @apply border-border my-6 border-t;
-  }
-}
 
 @theme {
   --font-sans: 'Lato', sans-serif;
@@ -186,24 +133,11 @@
   --rb-muted-text: var(--rb-color-neutral-600);
 
   /* Charts */
-  --chart-1: var(--rb-color-blue-500);
-  --chart-2: var(--rb-color-green-500);
-  --chart-3: var(--rb-color-yellow-500);
-  --chart-4: var(--rb-color-orange-500);
-  --chart-5: var(--rb-color-red-500);
-
-  /* Sidebar */
-  --sidebar: var(--rb-color-neutral-50);
-  --sidebar-foreground: var(--rb-color-neutral-950);
-  --sidebar-primary: var(--rb-color-cyan-200);
-  --sidebar-primary-foreground: var(--rb-color-cyan-950);
-  --sidebar-accent: var(--rb-color-violet-200);
-  --sidebar-accent-foreground: var(--rb-color-violet-950);
-  --sidebar-border: var(--rb-color-neutral-500);
-  --sidebar-ring: var(--rb-color-cyan-700);
-
-  /* Radii */
-  --radius: 0.625rem;
+  --rb-chart-1: var(--rb-color-blue-500);
+  --rb--chart-2: var(--rb-color-green-500);
+  --rb-chart-3: var(--rb-color-yellow-500);
+  --rb-chart-4: var(--rb-color-orange-500);
+  --rb-chart-5: var(--rb-color-red-500);
 }
 
 .dark {
@@ -231,79 +165,14 @@
   --rb-muted-text: var(--rb-color-neutral-100);
 
   /* Charts */
-  --chart-1: var(--rb-color-blue-400);
-  --chart-2: var(--rb-color-green-400);
-  --chart-3: var(--rb-color-yellow-400);
-  --chart-4: var(--rb-color-orange-400);
-  --chart-5: var(--rb-color-red-400);
-
-  /* Sidebar */
-  --sidebar: var(--rb-color-neutral-950);
-  --sidebar-foreground: var(--rb-color-neutral-50);
-  --sidebar-primary: var(--rb-color-cyan-800);
-  --sidebar-primary-foreground: var(--rb-color-cyan-50);
-  --sidebar-accent: var(--rb-color-violet-800);
-  --sidebar-accent-foreground: var(--rb-color-violet-50);
-  --sidebar-border: var(--rb-color-neutral-500);
-  --sidebar-ring: var(--rb-color-cyan-700);
-}
-
-@utility vstack {
-  @apply flex flex-col;
-}
-
-@utility hstack {
-  @apply flex flex-row;
-}
-
-@theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  
-  --color-background: var(--rb-base);
-  --color-foreground: var(--rb-text);
-  --color-card: var(--rb-container-base);
-  --color-card-foreground: var(--rb-container-text);
-  --color-popover: var(--rb-container-base);
-  --color-popover-foreground: var(--rb-container-text);
-  
-  --color-primary: var(--rb-primary-base);
-  --color-primary-foreground: var(--rb-primary-text);
-  --color-secondary: var(--rb-secondary-base);
-  --color-secondary-foreground: var(--rb-secondary-text);
-  --color-accent: var(--rb-tertiary-base);
-  --color-accent-foreground: var(--rb-tertiary-text);
-  --color-destructive: var(--rb-error-base);
-  --color-destructive-foreground: var(--rb-error-text);
-  
-  --color-muted: var(--rb-muted-base);
-  --color-muted-foreground: var(--rb-muted-text);
-  --color-border: var(--rb-outline);
-  --color-input: var(--rb-input);
-  --color-ring: var(--rb-ring);
-  
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+  --rb-chart-1: var(--rb-color-blue-400);
+  --rb-chart-2: var(--rb-color-green-400);
+  --rb-chart-3: var(--rb-color-yellow-400);
+  --rb-chart-4: var(--rb-color-orange-400);
+  --rb-chart-5: var(--rb-color-red-400);
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
   body {
     @apply bg-background text-foreground;
   }
