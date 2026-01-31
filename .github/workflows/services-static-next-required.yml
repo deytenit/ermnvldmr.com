@@ -59,6 +59,8 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Generate Astro types
+        run: pnpm --filter @ermnvldmr/static astro sync
       - name: Lint static service
         run: pnpm --filter @ermnvldmr/static lint
 
@@ -78,6 +80,8 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Generate Astro types
+        run: pnpm --filter @ermnvldmr/static astro sync
       - name: Typecheck static service
         run: pnpm --filter @ermnvldmr/static typecheck
 

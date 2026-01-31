@@ -97,6 +97,8 @@ jobs:
         run: pnpm --filter @ermnvldmr/stl lint
       - name: Lint UI package
         run: pnpm --filter @ermnvldmr/ui lint
+      - name: Generate Astro types
+        run: pnpm --filter @ermnvldmr/www astro sync
       - name: Lint WWW service
         run: pnpm --filter @ermnvldmr/www lint
 
@@ -125,6 +127,8 @@ jobs:
         run: pnpm --filter @ermnvldmr/stl typecheck
       - name: Typecheck UI package
         run: pnpm --filter @ermnvldmr/ui typecheck
+      - name: Generate Astro types
+        run: pnpm --filter @ermnvldmr/www astro sync
       - name: Typecheck WWW service
         run: pnpm --filter @ermnvldmr/www typecheck
 
@@ -183,6 +187,8 @@ jobs:
         run: pnpm --filter @ermnvldmr/stl test:coverage
       - name: Test UI package
         run: pnpm --filter @ermnvldmr/ui test:coverage
+      - name: Generate Astro types
+        run: pnpm --filter @ermnvldmr/www astro sync
       - name: Test WWW service
         run: pnpm --filter @ermnvldmr/www test:coverage
 
