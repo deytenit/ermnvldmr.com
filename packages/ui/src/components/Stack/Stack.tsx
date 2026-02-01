@@ -6,7 +6,41 @@ import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
 /**
  * Tailwind gap spacing scale values.
  */
-type GapScale = 0 | 0.5 | 1 | 1.5 | 2 | 2.5 | 3 | 3.5 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 14 | 16 | 20 | 24 | 28 | 32 | 36 | 40 | 44 | 48 | 52 | 56 | 60 | 64 | 72 | 80 | 96;
+type GapScale =
+  | 0
+  | 0.5
+  | 1
+  | 1.5
+  | 2
+  | 2.5
+  | 3
+  | 3.5
+  | 4
+  | 5
+  | 6
+  | 7
+  | 8
+  | 9
+  | 10
+  | 11
+  | 12
+  | 14
+  | 16
+  | 20
+  | 24
+  | 28
+  | 32
+  | 36
+  | 40
+  | 44
+  | 48
+  | 52
+  | 56
+  | 60
+  | 64
+  | 72
+  | 80
+  | 96;
 
 /**
  * Flexbox direction values.
@@ -44,17 +78,19 @@ export interface StackProps extends ClassNameProps, TestIdProps {
   wrap?: FlexWrap;
   /** Spacing between items using Tailwind's spacing scale */
   gap?: GapScale;
+  /** Whether to enable scrolling when content overflows */
+  scrollable?: boolean;
   /** The HTML element to use for rendering */
   as?: React.ElementType;
 }
 
 /**
  * A flexible layout component that arranges children using CSS Flexbox.
- * 
+ *
  * This component provides a consistent, type-safe way to create flexible layouts
  * with proper spacing and alignment. It supports all major flexbox properties
  * through semantic prop names that map to Tailwind CSS utility classes.
- * 
+ *
  * @example
  * ```tsx
  * // Horizontal stack with center alignment
@@ -62,26 +98,35 @@ export interface StackProps extends ClassNameProps, TestIdProps {
  *   <button>First</button>
  *   <button>Second</button>
  * </Stack>
- * 
+ *
  * // Vertical stack with space between items
  * <Stack direction="col" justify="between" gap={2}>
  *   <div>Header</div>
  *   <div>Content</div>
  *   <div>Footer</div>
  * </Stack>
+ *
+ * // Scrollable row
+ * <Stack direction="row" scrollable gap={4}>
+ *   {items.map(item => <Item key={item.id} {...item} />)}
+ * </Stack>
  * ```
  */
-const StackComponent = forwardRef<HTMLElement, StackProps>(function Stack({
-  children,
-  direction = 'row',
-  justify = 'start',
-  align = 'start',
-  wrap = 'nowrap',
-  gap = 0,
-  as: Component = 'div',
-  className,
-  'data-testid': testId,
-}, ref) {
+const StackComponent = forwardRef<HTMLElement, StackProps>(function Stack(
+  {
+    children,
+    direction = 'row',
+    justify = 'start',
+    align = 'start',
+    wrap = 'nowrap',
+    gap = 0,
+    scrollable = false,
+    as: Component = 'div',
+    className,
+    'data-testid': testId,
+  },
+  ref
+) {
   const directionClasses = {
     row: 'flex-row',
     col: 'flex-col',
@@ -150,8 +195,14 @@ const StackComponent = forwardRef<HTMLElement, StackProps>(function Stack({
     80: 'gap-80',
     96: 'gap-96',
   } as const;
-  
+
   const gapClass = gapClasses[gap];
+
+  const scrollClasses = scrollable
+    ? direction.includes('row')
+      ? 'overflow-x-auto'
+      : 'overflow-y-auto'
+    : '';
 
   const stackClasses = cn(
     'flex',
@@ -160,15 +211,12 @@ const StackComponent = forwardRef<HTMLElement, StackProps>(function Stack({
     alignClasses[align],
     wrapClasses[wrap],
     gapClass,
+    scrollClasses,
     className
   );
 
   return (
-    <Component
-      ref={castRef<HTMLElement>(ref)}
-      className={stackClasses}
-      data-testid={testId}
-    >
+    <Component ref={castRef<HTMLElement>(ref)} className={stackClasses} data-testid={testId}>
       {children}
     </Component>
   );

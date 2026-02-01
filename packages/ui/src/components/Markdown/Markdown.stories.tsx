@@ -26,12 +26,12 @@ export const Default: Story = {
     children: (
       <>
         <p>
-          This is a <strong>Markdown</strong> component that uses Tailwind CSS Typography (prose) 
-          to render content with consistent styling.
+          This is a <strong>Markdown</strong> component that uses Tailwind CSS Typography (prose) to
+          render content with consistent styling.
         </p>
         <p>
-          It is designed to be used with rendered HTML from markdown processors, 
-          but works with any HTML content that needs standard document styling.
+          It is designed to be used with rendered HTML from markdown processors, but works with any
+          HTML content that needs standard document styling.
         </p>
       </>
     ),
@@ -72,7 +72,8 @@ export const Lists: Story = {
         <h3>Unordered List</h3>
         <ul>
           <li>First item</li>
-          <li>Second item
+          <li>
+            Second item
             <ul>
               <li>Nested item A</li>
               <li>Nested item B</li>
@@ -84,7 +85,8 @@ export const Lists: Story = {
         <h3>Ordered List</h3>
         <ol>
           <li>Step one</li>
-          <li>Step two
+          <li>
+            Step two
             <ol>
               <li>Sub-step 2.1</li>
               <li>Sub-step 2.2</li>
@@ -183,16 +185,23 @@ export const KitchenSink: Story = {
           A lead paragraph that stands out and sets the tone for the rest of the document.
         </p>
         <p>
-          Markdown is a lightweight markup language with plain-text-formatting syntax. 
-          Its design allows it to be converted to many output formats, but the name 
-          originally referred to the tool for converting it to HTML.
+          Markdown is a lightweight markup language with plain-text-formatting syntax. Its design
+          allows it to be converted to many output formats, but the name originally referred to the
+          tool for converting it to HTML.
         </p>
 
         <h2>Key Features</h2>
         <ul>
-          <li><strong>Easy to read</strong> - The source text looks like the final output.</li>
-          <li><strong>Easy to write</strong> - Minimal syntax overhead.</li>
-          <li><strong>Versatile</strong> - Supports many elements like <em>italics</em>, <del>strikethrough</del>, and <code>code</code>.</li>
+          <li>
+            <strong>Easy to read</strong> - The source text looks like the final output.
+          </li>
+          <li>
+            <strong>Easy to write</strong> - Minimal syntax overhead.
+          </li>
+          <li>
+            <strong>Versatile</strong> - Supports many elements like <em>italics</em>,{' '}
+            <del>strikethrough</del>, and <code>code</code>.
+          </li>
         </ul>
 
         <h3>Example Code Block</h3>
@@ -209,8 +218,7 @@ export const MyPage = () => (
 
         <blockquote>
           &quot;Simplicity is the ultimate sophistication.&quot;
-          <br />
-          — Leonardo da Vinci
+          <br />— Leonardo da Vinci
         </blockquote>
 
         <hr />
@@ -245,7 +253,10 @@ export const MyPage = () => (
 
         <h3>Media Elements</h3>
         <p>Images should be rounded and have a nice shadow.</p>
-        <img alt="Coding" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80" />
+        <img
+          alt="Coding"
+          src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80"
+        />
 
         <p>Conclusion: We&apos;ve built a robust system for rendering content.</p>
       </>

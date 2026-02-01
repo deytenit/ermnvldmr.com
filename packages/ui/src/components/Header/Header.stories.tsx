@@ -5,7 +5,6 @@ import { VStack } from '../VStack/VStack';
 
 import type { Meta, StoryObj } from '@storybook/react';
 
-
 const meta: Meta<typeof Header> = {
   title: 'components/Header',
   component: Header,
@@ -51,9 +50,15 @@ export const AllLevels: Story = {
 export const Overrides: Story = {
   render: () => (
     <VStack gap={4}>
-      <Header level={1} size="s" type="headline">H1 Tag with Headline Small Style</Header>
-      <Header color="primary" level={3} size="l" type="body">H3 Tag with Body Large Style and Primary Color</Header>
-      <Header italic underline level={6}>H6 with Modifiers</Header>
+      <Header level={1} size="s" type="headline">
+        H1 Tag with Headline Small Style
+      </Header>
+      <Header color="primary" level={3} size="l" type="body">
+        H3 Tag with Body Large Style and Primary Color
+      </Header>
+      <Header italic underline level={6}>
+        H6 with Modifiers
+      </Header>
     </VStack>
   ),
 };

@@ -3,11 +3,11 @@ import { baseJestConfig } from './base.js';
 
 /**
  * Jest configuration for React projects with jsdom environment.
- * 
+ *
  * @example
  * ```typescript
  * import { reactJestConfig } from '@ermnvldmr/jest-config/react';
- * 
+ *
  * export default reactJestConfig;
  * ```
  */

@@ -26,7 +26,7 @@ export interface ArticleProps {
 
 /**
  * A article component with a structured layout.
- * 
+ *
  * Features:
  * - Centered medium headline (headline-m)
  * - Single-line separators
@@ -48,25 +48,27 @@ export const Article = memo(function Article({
         <Header className="text-center" level={4}>
           {headline}
         </Header>
-        
-          <VStack align="center" gap={2}>
-            {subHeadline ? (
-              <>
-                  <Separator className="w-3/4" type="single" />
-                  <Text italic className="text-center" size="m" type="label">
-                    {subHeadline}
-                  </Text>
-                  <Separator className="w-3/4" type="single" />
-              </>
-            ) : <Separator className="w-3/4" type="single" />}
-          </VStack>
+
+        <VStack align="center" gap={2}>
+          {subHeadline ? (
+            <>
+              <Separator className="w-3/4" type="single" />
+              <Text italic className="text-center" size="m" type="label">
+                {subHeadline}
+              </Text>
+              <Separator className="w-3/4" type="single" />
+            </>
+          ) : (
+            <Separator className="w-3/4" type="single" />
+          )}
+        </VStack>
 
         <Text size="m" type="body">
           {children}
         </Text>
 
         {additionalText && (
-          <VStack align='end'>
+          <VStack align="end">
             <Text italic color="muted" size="s" type="label">
               {additionalText}
             </Text>

@@ -32,11 +32,11 @@ const BreadcrumbsRoot = memo(function Breadcrumbs({ children, ...props }: Breadc
 /**
  * Individual step in the breadcrumb trail.
  */
-const BreadcrumbsItem = memo(function BreadcrumbsItem({ 
-  children, 
+const BreadcrumbsItem = memo(function BreadcrumbsItem({
+  children,
   className,
   'data-testid': testId,
-}: { 
+}: {
   children: React.ReactNode;
   className?: string;
 } & TestIdProps) {
@@ -57,7 +57,7 @@ export interface BreadcrumbsSeparatorProps extends ClassNameProps, TestIdProps {
   variant?: 'slash' | 'bull' | 'arrow';
 }
 
-const BreadcrumbsSeparator = memo(function BreadcrumbsSeparator({ 
+const BreadcrumbsSeparator = memo(function BreadcrumbsSeparator({
   variant = 'slash',
   className,
   'data-testid': testId,
@@ -69,8 +69,8 @@ const BreadcrumbsSeparator = memo(function BreadcrumbsSeparator({
   };
 
   return (
-    <li 
-      aria-hidden="true" 
+    <li
+      aria-hidden="true"
       className={cn('text-[var(--rb-muted-text)]', className)}
       data-testid={testId}
     >
@@ -83,10 +83,10 @@ const BreadcrumbsSeparator = memo(function BreadcrumbsSeparator({
 
 /**
  * A hierarchical navigation component.
- * 
+ *
  * Breadcrumbs provides a flexible way to display the current location within
  * a site's hierarchy. It uses a compound component pattern for maximum flexibility.
- * 
+ *
  * @example
  * ```tsx
  * <Breadcrumbs>

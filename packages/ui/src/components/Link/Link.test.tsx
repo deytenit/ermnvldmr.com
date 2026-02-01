@@ -1,9 +1,9 @@
 import React from 'react';
 
 import { Link } from './Link';
-import { render, screen } from '../../../test-utils';
+import { render, screen } from '../../test-utils';
 
-describe('components/generic/Link', () => {
+describe('components/Link', () => {
   it('renders correctly as a link when href is provided', () => {
     render(<Link href="https://example.com">Click me</Link>);
     const link = screen.getByRole('link', { name: 'Click me' });

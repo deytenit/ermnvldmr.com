@@ -25,7 +25,7 @@ export const baseStorybookConfig: Partial<StorybookConfig> = {
     try {
       const tailwindcss = (await import('@tailwindcss/vite')).default;
       const istanbul = (await import('vite-plugin-istanbul')).default;
-      
+
       return mergeConfig(config, {
         plugins: [
           tailwindcss(),

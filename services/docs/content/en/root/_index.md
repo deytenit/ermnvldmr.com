@@ -1,6 +1,6 @@
 ---
-title: "Root Infrastructure"
-description: "Documentation for the root.ermnvldmr.com infrastructure."
+title: 'Root Infrastructure'
+description: 'Documentation for the root.ermnvldmr.com infrastructure.'
 weight: 1
 type: docs
 cascade:
@@ -12,10 +12,11 @@ Comprehensive documentation for the personal infrastructure deployment and manag
 ## Sections
 
 {{% cards %}}
-  {{< card link="recipes" title="Recipes" icon="beaker" subtitle="Collection of step-by-step procedures for infrastructure maintenance and deployment." >}}
+{{< card link="recipes" title="Recipes" icon="beaker" subtitle="Collection of step-by-step procedures for infrastructure maintenance and deployment." >}}
 {{% /cards %}}
 
 ---
 
 **See also:**
+
 - [GitHub: root.ermnvldmr.com](https://github.com/deytenit/root.ermnvldmr.com)

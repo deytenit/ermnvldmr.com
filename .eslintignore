@@ -1,0 +1,11 @@
+node_modules
+dist
+build
+coverage
+storybook-static
+.next
+.astro
+public
+**/public/**
+**/dist/**
+**/node_modules/**

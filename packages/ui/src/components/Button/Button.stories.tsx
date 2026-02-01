@@ -4,125 +4,188 @@ import { Button } from './Button';
 
 import type { Meta, StoryObj } from '@storybook/react';
 
-
-/**
- * A newspaper-style button component with italic Lato font and underlined text.
- * 
- * Features:
- * - Rectangular design with subtle background
- * - Italic Medium Lato font (500 weight) 
- * - Underlined text decoration
- * - Accessible interaction patterns via react-aria
- * - Responsive hover and focus states
- */
 const meta: Meta<typeof Button> = {
   title: 'components/Button',
   component: Button,
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component: 'A newspaper-style button following traditional print design patterns.',
-      },
-    },
-  },
+  tags: ['autodocs'],
   argTypes: {
+    onPress: { action: 'pressed' },
     variant: {
       control: 'select',
-      options: ['default', 'primary', 'secondary'],
-      description: 'Visual style variant',
+      options: ['solid', 'outline', 'ghost', 'link'],
     },
-    children: {
-      control: 'text',
-      description: 'The button text content (string only)',
+    color: {
+      control: 'select',
+      options: [
+        'primary',
+        'primary-negative',
+        'secondary',
+        'secondary-negative',
+        'tertiary',
+        'tertiary-negative',
+        'error',
+        'error-negative',
+        'neutral',
+        'neutral-negative',
+      ],
     },
-    isDisabled: {
-      control: 'boolean',
-      description: 'Whether the button is disabled',
+    size: {
+      control: 'radio',
+      options: ['s', 'm', 'l'],
     },
-  },
-  args: {
-    children: 'Explore all the articles',
-    variant: 'default',
+    rounded: {
+      control: 'radio',
+      options: ['none', 'md', 'full'],
+    },
   },
 };
 
 export default meta;
-/**
- *
- */
-type Story = StoryObj<typeof meta>;
 
 /**
- * The default newspaper-style button with underlined italic text.
+ * Story helper type.
+ */
+type Story = StoryObj<typeof Button>;
+
+/**
+ * The default Button story demonstrating the standard configuration.
  */
 export const Default: Story = {
   args: {
-    children: 'Explore all the articles',
-    onPress: () => console.log('Default button pressed'),
+    children: 'Button',
+    variant: 'solid',
+    color: 'primary',
+    size: 'm',
   },
 };
 
 /**
- * Primary variant with enhanced visual prominence.
+ * A gallery of all available Button variants.
  */
-export const Primary: Story = {
-  args: {
-    variant: 'primary',
-    children: 'Read more stories',
-    onPress: () => console.log('Primary button pressed'),
-  },
+export const Variants: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <div className="flex gap-4 items-center">
+        <Button variant="solid">Solid</Button>
+        <Button variant="outline">Outline</Button>
+        <Button variant="ghost">Ghost</Button>
+        <Button variant="link">Link Variant</Button>
+      </div>
+    </div>
+  ),
 };
 
 /**
- * Secondary variant for supporting actions.
+ * A gallery of all available Button color themes, including negative variants.
  */
-export const Secondary: Story = {
+export const Colors: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <div className="flex gap-4 flex-wrap">
+        <Button color="primary">Primary</Button>
+        <Button color="secondary">Secondary</Button>
+        <Button color="tertiary">Tertiary</Button>
+        <Button color="error">Error</Button>
+        <Button color="neutral">Neutral</Button>
+      </div>
+      <div className="flex gap-4 flex-wrap p-4 bg-slate-900 rounded">
+        <Button color="primary-negative">Primary Neg</Button>
+        <Button color="secondary-negative">Secondary Neg</Button>
+        <Button color="tertiary-negative">Tertiary Neg</Button>
+        <Button color="error-negative">Error Neg</Button>
+        <Button color="neutral-negative">Neutral Neg</Button>
+      </div>
+    </div>
+  ),
+};
+
+/**
+ * A comparison of the available Button sizes.
+ */
+export const Sizes: Story = {
+  render: () => (
+    <div className="flex gap-4 items-end">
+      <Button size="s">Small</Button>
+      <Button size="m">Medium</Button>
+      <Button size="l">Large</Button>
+    </div>
+  ),
+};
+
+/**
+ * A comparison of the available border radius variants.
+ */
+export const Rounded: Story = {
+  render: () => (
+    <div className="flex gap-4 items-center">
+      <Button rounded="none">None</Button>
+      <Button rounded="md">Medium (Default)</Button>
+      <Button rounded="full">Full (Pill)</Button>
+    </div>
+  ),
+};
+
+/**
+ * Helper component to render a simple SVG icon.
+ * @param className - CSS class names for styling.
+ * @returns An SVG icon element.
+ * @example
+ * <Icon className="w-4 h-4" />
+ */
+const Icon = (className: string): React.ReactNode => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      d="M13 10V3L4 14h7v7l9-11h-7z"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+    />
+  </svg>
+);
+
+/**
+ * Story demonstrating the Button component with both start and end icons.
+ */
+export const WithIcons: Story = {
+  render: () => (
+    <div className="flex gap-4">
+      <Button renderStartIcon={Icon}>Start Icon</Button>
+      <Button renderEndIcon={Icon}>End Icon</Button>
+      <Button renderEndIcon={Icon} renderStartIcon={Icon}>
+        Both Icons
+      </Button>
+      <Button renderStartIcon={Icon} />
+    </div>
+  ),
+};
+
+/**
+ * Story demonstrating the Button component acting as a link (polymorphic 'a' tag).
+ */
+export const AsLink: Story = {
   args: {
-    variant: 'secondary', 
-    children: 'Subscribe now',
-    onPress: () => console.log('Secondary button pressed'),
+    children: 'Go to Example',
+    href: 'https://example.com',
+    target: '_blank',
   },
 };
 
 /**
- * Disabled state of the button.
+ * Story demonstrating the disabled state of the Button component.
  */
 export const Disabled: Story = {
   args: {
-    children: 'Unavailable action',
+    children: 'Disabled Button',
     isDisabled: true,
   },
 };
 
 /**
- * Long text content to test text wrapping and layout.
+ * Story demonstrating the full width capability of the Button component.
  */
-export const LongText: Story = {
+export const FullWidth: Story = {
   args: {
-    children: 'Explore all the fascinating articles and stories from around the world',
-    onPress: () => console.log('Long text button pressed'),
+    children: 'Full Width Button',
+    fullWidth: true,
   },
-};
-
-/**
- * Interactive demonstration showing all variants side by side.
- */
-export const AllVariants: Story = {
-  render: () => (
-    <div className="flex flex-col gap-4 items-start">
-      <Button variant="default" onPress={() => console.log('Default')}>
-        Default Style
-      </Button>
-      <Button variant="primary" onPress={() => console.log('Primary')}>
-        Primary Style  
-      </Button>
-      <Button variant="secondary" onPress={() => console.log('Secondary')}>
-        Secondary Style
-      </Button>
-      <Button isDisabled>
-        Disabled State
-      </Button>
-    </div>
-  ),
 };

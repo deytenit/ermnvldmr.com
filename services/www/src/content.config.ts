@@ -3,7 +3,7 @@ import { defineCollection, z } from 'astro:content';
 
 const articles = defineCollection({
   // Load all markdown and MDX files from the content/articles directory
-  loader: glob({ pattern: "**/*.{md,mdx}", base: "./content/articles" }),
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './content/articles' }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),

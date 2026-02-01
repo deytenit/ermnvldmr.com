@@ -3,7 +3,7 @@ name: services/docs - next/required
 on:
   push:
     branches: [next]
-    paths: 
+    paths:
       - 'services/docs/**'
 
 concurrency:
@@ -106,4 +106,3 @@ jobs:
             # Use the short SHA to match the tag from release-docker
             export DOCS_TAG="sha-$(echo ${{ github.sha }} | cut -c1-7)"
             ./ci/scripts/deploy-new-tags.sh
-

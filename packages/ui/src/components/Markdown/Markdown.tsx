@@ -31,13 +31,5 @@ export interface MarkdownProps {
  * ```
  */
 export const Markdown: React.FC<MarkdownProps> = ({ children, className }) => {
-  return (
-    <div
-      className={cn(
-        className
-      )}
-    >
-      {children}
-    </div>
-  );
+  return <div className={cn(className)}>{children}</div>;
 };

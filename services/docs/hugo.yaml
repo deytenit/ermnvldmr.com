@@ -40,8 +40,8 @@ enableGitInfo: true
 
 # Hextra theme parameters
 params:
-  description: "Documentation for ermnvldmr.com services and infrastructure"
-  
+  description: 'Documentation for ermnvldmr.com services and infrastructure'
+
   # Search configuration
   search:
     enable: true
@@ -54,23 +54,23 @@ params:
       tokenize: forward
 
   displayUpdatedDate: true
-  dateFormat: "January 2, 2006"
-    
+  dateFormat: 'January 2, 2006'
+
   # Navigation configuration
   navbar:
     displayTitle: true
     width: wide
     displayLogo: false
-    
+
   # Footer configuration
   footer:
     displayCopyright: true
     displayPoweredBy: true
-    
+
   # Edit page configuration
   editURL:
     enable: true
-    base: "https://github.com/deytenit/ermnvldmr.com/edit/next/services/docs/content"
+    base: 'https://github.com/deytenit/ermnvldmr.com/edit/next/services/docs/content'
 
   page:
     width: wide

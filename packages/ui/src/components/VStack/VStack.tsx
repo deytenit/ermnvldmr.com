@@ -15,11 +15,11 @@ export interface VStackProps extends Omit<StackProps, 'direction'> {
 
 /**
  * A vertical stack layout component that arranges children in a column using CSS Flexbox.
- * 
+ *
  * This is a specialized version of the Stack component with a fixed vertical direction.
  * It provides a convenient, semantic way to create vertical layouts without needing
  * to specify direction="col" every time.
- * 
+ *
  * @example
  * ```tsx
  * // Simple vertical stack
@@ -28,7 +28,7 @@ export interface VStackProps extends Omit<StackProps, 'direction'> {
  *   <div>Content</div>
  *   <div>Footer</div>
  * </VStack>
- * 
+ *
  * // Centered vertical stack with spacing
  * <VStack align="center" justify="center" gap={6}>
  *   <h1>Title</h1>
@@ -37,6 +37,8 @@ export interface VStackProps extends Omit<StackProps, 'direction'> {
  * </VStack>
  * ```
  */
-export const VStack = memo(forwardRef<HTMLElement, VStackProps>(function VStack(props, ref) {
-  return <Stack direction="col" {...props} ref={ref} />;
-}));
+export const VStack = memo(
+  forwardRef<HTMLElement, VStackProps>(function VStack(props, ref) {
+    return <Stack direction="col" {...props} ref={ref} />;
+  })
+);

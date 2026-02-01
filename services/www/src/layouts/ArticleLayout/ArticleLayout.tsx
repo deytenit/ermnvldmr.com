@@ -93,9 +93,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
           <h1 className="leading-tight">{title}</h1>
 
           {description && (
-            <p className="text-muted-foreground text-l leading-relaxed italic">
-              {description}
-            </p>
+            <p className="text-muted-foreground text-l leading-relaxed italic">{description}</p>
           )}
         </VStack>
       </header>

@@ -3,7 +3,7 @@ name: packages/ui - next/required
 on:
   push:
     branches: [next]
-    paths: 
+    paths:
       - 'packages/ui/**'
       - 'packages/stl/**'
       - 'pnpm-lock.yaml'

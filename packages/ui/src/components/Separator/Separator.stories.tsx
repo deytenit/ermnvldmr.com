@@ -6,7 +6,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 /**
  * A newspaper-style separator component for dividing content sections.
- * 
+ *
  * Features:
  * - Single or double line variants inspired by newspaper layout traditions
  * - Multiple color options (black, outline, outline-light) with theme support
@@ -22,7 +22,8 @@ const meta: Meta<typeof Separator> = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'A newspaper-style separator following traditional print design patterns for content division.',
+        component:
+          'A newspaper-style separator following traditional print design patterns for content division.',
       },
     },
   },
@@ -69,13 +70,9 @@ export const Default: Story = {
   decorators: [
     (Story) => (
       <div className="w-96 p-8">
-        <div className="text-center text-sm text-muted-foreground mb-4">
-          Content Above
-        </div>
+        <div className="text-center text-sm text-muted-foreground mb-4">Content Above</div>
         <Story />
-        <div className="text-center text-sm text-muted-foreground mt-4">
-          Content Below
-        </div>
+        <div className="text-center text-sm text-muted-foreground mt-4">Content Below</div>
       </div>
     ),
   ],
@@ -92,13 +89,9 @@ export const Double: Story = {
   decorators: [
     (Story) => (
       <div className="w-96 p-8">
-        <div className="text-center text-sm text-muted-foreground mb-4">
-          Content Above
-        </div>
+        <div className="text-center text-sm text-muted-foreground mb-4">Content Above</div>
         <Story />
-        <div className="text-center text-sm text-muted-foreground mt-4">
-          Content Below
-        </div>
+        <div className="text-center text-sm text-muted-foreground mt-4">Content Below</div>
       </div>
     ),
   ],
@@ -115,13 +108,9 @@ export const Black: Story = {
   decorators: [
     (Story) => (
       <div className="w-96 p-8">
-        <div className="text-center text-sm text-muted-foreground mb-4">
-          Content Above
-        </div>
+        <div className="text-center text-sm text-muted-foreground mb-4">Content Above</div>
         <Story />
-        <div className="text-center text-sm text-muted-foreground mt-4">
-          Content Below
-        </div>
+        <div className="text-center text-sm text-muted-foreground mt-4">Content Below</div>
       </div>
     ),
   ],
@@ -138,13 +127,9 @@ export const OutlineLight: Story = {
   decorators: [
     (Story) => (
       <div className="w-96 p-8">
-        <div className="text-center text-sm text-muted-foreground mb-4">
-          Content Above
-        </div>
+        <div className="text-center text-sm text-muted-foreground mb-4">Content Above</div>
         <Story />
-        <div className="text-center text-sm text-muted-foreground mt-4">
-          Content Below
-        </div>
+        <div className="text-center text-sm text-muted-foreground mt-4">Content Below</div>
       </div>
     ),
   ],
@@ -302,7 +287,7 @@ export const VerticalShowcase: Story = {
           Content
         </div>
       </div>
-      
+
       <div className="flex h-48">
         <div className="flex items-center justify-center w-20 text-xs text-muted-foreground">
           Medium
@@ -314,7 +299,7 @@ export const VerticalShowcase: Story = {
           Content
         </div>
       </div>
-      
+
       <div className="flex h-64">
         <div className="flex items-center justify-center w-20 text-xs text-muted-foreground">
           Tall

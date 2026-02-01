@@ -3,41 +3,21 @@
     <h3>{{ .Get "name" }}</h3>
     <span class="container-name">{{ .Get "container" }}</span>
   </div>
-  
+
   <div class="service-details">
-    <div class="service-row">
-      <strong>Image:</strong> <code>{{ .Get "image" }}</code>
-    </div>
-    
-    <div class="service-row">
-      <strong>Purpose:</strong> {{ .Get "purpose" }}
-    </div>
-    
+    <div class="service-row"><strong>Image:</strong> <code>{{ .Get "image" }}</code></div>
+
+    <div class="service-row"><strong>Purpose:</strong> {{ .Get "purpose" }}</div>
+
     {{ with .Get "ports" }}
-    <div class="service-row">
-      <strong>Ports:</strong> <code>{{ . }}</code>
-    </div>
-    {{ end }}
-    
-    {{ with .Get "networks" }}
-    <div class="service-row">
-      <strong>Networks:</strong> <code>{{ . }}</code>
-    </div>
-    {{ end }}
-    
-    {{ with .Get "volumes" }}
-    <div class="service-row">
-      <strong>Volumes:</strong> <code>{{ . }}</code>
-    </div>
-    {{ end }}
-    
-    {{ with .Get "features" }}
-    <div class="service-row">
-      <strong>Features:</strong> {{ . }}
-    </div>
-    {{ end }}
-    
-    {{ with .Get "management_url" }}
+    <div class="service-row"><strong>Ports:</strong> <code>{{ . }}</code></div>
+    {{ end }} {{ with .Get "networks" }}
+    <div class="service-row"><strong>Networks:</strong> <code>{{ . }}</code></div>
+    {{ end }} {{ with .Get "volumes" }}
+    <div class="service-row"><strong>Volumes:</strong> <code>{{ . }}</code></div>
+    {{ end }} {{ with .Get "features" }}
+    <div class="service-row"><strong>Features:</strong> {{ . }}</div>
+    {{ end }} {{ with .Get "management_url" }}
     <div class="service-row">
       <strong>Management URL:</strong> <a href="{{ . }}" target="_blank">{{ . }}</a>
     </div>

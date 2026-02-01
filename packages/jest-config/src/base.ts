@@ -2,11 +2,11 @@ import type { Config } from 'jest';
 
 /**
  * Base Jest configuration for TypeScript projects.
- * 
+ *
  * @example
  * ```typescript
  * import { baseJestConfig } from '@ermnvldmr/jest-config/base';
- * 
+ *
  * export default {
  *   ...baseJestConfig,
  *   // package-specific overrides
@@ -36,8 +36,5 @@ export const baseJestConfig: Config = {
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
-  testMatch: [
-    '**/__tests__/**/*.{ts,tsx}',
-    '**/*.{test,spec}.{ts,tsx}',
-  ],
+  testMatch: ['**/__tests__/**/*.{ts,tsx}', '**/*.{test,spec}.{ts,tsx}'],
 };

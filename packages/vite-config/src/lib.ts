@@ -10,17 +10,17 @@ export interface LibConfigOptions {
 
 /**
  * Base Vite configuration for library packages.
- * 
+ *
  * @param packageName - The name for the library build
  * @param entry - Entry point file path (relative to package root)
  * @param external - Array of external dependencies to exclude from bundle
  * @param options - Additional configuration options
  * @returns Vite configuration object
- * 
+ *
  * @example
  * ```typescript
  * import { createLibConfig } from '@ermnvldmr/vite-config/lib';
- * 
+ *
  * export default createLibConfig('MyLib', 'src/index.ts', ['react', 'react-dom']);
  * ```
  */
@@ -47,11 +47,11 @@ export function createLibConfig(
       rollupOptions: {
         external: [
           'react',
-          'react-dom', 
-          'react/jsx-runtime', 
+          'react-dom',
+          'react/jsx-runtime',
           'react/jsx-dev-runtime',
           'tailwindcss',
-          ...external
+          ...external,
         ],
         output: {
           globals: {

@@ -49,9 +49,9 @@ Want to contribute or understand the codebase.
 
 - **Setup**: `pnpm install`
 - **Development**:
-    - Website: `pnpm www:dev`
-    - Documentation: `pnpm docs:dev`
-    - UI Library: `pnpm ui:dev`
+  - Website: `pnpm www:dev`
+  - Documentation: `pnpm docs:dev`
+  - UI Library: `pnpm ui:dev`
 - **Development Guide**: [AGENTS.md](./AGENTS.md)
 - **Component Development**: `pnpm ui:storybook`
 - **Testing**: `pnpm test` or `pnpm test:coverage` (View results on [Codecov](https://app.codecov.io/github/deytenit/ermnvldmr.com))
@@ -63,7 +63,7 @@ Interested in the design system and components.
 
 - **Components**: Run `pnpm ui:storybook` to explore components
 - **Design System**: See [packages/ui/src/styles/index.css](./packages/ui/src/styles/index.css)
-for the color palette and theme
+  for the color palette and theme
 - **Theme Structure**: CSS variables with light/dark mode support
 
 ### Contributor
@@ -87,12 +87,12 @@ Want to submit improvements.
 
 **Documentation & Informational Content**: Technical documentation, guides, and informational articles within `services/docs/content/` and `services/www/content/` are licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
 
-**Creative Literature & Art**: Poems, personal essays, artworks, photography, and other purely creative or literary works are **individually copyrighted by their respective owners**. These works are *not* open-source and are *not* covered by the GPL or CC BY 4.0 licenses. They remain under full copyright protection unless explicitly stated otherwise within their specific file metadata or directory.
+**Creative Literature & Art**: Poems, personal essays, artworks, photography, and other purely creative or literary works are **individually copyrighted by their respective owners**. These works are _not_ open-source and are _not_ covered by the GPL or CC BY 4.0 licenses. They remain under full copyright protection unless explicitly stated otherwise within their specific file metadata or directory.
 
 ---
 
 **AI Assistance**:
-Significant portions of this project's *source code* were developed with
+Significant portions of this project's _source code_ were developed with
 the assistance of AI code generation tools.
 
 Copyright © 2026 Vladimir Eremin

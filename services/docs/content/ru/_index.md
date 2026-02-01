@@ -1,5 +1,5 @@
 ---
-title: "Документация ermnvldmr.com"
+title: 'Документация ermnvldmr.com'
 ---
 
 <br />
@@ -7,5 +7,5 @@ title: "Документация ermnvldmr.com"
 Добро пожаловать в единую документацию для моих собственных проектов
 
 {{< cards >}}
-  {{< card link="root" title="root.ermnvldmr.com" icon="server" subtitle="Документация инфраструктуры root.ermnvldmr.com" >}}
+{{< card link="root" title="root.ermnvldmr.com" icon="server" subtitle="Документация инфраструктуры root.ermnvldmr.com" >}}
 {{< /cards >}}

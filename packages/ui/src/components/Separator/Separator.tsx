@@ -5,7 +5,6 @@ import { VStack } from '../VStack/VStack';
 
 import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
 
-
 /**
  * Props for the Separator component.
  */
@@ -22,7 +21,7 @@ export interface SeparatorProps extends ClassNameProps, TestIdProps {
 
 /**
  * A separator component for dividing content sections.
- * 
+ *
  * Features:
  * - Single or double line variants inspired by newspaper layout traditions
  * - Multiple color options (black, outline, outline-light) with theme support
@@ -30,26 +29,26 @@ export interface SeparatorProps extends ClassNameProps, TestIdProps {
  * - Optional thinned gradient fade effect at line ends (10% fade length)
  * - 2px stroke width following print design standards
  * - Semantic HTML with proper ARIA attributes for accessibility
- * 
+ *
  * The component uses CSS mask-image for the thinned effect and CSS custom properties
  * for theme-aware colors. Double separators have 4px spacing between lines.
- * 
+ *
  * @example
  * ```tsx
  * // Basic horizontal separator
  * <Separator />
- * 
+ *
  * // Double-line separator with black color
  * <Separator type="double" color="black" />
- * 
+ *
  * // Vertical separator without thinned ends
  * <Separator direction="vertical" thinned={false} />
- * 
+ *
  * // Light separator for subtle content division
  * <Separator color="outline-light" />
  * ```
  */
-export const Separator = memo(function Separator({ 
+export const Separator = memo(function Separator({
   type = 'single',
   color,
   direction = 'horizontal',
@@ -64,7 +63,7 @@ export const Separator = memo(function Separator({
   // Color mapping to CSS custom properties
   const colorClasses = {
     black: 'border-foreground',
-    outline: 'border-border', 
+    outline: 'border-border',
     'outline-light': 'border-muted',
   };
 
@@ -78,25 +77,23 @@ export const Separator = memo(function Separator({
   ];
 
   // Thinned effect using CSS mask
-  const thinnedClasses = thinned ? [
-    direction === 'horizontal' 
-      ? '[mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]'
-      : '[mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)]',
-  ] : [];
+  const thinnedClasses = thinned
+    ? [
+        direction === 'horizontal'
+          ? '[mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]'
+          : '[mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)]',
+      ]
+    : [];
 
   // Size classes - fill container by default
-  const sizeClasses = direction === 'horizontal' 
-    ? ['w-full', 'h-0']  // Full width, no height (border provides the visual)
-    : ['h-full', 'w-0'];  // Full height, no width (border provides the visual)
+  const sizeClasses =
+    direction === 'horizontal'
+      ? ['w-full', 'h-0'] // Full width, no height (border provides the visual)
+      : ['h-full', 'w-0']; // Full height, no width (border provides the visual)
 
   // Single line implementation
   if (type === 'single') {
-    const lineClasses = cn(
-      ...lineBaseClasses,
-      ...thinnedClasses,
-      ...sizeClasses,
-      className
-    );
+    const lineClasses = cn(...lineBaseClasses, ...thinnedClasses, ...sizeClasses, className);
 
     return (
       <div
@@ -109,16 +106,9 @@ export const Separator = memo(function Separator({
   }
 
   // Double line implementation
-  const singleLineClasses = cn(
-    ...lineBaseClasses,
-    ...thinnedClasses,
-    ...sizeClasses
-  );
+  const singleLineClasses = cn(...lineBaseClasses, ...thinnedClasses, ...sizeClasses);
 
-  const containerClasses = cn(
-    direction === 'horizontal' ? 'w-full' : 'h-full',
-    className
-  );
+  const containerClasses = cn(direction === 'horizontal' ? 'w-full' : 'h-full', className);
 
   if (direction === 'horizontal') {
     return (
@@ -129,20 +119,14 @@ export const Separator = memo(function Separator({
         role="separator"
       >
         <VStack gap={1}>
-          <div 
-            aria-hidden="true"
-            className={singleLineClasses}
-          />
-          <div 
-            aria-hidden="true"
-            className={singleLineClasses}
-          />
+          <div aria-hidden="true" className={singleLineClasses} />
+          <div aria-hidden="true" className={singleLineClasses} />
         </VStack>
       </div>
     );
   } else {
     return (
-      <div 
+      <div
         aria-orientation="vertical"
         className={cn('flex flex-row gap-1', containerClasses)}
         data-testid={testId}

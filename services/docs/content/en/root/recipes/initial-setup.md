@@ -1,6 +1,6 @@
 ---
-title: "Initial Host Setup"
-description: "Setting up a fresh Debian host from scratch."
+title: 'Initial Host Setup'
+description: 'Setting up a fresh Debian host from scratch.'
 weight: 1
 ---
 
@@ -145,5 +145,6 @@ sudo -u adam .scripts/ops/setup-noroot-users $NODE
 ---
 
 **See also:**
+
 - [Doc: Docker - Install on Debian](https://docs.docker.com/engine/install/debian/)
 - [GitHub: root.ermnvldmr.com](https://github.com/deytenit/root.ermnvldmr.com)

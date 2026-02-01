@@ -5,6 +5,7 @@
 **ermnvldmr.com** is Vladimir Eremin's personal ecosystem of services delivered through a modern monorepo architecture. The project encompasses personal websites, documentation sites, and shared infrastructure for web-based content and services.
 
 ### Monorepo Architecture
+
 - **Repository Structure**: pnpm workspace monorepo
 - **Package Manager**: pnpm v9.12.3+
 - **Core Technology**: TypeScript (Strict mode)
@@ -14,6 +15,7 @@
 - **CI/CD**: GitHub Actions with path-based triggers
 
 ### Design Philosophy
+
 - **Component-First**: All UI elements developed as isolated, reusable components
 - **Configuration Sharing**: Centralized tooling configurations across services
 - **TypeScript-First**: Strict typing for all public APIs and components
@@ -26,7 +28,7 @@
 ```
 ├── packages/                   # Shared packages and configurations
 │   ├── eslint-config/         # Shared ESLint configurations
-│   ├── jest-config/           # Shared Jest configurations  
+│   ├── jest-config/           # Shared Jest configurations
 │   ├── storybook-config/      # Shared Storybook configurations
 │   ├── vite-config/           # Shared Vite configurations
 │   ├── stl/                   # Standard Type Library (utilities)
@@ -42,22 +44,26 @@
 ### Package Organization
 
 #### Configuration Packages (`packages/`)
+
 - **eslint-config**: Shared ESLint rules for TypeScript, React, and Astro
 - **jest-config**: Shared Jest configurations for different project types
 - **storybook-config**: Shared Storybook setup and configurations
 - **vite-config**: Shared Vite configurations for library builds
 
 #### Library Packages (`packages/`)
+
 - **stl** (Standard Type Library): Common utilities, types, and helper functions
 - **ui**: React component library with design system and Storybook stories
 
 #### Service Packages (`services/`)
+
 - **www**: Main website built with Astro.js, React, and Tailwind CSS
 - **docs**: Documentation site built with Hugo and Hextra theme
 
 ### Key Directory Rules
 
 #### `/packages/`
+
 - **Purpose**: Shared configurations and reusable libraries
 - **Dependencies**: Can depend on each other following build order (configs → stl → ui)
 - **Exports**: Must provide proper TypeScript declarations
@@ -65,6 +71,7 @@
 - **Testing**: Individual test suites for each package
 
 #### `/services/`
+
 - **Purpose**: Independent web applications and sites
 - **Dependencies**: Can consume packages but not other services
 - **Deployment**: Independent deployment pipelines
@@ -74,24 +81,30 @@
 ## 🛠️ Development Workflow
 
 ### Monorepo Development Principles
+
 - **Root-Level Scripts**: Check `package.json` at repository root for monorepo-wide operations
 - **Service-Specific Scripts**: Each service in `services/` has its own development commands
 - **Package Filtering**: Use pnpm workspace filtering to target specific packages/services
 - **Dependency-Aware Building**: UI components must be built before dependent services
 
 ### Package Development Workflow
+
 The monorepo follows a strict dependency hierarchy that must be respected:
 
 #### 1. Configuration Packages First
+
 Configuration packages provide shared tooling setups and must be built before anything else. Look for packages ending in `-config` in the `packages/` directory.
 
 #### 2. Library Packages
+
 Library packages (`stl`, `ui`) provide reusable code and components. They depend on configuration packages and must be built in dependency order (check their `package.json` dependencies).
 
 #### 3. Services
+
 Services consume packages but are independent of each other. They can be developed and deployed separately. Check `services/` directory for available services and their individual `package.json` files for available scripts.
 
 ### Code Organization Principles
+
 - **Dependency Order**: configs → stl → ui → services
 - **Single Responsibility**: Each package serves one clear purpose
 - **Explicit Dependencies**: All inter-package dependencies declared in package.json
@@ -101,9 +114,11 @@ Services consume packages but are independent of each other. They can be develop
 ## 📝 Coding Conventions
 
 ### Package Naming Convention
+
 All packages use the `@ermnvldmr/` namespace:
+
 - `@ermnvldmr/eslint-config` - Shared ESLint configurations
-- `@ermnvldmr/jest-config` - Shared Jest configurations  
+- `@ermnvldmr/jest-config` - Shared Jest configurations
 - `@ermnvldmr/storybook-config` - Shared Storybook configurations
 - `@ermnvldmr/vite-config` - Shared Vite configurations
 - `@ermnvldmr/stl` - Standard Type Library
@@ -112,21 +127,23 @@ All packages use the `@ermnvldmr/` namespace:
 - `@ermnvldmr/docs` - Documentation service
 
 ### TypeScript Guidelines
+
 - **Strict Mode**: All TypeScript strict checks must pass
 - **Explicit Types**: Avoid `any` and prefer explicit type definitions
 - **Interface First**: Use interfaces for component props and public APIs
 - **Cross-Package Types**: Export types from packages for service consumption
 
 ### TSDoc Documentation Requirements
+
 **MANDATORY for all exported elements**: types, functions, constants, components
 
 ```typescript
 /**
  * Combines class names using clsx and tailwind-merge for consistent styling.
- * 
+ *
  * @param inputs - Class name inputs to combine
  * @returns Combined and deduplicated class string
- * 
+ *
  * @example
  * \`\`\`typescript
  * cn('px-4 py-2', 'bg-blue-500', 'px-6') // 'py-2 bg-blue-500 px-6'
@@ -139,7 +156,9 @@ export function cn(...inputs: ClassValue[]): string {
 ```
 
 ### Component Development Patterns
+
 #### UI Package Components
+
 ```typescript
 /**
  * Props for the Button component.
@@ -170,6 +189,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 ```
 
 ### File Naming Conventions
+
 - **Components**: PascalCase (e.g., `Button.tsx`, `NavigationMenu.tsx`)
 - **Utilities**: camelCase (e.g., `cn.ts`, `formatters.ts`)
 - **Constants**: UPPER_SNAKE_CASE for exports (e.g., `API_ENDPOINTS`)
@@ -179,6 +199,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 ### Module Structure Patterns
 
 #### Package Structure
+
 ```
 packages/ui/
 ├── src/
@@ -195,6 +216,7 @@ packages/ui/
 ```
 
 #### Service Structure (www example)
+
 ```
 services/www/
 ├── src/
@@ -211,18 +233,21 @@ services/www/
 ## 🎨 Design System (UI Package)
 
 ### Component Organization
+
 - **Generic Components**: Layout utilities (Stack, VStack, HStack)
 - **Themed Components**: Paper-themed variants with consistent styling
 - **Radix Integration**: Accessibility-first components using Radix UI
 - **Storybook Stories**: Every component has comprehensive documentation
 
 ### Styling Approach
+
 - **Tailwind CSS v4+**: Utility-first CSS framework
 - **Class Variance Authority**: Type-safe variant generation
 - **Custom Design Tokens**: Consistent spacing, colors, typography
 - **Responsive Design**: Mobile-first responsive patterns
 
 ### Component Categories
+
 ```typescript
 // Generic Layout Components
 export { Stack } from './components/generic/Stack/Stack';
@@ -237,9 +262,11 @@ export { Separator } from './components/paper/PaperSeparator/Separator';
 ## ⚙️ Configuration Management
 
 ### Shared Configurations
+
 Each configuration package provides standardized setups:
 
 #### ESLint Configuration
+
 ```javascript
 // Provides: base, react, astro configurations
 import { base } from '@ermnvldmr/eslint-config';
@@ -248,6 +275,7 @@ import { astro } from '@ermnvldmr/eslint-config/astro';
 ```
 
 #### Jest Configuration
+
 ```typescript
 // Provides: base, react configurations
 import { base } from '@ermnvldmr/jest-config/base';
@@ -255,13 +283,16 @@ import { react } from '@ermnvldmr/jest-config/react';
 ```
 
 #### Vite Configuration
+
 ```typescript
 // Provides: library build configurations
 import { defineLibConfig } from '@ermnvldmr/vite-config/lib';
 ```
 
 ### Service Configuration Inheritance
+
 Services inherit from shared configs but can override:
+
 ```typescript
 // In service package.json devDependencies
 "@ermnvldmr/eslint-config": "workspace:*"
@@ -271,6 +302,7 @@ Services inherit from shared configs but can override:
 ## 🚀 Build & Deployment
 
 ### Build Dependencies
+
 The monorepo must respect a strict build order due to package dependencies:
 
 1. **Configuration packages** (eslint-config, jest-config, etc.) - Foundation tooling
@@ -279,7 +311,9 @@ The monorepo must respect a strict build order due to package dependencies:
 4. **Services** - Applications that consume packages (www, docs)
 
 ### CI/CD Pipeline Structure
+
 The repository uses path-based CI/CD triggers - each package and service has dedicated workflows in `.github/workflows/`. Examine the workflow files to understand:
+
 - **Trigger Patterns**: Which file changes activate each pipeline
 - **Build Dependencies**: How packages are built in sequence
 - **Quality Gates**: Linting, type-checking, and testing requirements
@@ -288,12 +322,14 @@ The repository uses path-based CI/CD triggers - each package and service has ded
 ## 🔧 Development Environment
 
 ### Prerequisites
+
 - **Node.js**: v20+
 - **pnpm**: v9.12.3+
 - **TypeScript**: v5.8+
 - **Hugo**: v0.110.0+ (for docs service)
 
 ### Initial Setup
+
 To start development, follow the dependency hierarchy:
 
 1. **Install dependencies** using the root `package.json` scripts
@@ -302,6 +338,7 @@ To start development, follow the dependency hierarchy:
 4. **Start services** after dependencies are built
 
 ### Development Commands
+
 The monorepo provides scripts at multiple levels:
 
 - **Root Level**: Check root `package.json` for monorepo-wide operations
@@ -313,6 +350,7 @@ Use pnpm workspace filtering (`--filter`) to target specific packages or service
 ## 🧪 Testing Strategy
 
 ### Testing Framework Distribution
+
 - **Shared Configuration**: Jest configs in `@ermnvldmr/jest-config`
 - **Package Testing**: Each package has its own test suite
 - **Service Testing**: Services test their specific functionality
@@ -320,6 +358,7 @@ Use pnpm workspace filtering (`--filter`) to target specific packages or service
 - **Storybook Testing**: Visual regression and interaction testing
 
 ### Test Organization
+
 ```typescript
 // Package-level testing (packages/stl/src/functions/cn/cn.test.ts)
 describe('cn function', () => {
@@ -338,10 +377,11 @@ describe('components/paper/Button/Button', () => {
 ```
 
 ### Coverage Strategy
+
 - **Package Coverage**: Individual coverage reports per package
 - **Service Coverage**: Service-specific coverage including Storybook tests
 - **Aggregated Coverage**: Combined reporting for the entire monorepo
 
 ---
 
-*This guide serves as the architectural foundation for the monorepo. Focus on these stable patterns and structures rather than specific implementation details that may change over time.*
+_This guide serves as the architectural foundation for the monorepo. Focus on these stable patterns and structures rather than specific implementation details that may change over time._

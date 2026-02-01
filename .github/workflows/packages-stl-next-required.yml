@@ -3,7 +3,7 @@ name: packages/stl - next/required
 on:
   push:
     branches: [next]
-    paths: 
+    paths:
       - 'packages/stl/**'
       - 'pnpm-lock.yaml'
 

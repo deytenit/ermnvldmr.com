@@ -6,7 +6,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 /**
  * A flexible layout component that arranges children using CSS Flexbox.
- * 
+ *
  * The Stack component provides a consistent, type-safe way to create flexible layouts
  * with proper spacing and alignment. It supports all major flexbox properties
  * through semantic prop names that map to Tailwind CSS utility classes.
@@ -18,7 +18,8 @@ const meta: Meta<typeof Stack> = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'A flexible layout component using CSS Flexbox for consistent spacing and alignment.',
+        component:
+          'A flexible layout component using CSS Flexbox for consistent spacing and alignment.',
       },
     },
   },
@@ -34,7 +35,7 @@ const meta: Meta<typeof Stack> = {
       description: 'Main axis alignment',
     },
     align: {
-      control: 'select', 
+      control: 'select',
       options: ['start', 'end', 'center', 'baseline', 'stretch'],
       description: 'Cross axis alignment',
     },
@@ -48,6 +49,10 @@ const meta: Meta<typeof Stack> = {
       options: [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6, 7, 8, 9, 10, 12, 16, 20, 24],
       description: 'Spacing between items',
     },
+    scrollable: {
+      control: 'boolean',
+      description: 'Enable scrolling on the main axis',
+    },
   },
   args: {
     direction: 'row',
@@ -55,6 +60,7 @@ const meta: Meta<typeof Stack> = {
     align: 'start',
     wrap: 'nowrap',
     gap: 4,
+    scrollable: false,
   },
 };
 
@@ -65,8 +71,16 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Sample content components for demonstrations
-const SampleBox = ({ children, color = 'bg-primary' }: { children: React.ReactNode; color?: string }): React.JSX.Element => (
-  <div className={`${color} text-primary-foreground px-4 py-2 rounded text-sm font-medium min-w-16 text-center`}>
+const SampleBox = ({
+  children,
+  color = 'bg-primary',
+}: {
+  children: React.ReactNode;
+  color?: string;
+}): React.JSX.Element => (
+  <div
+    className={`${color} text-primary-foreground px-4 py-2 rounded text-sm font-medium min-w-16 text-center`}
+  >
     {children}
   </div>
 );
@@ -179,7 +193,7 @@ export const Reversed: Story = {
           <SampleBox color="bg-accent">3</SampleBox>
         </Stack>
       </div>
-      
+
       <div>
         <h3 className="text-sm font-semibold mb-2">Column Reverse</h3>
         <Stack direction="col-reverse" gap={3}>
@@ -206,7 +220,7 @@ export const GapSizes: Story = {
           <SampleBox color="bg-accent">C</SampleBox>
         </Stack>
       </div>
-      
+
       <div>
         <h3 className="text-sm font-semibold mb-2">Gap: 1.5 (Decimal)</h3>
         <Stack gap={1.5}>
@@ -215,7 +229,7 @@ export const GapSizes: Story = {
           <SampleBox color="bg-accent">C</SampleBox>
         </Stack>
       </div>
-      
+
       <div>
         <h3 className="text-sm font-semibold mb-2">Gap: 2.5 (Decimal)</h3>
         <Stack gap={2.5}>
@@ -224,7 +238,7 @@ export const GapSizes: Story = {
           <SampleBox color="bg-accent">C</SampleBox>
         </Stack>
       </div>
-      
+
       <div>
         <h3 className="text-sm font-semibold mb-2">Gap: 3.5 (Decimal)</h3>
         <Stack gap={3.5}>
@@ -233,7 +247,7 @@ export const GapSizes: Story = {
           <SampleBox color="bg-accent">C</SampleBox>
         </Stack>
       </div>
-      
+
       <div>
         <h3 className="text-sm font-semibold mb-2">Gap: 4 (Integer)</h3>
         <Stack gap={4}>
@@ -242,7 +256,7 @@ export const GapSizes: Story = {
           <SampleBox color="bg-accent">C</SampleBox>
         </Stack>
       </div>
-      
+
       <div>
         <h3 className="text-sm font-semibold mb-2">Gap: 8 (Large)</h3>
         <Stack gap={8}>
@@ -266,23 +280,27 @@ export const AlignmentVariations: Story = {
         <div className="h-20 border-2 border-dashed border-border">
           <Stack align="start" className="h-full" gap={2}>
             <SampleBox>Short</SampleBox>
-            <div className="bg-secondary text-secondary-foreground px-4 py-6 rounded text-sm">Tall</div>
+            <div className="bg-secondary text-secondary-foreground px-4 py-6 rounded text-sm">
+              Tall
+            </div>
             <SampleBox>Short</SampleBox>
           </Stack>
         </div>
       </div>
-      
+
       <div>
         <h3 className="text-sm font-semibold mb-2">Align: Center</h3>
         <div className="h-20 border-2 border-dashed border-border">
           <Stack align="center" className="h-full" gap={2}>
             <SampleBox>Short</SampleBox>
-            <div className="bg-secondary text-secondary-foreground px-4 py-6 rounded text-sm">Tall</div>
+            <div className="bg-secondary text-secondary-foreground px-4 py-6 rounded text-sm">
+              Tall
+            </div>
             <SampleBox>Short</SampleBox>
           </Stack>
         </div>
       </div>
-      
+
       <div>
         <h3 className="text-sm font-semibold mb-2">Align: Stretch</h3>
         <div className="h-20 border-2 border-dashed border-border">
@@ -298,15 +316,47 @@ export const AlignmentVariations: Story = {
 };
 
 /**
+ * Scrollable stack when content overflows.
+ */
+export const Scrollable: Story = {
+  render: () => (
+    <div className="space-y-8">
+      <div>
+        <h3 className="text-sm font-semibold mb-2">Horizontal Scroll</h3>
+        <div className="w-80 border-2 border-dashed border-border p-2">
+          <Stack scrollable direction="row" gap={4}>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <SampleBox key={`SampleBox_${String(i)}`}>Item {i + 1}</SampleBox>
+            ))}
+          </Stack>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-semibold mb-2">Vertical Scroll</h3>
+        <div className="h-40 w-40 border-2 border-dashed border-border p-2">
+          <Stack scrollable className="h-full" direction="col" gap={4}>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <SampleBox key={`SampleBox_${String(i)}`}>Item {i + 1}</SampleBox>
+            ))}
+          </Stack>
+        </div>
+      </div>
+    </div>
+  ),
+};
+
+/**
  * Interactive playground for experimenting with all Stack properties.
  */
 export const Playground: Story = {
   args: {
     direction: 'row',
     justify: 'start',
-    align: 'center', 
+    align: 'center',
     wrap: 'nowrap',
     gap: 4,
+    scrollable: false,
   },
   render: (args) => (
     <div className="w-96 h-64 border-2 border-dashed border-border p-4">

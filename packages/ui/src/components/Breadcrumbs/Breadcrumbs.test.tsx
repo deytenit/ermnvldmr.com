@@ -1,10 +1,10 @@
 import React from 'react';
 
 import { Breadcrumbs } from './Breadcrumbs';
-import { render, screen } from '../../../test-utils';
+import { render, screen } from '../../test-utils';
 import { Link } from '../Link/Link';
 
-describe('components/generic/Breadcrumbs', () => {
+describe('components/Breadcrumbs', () => {
   it('renders correctly with multiple items and separators', () => {
     render(
       <Breadcrumbs>
@@ -15,7 +15,7 @@ describe('components/generic/Breadcrumbs', () => {
         <Breadcrumbs.Item>Current</Breadcrumbs.Item>
       </Breadcrumbs>
     );
-    
+
     expect(screen.getByRole('navigation')).toHaveAttribute('aria-label', 'Breadcrumb');
     expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument();
     expect(screen.getByText('/')).toBeInTheDocument();

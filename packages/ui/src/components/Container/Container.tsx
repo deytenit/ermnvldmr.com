@@ -8,12 +8,53 @@ import type { PressEvents } from 'react-aria';
 /**
  * Tailwind gap spacing scale values.
  */
-type GapScale = 0 | 0.5 | 1 | 1.5 | 2 | 2.5 | 3 | 3.5 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 14 | 16 | 20 | 24 | 28 | 32 | 36 | 40 | 44 | 48 | 52 | 56 | 60 | 64 | 72 | 80 | 96;
+type GapScale =
+  | 0
+  | 0.5
+  | 1
+  | 1.5
+  | 2
+  | 2.5
+  | 3
+  | 3.5
+  | 4
+  | 5
+  | 6
+  | 7
+  | 8
+  | 9
+  | 10
+  | 11
+  | 12
+  | 14
+  | 16
+  | 20
+  | 24
+  | 28
+  | 32
+  | 36
+  | 40
+  | 44
+  | 48
+  | 52
+  | 56
+  | 60
+  | 64
+  | 72
+  | 80
+  | 96;
 
 /**
  * Background variants for the Container.
  */
-export type ContainerBackground = 'base' | 'primary' | 'secondary' | 'tertiary' | 'error' | 'muted' | 'transparent';
+export type ContainerBackground =
+  | 'base'
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
+  | 'error'
+  | 'muted'
+  | 'transparent';
 
 /**
  * Max width constraints for the Container.
@@ -49,8 +90,8 @@ export interface ContainerProps extends ClassNameProps, TestIdProps {
 
 /**
  * A generic surface component for creating structural layouts.
- * 
- * Container provides a consistent way to handle backgrounds, padding, 
+ *
+ * Container provides a consistent way to handle backgrounds, padding,
  * borders, and width constraints while maintaining theme consistency.
  */
 export const Container = memo(function Container({

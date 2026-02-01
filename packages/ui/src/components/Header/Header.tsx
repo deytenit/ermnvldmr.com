@@ -14,18 +14,12 @@ export interface HeaderProps extends Omit<TextProps, 'as'> {
 
 /**
  * A semantic header component that wraps the Text component.
- * 
- * Header automatically maps semantic levels (h1-h6) to the appropriate 
- * typography variants in the design system, ensuring accessibility 
+ *
+ * Header automatically maps semantic levels (h1-h6) to the appropriate
+ * typography variants in the design system, ensuring accessibility
  * and visual consistency.
  */
-export const Header = memo(function Header({
-  level,
-  type,
-  size,
-  children,
-  ...props
-}: HeaderProps) {
+export const Header = memo(function Header({ level, type, size, children, ...props }: HeaderProps) {
   // Default mappings from level to type and size
   const levelMapping: Record<number, { type: TextType; size: TextSize }> = {
     1: { type: 'display', size: 'l' },
@@ -48,12 +42,7 @@ export const Header = memo(function Header({
   const Tag = tags[level];
 
   return (
-    <Text
-      as={Tag}
-      size={size ?? defaultStyles.size}
-      type={type ?? defaultStyles.type}
-      {...props}
-    >
+    <Text as={Tag} size={size ?? defaultStyles.size} type={type ?? defaultStyles.type} {...props}>
       {children}
     </Text>
   );

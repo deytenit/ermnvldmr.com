@@ -2,7 +2,7 @@ import React from 'react';
 
 /**
  * A type-safe version of React.memo that preserves generic types.
- * 
+ *
  * @param component - The component to memoize
  * @returns The memoized component
  * @example

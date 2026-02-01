@@ -29,10 +29,7 @@ export const baseConfig = tseslint.config(
   // TypeScript - Strict Configuration (only for .ts/.tsx files)
   {
     files: ['**/*.{ts,tsx,mts,cts}'],
-    extends: [
-      ...tseslint.configs.recommendedTypeChecked,
-      ...tseslint.configs.stylisticTypeChecked,
-    ],
+    extends: [...tseslint.configs.recommendedTypeChecked, ...tseslint.configs.stylisticTypeChecked],
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -81,14 +78,7 @@ export const baseConfig = tseslint.config(
       'import/order': [
         'error',
         {
-          groups: [
-            'builtin',
-            'external',
-            'internal',
-            ['parent', 'sibling'],
-            'index',
-            'type',
-          ],
+          groups: ['builtin', 'external', 'internal', ['parent', 'sibling'], 'index', 'type'],
           'newlines-between': 'always',
           alphabetize: { order: 'asc', caseInsensitive: true },
         },
@@ -129,16 +119,16 @@ export const baseConfig = tseslint.config(
     },
   },
 
-  // Test files
+  // Test files and Stories
   {
-    files: ['**/*.{test,spec}.{js,jsx,ts,tsx}', '.config/jest/**/*.{js,jsx,ts,tsx}'],
+    files: ['**/*.{test,spec,stories}.{js,jsx,ts,tsx}', '.config/jest/**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
       globals: {
         ...globals.jest,
       },
     },
     rules: {
-      // Relax rules for test files and jest configuration
+      // Relax rules for test files, stories and jest configuration
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
@@ -146,7 +136,19 @@ export const baseConfig = tseslint.config(
       '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/consistent-type-assertions': 'off',
+
+      // Disable all JSDoc rules
       'jsdoc/require-jsdoc': 'off',
+      'jsdoc/require-description': 'off',
+      'jsdoc/require-param': 'off',
+      'jsdoc/require-returns': 'off',
+      'jsdoc/require-example': 'off',
+      'jsdoc/check-alignment': 'off',
+      'jsdoc/check-indentation': 'off',
+      'jsdoc/check-syntax': 'off',
+      'jsdoc/check-tag-names': 'off',
+      'jsdoc/check-types': 'off',
+      'jsdoc/valid-types': 'off',
     },
   },
 

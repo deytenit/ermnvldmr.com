@@ -1,7 +1,7 @@
 {
   "include": ["packages/**/*", "services/**/*"],
   "exclude": [
-    "dist", 
+    "dist",
     "coverage",
     "node_modules",
     "**/dist",

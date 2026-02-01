@@ -16,12 +16,22 @@ export type TextSize = 's' | 'm' | 'l';
 /**
  * Text color variants.
  */
-export type TextColor = 'default' | 'primary' | 'secondary' | 'tertiary' | 'error' | 'muted' | 'inherit';
+export type TextColor =
+  | 'default'
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
+  | 'error'
+  | 'muted'
+  | 'inherit';
 
 /**
  * Props for the Text component.
  */
-export interface TextProps extends ClassNameProps, TestIdProps, Omit<React.HTMLAttributes<HTMLElement>, 'as'> {
+export interface TextProps
+  extends ClassNameProps,
+    TestIdProps,
+    Omit<React.HTMLAttributes<HTMLElement>, 'as'> {
   /** Content to be rendered */
   children: React.ReactNode;
   /** Typography style type */
@@ -42,29 +52,43 @@ export interface TextProps extends ClassNameProps, TestIdProps, Omit<React.HTMLA
   as?: React.ElementType;
   /** Optional href for links */
   href?: string;
+  /** Text alignment */
+  align?: 'left' | 'center' | 'right' | 'justify';
+  /** Text wrapping behavior */
+  wrap?: 'nowrap' | 'balance' | 'pretty';
+  /** Overflow behavior for single lines */
+  overflow?: 'ellipsis' | 'clip';
+  /** Maximum number of lines to show (truncates with ellipsis) */
+  maxLines?: number;
 }
 
 /**
  * A flexible typography component that implements the design system's type scale.
- * 
- * Text centralizes all typography rules, including font families, sizes, 
+ *
+ * Text centralizes all typography rules, including font families, sizes,
  * line heights, and letter spacing, reducing the need for custom CSS.
  */
-const TextComponent = forwardRef<HTMLElement, TextProps>(function Text({
-  children,
-  type = 'body',
-  size = 'm',
-  color = 'default',
-  bold = false,
-  italic = false,
-  underline = false,
-  strike = false,
-  as: Component = 'span',
-  className,
-  'data-testid': testId,
-  ...props
-}, ref) {
-  
+const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
+  {
+    children,
+    type = 'body',
+    size = 'm',
+    color = 'default',
+    bold = false,
+    italic = false,
+    underline = false,
+    strike = false,
+    align,
+    wrap,
+    overflow,
+    maxLines,
+    as: Component = 'span',
+    className,
+    'data-testid': testId,
+    ...props
+  },
+  ref
+) {
   // Base typography styles mapping
   const typeStyles: Record<TextType, Record<TextSize, string>> = {
     display: {
@@ -104,6 +128,27 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text({
     inherit: 'text-inherit',
   };
 
+  const alignClasses = {
+    left: 'text-left',
+    center: 'text-center',
+    right: 'text-right',
+    justify: 'text-justify',
+  };
+
+  const wrapClasses = {
+    nowrap: 'whitespace-nowrap',
+    balance: 'text-balance',
+    pretty: 'text-pretty',
+  };
+
+  let truncationClass = '';
+  if (maxLines) {
+    truncationClass = `line-clamp-${maxLines}`;
+  } else {
+    if (overflow === 'ellipsis') truncationClass = 'truncate';
+    if (overflow === 'clip') truncationClass = 'overflow-clip';
+  }
+
   return (
     <Component
       {...props}
@@ -115,6 +160,9 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text({
         italic && 'italic',
         underline && 'underline',
         strike && 'line-through',
+        align && alignClasses[align],
+        wrap && wrapClasses[wrap],
+        truncationClass,
         className
       )}
       data-testid={testId}

@@ -15,11 +15,11 @@ export interface HStackProps extends Omit<StackProps, 'direction'> {
 
 /**
  * A horizontal stack layout component that arranges children in a row using CSS Flexbox.
- * 
+ *
  * This is a specialized version of the Stack component with a fixed horizontal direction.
  * It provides a convenient, semantic way to create horizontal layouts without needing
  * to specify direction="row" every time.
- * 
+ *
  * @example
  * ```tsx
  * // Simple horizontal stack
@@ -28,7 +28,7 @@ export interface HStackProps extends Omit<StackProps, 'direction'> {
  *   <button>Second</button>
  *   <button>Third</button>
  * </HStack>
- * 
+ *
  * // Centered horizontal stack with space between
  * <HStack align="center" justify="between">
  *   <div>Logo</div>
@@ -37,6 +37,8 @@ export interface HStackProps extends Omit<StackProps, 'direction'> {
  * </HStack>
  * ```
  */
-export const HStack = memo(forwardRef<HTMLElement, HStackProps>(function HStack(props, ref) {
-  return <Stack direction="row" {...props} ref={ref} />;
-}));
+export const HStack = memo(
+  forwardRef<HTMLElement, HStackProps>(function HStack(props, ref) {
+    return <Stack direction="row" {...props} ref={ref} />;
+  })
+);

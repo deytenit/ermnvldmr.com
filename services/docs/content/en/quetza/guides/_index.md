@@ -3,7 +3,6 @@ title: Guides
 weight: 2
 ---
 
-
 **Quetza** guides provide step-by-step instructions for common tasks and workflows. These documents focus on practical application of the framework's concepts.
 
 ## Core Workflows
@@ -17,6 +16,6 @@ The development and operation of Quetza bots revolve around three primary workfl
 ## Available Guides
 
 {{% cards %}}
-  {{< card link="module-development" title="Module Development" icon="code" subtitle="Step-by-step guide to creating your first module." >}}
-  {{< card link="deployment" title="Deployment & Operations" icon="server" subtitle="Deploying Quetza with Docker or from source." >}}
+{{< card link="module-development" title="Module Development" icon="code" subtitle="Step-by-step guide to creating your first module." >}}
+{{< card link="deployment" title="Deployment & Operations" icon="server" subtitle="Deploying Quetza with Docker or from source." >}}
 {{% /cards %}}

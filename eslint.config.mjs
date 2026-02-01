@@ -16,6 +16,13 @@ export default tseslint.config(
   {
     ignores: [
       'services/docs/**/*', // Hugo content, no linting needed
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/build/**',
+      '**/coverage/**',
+      '**/storybook-static/**',
+      '**/.next/**',
+      '**/.astro/**',
     ],
   },
 

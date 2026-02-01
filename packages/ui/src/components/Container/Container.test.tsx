@@ -2,14 +2,14 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 
 import { Container } from './Container';
-import { render, screen } from '../../../test-utils';
+import { render, screen } from '../../test-utils';
 
-describe('components/generic/Container', () => {
+describe('components/Container', () => {
   it('handles onPress event', async () => {
     const user = userEvent.setup();
     const handlePress = jest.fn();
     render(<Container onPress={handlePress}>Content</Container>);
-    
+
     const container = screen.getByText('Content');
     await user.click(container);
     expect(handlePress).toHaveBeenCalledTimes(1);

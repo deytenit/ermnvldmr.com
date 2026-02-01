@@ -19,10 +19,10 @@ describe('shared/helpers/cn/cn', () => {
     // Test with actual conditional values (simulating real usage)
     const activeCondition = Math.random() > -1; // Always true but not constant
     const inactiveCondition = Math.random() < -1; // Always false but not constant
-    
+
     expect(cn('p-4', activeCondition && 'bg-red-500')).toBe('p-4 bg-red-500');
     expect(cn('p-4', inactiveCondition && 'bg-red-500')).toBe('p-4');
-    
+
     // Test null and undefined conditions
     const nullCondition: string | null = null;
     const undefinedCondition: string | undefined = undefined;
@@ -36,7 +36,9 @@ describe('shared/helpers/cn/cn', () => {
   });
 
   it('handles array inputs', () => {
-    expect(cn(['flex', 'items-center'], 'justify-between')).toBe('flex items-center justify-between');
+    expect(cn(['flex', 'items-center'], 'justify-between')).toBe(
+      'flex items-center justify-between'
+    );
     expect(cn(['p-4', null, 'bg-red-500'])).toBe('p-4 bg-red-500');
   });
 
@@ -50,11 +52,11 @@ describe('shared/helpers/cn/cn', () => {
     const getIsActive = (): boolean => true;
     const getPrimaryVariant = (): 'primary' | 'secondary' => 'primary';
     const getSecondaryVariant = (): 'primary' | 'secondary' => 'secondary';
-    
+
     const isActive = getIsActive();
     const primaryVariant = getPrimaryVariant();
     const secondaryVariant = getSecondaryVariant();
-    
+
     // Test primary variant
     expect(
       cn(
@@ -84,12 +86,8 @@ describe('shared/helpers/cn/cn', () => {
   });
 
   it('properly handles spacing and responsive classes', () => {
-    expect(
-      cn('p-2 p-4', 'sm:p-6', 'md:p-8')
-    ).toBe('p-4 sm:p-6 md:p-8');
-    
-    expect(
-      cn('m-2', 'mx-4', 'ml-6')
-    ).toBe('m-2 mx-4 ml-6');
+    expect(cn('p-2 p-4', 'sm:p-6', 'md:p-8')).toBe('p-4 sm:p-6 md:p-8');
+
+    expect(cn('m-2', 'mx-4', 'ml-6')).toBe('m-2 mx-4 ml-6');
   });
 });

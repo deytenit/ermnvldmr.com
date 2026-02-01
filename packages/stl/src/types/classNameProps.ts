@@ -1,6 +1,6 @@
 /**
  * Props interface for components that accept a className prop.
- * 
+ *
  * @example
  * ```typescript
  * interface ButtonProps extends ClassNameProps {

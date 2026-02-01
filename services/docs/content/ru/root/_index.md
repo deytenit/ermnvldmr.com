@@ -1,6 +1,6 @@
 ---
-title: "root.ermnvldmr.com"
-description: "Документация к инфраструктуре root.ermnvldmr.com"
+title: 'root.ermnvldmr.com'
+description: 'Документация к инфраструктуре root.ermnvldmr.com'
 type: docs
 ---
 
@@ -9,4 +9,4 @@ type: docs
 ## Разделы
 
 - **[Рецепты](recipes/)** -- Пошаговые инструкции,
-которые мне не хочется изобретать каждый раз снова.
+  которые мне не хочется изобретать каждый раз снова.

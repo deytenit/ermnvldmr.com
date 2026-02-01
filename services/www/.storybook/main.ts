@@ -4,9 +4,7 @@ import { mergeConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 
 const config: StorybookConfig = {
-  stories: [
-    '../src/**/*.stories.@(js|jsx|ts|tsx|mdx)'
-  ],
+  stories: ['../src/**/*.stories.@(js|jsx|ts|tsx|mdx)'],
   addons: [
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',

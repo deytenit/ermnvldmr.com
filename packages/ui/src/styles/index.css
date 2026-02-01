@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Fira+Code:wght@300..700&display=swap');
 
 @import 'tailwindcss';
 @import 'tw-animate-css';
@@ -8,6 +8,7 @@
 @theme {
   --font-sans: 'Lato', sans-serif;
   --font-serif: 'EB Garamond', serif;
+  --font-mono: 'Fira Code', monospace;
 }
 
 @theme {
@@ -174,6 +175,39 @@
 
 @layer base {
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--rb-base);
+    color: var(--rb-text);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@layer utilities {
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--rb-color-neutral-100) 25%,
+      var(--rb-color-neutral-200) 50%,
+      var(--rb-color-neutral-100) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite linear;
+  }
+
+  .dark .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--rb-color-neutral-800) 25%,
+      var(--rb-color-neutral-700) 50%,
+      var(--rb-color-neutral-800) 75%
+    );
+    background-size: 200% 100%;
   }
 }

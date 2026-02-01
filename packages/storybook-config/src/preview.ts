@@ -3,11 +3,11 @@ import type { Preview } from '@storybook/react';
 
 /**
  * Base preview configuration for theme support.
- * 
+ *
  * @example
  * ```typescript
  * import { basePreviewConfig } from '@ermnvldmr/storybook-config/preview';
- * 
+ *
  * export default {
  *   ...basePreviewConfig,
  *   // additional overrides
