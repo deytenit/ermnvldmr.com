@@ -26,7 +26,9 @@ type Story = StoryObj<typeof Code>;
 // Helper to simulate highlighted lines
 const MockHighlightedCode = () => (
   <>
-    <span className="block text-[var(--rb-primary-text)]">import React from &apos;react&apos;;</span>
+    <span className="block text-[var(--rb-primary-text)]">
+      import React from &apos;react&apos;;
+    </span>
     <span className="block text-[var(--rb-text)]"> </span>
     <span className="block text-[var(--rb-secondary-text)]">
       export const MyComponent = () =&gt; &#123;

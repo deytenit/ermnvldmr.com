@@ -117,8 +117,10 @@ export const LoadingState: Story = {
     <div className="flex flex-col gap-2">
       <span className="text-sm font-medium">Simulated Loading (Using Stub)</span>
       <Image alt="Loading" ratio="16/9" src="https://invalid-url.jpg" width="300px" />
-            <p className="text-xs text-neutral-500">Note: This will stay in &quot;loading&quot; then &quot;error&quot; state because URL is invalid.</p>
-      
+      <p className="text-xs text-neutral-500">
+        Note: This will stay in &quot;loading&quot; then &quot;error&quot; state because URL is
+        invalid.
+      </p>
     </div>
   ),
 };

@@ -15,6 +15,8 @@ export * from './Blockquote';
 export * from './Stub/Stub';
 export * from './Image/Image';
 
+export * from './Table';
+
 export type { StackProps } from './Stack/Stack';
 export type { ListProps, ListVariant, ListSpacing, ListItemProps } from './List/List';
 export type {
@@ -31,3 +33,14 @@ export type { CodeProps } from './Code/Code';
 export type { BlockquoteProps, BlockquoteCitationProps } from './Blockquote';
 export type { StubProps } from './Stub/Stub';
 export type { ImageProps } from './Image/Image';
+export type {
+  TableProps,
+  TableDensity,
+  TableVariant,
+  TablePadding,
+  TableRowProps,
+  TableHeadProps,
+  TableCellProps,
+  TableCellBorder,
+  TableContentProps as TableContentCellProps,
+} from './Table';
