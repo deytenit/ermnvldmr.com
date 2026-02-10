@@ -86,6 +86,8 @@ export interface ContainerProps extends ClassNameProps, TestIdProps {
   border?: boolean;
   /** Press interaction handler */
   onPress?: PressEvents['onPress'];
+  /** The HTML element to use for rendering */
+  as?: React.ElementType;
 }
 
 /**
@@ -103,10 +105,11 @@ export const Container = memo(function Container({
   shadow = false,
   border = false,
   onPress,
+  as: Component = 'div',
   className,
   'data-testid': testId,
 }: ContainerProps) {
-  const ref = React.useRef<HTMLDivElement>(null);
+  const ref = React.useRef<HTMLElement>(null);
   const { pressProps } = usePress({
     onPress,
     isDisabled: !onPress,
@@ -176,7 +179,7 @@ export const Container = memo(function Container({
   };
 
   return (
-    <div
+    <Component
       {...pressProps}
       ref={ref}
       className={cn(
@@ -193,6 +196,6 @@ export const Container = memo(function Container({
       data-testid={testId}
     >
       {children}
-    </div>
+    </Component>
   );
 });

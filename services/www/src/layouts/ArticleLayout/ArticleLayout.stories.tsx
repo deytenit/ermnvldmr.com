@@ -1,3 +1,5 @@
+import { Header, Paragraph, List, Blockquote, Code, CodeBlock, Container, Text } from '@ermnvldmr/ui';
+
 import { ArticleLayout } from './ArticleLayout';
 
 import type { Meta, StoryObj } from '@storybook/react';
@@ -21,34 +23,36 @@ const meta: Meta<typeof ArticleLayout> = {
 export default meta;
 
 /**
- *
+ * 
  */
 type Story = StoryObj<typeof ArticleLayout>;
 
 /**
- * Default story showcasing various HTML elements to verify typography.
+ * Default story showcasing various UI components to verify typography in layout.
  */
 export const Default: Story = {
   render: (args) => (
     <ArticleLayout {...args}>
-      <h2>Introduction</h2>
-      <p>
+      <Header level={2}>Introduction</Header>
+      <Paragraph>
         Astro 5 introduces the Content Layer API, a powerful way to fetch content from any source,
         including local files, remote APIs, and CMSs. In this article, we&apos;ll explore how to set
         up a robust system for articles and projects.
-      </p>
+      </Paragraph>
 
-      <blockquote>
-        &quot;The best way to manage content is to not manage it at all.&quot; — Someone, probably.
-      </blockquote>
+      <Blockquote>
+        The best way to manage content is to not manage it at all.
+        <Blockquote.Citation>Someone, probably</Blockquote.Citation>
+      </Blockquote>
 
-      <p>
-        Let&apos;s look at some code. Our new <code>content.config.ts</code> uses the{' '}
-        <code>glob</code> loader to pull in MDX files from outside the <code>src</code> directory:
-      </p>
+      <Paragraph>
+        Let&apos;s look at some code. Our new <Code>content.config.ts</Code> uses the{' '}
+        <Code>glob</Code> loader to pull in MDX files from outside the <Code>src</Code> directory:
+      </Paragraph>
 
-      <pre>
-        <code>{`// services/www/src/content.config.ts
+      <CodeBlock label="content.config.ts">
+        <Code>
+          {`// services/www/src/content.config.ts
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
@@ -63,37 +67,39 @@ const articles = defineCollection({
   }),
 });
 
-export const collections = { articles };`}</code>
-      </pre>
+export const collections = { articles };`}
+        </Code>
+      </CodeBlock>
 
-      <h3>Why Astro 5?</h3>
-      <p>
+      <Header level={3}>Why Astro 5?</Header>
+      <Paragraph>
         Astro&apos;s zero-JS by default approach is perfect for content-heavy sites. By moving our
-        content outside of the <code>src</code> directory, we keep our project clean and organized.
-      </p>
+        content outside of the <Code>src</Code> directory, we keep our project clean and organized.
+      </Paragraph>
 
-      <ul>
-        <li>
-          <strong>Better performance:</strong> Only what you need is shipped.
-        </li>
-        <li>
-          <strong>Improved developer experience:</strong> Fast HMR and great tooling.
-        </li>
-        <li>
-          <strong>Type safety:</strong> Zod schemas validate your frontmatter.
-        </li>
-      </ul>
+      <List spacing="s" variant="unordered">
+        <List.Item>
+          <Text bold>Better performance:</Text> Only what you need is shipped.
+        </List.Item>
+        <List.Item>
+          <Text bold>Improved developer experience:</Text> Fast HMR and great tooling.
+        </List.Item>
+        <List.Item>
+          <Text bold>Type safety:</Text> Zod schemas validate your frontmatter.
+        </List.Item>
+      </List>
 
-      <h3>Visual Media</h3>
-      <p>
+      <Header level={3}>Visual Media</Header>
+      <Paragraph>
         We can also include images and videos. The layout ensures they are responsive and fit the
         grid.
-      </p>
-      <div className="bg-muted flex aspect-video items-center justify-center rounded-lg border-2 border-dashed">
-        <span className="text-muted-foreground">Placeholder for Image/Video</span>
-      </div>
+      </Paragraph>
+      <Container border bg="muted" className="flex aspect-video items-center justify-center" rounded="lg">
+        <Text color="muted">Placeholder for Image/Video</Text>
+      </Container>
 
-      <p>Conclusion: It&apos;s a great time to be a web developer.</p>
+      <Paragraph>Conclusion: It&apos;s a great time to be a web developer.</Paragraph>
     </ArticleLayout>
   ),
 };
+

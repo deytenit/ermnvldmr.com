@@ -15,6 +15,8 @@ export interface LinkProps extends AriaLinkOptions, ClassNameProps {
   href?: string;
   /** Link content */
   children: React.ReactNode;
+  /** Whether the link is external (opens in new tab) */
+  isExternal?: boolean;
 }
 
 /**
@@ -24,7 +26,7 @@ export interface LinkProps extends AriaLinkOptions, ClassNameProps {
  * It uses standard design system colors (--rb-ring) and provides responsive hover/focus states.
  */
 export const Link = memo(function Link(props: LinkProps) {
-  const { children, className, href, ...otherProps } = props;
+  const { children, className, href, isExternal, ...otherProps } = props;
 
   // We use a specific ref type that useLink expects.
   // Since Link can be an 'a' or a 'span', we use HTMLElement as common denominator.
@@ -38,8 +40,20 @@ export const Link = memo(function Link(props: LinkProps) {
   );
 
   if (href) {
+    const isAutoExternal = isExternal ?? href.startsWith('http');
+    const externalProps = isAutoExternal
+      ? { target: '_blank', rel: 'noopener noreferrer' }
+      : {};
+
     return (
-      <Text {...linkProps} ref={ref} as="a" className={sharedClasses} href={href}>
+      <Text
+        {...linkProps}
+        {...externalProps}
+        ref={ref}
+        as="a"
+        className={sharedClasses}
+        href={href}
+      >
         {children}
       </Text>
     );

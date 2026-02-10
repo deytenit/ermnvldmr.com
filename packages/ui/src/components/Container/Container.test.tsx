@@ -25,4 +25,15 @@ describe('components/Container', () => {
     expect(container).toHaveClass('cursor-pointer');
     expect(container).toHaveClass('active:opacity-80');
   });
+
+  it('renders as different HTML elements using the "as" prop', () => {
+    const { rerender } = render(<Container as="main">Main Content</Container>);
+    expect(screen.getByText('Main Content').tagName).toBe('MAIN');
+
+    rerender(<Container as="article">Article Content</Container>);
+    expect(screen.getByText('Article Content').tagName).toBe('ARTICLE');
+
+    rerender(<Container as="section">Section Content</Container>);
+    expect(screen.getByText('Section Content').tagName).toBe('SECTION');
+  });
 });

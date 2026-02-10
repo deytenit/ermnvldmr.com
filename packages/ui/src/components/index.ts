@@ -14,6 +14,7 @@ export * from './Code';
 export * from './Blockquote';
 export * from './Stub/Stub';
 export * from './Image/Image';
+export * from './Time/Time';
 
 export * from './Table';
 
@@ -33,6 +34,7 @@ export type { CodeProps, CodeBlockProps } from './Code';
 export type { BlockquoteProps, BlockquoteCitationProps } from './Blockquote';
 export type { StubProps } from './Stub/Stub';
 export type { ImageProps } from './Image/Image';
+export type { TimeProps } from './Time/Time';
 export type {
   TableProps,
   TableDensity,

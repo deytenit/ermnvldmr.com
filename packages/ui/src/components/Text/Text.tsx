@@ -31,7 +31,7 @@ export type TextColor =
 export interface TextProps
   extends ClassNameProps,
     TestIdProps,
-    Omit<React.HTMLAttributes<HTMLElement>, 'as'> {
+    Omit<React.AllHTMLAttributes<HTMLElement>, 'as' | 'type' | 'size' | 'color'> {
   /** Content to be rendered */
   children: React.ReactNode;
   /** Typography style type */

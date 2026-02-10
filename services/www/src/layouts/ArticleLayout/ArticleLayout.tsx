@@ -1,5 +1,5 @@
 import { cn } from '@ermnvldmr/stl';
-import { VStack, HStack, Markdown } from '@ermnvldmr/ui';
+import { VStack, HStack, Markdown, Container, Time, Header, Paragraph, Text } from '@ermnvldmr/ui';
 import React from 'react';
 
 /**
@@ -56,51 +56,49 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
   children,
   className,
 }) => {
-  const formattedDate = createdDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-
-  const displayDate = updatedDate
-    ? `Updated ${updatedDate.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })}`
-    : formattedDate;
+  const displayDate = updatedDate ? (
+    <Text color="muted" size="s" type="label">
+      Updated <Time date={updatedDate} />
+    </Text>
+  ) : (
+    <Time color="muted" date={createdDate} size="s" type="label" />
+  );
 
   return (
-    <article className={cn('mx-auto max-w-3xl px-6 py-12 md:py-20', className)}>
-      <header className="pb-12">
-        <VStack gap={4}>
-          <HStack className="text-muted-foreground text-sm font-medium" gap={4}>
-            <time dateTime={createdDate.toISOString()}>{displayDate}</time>
-            {tags && tags.length > 0 && (
-              <HStack className="flex-wrap" gap={2}>
-                {tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="before:text-muted-foreground/50 before:mr-0.5 before:content-['#']"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </HStack>
-            )}
-          </HStack>
-
-          <h1 className="leading-tight">{title}</h1>
-
-          {description && (
-            <p className="text-muted-foreground text-l leading-relaxed italic">{description}</p>
+    <Container as="article" className={cn('mx-auto max-w-3xl px-6 py-12 md:py-20', className)}>
+      <VStack as="header" className="pb-12" gap={4}>
+        <HStack align="center" className="flex-wrap" gap={4}>
+          {displayDate}
+          {tags && tags.length > 0 && (
+            <HStack className="flex-wrap" gap={2}>
+              {tags.map((tag) => (
+                <Text
+                  key={tag}
+                  className="before:text-muted-foreground/50 before:mr-0.5 before:content-['#']"
+                  color="muted"
+                  size="s"
+                >
+                  {tag}
+                </Text>
+              ))}
+            </HStack>
           )}
-        </VStack>
-      </header>
+        </HStack>
 
-      <section className="article-content">
+        <Header className="leading-tight" level={1}>
+          {title}
+        </Header>
+
+        {description && (
+          <Paragraph italic className="leading-relaxed" color="muted" size="l">
+            {description}
+          </Paragraph>
+        )}
+      </VStack>
+
+      <Container as="section" className="article-content">
         <Markdown>{children}</Markdown>
-      </section>
-    </article>
+      </Container>
+    </Container>
   );
 };

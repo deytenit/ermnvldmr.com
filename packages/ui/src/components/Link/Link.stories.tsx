@@ -20,7 +20,22 @@ type Story = StoryObj<typeof Link>;
 export const Default: Story = {
   args: {
     href: 'https://example.com',
-    children: 'Standard Link',
+    children: 'Standard External Link',
+  },
+};
+
+export const Internal: Story = {
+  args: {
+    href: '/internal-page',
+    children: 'Internal Link',
+  },
+};
+
+export const ForcedExternal: Story = {
+  args: {
+    href: '/forced-external',
+    isExternal: true,
+    children: 'Forced External Link',
   },
 };
 

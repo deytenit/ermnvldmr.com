@@ -129,9 +129,12 @@ All packages use the `@ermnvldmr/` namespace:
 ### TypeScript Guidelines
 
 - **Strict Mode**: All TypeScript strict checks must pass
-- **Explicit Types**: Avoid `any` and prefer explicit type definitions
-- **Interface First**: Use interfaces for component props and public APIs
-- **Cross-Package Types**: Export types from packages for service consumption
+- **No 'any'**: The use of `any` is strictly prohibited. Use `unknown` if the type is truly unknown, or define proper generic constraints.
+- **No 'ts-ignore' or 'ts-expect-error'**: Never suppress compiler errors. If a third-party library has missing types, provide a local declaration file (.d.ts) instead.
+- **No Unsafe Assertions**: Avoid `as any` or `as T` assertions. Prefer type guards, `instanceof` checks, or proper schema validation (e.g., Zod) to narrow types.
+- **Explicit Types**: Avoid type inference for public APIs; prefer explicit type definitions for exports.
+- **Interface First**: Use interfaces for component props and public APIs.
+- **Cross-Package Types**: Export types from packages for service consumption.
 
 ### TSDoc Documentation Requirements
 

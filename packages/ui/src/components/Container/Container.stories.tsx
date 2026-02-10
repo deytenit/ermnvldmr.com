@@ -176,3 +176,25 @@ export const Composition: Story = {
     </Container>
   ),
 };
+
+export const SemanticElements: Story = {
+  render: () => (
+    <VStack gap={4}>
+      <Container border as="main" bg="base" padding={4} rounded="md">
+        Rendered as &lt;main&gt;
+      </Container>
+      <Container border as="article" bg="base" padding={4} rounded="md">
+        Rendered as &lt;article&gt;
+      </Container>
+      <Container border as="section" bg="base" padding={4} rounded="md">
+        Rendered as &lt;section&gt;
+      </Container>
+      <Container border as="header" bg="base" padding={4} rounded="md">
+        Rendered as &lt;header&gt;
+      </Container>
+      <Container border as="footer" bg="base" padding={4} rounded="md">
+        Rendered as &lt;footer&gt;
+      </Container>
+    </VStack>
+  ),
+};
