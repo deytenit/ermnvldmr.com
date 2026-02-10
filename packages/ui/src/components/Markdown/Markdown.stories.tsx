@@ -1,265 +1,163 @@
-import { Markdown } from './Markdown';
-
 import type { Meta, StoryObj } from '@storybook/react';
+import React from 'react';
 
-/**
- * Metadata for the Markdown component stories.
- */
+import { Markdown, MARKDOWN_COMPONENTS } from './Markdown';
+
 const meta: Meta<typeof Markdown> = {
-  title: 'components/Markdown',
+  title: 'Components/Markdown',
   component: Markdown,
-  tags: ['autodocs'],
+  parameters: {
+    layout: 'padded',
+  },
 };
 
 export default meta;
-
-/**
- * Type definition for Markdown component stories.
- */
 type Story = StoryObj<typeof Markdown>;
 
 /**
- * Default story showcasing various HTML elements to verify typography.
- */
-export const Default: Story = {
-  args: {
-    children: (
-      <>
-        <p>
-          This is a <strong>Markdown</strong> component that uses Tailwind CSS Typography (prose) to
-          render content with consistent styling.
-        </p>
-        <p>
-          It is designed to be used with rendered HTML from markdown processors, but works with any
-          HTML content that needs standard document styling.
-        </p>
-      </>
-    ),
-  },
-};
-
-/**
- * Showcasing all heading levels.
- */
-export const Typography: Story = {
-  args: {
-    children: (
-      <>
-        <h1>Heading Level 1</h1>
-        <p>Paragraph text following an H1.</p>
-        <h2>Heading Level 2</h2>
-        <p>Paragraph text following an H2.</p>
-        <h3>Heading Level 3</h3>
-        <p>Paragraph text following an H3.</p>
-        <h4>Heading Level 4</h4>
-        <p>Paragraph text following an H4.</p>
-        <h5>Heading Level 5</h5>
-        <p>Paragraph text following an H5.</p>
-        <h6>Heading Level 6</h6>
-        <p>Paragraph text following an H6.</p>
-      </>
-    ),
-  },
-};
-
-/**
- * Showcasing ordered and unordered lists.
- */
-export const Lists: Story = {
-  args: {
-    children: (
-      <>
-        <h3>Unordered List</h3>
-        <ul>
-          <li>First item</li>
-          <li>
-            Second item
-            <ul>
-              <li>Nested item A</li>
-              <li>Nested item B</li>
-            </ul>
-          </li>
-          <li>Third item</li>
-        </ul>
-
-        <h3>Ordered List</h3>
-        <ol>
-          <li>Step one</li>
-          <li>
-            Step two
-            <ol>
-              <li>Sub-step 2.1</li>
-              <li>Sub-step 2.2</li>
-            </ol>
-          </li>
-          <li>Step three</li>
-        </ol>
-      </>
-    ),
-  },
-};
-
-/**
- * Showcasing blockquotes.
- */
-export const Quotes: Story = {
-  args: {
-    children: (
-      <>
-        <p>Before the quote.</p>
-        <blockquote>
-          &quot;Design is not just what it looks like and feels like. Design is how it works.&quot;
-          <footer>— Steve Jobs</footer>
-        </blockquote>
-        <p>After the quote.</p>
-      </>
-    ),
-  },
-};
-
-/**
- * Showcasing code and pre blocks.
- */
-export const Code: Story = {
-  args: {
-    children: (
-      <>
-        <p>
-          You can use <code>inline code</code> for small snippets.
-        </p>
-        <pre>
-          <code>{`function hello() {
-  console.log("Hello, world!");
-}`}</code>
-        </pre>
-      </>
-    ),
-  },
-};
-
-/**
- * Showcasing tables.
- */
-export const Tables: Story = {
-  args: {
-    children: (
-      <table>
-        <thead>
-          <tr>
-            <th>Feature</th>
-            <th>Description</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Typography</td>
-            <td>Garamond and Lato fonts</td>
-            <td>✅ Done</td>
-          </tr>
-          <tr>
-            <td>Dark Mode</td>
-            <td>Automatic inversion</td>
-            <td>✅ Done</td>
-          </tr>
-          <tr>
-            <td>Responsive</td>
-            <td>Fluid layouts</td>
-            <td>✅ Done</td>
-          </tr>
-        </tbody>
-      </table>
-    ),
-  },
-};
-
-/**
- * The "Kitchen Sink" containing everything.
+ * A "Kitchen Sink" demonstration of all Markdown components working together
+ * as they would in a real article.
  */
 export const KitchenSink: Story = {
-  args: {
-    children: (
-      <>
-        <h1>The Art of Markdown Rendering</h1>
-        <p className="lead">
-          A lead paragraph that stands out and sets the tone for the rest of the document.
-        </p>
-        <p>
-          Markdown is a lightweight markup language with plain-text-formatting syntax. Its design
-          allows it to be converted to many output formats, but the name originally referred to the
-          tool for converting it to HTML.
-        </p>
+  render: () => (
+    <div className="max-w-[800px] mx-auto">
+      <Markdown>
+        <MARKDOWN_COMPONENTS.h1>The Art of Markdown Integration</MARKDOWN_COMPONENTS.h1>
+        <MARKDOWN_COMPONENTS.p>
+          This article demonstrates how our design system translates standard Markdown tags into
+          beautiful, accessible UI primitives. From typography to complex data tables.
+        </MARKDOWN_COMPONENTS.p>
 
-        <h2>Key Features</h2>
-        <ul>
-          <li>
-            <strong>Easy to read</strong> - The source text looks like the final output.
-          </li>
-          <li>
-            <strong>Easy to write</strong> - Minimal syntax overhead.
-          </li>
-          <li>
-            <strong>Versatile</strong> - Supports many elements like <em>italics</em>,{' '}
-            <del>strikethrough</del>, and <code>code</code>.
-          </li>
-        </ul>
+        <MARKDOWN_COMPONENTS.hr />
 
-        <h3>Example Code Block</h3>
-        <pre>
-          <code>{`import { Markdown } from '@ermnvldmr/ui';
+        <MARKDOWN_COMPONENTS.h2>Typography & Vertical Rhythm</MARKDOWN_COMPONENTS.h2>
+        <MARKDOWN_COMPONENTS.p>
+          Our typography system is built on a strict vertical rhythm. Headers use the{' '}
+          <MARKDOWN_COMPONENTS.code>Header</MARKDOWN_COMPONENTS.code> component, while paragraphs
+          leverage the <MARKDOWN_COMPONENTS.code>Paragraph</MARKDOWN_COMPONENTS.code> component with
+          pre-configured gutters.
+        </MARKDOWN_COMPONENTS.p>
 
-export const MyPage = () => (
-  <Markdown>
-    <h1>Welcome</h1>
-    <p>This is styled automatically.</p>
-  </Markdown>
-);`}</code>
-        </pre>
+        <MARKDOWN_COMPONENTS.blockquote>
+          "Design is not just what it looks like and feels like. Design is how it works."
+          <br />
+          <MARKDOWN_COMPONENTS.a href="https://en.wikipedia.org/wiki/Steve_Jobs">— Steve Jobs</MARKDOWN_COMPONENTS.a>
+        </MARKDOWN_COMPONENTS.blockquote>
 
-        <blockquote>
-          &quot;Simplicity is the ultimate sophistication.&quot;
-          <br />— Leonardo da Vinci
-        </blockquote>
+        <MARKDOWN_COMPONENTS.h3>Nesting and Lists</MARKDOWN_COMPONENTS.h3>
+        <MARKDOWN_COMPONENTS.p>
+          Lists are handled by our <MARKDOWN_COMPONENTS.code>List</MARKDOWN_COMPONENTS.code> system,
+          supporting both ordered and unordered variants:
+        </MARKDOWN_COMPONENTS.p>
 
-        <hr />
+        <MARKDOWN_COMPONENTS.ul>
+          <MARKDOWN_COMPONENTS.li>Standardization across all articles</MARKDOWN_COMPONENTS.li>
+          <MARKDOWN_COMPONENTS.li>
+            Support for nested structures:
+            <MARKDOWN_COMPONENTS.ul className="mt-2">
+              <MARKDOWN_COMPONENTS.li>Nested unordered item</MARKDOWN_COMPONENTS.li>
+              <MARKDOWN_COMPONENTS.li>Another nested item</MARKDOWN_COMPONENTS.li>
+            </MARKDOWN_COMPONENTS.ul>
+          </MARKDOWN_COMPONENTS.li>
+          <MARKDOWN_COMPONENTS.li>Consistent spacing and markers</MARKDOWN_COMPONENTS.li>
+        </MARKDOWN_COMPONENTS.ul>
 
-        <h2>Data Representation</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Language</th>
-              <th>Difficulty</th>
-              <th>Usage</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>TypeScript</td>
-              <td>Moderate</td>
-              <td>Frontend/Backend</td>
-            </tr>
-            <tr>
-              <td>Rust</td>
-              <td>High</td>
-              <td>Systems</td>
-            </tr>
-            <tr>
-              <td>Python</td>
-              <td>Low</td>
-              <td>Data Science</td>
-            </tr>
-          </tbody>
-        </table>
+        <MARKDOWN_COMPONENTS.h2>Code & Technical Content</MARKDOWN_COMPONENTS.h2>
+        <MARKDOWN_COMPONENTS.p>
+          Technical articles often require code blocks. We use{' '}
+          <MARKDOWN_COMPONENTS.code>CodeBlock</MARKDOWN_COMPONENTS.code> for multi-line snippets:
+        </MARKDOWN_COMPONENTS.p>
 
-        <h3>Media Elements</h3>
-        <p>Images should be rounded and have a nice shadow.</p>
-        <img
-          alt="Coding"
-          src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80"
+        <MARKDOWN_COMPONENTS.pre label="markdown-example.tsx">
+          <MARKDOWN_COMPONENTS.code>
+            {`export const MarkdownP = memo(function MarkdownP(props: ParagraphProps) {
+  return <Paragraph gutterBottom {...props} />;
+});`}
+          </MARKDOWN_COMPONENTS.code>
+        </MARKDOWN_COMPONENTS.pre>
+
+        <MARKDOWN_COMPONENTS.h2>Data Representation</MARKDOWN_COMPONENTS.h2>
+        <MARKDOWN_COMPONENTS.p>
+          Tables are notoriously difficult to style in Markdown. Our components ensure they stay
+          within the container and maintain readable density.
+        </MARKDOWN_COMPONENTS.p>
+
+        <MARKDOWN_COMPONENTS.table>
+          <MARKDOWN_COMPONENTS.thead>
+            <MARKDOWN_COMPONENTS.tr>
+              <MARKDOWN_COMPONENTS.th>Component</MARKDOWN_COMPONENTS.th>
+              <MARKDOWN_COMPONENTS.th>Tag</MARKDOWN_COMPONENTS.th>
+              <MARKDOWN_COMPONENTS.th>Status</MARKDOWN_COMPONENTS.th>
+            </MARKDOWN_COMPONENTS.tr>
+          </MARKDOWN_COMPONENTS.thead>
+          <MARKDOWN_COMPONENTS.tbody>
+            <MARKDOWN_COMPONENTS.tr>
+              <MARKDOWN_COMPONENTS.td>MarkdownP</MARKDOWN_COMPONENTS.td>
+              <MARKDOWN_COMPONENTS.td>
+                <MARKDOWN_COMPONENTS.code>p</MARKDOWN_COMPONENTS.code>
+              </MARKDOWN_COMPONENTS.td>
+              <MARKDOWN_COMPONENTS.td>Verified</MARKDOWN_COMPONENTS.td>
+            </MARKDOWN_COMPONENTS.tr>
+            <MARKDOWN_COMPONENTS.tr>
+              <MARKDOWN_COMPONENTS.td>MarkdownTable</MARKDOWN_COMPONENTS.td>
+              <MARKDOWN_COMPONENTS.td>
+                <MARKDOWN_COMPONENTS.code>table</MARKDOWN_COMPONENTS.code>
+              </MARKDOWN_COMPONENTS.td>
+              <MARKDOWN_COMPONENTS.td>Verified</MARKDOWN_COMPONENTS.td>
+            </MARKDOWN_COMPONENTS.tr>
+          </MARKDOWN_COMPONENTS.tbody>
+        </MARKDOWN_COMPONENTS.table>
+
+        <MARKDOWN_COMPONENTS.h2>Visual Assets</MARKDOWN_COMPONENTS.h2>
+        <MARKDOWN_COMPONENTS.img
+          alt="Atmospheric landscape"
+          ratio="16/9"
+          src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=1600"
+          width="100%"
         />
+      </Markdown>
+    </div>
+  ),
+};
 
-        <p>Conclusion: We&apos;ve built a robust system for rendering content.</p>
-      </>
-    ),
-  },
+/**
+ * Specifically showcases the header hierarchy from H1 to H6.
+ */
+export const HeaderHierarchy: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <MARKDOWN_COMPONENTS.h1>Header Level 1</MARKDOWN_COMPONENTS.h1>
+      <MARKDOWN_COMPONENTS.h2>Header Level 2</MARKDOWN_COMPONENTS.h2>
+      <MARKDOWN_COMPONENTS.h3>Header Level 3</MARKDOWN_COMPONENTS.h3>
+      <MARKDOWN_COMPONENTS.h4>Header Level 4</MARKDOWN_COMPONENTS.h4>
+      <MARKDOWN_COMPONENTS.h5>Header Level 5</MARKDOWN_COMPONENTS.h5>
+      <MARKDOWN_COMPONENTS.h6>Header Level 6</MARKDOWN_COMPONENTS.h6>
+    </div>
+  ),
+};
+
+/**
+ * Demonstrates various list types and their spacing.
+ */
+export const ListStyles: Story = {
+  render: () => (
+    <div className="flex flex-col gap-8">
+      <div>
+        <MARKDOWN_COMPONENTS.h4 className="mb-4">Unordered List</MARKDOWN_COMPONENTS.h4>
+        <MARKDOWN_COMPONENTS.ul>
+          <MARKDOWN_COMPONENTS.li>First item</MARKDOWN_COMPONENTS.li>
+          <MARKDOWN_COMPONENTS.li>Second item</MARKDOWN_COMPONENTS.li>
+          <MARKDOWN_COMPONENTS.li>Third item</MARKDOWN_COMPONENTS.li>
+        </MARKDOWN_COMPONENTS.ul>
+      </div>
+      <div>
+        <MARKDOWN_COMPONENTS.h4 className="mb-4">Ordered List</MARKDOWN_COMPONENTS.h4>
+        <MARKDOWN_COMPONENTS.ol>
+          <MARKDOWN_COMPONENTS.li>Step one: Preparation</MARKDOWN_COMPONENTS.li>
+          <MARKDOWN_COMPONENTS.li>Step two: Implementation</MARKDOWN_COMPONENTS.li>
+          <MARKDOWN_COMPONENTS.li>Step three: Verification</MARKDOWN_COMPONENTS.li>
+        </MARKDOWN_COMPONENTS.ol>
+      </div>
+    </div>
+  ),
 };

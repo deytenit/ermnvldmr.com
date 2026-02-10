@@ -1,9 +1,29 @@
 import { cn } from '@ermnvldmr/stl';
-import React from 'react';
+import React, { memo } from 'react';
 
-/**
- * Props for the Markdown component.
- */
+import { MarkdownA } from './MarkdownA/MarkdownA';
+import { MarkdownBlockquote } from './MarkdownBlockquote/MarkdownBlockquote';
+import { MarkdownCode } from './MarkdownCode/MarkdownCode';
+import { MarkdownH1 } from './MarkdownH1/MarkdownH1';
+import { MarkdownH2 } from './MarkdownH2/MarkdownH2';
+import { MarkdownH3 } from './MarkdownH3/MarkdownH3';
+import { MarkdownH4 } from './MarkdownH4/MarkdownH4';
+import { MarkdownH5 } from './MarkdownH5/MarkdownH5';
+import { MarkdownH6 } from './MarkdownH6/MarkdownH6';
+import { MarkdownHR } from './MarkdownHR/MarkdownHR';
+import { MarkdownImg } from './MarkdownImg/MarkdownImg';
+import { MarkdownLI } from './MarkdownLI/MarkdownLI';
+import { MarkdownOL } from './MarkdownOL/MarkdownOL';
+import { MarkdownP } from './MarkdownP/MarkdownP';
+import { MarkdownPre } from './MarkdownPre/MarkdownPre';
+import { MarkdownTable } from './MarkdownTable/MarkdownTable';
+import { MarkdownTBody } from './MarkdownTBody/MarkdownTBody';
+import { MarkdownTD } from './MarkdownTD/MarkdownTD';
+import { MarkdownTH } from './MarkdownTH/MarkdownTH';
+import { MarkdownTHead } from './MarkdownTHead/MarkdownTHead';
+import { MarkdownTR } from './MarkdownTR/MarkdownTR';
+import { MarkdownUL } from './MarkdownUL/MarkdownUL';
+
 /**
  * Props for the Markdown component.
  */
@@ -15,21 +35,74 @@ export interface MarkdownProps {
 }
 
 /**
+ * A map of HTML tags to Markdown components for use with MDX or Astro Content.
+ */
+export const MARKDOWN_COMPONENTS = {
+  p: MarkdownP,
+  a: MarkdownA,
+  h1: MarkdownH1,
+  h2: MarkdownH2,
+  h3: MarkdownH3,
+  h4: MarkdownH4,
+  h5: MarkdownH5,
+  h6: MarkdownH6,
+  blockquote: MarkdownBlockquote,
+  ul: MarkdownUL,
+  ol: MarkdownOL,
+  li: MarkdownLI,
+  table: MarkdownTable,
+  thead: MarkdownTHead,
+  tbody: MarkdownTBody,
+  tr: MarkdownTR,
+  th: MarkdownTH,
+  td: MarkdownTD,
+  code: MarkdownCode,
+  pre: MarkdownPre,
+  hr: MarkdownHR,
+  img: MarkdownImg,
+} as const;
+
+const MarkdownComponent = memo(function Markdown({ children, className }: MarkdownProps) {
+  return <div className={cn('flex flex-col gap-4', className)}>{children}</div>;
+});
+
+/**
  * Markdown component provides a styled container for rendered markdown content.
- * It uses the Tailwind CSS Typography plugin (prose) with custom project styles.
  *
- * @param props - The component props.
- * @param props.children
- * @param props.className
- * @returns A React element.
+ * It also exports all necessary sub-components for mapping HTML tags to design system components.
+ *
  * @example
  * ```tsx
  * <Markdown>
- *   <h1>Title</h1>
- *   <p>Content goes here.</p>
+ *   <Markdown.H1>Title</Markdown.H1>
+ *   <Markdown.P>Content goes here.</Markdown.P>
  * </Markdown>
+ *
+ * // Or with Astro:
+ * <Content components={MARKDOWN_COMPONENTS} />
  * ```
  */
-export const Markdown: React.FC<MarkdownProps> = ({ children, className }) => {
-  return <div className={cn(className)}>{children}</div>;
-};
+export const Markdown = Object.assign(MarkdownComponent, {
+  P: MarkdownP,
+  A: MarkdownA,
+  H1: MarkdownH1,
+  H2: MarkdownH2,
+  H3: MarkdownH3,
+  H4: MarkdownH4,
+  H5: MarkdownH5,
+  H6: MarkdownH6,
+  Blockquote: MarkdownBlockquote,
+  UL: MarkdownUL,
+  OL: MarkdownOL,
+  LI: MarkdownLI,
+  Table: MarkdownTable,
+  THead: MarkdownTHead,
+  TBody: MarkdownTBody,
+  TR: MarkdownTR,
+  TH: MarkdownTH,
+  TD: MarkdownTD,
+  Code: MarkdownCode,
+  Pre: MarkdownPre,
+  HR: MarkdownHR,
+  Img: MarkdownImg,
+});

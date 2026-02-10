@@ -1,4 +1,5 @@
 ---
+import { MARKDOWN_COMPONENTS } from '@ermnvldmr/ui';
 import { getCollection, render } from 'astro:content';
 
 import { ArticleLayout } from '#layouts/ArticleLayout/ArticleLayout';
@@ -30,6 +31,6 @@ const { title, description, createdDate, updatedDate, tags } = entry.data;
     updatedDate={updatedDate}
     tags={tags}
   >
-    <Content />
+    <Content components={MARKDOWN_COMPONENTS} />
   </ArticleLayout>
 </IndexLayout>
