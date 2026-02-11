@@ -5,7 +5,7 @@ import { Code } from './Code';
 import { CodeBlock } from './CodeBlock/CodeBlock';
 
 // Mock clipboard API
-const mockWriteText = jest.fn().mockImplementation(() => Promise.resolve());
+const mockWriteText = vi.fn().mockImplementation(() => Promise.resolve());
 Object.assign(navigator, {
   clipboard: {
     writeText: mockWriteText,

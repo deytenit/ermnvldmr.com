@@ -34,33 +34,7 @@ export interface MarkdownProps {
   className?: string;
 }
 
-/**
- * A map of HTML tags to Markdown components for use with MDX or Astro Content.
- */
-export const MARKDOWN_COMPONENTS = {
-  p: MarkdownP,
-  a: MarkdownA,
-  h1: MarkdownH1,
-  h2: MarkdownH2,
-  h3: MarkdownH3,
-  h4: MarkdownH4,
-  h5: MarkdownH5,
-  h6: MarkdownH6,
-  blockquote: MarkdownBlockquote,
-  ul: MarkdownUL,
-  ol: MarkdownOL,
-  li: MarkdownLI,
-  table: MarkdownTable,
-  thead: MarkdownTHead,
-  tbody: MarkdownTBody,
-  tr: MarkdownTR,
-  th: MarkdownTH,
-  td: MarkdownTD,
-  code: MarkdownCode,
-  pre: MarkdownPre,
-  hr: MarkdownHR,
-  img: MarkdownImg,
-} as const;
+export { MARKDOWN_COMPONENTS } from './components';
 
 const MarkdownComponent = memo(function Markdown({ children, className }: MarkdownProps) {
   return <div className={cn('flex flex-col gap-4', className)}>{children}</div>;
@@ -92,17 +66,17 @@ export const Markdown = Object.assign(MarkdownComponent, {
   H5: MarkdownH5,
   H6: MarkdownH6,
   Blockquote: MarkdownBlockquote,
-  UL: MarkdownUL,
-  OL: MarkdownOL,
-  LI: MarkdownLI,
+  Ul: MarkdownUL,
+  Ol: MarkdownOL,
+  Li: MarkdownLI,
   Table: MarkdownTable,
   THead: MarkdownTHead,
   TBody: MarkdownTBody,
-  TR: MarkdownTR,
-  TH: MarkdownTH,
-  TD: MarkdownTD,
+  Tr: MarkdownTR,
+  Th: MarkdownTH,
+  Td: MarkdownTD,
   Code: MarkdownCode,
   Pre: MarkdownPre,
-  HR: MarkdownHR,
+  Hr: MarkdownHR,
   Img: MarkdownImg,
 });

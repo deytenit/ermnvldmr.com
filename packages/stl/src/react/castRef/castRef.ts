@@ -13,7 +13,7 @@ import type React from 'react';
  * ```
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function castRef<T>(ref: React.ForwardedRef<any>): React.RefObject<T> {
+export function castRef<T>(ref: any): React.RefObject<T> {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return ref as unknown as React.RefObject<T>;
 }

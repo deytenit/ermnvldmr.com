@@ -25,10 +25,18 @@ describe('components/Link', () => {
   });
 
   it('respects explicit isExternal prop', () => {
-    const { rerender } = render(<Link isExternal href="/internal">Force External</Link>);
+    const { rerender } = render(
+      <Link isExternal href="/internal">
+        Force External
+      </Link>
+    );
     expect(screen.getByRole('link')).toHaveAttribute('target', '_blank');
 
-    rerender(<Link href="https://external.com" isExternal={false}>Force Internal</Link>);
+    rerender(
+      <Link href="https://external.com" isExternal={false}>
+        Force Internal
+      </Link>
+    );
     expect(screen.getByRole('link')).not.toHaveAttribute('target');
   });
 

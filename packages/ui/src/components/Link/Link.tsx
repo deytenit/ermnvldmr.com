@@ -6,6 +6,7 @@ import { Text } from '../Text/Text';
 
 import type { ClassNameProps } from '@ermnvldmr/stl';
 import type { AriaLinkOptions } from 'react-aria';
+import type { TextColor, TextSize, TextType } from '../Text/Text';
 
 /**
  * Props for the Link component.
@@ -17,6 +18,12 @@ export interface LinkProps extends AriaLinkOptions, ClassNameProps {
   children: React.ReactNode;
   /** Whether the link is external (opens in new tab) */
   isExternal?: boolean;
+  /** Typography style type */
+  type?: TextType;
+  /** Typography size variant */
+  size?: TextSize;
+  /** Text color variant */
+  color?: TextColor;
 }
 
 /**
@@ -26,7 +33,7 @@ export interface LinkProps extends AriaLinkOptions, ClassNameProps {
  * It uses standard design system colors (--rb-ring) and provides responsive hover/focus states.
  */
 export const Link = memo(function Link(props: LinkProps) {
-  const { children, className, href, isExternal, ...otherProps } = props;
+  const { children, className, href, isExternal, type, size, color, ...otherProps } = props;
 
   // We use a specific ref type that useLink expects.
   // Since Link can be an 'a' or a 'span', we use HTMLElement as common denominator.
@@ -34,16 +41,15 @@ export const Link = memo(function Link(props: LinkProps) {
   const { linkProps } = useLink(otherProps, ref);
 
   const sharedClasses = cn(
-    'text-[var(--rb-ring)] cursor-pointer hover:underline underline-offset-4 transition-colors',
+    !color && 'text-[var(--rb-ring)]',
+    'cursor-pointer hover:underline underline-offset-4 transition-colors',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
     className
   );
 
   if (href) {
     const isAutoExternal = isExternal ?? href.startsWith('http');
-    const externalProps = isAutoExternal
-      ? { target: '_blank', rel: 'noopener noreferrer' }
-      : {};
+    const externalProps = isAutoExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {};
 
     return (
       <Text
@@ -52,7 +58,10 @@ export const Link = memo(function Link(props: LinkProps) {
         ref={ref}
         as="a"
         className={sharedClasses}
+        color={color}
         href={href}
+        size={size}
+        type={type}
       >
         {children}
       </Text>
@@ -60,7 +69,15 @@ export const Link = memo(function Link(props: LinkProps) {
   }
 
   return (
-    <Text {...linkProps} ref={castRef<HTMLSpanElement>(ref)} as="span" className={sharedClasses}>
+    <Text
+      {...linkProps}
+      ref={castRef<HTMLSpanElement>(ref)}
+      as="span"
+      className={sharedClasses}
+      color={color}
+      size={size}
+      type={type}
+    >
       {children}
     </Text>
   );

@@ -55,12 +55,7 @@ export const Time = genericMemo(
     }, [children, dateObj, locale, formatOptions]);
 
     return (
-      <Text
-        ref={castRef<HTMLElement>(ref)}
-        as="time"
-        dateTime={isoString}
-        {...props}
-      >
+      <Text ref={castRef<HTMLElement>(ref)} as="time" dateTime={isoString} {...props}>
         {formattedDate}
       </Text>
     );

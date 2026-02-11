@@ -58,17 +58,14 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build Jest config
-        run: pnpm --filter @ermnvldmr/jest-config build
-      - name: Build Vite config
-        run: pnpm --filter @ermnvldmr/vite-config build
+      - name: Build Rsbuild config
+        run: pnpm --filter @ermnvldmr/rsbuild-config build
       - name: Upload Config Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: config-artifacts
           path: |
-            packages/jest-config/dist
-            packages/vite-config/dist
+            packages/rsbuild-config/dist
           retention-days: 1
 
   lint-stl:

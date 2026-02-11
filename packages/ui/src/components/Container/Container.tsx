@@ -115,6 +115,8 @@ export const Container = memo(function Container({
     isDisabled: !onPress,
   });
 
+  const interactionProps = onPress ? pressProps : {};
+
   const bgClasses: Record<ContainerBackground, string> = {
     base: 'bg-[var(--rb-container-base)] text-[var(--rb-container-text)]',
     primary: 'bg-[var(--rb-primary-base)] text-[var(--rb-primary-text)]',
@@ -180,7 +182,7 @@ export const Container = memo(function Container({
 
   return (
     <Component
-      {...pressProps}
+      {...interactionProps}
       ref={ref}
       className={cn(
         'overflow-hidden',

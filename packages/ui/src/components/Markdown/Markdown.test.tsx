@@ -10,19 +10,19 @@ describe('Markdown Components', () => {
         <Markdown.H1>Heading 1</Markdown.H1>
         <Markdown.P>This is a paragraph.</Markdown.P>
         <Markdown.A href="https://example.com">Link</Markdown.A>
-        <Markdown.UL>
-          <Markdown.LI>Item 1</Markdown.LI>
-        </Markdown.UL>
+        <Markdown.Ul>
+          <Markdown.Li>Item 1</Markdown.Li>
+        </Markdown.Ul>
         <Markdown.Table>
           <Markdown.THead>
-            <Markdown.TR>
-              <Markdown.TH>Header</Markdown.TH>
-            </Markdown.TR>
+            <Markdown.Tr>
+              <Markdown.Th>Header</Markdown.Th>
+            </Markdown.Tr>
           </Markdown.THead>
           <Markdown.TBody>
-            <Markdown.TR>
-              <Markdown.TD>Cell</Markdown.TD>
-            </Markdown.TR>
+            <Markdown.Tr>
+              <Markdown.Td>Cell</Markdown.Td>
+            </Markdown.Tr>
           </Markdown.TBody>
         </Markdown.Table>
       </Markdown>

@@ -19,7 +19,7 @@ describe('components/Button', () => {
   });
 
   it('calls onPress when clicked in button mode', () => {
-    const onPress = jest.fn();
+    const onPress = vi.fn();
     render(<Button onPress={onPress}>Click me</Button>);
     const button = screen.getByRole('button');
     fireEvent.click(button);
@@ -27,7 +27,7 @@ describe('components/Button', () => {
   });
 
   it('does not call onPress when disabled', () => {
-    const onPress = jest.fn();
+    const onPress = vi.fn();
     render(
       <Button isDisabled onPress={onPress}>
         Disabled

@@ -1,4 +1,13 @@
-import { Header, Paragraph, List, Blockquote, Code, CodeBlock, Container, Text } from '@ermnvldmr/ui';
+import {
+  Header,
+  Paragraph,
+  List,
+  Blockquote,
+  Code,
+  CodeBlock,
+  Container,
+  Text,
+} from '@ermnvldmr/ui';
 
 import { ArticleLayout } from './ArticleLayout';
 
@@ -23,7 +32,7 @@ const meta: Meta<typeof ArticleLayout> = {
 export default meta;
 
 /**
- * 
+ *
  */
 type Story = StoryObj<typeof ArticleLayout>;
 
@@ -94,7 +103,12 @@ export const collections = { articles };`}
         We can also include images and videos. The layout ensures they are responsive and fit the
         grid.
       </Paragraph>
-      <Container border bg="muted" className="flex aspect-video items-center justify-center" rounded="lg">
+      <Container
+        border
+        bg="muted"
+        className="flex aspect-video items-center justify-center"
+        rounded="lg"
+      >
         <Text color="muted">Placeholder for Image/Video</Text>
       </Container>
 
@@ -102,4 +116,3 @@ export const collections = { articles };`}
     </ArticleLayout>
   ),
 };
-

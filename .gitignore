@@ -28,3 +28,6 @@ playwright-report/
 
 # jetbrains setting folder
 .idea/
+
+# agents plans and designs
+docs/plans/

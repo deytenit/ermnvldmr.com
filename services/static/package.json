@@ -4,30 +4,31 @@
   "description": "static.ermnvldmr.com landing pages",
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro",
+    "dev": "rsbuild dev",
+    "build": "rsbuild build",
+    "preview": "rsbuild preview",
     "lint": "eslint src --max-warnings 0",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist .turbo node_modules"
   },
   "dependencies": {
-    "@astrojs/react": "^4.2.5",
     "@ermnvldmr/stl": "workspace:*",
     "@ermnvldmr/ui": "workspace:*",
-    "astro": "^5.7.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tailwindcss": "^4.1.4"
   },
   "devDependencies": {
     "@ermnvldmr/eslint-config": "workspace:*",
-    "@tailwindcss/vite": "^4.1.4",
+    "@ermnvldmr/rsbuild-config": "workspace:*",
+    "@rsbuild/core": "^1.2.11",
+    "@tailwindcss/postcss": "^4.1.18",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
     "eslint": "^9.25.1",
+    "postcss": "^8.5.6",
     "prettier": "^3.5.3",
-    "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "typescript": "^5.8.3"
   }

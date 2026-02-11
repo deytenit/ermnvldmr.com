@@ -9,7 +9,7 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-export default tseslint.config(
+export default [
   ...baseConfig,
 
   // Additional ignores for monorepo
@@ -104,7 +104,7 @@ export default tseslint.config(
   // React Refresh
   {
     files: ['**/*.{jsx,tsx}'],
-    ignores: ['.config/jest/**/*.{jsx,tsx}'],
+    ignores: ['.config/jest/**/*.{jsx,tsx}', '**/test-utils.tsx'],
     plugins: { 'react-refresh': reactRefresh },
     rules: {
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
@@ -144,4 +144,4 @@ export default tseslint.config(
       globals: globals.node,
     },
   }
-);
+];

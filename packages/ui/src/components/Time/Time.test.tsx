@@ -33,10 +33,7 @@ describe('components/Time', () => {
   it('applies custom formatting options', () => {
     const date = new Date('2026-02-10T00:00:00Z');
     render(
-      <Time
-        date={date}
-        formatOptions={{ year: '2-digit', month: 'short', day: 'numeric' }}
-      />
+      <Time date={date} formatOptions={{ year: '2-digit', month: 'short', day: 'numeric' }} />
     );
 
     // Depending on locale, "Feb 10, 26" or similar

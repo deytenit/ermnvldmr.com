@@ -9,7 +9,7 @@ import tseslint from 'typescript-eslint';
 /**
  * Base ESLint configuration
  */
-export const baseConfig = tseslint.config(
+export const baseConfig = [
   {
     ignores: [
       '**/dist',
@@ -27,9 +27,12 @@ export const baseConfig = tseslint.config(
   eslint.configs.recommended,
 
   // TypeScript - Strict Configuration (only for .ts/.tsx files)
+  ...[...tseslint.configs.recommendedTypeChecked, ...tseslint.configs.stylisticTypeChecked].map((config) => ({
+    ...config,
+    files: ['**/*.{ts,tsx,mts,cts}'],
+  })),
   {
     files: ['**/*.{ts,tsx,mts,cts}'],
-    extends: [...tseslint.configs.recommendedTypeChecked, ...tseslint.configs.stylisticTypeChecked],
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -121,7 +124,7 @@ export const baseConfig = tseslint.config(
 
   // Test files and Stories
   {
-    files: ['**/*.{test,spec,stories}.{js,jsx,ts,tsx}', '.config/jest/**/*.{js,jsx,ts,tsx}'],
+    files: ['**/*.{test,spec,stories}.{js,jsx,ts,tsx}', '.config/jest/**/*.{js,jsx,ts,tsx}', '**/test-utils.tsx'],
     languageOptions: {
       globals: {
         ...globals.jest,
@@ -176,4 +179,4 @@ export const baseConfig = tseslint.config(
 
   // Prettier
   prettier
-);
+];

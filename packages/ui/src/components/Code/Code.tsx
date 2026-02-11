@@ -73,6 +73,15 @@ export const Code = memo(function Code({
 
   if (context?.isInCodeBlock) {
     const { showLineNumbers } = context;
+    
+    let content = children;
+    if (typeof children === 'string') {
+      content = children.trimEnd().split('\n').map((line, i) => (
+        // eslint-disable-next-line react/no-array-index-key
+        <span key={i} className="block min-h-[1.5em]">{line || '\n'}</span>
+      ));
+    }
+
     return (
       <code
         ref={codeRef}
@@ -80,25 +89,25 @@ export const Code = memo(function Code({
           'block min-w-full font-mono whitespace-pre',
           showLineNumbers && [
             '[counter-reset:line]',
-            '[&>*]:relative [&>*]:block [&>*]:pl-10',
-            '[&>*]:[counter-increment:line]',
-            '[&>*]:before:content-[counter(line)]',
-            '[&>*]:before:absolute [&>*]:before:left-0',
-            '[&>*]:before:inline-block',
-            '[&>*]:before:w-8',
-            '[&>*]:before:text-right',
-            '[&>*]:before:text-[var(--rb-muted-text)]/50',
-            '[&>*]:before:select-none',
-            '[&>*]:before:border-r',
-            '[&>*]:before:border-[var(--rb-outline)]/10',
-            '[&>*]:before:pr-3',
-            '[&>*]:before:font-mono [&>*]:before:text-[10px]',
+            '[&>span]:relative [&>span]:pl-10',
+            '[&>span]:[counter-increment:line]',
+            '[&>span]:before:content-[counter(line)]',
+            '[&>span]:before:absolute [&>span]:before:left-0 [&>span]:before:top-[4px]',
+            '[&>span]:before:inline-block',
+            '[&>span]:before:w-8',
+            '[&>span]:before:text-right',
+            '[&>span]:before:text-[var(--rb-muted-text)]/50',
+            '[&>span]:before:select-none',
+            '[&>span]:before:border-r',
+            '[&>span]:before:border-[var(--rb-outline)]/10',
+            '[&>span]:before:pr-3',
+            '[&>span]:before:font-mono [&>span]:before:text-[10px]',
           ],
           className
         )}
         data-testid={testId}
       >
-        {children}
+        {content}
       </code>
     );
   }

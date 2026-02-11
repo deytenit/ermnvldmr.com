@@ -7,7 +7,7 @@ import { render, screen } from '../../test-utils';
 describe('components/Container', () => {
   it('handles onPress event', async () => {
     const user = userEvent.setup();
-    const handlePress = jest.fn();
+    const handlePress = vi.fn();
     render(<Container onPress={handlePress}>Content</Container>);
 
     const container = screen.getByText('Content');

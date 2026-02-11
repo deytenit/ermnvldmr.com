@@ -1,0 +1,24 @@
+{
+  "name": "@ermnvldmr/rsbuild-config",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./vitest": "./dist/vitest.js"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@rsbuild/plugin-react": "^1.1.1",
+    "@rsbuild/plugin-type-check": "^1.1.1",
+    "rsbuild-plugin-dts": "^0.19.5"
+  },
+  "devDependencies": {
+    "@rsbuild/core": "^1.7.3",
+    "typescript": "^5.8.2",
+    "vitest": "^4.0.18"
+  }
+}
