@@ -28,9 +28,8 @@
 ```
 ├── packages/                   # Shared packages and configurations
 │   ├── eslint-config/         # Shared ESLint configurations
-│   ├── jest-config/           # Shared Jest configurations
+│   ├── rsbuild-config/        # Shared Rsbuild configurations
 │   ├── storybook-config/      # Shared Storybook configurations
-│   ├── vite-config/           # Shared Vite configurations
 │   ├── stl/                   # Standard Type Library (utilities)
 │   └── ui/                    # Shared React component library
 ├── services/                   # Independent web services
@@ -46,9 +45,8 @@
 #### Configuration Packages (`packages/`)
 
 - **eslint-config**: Shared ESLint rules for TypeScript, React, and Astro
-- **jest-config**: Shared Jest configurations for different project types
+- **rsbuild-config**: Shared Rsbuild and Rspack configurations for library and service builds
 - **storybook-config**: Shared Storybook setup and configurations
-- **vite-config**: Shared Vite configurations for library builds
 
 #### Library Packages (`packages/`)
 
@@ -118,9 +116,8 @@ Services consume packages but are independent of each other. They can be develop
 All packages use the `@ermnvldmr/` namespace:
 
 - `@ermnvldmr/eslint-config` - Shared ESLint configurations
-- `@ermnvldmr/jest-config` - Shared Jest configurations
+- `@ermnvldmr/rsbuild-config` - Shared Rsbuild configurations
 - `@ermnvldmr/storybook-config` - Shared Storybook configurations
-- `@ermnvldmr/vite-config` - Shared Vite configurations
 - `@ermnvldmr/stl` - Standard Type Library
 - `@ermnvldmr/ui` - Component library
 - `@ermnvldmr/www` - Main website service
@@ -197,7 +194,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 - **Utilities**: camelCase (e.g., `cn.ts`, `formatters.ts`)
 - **Constants**: UPPER_SNAKE_CASE for exports (e.g., `API_ENDPOINTS`)
 - **Types**: PascalCase with descriptive suffixes (e.g., `ButtonProps`, `ApiResponse`)
-- **Config Files**: kebab-case (e.g., `jest-config`, `eslint-config`)
+- **Config Files**: kebab-case (e.g., `rsbuild-config`, `eslint-config`)
 
 ### Module Structure Patterns
 
@@ -277,19 +274,19 @@ import { react } from '@ermnvldmr/eslint-config/react';
 import { astro } from '@ermnvldmr/eslint-config/astro';
 ```
 
-#### Jest Configuration
+#### Vitest Configuration
 
 ```typescript
-// Provides: base, react configurations
-import { base } from '@ermnvldmr/jest-config/base';
-import { react } from '@ermnvldmr/jest-config/react';
+// Provides: base, react configurations from rsbuild-config
+import { baseVitestConfig } from '@ermnvldmr/rsbuild-config/vitest';
+import { mergeConfig } from 'vitest/config';
 ```
 
-#### Vite Configuration
+#### Rsbuild Configuration
 
 ```typescript
-// Provides: library build configurations
-import { defineLibConfig } from '@ermnvldmr/vite-config/lib';
+// Provides: definePackageConfig, defineServiceConfig
+import { definePackageConfig } from '@ermnvldmr/rsbuild-config';
 ```
 
 ### Service Configuration Inheritance
@@ -299,7 +296,7 @@ Services inherit from shared configs but can override:
 ```typescript
 // In service package.json devDependencies
 "@ermnvldmr/eslint-config": "workspace:*"
-"@ermnvldmr/jest-config": "workspace:*"
+"@ermnvldmr/rsbuild-config": "workspace:*"
 ```
 
 ## 🚀 Build & Deployment
@@ -308,7 +305,7 @@ Services inherit from shared configs but can override:
 
 The monorepo must respect a strict build order due to package dependencies:
 
-1. **Configuration packages** (eslint-config, jest-config, etc.) - Foundation tooling
+1. **Configuration packages** (eslint-config, rsbuild-config, etc.) - Foundation tooling
 2. **STL package** - Shared utilities and types
 3. **UI package** - Component library (depends on STL)
 4. **Services** - Applications that consume packages (www, docs)
@@ -354,10 +351,10 @@ Use pnpm workspace filtering (`--filter`) to target specific packages or service
 
 ### Testing Framework Distribution
 
-- **Shared Configuration**: Jest configs in `@ermnvldmr/jest-config`
+- **Shared Configuration**: Vitest configs in `@ermnvldmr/rsbuild-config`
 - **Package Testing**: Each package has its own test suite
 - **Service Testing**: Services test their specific functionality
-- **Component Testing**: UI package uses React Testing Library
+- **Component Testing**: UI package uses React Testing Library with Vitest
 - **Storybook Testing**: Visual regression and interaction testing
 
 ### Test Organization

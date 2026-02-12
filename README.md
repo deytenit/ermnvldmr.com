@@ -31,8 +31,7 @@ Composite (see [Copyright & License](#copyright--license))
 - **[@ermnvldmr/ui](./packages/ui)**: Shared React component library and design system.
 - **[@ermnvldmr/stl](./packages/stl)**: Standard Template Library – common utilities and reusable logic.
 - **[@ermnvldmr/eslint-config](./packages/eslint-config)**: Shared linting configurations.
-- **[@ermnvldmr/jest-config](./packages/jest-config)**: Shared testing configurations.
-- **[@ermnvldmr/vite-config](./packages/vite-config)**: Shared build configurations.
+- **[@ermnvldmr/rsbuild-config](./packages/rsbuild-config)**: Shared build configurations (Rsbuild & Rspack).
 - **[@ermnvldmr/storybook-config](./packages/storybook-config)**: Shared Storybook configurations.
 
 ## Who Are You?
