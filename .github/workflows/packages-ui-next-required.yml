@@ -6,6 +6,7 @@ on:
     paths:
       - 'packages/ui/**'
       - 'packages/stl/**'
+      - '.github/workflows/packages-ui-next-required.yml'
       - 'pnpm-lock.yaml'
 
 concurrency:
@@ -102,8 +103,6 @@ jobs:
         with:
           name: storybook-config-dist
           path: packages/storybook-config/dist
-      - name: Lint STL package
-        run: pnpm --filter @ermnvldmr/stl lint
       - name: Lint UI package
         run: pnpm --filter @ermnvldmr/ui lint
 
@@ -133,8 +132,6 @@ jobs:
         with:
           name: storybook-config-dist
           path: packages/storybook-config/dist
-      - name: Typecheck STL package
-        run: pnpm --filter @ermnvldmr/stl typecheck
       - name: Typecheck UI package
         run: pnpm --filter @ermnvldmr/ui typecheck
 
@@ -164,6 +161,8 @@ jobs:
         with:
           name: storybook-config-dist
           path: packages/storybook-config/dist
+      - name: Build STL package
+        run: pnpm --filter @ermnvldmr/stl build
       - name: Test UI package
         run: pnpm --filter @ermnvldmr/ui test:coverage
       - name: Upload coverage to Codecov
@@ -200,9 +199,13 @@ jobs:
         with:
           name: storybook-config-dist
           path: packages/storybook-config/dist
-      - name: Build UI package
-        run: pnpm --filter @ermnvldmr/ui build
-      - name: Build UI Storybook
+            - name: Build STL package
+              run: pnpm --filter @ermnvldmr/stl build
+                  - name: Build STL package
+                    run: pnpm --filter @ermnvldmr/stl build
+                  - name: Build UI package
+                    run: pnpm --filter @ermnvldmr/ui build
+                  - name: Build UI Storybook
         run: pnpm --filter @ermnvldmr/ui build-storybook
 
   test-storybook:
@@ -233,6 +236,8 @@ jobs:
           path: packages/storybook-config/dist
       - name: Install Playwright browsers
         run: pnpm --filter @ermnvldmr/ui exec playwright install --with-deps chromium
+      - name: Build STL package
+        run: pnpm --filter @ermnvldmr/stl build
       - name: Build UI Storybook
         run: pnpm --filter @ermnvldmr/ui build-storybook
       - name: Test Storybook

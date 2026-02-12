@@ -6,6 +6,8 @@ on:
     paths:
       - 'services/static/**'
       - 'packages/ui/**'
+      - 'packages/stl/**'
+      - '.github/workflows/services-static-next-required.yml'
       - 'pnpm-lock.yaml'
 
 concurrency:
@@ -137,6 +139,10 @@ jobs:
         with:
           name: rsbuild-config-dist
           path: packages/rsbuild-config/dist
+      - name: Build STL package
+        run: pnpm --filter @ermnvldmr/stl build
+      - name: Build UI package
+        run: pnpm --filter @ermnvldmr/ui build
       - name: Build static service
         run: pnpm --filter @ermnvldmr/static build
       - name: Upload build artifacts

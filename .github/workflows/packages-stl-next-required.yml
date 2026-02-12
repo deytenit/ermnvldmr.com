@@ -5,6 +5,7 @@ on:
     branches: [next]
     paths:
       - 'packages/stl/**'
+      - '.github/workflows/packages-stl-next-required.yml'
       - 'pnpm-lock.yaml'
 
 concurrency:

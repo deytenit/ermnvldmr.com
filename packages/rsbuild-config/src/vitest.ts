@@ -1,6 +1,8 @@
 import { defineConfig } from 'vitest/config';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export const baseVitestConfig = defineConfig({
+  plugins: [tsconfigPaths()],
   test: {
     globals: true,
     environment: 'node',
@@ -23,4 +25,5 @@ export const reactVitestConfig = defineConfig({
       '\.(css|less|scss|sass)$': 'identity-obj-proxy',
     },
   },
+  plugins: [tsconfigPaths()],
 });

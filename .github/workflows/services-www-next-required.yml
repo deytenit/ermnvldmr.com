@@ -7,6 +7,7 @@ on:
       - 'services/www/**'
       - 'packages/ui/**'
       - 'packages/stl/**'
+      - '.github/workflows/services-www-next-required.yml'
       - 'pnpm-lock.yaml'
 
 concurrency:
@@ -103,10 +104,6 @@ jobs:
         with:
           name: storybook-config-dist
           path: packages/storybook-config/dist
-      - name: Lint STL package
-        run: pnpm --filter @ermnvldmr/stl lint
-      - name: Lint UI package
-        run: pnpm --filter @ermnvldmr/ui lint
       - name: Lint WWW service
         run: pnpm --filter @ermnvldmr/www lint
 
@@ -136,10 +133,6 @@ jobs:
         with:
           name: storybook-config-dist
           path: packages/storybook-config/dist
-      - name: Typecheck STL package
-        run: pnpm --filter @ermnvldmr/stl typecheck
-      - name: Typecheck UI package
-        run: pnpm --filter @ermnvldmr/ui typecheck
       - name: Typecheck WWW service
         run: pnpm --filter @ermnvldmr/www typecheck
 
@@ -169,6 +162,10 @@ jobs:
         with:
           name: storybook-config-dist
           path: packages/storybook-config/dist
+      - name: Build STL package
+        run: pnpm --filter @ermnvldmr/stl build
+      - name: Build UI package
+        run: pnpm --filter @ermnvldmr/ui build
       - name: Build WWW Storybook
         run: pnpm --filter @ermnvldmr/www build-storybook
       - name: Upload Storybook build
@@ -204,10 +201,10 @@ jobs:
         with:
           name: storybook-config-dist
           path: packages/storybook-config/dist
-      - name: Test STL package
-        run: pnpm --filter @ermnvldmr/stl test:coverage
-      - name: Test UI package
-        run: pnpm --filter @ermnvldmr/ui test:coverage
+      - name: Build STL package
+        run: pnpm --filter @ermnvldmr/stl build
+      - name: Build UI package
+        run: pnpm --filter @ermnvldmr/ui build
       - name: Test WWW service
         run: pnpm --filter @ermnvldmr/www test:coverage
       - name: Upload Unit coverage to Codecov
@@ -287,6 +284,10 @@ jobs:
         with:
           name: storybook-config-dist
           path: packages/storybook-config/dist
+      - name: Build STL package
+        run: pnpm --filter @ermnvldmr/stl build
+      - name: Build UI package
+        run: pnpm --filter @ermnvldmr/ui build
       - name: Build WWW service
         run: pnpm --filter @ermnvldmr/www build
 
