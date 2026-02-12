@@ -93,7 +93,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: config-artifacts
-          path: packages
+          path: .
       - name: Lint STL package
         run: pnpm --filter @ermnvldmr/stl lint
       - name: Lint UI package
@@ -121,7 +121,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: config-artifacts
-          path: packages
+          path: .
       - name: Typecheck STL package
         run: pnpm --filter @ermnvldmr/stl typecheck
       - name: Typecheck UI package
@@ -149,7 +149,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: config-artifacts
-          path: packages
+          path: .
       - name: Build WWW Storybook
         run: pnpm --filter @ermnvldmr/www build-storybook
       - name: Upload Storybook build
@@ -179,7 +179,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: config-artifacts
-          path: packages
+          path: .
       - name: Test STL package
         run: pnpm --filter @ermnvldmr/stl test:coverage
       - name: Test UI package
@@ -214,7 +214,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: config-artifacts
-          path: packages
+          path: .
       - name: Install Playwright browsers
         run: pnpm --filter @ermnvldmr/www exec playwright install --with-deps chromium
       - name: Download Storybook build
@@ -252,7 +252,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: config-artifacts
-          path: packages
+          path: .
       - name: Build WWW service
         run: pnpm --filter @ermnvldmr/www build
 

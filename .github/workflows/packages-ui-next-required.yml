@@ -92,7 +92,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: config-artifacts
-          path: packages
+          path: .
       - name: Lint STL package
         run: pnpm --filter @ermnvldmr/stl lint
       - name: Lint UI package
@@ -118,7 +118,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: config-artifacts
-          path: packages
+          path: .
       - name: Typecheck STL package
         run: pnpm --filter @ermnvldmr/stl typecheck
       - name: Typecheck UI package
@@ -144,7 +144,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: config-artifacts
-          path: packages
+          path: .
       - name: Test UI package
         run: pnpm --filter @ermnvldmr/ui test:coverage
       - name: Upload coverage to Codecov
@@ -175,7 +175,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: config-artifacts
-          path: packages
+          path: .
       - name: Build UI package
         run: pnpm --filter @ermnvldmr/ui build
       - name: Build UI Storybook
@@ -201,7 +201,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: config-artifacts
-          path: packages
+          path: .
       - name: Install Playwright browsers
         run: pnpm --filter @ermnvldmr/ui exec playwright install --with-deps chromium
       - name: Build UI Storybook
@@ -236,6 +236,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: config-artifacts
-          path: packages
+          path: .
       - name: Build UI package
         run: pnpm --filter @ermnvldmr/ui build

@@ -8,6 +8,7 @@ import {
   Container,
   Text,
 } from '@ermnvldmr/ui';
+import React from 'react';
 
 import { ArticleLayout } from './ArticleLayout';
 

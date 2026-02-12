@@ -1,4 +1,5 @@
 import path from 'path';
+import { pluginBabel } from '@rsbuild/plugin-babel';
 import type { StorybookConfig } from 'storybook-react-rsbuild';
 
 const config: StorybookConfig = {
@@ -22,6 +23,26 @@ const config: StorybookConfig = {
         '@ermnvldmr/stl': path.resolve(__dirname, '../../../packages/stl/src'),
         '@ermnvldmr/ui': path.resolve(__dirname, '../../../packages/ui/src'),
     };
+
+    // Add Babel plugin with istanbul for coverage
+    config.plugins = config.plugins || [];
+    config.plugins.push(
+      pluginBabel({
+        include: /\.(?:jsx|tsx)$/,
+        exclude: /[\\/]node_modules[\\/]/,
+        babelLoaderOptions: (opts) => {
+          opts.plugins = opts.plugins || [];
+          opts.plugins.push([
+            'babel-plugin-istanbul',
+            {
+              exclude: ['**/*.stories.tsx', '**/*.test.tsx', 'node_modules/**'],
+              extension: ['.js', '.jsx', '.ts', '.tsx'],
+            },
+          ]);
+        },
+      })
+    );
+
     return config;
   },
 };

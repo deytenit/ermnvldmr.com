@@ -1,5 +1,5 @@
-import { mergeConfig } from 'vite';
-import type { StorybookConfig } from '@storybook/react-vite';
+import { pluginBabel } from '@rsbuild/plugin-babel';
+import type { StorybookConfig } from 'storybook-react-rsbuild';
 
 export const baseStorybookConfig: Partial<StorybookConfig> = {
   addons: [
@@ -10,7 +10,7 @@ export const baseStorybookConfig: Partial<StorybookConfig> = {
     '@storybook/addon-coverage',
   ],
   framework: {
-    name: '@storybook/react-vite',
+    name: 'storybook-react-rsbuild',
     options: {},
   },
   typescript: {
@@ -21,28 +21,25 @@ export const baseStorybookConfig: Partial<StorybookConfig> = {
       propFilter: (prop) => (prop.parent ? !/node_modules/.test(prop.parent.fileName) : true),
     },
   },
-  viteFinal: async (config) => {
-    try {
-      const tailwindcss = (await import('@tailwindcss/vite')).default;
-      const istanbul = (await import('vite-plugin-istanbul')).default;
-
-      return mergeConfig(config, {
-        plugins: [
-          tailwindcss(),
-          istanbul({
-            include: 'src/**/*',
-            exclude: ['node_modules', 'test/', '**/*.stories.tsx', '**/*.test.tsx'],
-            extension: ['.js', '.jsx', '.ts', '.tsx'],
-            requireEnv: false,
-            cypress: false,
-            forceBuildInstrument: true,
-          }),
-        ],
-      });
-    } catch (error) {
-      // Fallback if plugins can't be loaded
-      console.warn('Failed to load Storybook plugins:', error);
-      return config;
-    }
+  rsbuildFinal: async (config) => {
+    // Add Babel plugin with istanbul for coverage
+    config.plugins = config.plugins || [];
+    config.plugins.push(
+      pluginBabel({
+        include: /\.(?:jsx|tsx)$/,
+        exclude: /[\\/]node_modules[\\/]/,
+        babelLoaderOptions: (opts) => {
+          opts.plugins = opts.plugins || [];
+          opts.plugins.push([
+            'babel-plugin-istanbul',
+            {
+              exclude: ['**/*.stories.tsx', '**/*.test.tsx', 'node_modules/**'],
+              extension: ['.js', '.jsx', '.ts', '.tsx'],
+            },
+          ]);
+        },
+      })
+    );
+    return config;
   },
 };

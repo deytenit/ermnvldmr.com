@@ -43,8 +43,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-  lint-static:
-    name: Lint - Static
+  build-configs:
+    name: Build - Configs
     needs: setup-stage
     runs-on: ubuntu-latest
     steps:
@@ -59,12 +59,43 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Build Rsbuild config
+        run: pnpm --filter @ermnvldmr/rsbuild-config build
+      - name: Upload Config Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: config-artifacts
+          path: |
+            packages/rsbuild-config/dist
+          retention-days: 1
+
+  lint-static:
+    name: Lint - Static
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: .
       - name: Lint static service
         run: pnpm --filter @ermnvldmr/static lint
 
   typecheck-static:
     name: Typecheck - Static
-    needs: setup-stage
+    needs: build-configs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -78,12 +109,17 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: .
       - name: Typecheck static service
         run: pnpm --filter @ermnvldmr/static typecheck
 
   build-static:
     name: Build - Static Site
-    needs: setup-stage
+    needs: build-configs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -97,6 +133,11 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: config-artifacts
+          path: .
       - name: Build static service
         run: pnpm --filter @ermnvldmr/static build
       - name: Upload build artifacts

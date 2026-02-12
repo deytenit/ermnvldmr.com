@@ -4,9 +4,9 @@ import { useLink } from 'react-aria';
 
 import { Text } from '../Text/Text';
 
+import type { TextColor, TextSize, TextType } from '../Text/Text';
 import type { ClassNameProps } from '@ermnvldmr/stl';
 import type { AriaLinkOptions } from 'react-aria';
-import type { TextColor, TextSize, TextType } from '../Text/Text';
 
 /**
  * Props for the Link component.

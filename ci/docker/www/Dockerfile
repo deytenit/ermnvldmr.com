@@ -9,13 +9,13 @@ WORKDIR /app
 
 # Copy monorepo configuration
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+
 # Copy all package.json files to allow pnpm to fetch dependencies
 COPY packages/eslint-config/package.json ./packages/eslint-config/
-COPY packages/jest-config/package.json ./packages/jest-config/
+COPY packages/rsbuild-config/package.json ./packages/rsbuild-config/
 COPY packages/stl/package.json ./packages/stl/
 COPY packages/storybook-config/package.json ./packages/storybook-config/
 COPY packages/ui/package.json ./packages/ui/
-COPY packages/vite-config/package.json ./packages/vite-config/
 COPY services/www/package.json ./services/www/
 
 # Install dependencies
@@ -23,6 +23,11 @@ RUN pnpm install --frozen-lockfile
 
 # Copy source code
 COPY . .
+
+# Build dependencies
+RUN pnpm --filter @ermnvldmr/rsbuild-config build
+RUN pnpm --filter @ermnvldmr/stl build
+RUN pnpm --filter @ermnvldmr/ui build
 
 # Build the website
 RUN pnpm --filter @ermnvldmr/www build
