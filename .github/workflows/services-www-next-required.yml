@@ -79,7 +79,7 @@ jobs:
           retention-days: 1
 
   lint-www:
-    name: Lint - WWW & Deps
+    name: Lint - WWW
     needs: build-configs
     runs-on: ubuntu-latest
     steps:
@@ -108,7 +108,7 @@ jobs:
         run: pnpm --filter @ermnvldmr/www lint
 
   typecheck-www:
-    name: Typecheck - WWW & Deps
+    name: Typecheck - WWW
     needs: build-configs
     runs-on: ubuntu-latest
     steps:
@@ -162,10 +162,6 @@ jobs:
         with:
           name: storybook-config-dist
           path: packages/storybook-config/dist
-      - name: Build STL package
-        run: pnpm --filter @ermnvldmr/stl build
-      - name: Build UI package
-        run: pnpm --filter @ermnvldmr/ui build
       - name: Build WWW Storybook
         run: pnpm --filter @ermnvldmr/www build-storybook
       - name: Upload Storybook build
@@ -201,10 +197,6 @@ jobs:
         with:
           name: storybook-config-dist
           path: packages/storybook-config/dist
-      - name: Build STL package
-        run: pnpm --filter @ermnvldmr/stl build
-      - name: Build UI package
-        run: pnpm --filter @ermnvldmr/ui build
       - name: Test WWW service
         run: pnpm --filter @ermnvldmr/www test:coverage
       - name: Upload Unit coverage to Codecov
@@ -284,10 +276,6 @@ jobs:
         with:
           name: storybook-config-dist
           path: packages/storybook-config/dist
-      - name: Build STL package
-        run: pnpm --filter @ermnvldmr/stl build
-      - name: Build UI package
-        run: pnpm --filter @ermnvldmr/ui build
       - name: Build WWW service
         run: pnpm --filter @ermnvldmr/www build
 

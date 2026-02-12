@@ -1,5 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react';
 import { Welcome } from './Welcome';
+
+import type { Meta, StoryObj } from '@storybook/react';
 
 const meta: Meta<typeof Welcome> = {
   title: 'Widgets/Welcome',

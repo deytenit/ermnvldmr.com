@@ -70,7 +70,7 @@
     "playwright": "^1.57.0",
     "postcss": "^8.5.6",
     "storybook": "^8.6.15",
-    "storybook-react-rsbuild": "^2.1.6",
+    "storybook-react-rsbuild": "^1.0.3",
     "typescript": "^5.8.3",
     "vitest": "^4.0.18",
     "wait-on": "^8.0.3"

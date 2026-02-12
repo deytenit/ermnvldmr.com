@@ -139,10 +139,6 @@ jobs:
         with:
           name: rsbuild-config-dist
           path: packages/rsbuild-config/dist
-      - name: Build STL package
-        run: pnpm --filter @ermnvldmr/stl build
-      - name: Build UI package
-        run: pnpm --filter @ermnvldmr/ui build
       - name: Build static service
         run: pnpm --filter @ermnvldmr/static build
       - name: Upload build artifacts
