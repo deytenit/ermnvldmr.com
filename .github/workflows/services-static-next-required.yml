@@ -64,9 +64,8 @@ jobs:
       - name: Upload Config Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: config-artifacts
-          path: |
-            packages/rsbuild-config/dist
+          name: rsbuild-config-dist
+          path: packages/rsbuild-config/dist
           retention-days: 1
 
   lint-static:
@@ -88,8 +87,8 @@ jobs:
       - name: Download Config Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: config-artifacts
-          path: .
+          name: rsbuild-config-dist
+          path: packages/rsbuild-config/dist
       - name: Lint static service
         run: pnpm --filter @ermnvldmr/static lint
 
@@ -112,8 +111,8 @@ jobs:
       - name: Download Config Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: config-artifacts
-          path: .
+          name: rsbuild-config-dist
+          path: packages/rsbuild-config/dist
       - name: Typecheck static service
         run: pnpm --filter @ermnvldmr/static typecheck
 
@@ -136,8 +135,8 @@ jobs:
       - name: Download Config Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: config-artifacts
-          path: .
+          name: rsbuild-config-dist
+          path: packages/rsbuild-config/dist
       - name: Build static service
         run: pnpm --filter @ermnvldmr/static build
       - name: Upload build artifacts

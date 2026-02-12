@@ -1,7 +1,7 @@
 {
   "name": "@ermnvldmr/stl",
   "version": "1.0.0",
-  "description": "Common reusable dependencies",
+  "description": "Common utilities for ermnvldmr projects",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
