@@ -20,12 +20,30 @@ import { pluginDts } from 'rsbuild-plugin-dts';
 export function defineServiceConfig(config: RsbuildConfig = {}): RsbuildConfig {
   return defineConfig({
     plugins: [pluginReact(), pluginTypeCheck()],
+    output: {
+      distPath: {
+        font: 'static/font',
+      },
+      filename: {
+        font: '[name][ext]',
+      },
+    },
     html: {
       template: './src/static/index.html',
       meta: {
         description: 'Thoughts and creations of mine',
       },
       tags: [
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'preload',
+            as: 'font',
+            type: 'font/woff2',
+            href: '/static/font/lato-var.woff2',
+            crossorigin: true,
+          },
+        },
         {
           tag: 'style',
           children: `
