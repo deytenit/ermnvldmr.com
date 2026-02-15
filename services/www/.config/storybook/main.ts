@@ -3,7 +3,7 @@ import { pluginBabel } from '@rsbuild/plugin-babel';
 import type { StorybookConfig } from 'storybook-react-rsbuild';
 
 const config: StorybookConfig = {
-  stories: ['../src/**/*.stories.@(js|jsx|ts|tsx|mdx)'],
+  stories: ['../../src/**/*.stories.@(js|jsx|ts|tsx|mdx)'],
   addons: [
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',

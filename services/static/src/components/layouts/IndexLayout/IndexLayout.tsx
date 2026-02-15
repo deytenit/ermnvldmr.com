@@ -31,20 +31,15 @@ export function IndexLayout({ children }: IndexLayoutProps): React.JSX.Element {
       <VStack as="main" className="min-h-[105vh] w-full flex-1">
         {children}
       </VStack>
-
       <VStack as="footer" className="w-full" gap={0}>
         <Separator thinned={false} />
-        <Container className="px-6 py-12 md:px-12">
+        <Container className="w-full" padding={12}>
           <HStack align="center" className="w-full" justify="between">
             <VStack align="start" gap={1}>
               <Text color="muted" size="s">
                 © {currentYear} Vladimir Eremin
               </Text>
-              <Link href="https://creativecommons.org/licenses/by/4.0/" size="s">
-                CC-BY 4.0
-              </Link>
             </VStack>
-            
             <ThemeSwitch />
           </HStack>
         </Container>
