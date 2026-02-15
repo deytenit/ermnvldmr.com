@@ -1,4 +1,4 @@
-import { Container, HStack, Link, ThemeSwitch, useTheme, VStack, Text, Separator } from '@ermnvldmr/ui';
+import { Container, HStack, ThemeSwitch, useTheme, VStack, Text, Separator } from '@ermnvldmr/ui';
 import React from 'react';
 
 /**
