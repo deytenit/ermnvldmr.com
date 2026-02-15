@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Button } from './Button';
-import { render, screen, fireEvent } from '../../test-utils';
+import { render, screen, fireEvent } from '../../lib/testing';
 
 describe('components/Button', () => {
   it('renders correctly as a button by default', () => {

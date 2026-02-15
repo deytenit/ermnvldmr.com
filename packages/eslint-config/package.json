@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "description": "Shared ESLint configuration",
   "type": "module",
-  "main": "./index.js",
+  "exports": {
+    "./dev": "./src/dev.js",
+    "./testing": "./src/testing.js"
+  },
   "files": [
-    "index.js",
-    "react.js",
-    "astro.js"
+    "src"
   ],
   "dependencies": {
     "@eslint/js": "^9.39.2",

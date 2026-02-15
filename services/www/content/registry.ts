@@ -9,11 +9,23 @@ export interface Article {
   updatedDate?: Date;
   tags?: string[];
   image?: string;
-  Component: React.ComponentType<{ components?: Record<string, React.ComponentType<any>> }>;
+  Component: React.ComponentType<{ components?: Record<string, React.ComponentType<unknown>> }>;
 }
 
-function register(module: any, slug: string): Article {
-  const { frontmatter, default: Component } = module;
+interface MdxModule {
+  frontmatter: {
+    title: string;
+    description?: string;
+    createdDate: string;
+    updatedDate?: string;
+    tags?: string[];
+    image?: string;
+  };
+  default: React.ComponentType<{ components?: Record<string, React.ComponentType<unknown>> }>;
+}
+
+function register(module: unknown, slug: string): Article {
+  const { frontmatter, default: Component } = module as MdxModule;
   return {
     slug,
     title: frontmatter.title,

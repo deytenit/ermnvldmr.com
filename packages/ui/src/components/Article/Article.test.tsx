@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Article } from './Article';
-import { render, screen } from '../../test-utils';
+import { render, screen } from '../../lib/testing';
 
 describe('components/Article', () => {
   const props = {

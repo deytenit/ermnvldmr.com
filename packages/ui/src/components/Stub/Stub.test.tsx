@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Stub } from './Stub';
-import { render, screen } from '../../test-utils';
+import { render, screen } from '../../lib/testing';
 
 describe('components/Stub', () => {
   it('renders correctly with default props', () => {

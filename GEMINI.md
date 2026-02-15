@@ -108,6 +108,26 @@ Services consume packages but are independent of each other. They can be develop
 - **Explicit Dependencies**: All inter-package dependencies declared in package.json
 - **Build Isolation**: Each package can be built independently
 - **Configuration Inheritance**: Services inherit from shared configurations
+- **Package Entry Points**:
+  - `.` (Main): Runtime code used in production (e.g., `import { ... } from '@ermnvldmr/stl'`).
+  - `/testing`: Test-related utilities and mocks (e.g., `import { ... } from '@ermnvldmr/stl/testing'`).
+  - `/dev`: Build-time dependencies (e.g., `import { ... } from '@ermnvldmr/stl/dev'`).
+  - All other entry points are forbidden. Strictly build-time packages must still expose via `/dev`.
+- **Directory Structure (Packages & Services)**:
+  - `src/lib/`: Helpers, utilities, and types.
+    - `{category}/`: Grouped logic.
+    - `index.ts`: Barrel export for all of `lib/`.
+    - `testing.ts`: Testing utilities for the library.
+    - `dev.ts`: Build-time utilities for the library.
+  - `src/components/`: UI components.
+    - `{ComponentName}/`: Isolated component directory.
+    - `index.ts`: Barrel export for all components.
+    - `testing.ts`: Component-specific testing utilities.
+  - `src/static/`: Static assets (`.html`, `.css`, `.js`) directly in this directory (no subdirectories).
+  - `src/app/` (Services only): Page definitions.
+    - `{page}.tsx`: Single file per page, inlining the component in `createPage`.
+    - `{path}/{page}.tsx`: Nested routing structure.
+  - Top-level `src/index.ts`, `src/testing.ts`, and `src/dev.ts` should only re-export from `lib/` or `components/`.
 
 ## 📝 Coding Conventions
 
@@ -202,32 +222,50 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
 ```
 packages/ui/
+├── .config/
+│   ├── vitest/
+│   │   └── setup.ts
+│   └── storybook/
+│       ├── main.ts
+│       └── preview.tsx
 ├── src/
 │   ├── components/           # Component categories
-│   │   ├── generic/         # Layout and generic components
-│   │   └── paper/           # Themed component variants
-│   ├── styles/              # Global styles and CSS
-│   ├── test-utils.tsx       # Testing utilities
-│   └── index.ts            # Main package exports
+│   │   ├── index.ts         # Production barrel
+│   │   ├── testing.ts       # Testing barrel
+│   │   └── Button/          # Isolated component
+│   ├── lib/                  # Core logic
+│   │   ├── index.ts
+│   │   ├── testing.ts
+│   │   └── dev.ts
+│   ├── static/               # Flat static assets (CSS, etc.)
+│   ├── index.ts              # Main entry point (runtime)
+│   ├── testing.ts            # Testing entry point
+│   └── dev.ts                # Dev entry point
 ├── package.json
-├── vite.config.ts
-├── tsconfig.json
-└── .storybook/             # Storybook configuration
+├── rsbuild.config.ts
+└── tsconfig.json
 ```
 
 #### Service Structure (www example)
 
 ```
 services/www/
+├── .config/
+│   ├── vitest/
+│   │   └── setup.ts
+│   └── storybook/
 ├── src/
-│   ├── layouts/            # Astro layout components
-│   ├── pages/              # Astro pages (file-based routing)
-│   ├── shared/             # Shared utilities and constants
-│   └── global.css          # Service-specific styles
-├── public/                 # Static assets
-├── astro.config.mjs        # Astro configuration
-├── package.json
-└── tailwind.config.mjs     # Tailwind configuration
+│   ├── app/                 # Single file per page
+│   │   ├── index.tsx        # Inlined createPage
+│   │   └── articles/
+│   ├── components/          # layouts, widgets
+│   ├── lib/                 # core, shared
+│   ├── static/              # global.css, index.html
+│   ├── index.ts
+│   └── ...
+├── public/                 # Direct static assets (images)
+├── rsbuild.config.ts
+└── package.json
 ```
 
 ## 🎨 Design System (UI Package)
@@ -269,16 +307,14 @@ Each configuration package provides standardized setups:
 
 ```javascript
 // Provides: base, react, astro configurations
-import { base } from '@ermnvldmr/eslint-config';
-import { react } from '@ermnvldmr/eslint-config/react';
-import { astro } from '@ermnvldmr/eslint-config/astro';
+import { baseConfig } from '@ermnvldmr/eslint-config/dev';
 ```
 
 #### Vitest Configuration
 
 ```typescript
 // Provides: base, react configurations from rsbuild-config
-import { baseVitestConfig } from '@ermnvldmr/rsbuild-config/vitest';
+import { baseVitestConfig, reactVitestConfig } from '@ermnvldmr/rsbuild-config/dev';
 import { mergeConfig } from 'vitest/config';
 ```
 
@@ -286,7 +322,7 @@ import { mergeConfig } from 'vitest/config';
 
 ```typescript
 // Provides: definePackageConfig, defineServiceConfig
-import { definePackageConfig } from '@ermnvldmr/rsbuild-config';
+import { definePackageConfig } from '@ermnvldmr/rsbuild-config/dev';
 ```
 
 ### Service Configuration Inheritance

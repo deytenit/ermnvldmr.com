@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Link } from './Link';
-import { render, screen } from '../../test-utils';
+import { render, screen } from '../../lib/testing';
 
 describe('components/Link', () => {
   it('renders correctly as a link when href is provided', () => {

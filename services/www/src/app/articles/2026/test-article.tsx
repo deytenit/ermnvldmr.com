@@ -1,6 +1,9 @@
-import { ArticlePage } from './ArticlePage';
+import { MARKDOWN_COMPONENTS } from '@ermnvldmr/ui';
+import React from 'react';
+
 import { articles } from '../../../../content/registry';
-import { createPage } from '../../../lib/createPage';
+import { ArticleLayout } from '../../../components/layouts/ArticleLayout/ArticleLayout';
+import { createPage } from '../../../lib/core/createPage';
 
 const article = articles['test-article'];
 
@@ -9,7 +12,22 @@ if (!article) {
   throw new Error('Article not found');
 }
 
-createPage(ArticlePage, {
-  title: `${article.title} - Vladimir Eremin`,
-  description: article.description,
-});
+createPage(
+  function TestArticlePage(): React.JSX.Element {
+    return (
+      <ArticleLayout
+        createdDate={article.createdDate}
+        description={article.description}
+        tags={article.tags}
+        title={article.title}
+        updatedDate={article.updatedDate}
+      >
+        <article.Component components={MARKDOWN_COMPONENTS} />
+      </ArticleLayout>
+    );
+  },
+  {
+    title: `${article.title} - Vladimir Eremin`,
+    description: article.description,
+  }
+);

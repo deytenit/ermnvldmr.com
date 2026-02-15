@@ -1,4 +1,4 @@
-import { defineServiceConfig } from '@ermnvldmr/rsbuild-config';
+import { defineServiceConfig } from '@ermnvldmr/rsbuild-config/dev';
 
 export default defineServiceConfig({
   source: {

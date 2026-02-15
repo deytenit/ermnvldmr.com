@@ -1,5 +1,5 @@
 // @ts-check
-import { baseConfig } from '@ermnvldmr/eslint-config';
+import { baseConfig } from '@ermnvldmr/eslint-config/dev';
 import eslintPluginAstro from 'eslint-plugin-astro';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
@@ -23,6 +23,7 @@ export default [
       '**/storybook-static/**',
       '**/.next/**',
       '**/.astro/**',
+      '**/*.d.ts',
     ],
   },
 
@@ -143,5 +144,5 @@ export default [
     languageOptions: {
       globals: globals.node,
     },
-  }
+  },
 ];

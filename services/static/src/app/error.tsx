@@ -1,15 +1,15 @@
 import { VStack, HStack, Header, Paragraph, Link } from '@ermnvldmr/ui';
 import React, { useEffect, useState } from 'react';
 
-import { createPage } from '../lib/createPage';
+import { createPage } from '../lib/core/createPage';
 import {
   AUTHOR_EMAIL,
   AUTHOR_NAME,
   SITE_URL,
   ERROR_TITLE,
   ERROR_DESCRIPTION,
-} from '../shared/constants';
-import { getCurrentYear, getHttpStatusUrl } from '../shared/utils';
+} from '../lib/shared/constants';
+import { getCurrentYear, getHttpStatusUrl } from '../lib/shared/utils';
 
 createPage(
   function ErrorPage() {
@@ -25,9 +25,7 @@ createPage(
        * const isNav = isNavigationTiming(entry);
        * ```
        */
-      function isNavigationTiming(
-        entry: PerformanceEntry
-      ): entry is PerformanceNavigationTiming {
+      function isNavigationTiming(entry: PerformanceEntry): entry is PerformanceNavigationTiming {
         return entry.entryType === 'navigation';
       }
 
@@ -42,17 +40,18 @@ createPage(
       <main className="h-screen w-screen">
         <VStack align="center" className="w-full h-full" justify="center">
           <VStack align="start" gap={8}>
-                      <Header level={1}>
-                        Exceptional Situation
-                        {status !== null && (
-                          <>
-                            {' '}
-                            <Link href={getHttpStatusUrl(status)} size="l" type="display">
-                              #{status}
-                            </Link>
-                          </>
-                        )}
-                      </Header>            <Paragraph>
+            <Header level={1}>
+              Exceptional Situation
+              {status !== null && (
+                <>
+                  {' '}
+                  <Link href={getHttpStatusUrl(status)} size="l" type="display">
+                    #{status}
+                  </Link>
+                </>
+              )}
+            </Header>{' '}
+            <Paragraph>
               This location is unavailable at the moment — static content does not dwell here
             </Paragraph>
             <HStack className="w-full" justify="between">

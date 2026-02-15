@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Time } from './Time';
-import { render, screen } from '../../test-utils';
+import { render, screen } from '../../lib/testing';
 
 describe('components/Time', () => {
   it('renders correctly with a Date object', () => {

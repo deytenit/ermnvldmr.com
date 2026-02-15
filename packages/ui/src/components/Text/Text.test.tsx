@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Text } from './Text';
-import { render, screen } from '../../test-utils';
+import { render, screen } from '../../lib/testing';
 
 describe('components/Text', () => {
   it('renders children correctly', () => {

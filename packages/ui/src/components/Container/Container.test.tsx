@@ -2,7 +2,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 
 import { Container } from './Container';
-import { render, screen } from '../../test-utils';
+import { render, screen } from '../../lib/testing';
 
 describe('components/Container', () => {
   it('handles onPress event', async () => {

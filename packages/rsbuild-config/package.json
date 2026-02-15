@@ -2,11 +2,9 @@
   "name": "@ermnvldmr/rsbuild-config",
   "version": "0.0.1",
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js",
-    "./vitest": "./dist/vitest.js"
+    "./dev": "./dist/dev.js",
+    "./testing": "./dist/testing.js"
   },
   "scripts": {
     "build": "tsc"

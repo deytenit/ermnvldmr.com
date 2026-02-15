@@ -1,4 +1,4 @@
-import { defineServiceConfig } from '@ermnvldmr/rsbuild-config';
+import { defineServiceConfig } from '@ermnvldmr/rsbuild-config/dev';
 import { pluginMdx } from '@rsbuild/plugin-mdx';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';

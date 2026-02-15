@@ -1,9 +1,11 @@
-import { definePackageConfig } from '@ermnvldmr/rsbuild-config';
+import { definePackageConfig } from '@ermnvldmr/rsbuild-config/dev';
 
 export default definePackageConfig({
   source: {
     entry: {
       index: './src/index.ts',
+      testing: './src/testing.ts',
+      dev: './src/dev.ts',
     },
     alias: {
       '@': './src',
@@ -16,7 +18,7 @@ export default definePackageConfig({
       js: '',
     },
     filename: {
-      js: 'index.js',
+      js: '[name].js',
     },
     cleanDistPath: true,
   },

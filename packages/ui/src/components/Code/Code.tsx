@@ -73,13 +73,18 @@ export const Code = memo(function Code({
 
   if (context?.isInCodeBlock) {
     const { showLineNumbers } = context;
-    
+
     let content = children;
     if (typeof children === 'string') {
-      content = children.trimEnd().split('\n').map((line, i) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <span key={i} className="block min-h-[1.5em]">{line || '\n'}</span>
-      ));
+      content = children
+        .trimEnd()
+        .split('\n')
+        .map((line, i) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <span key={i} className="block min-h-[1.5em]">
+            {line || '\n'}
+          </span>
+        ));
     }
 
     return (

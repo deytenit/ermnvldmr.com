@@ -1,15 +1,15 @@
 import { VStack, HStack, Header, Paragraph, Link } from '@ermnvldmr/ui';
 import React from 'react';
 
-import { createPage } from '../lib/createPage';
+import { createPage } from '../lib/core/createPage';
 import {
   AUTHOR_EMAIL,
   AUTHOR_NAME,
   SITE_URL,
   SITE_TITLE,
   SITE_DESCRIPTION,
-} from '../shared/constants';
-import { getCurrentYear } from '../shared/utils';
+} from '../lib/shared/constants';
+import { getCurrentYear } from '../lib/shared/utils';
 
 createPage(
   function Index() {

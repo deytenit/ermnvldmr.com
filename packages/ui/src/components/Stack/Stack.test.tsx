@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Stack } from './Stack';
-import { render, screen } from '../../test-utils';
+import { render, screen } from '../../lib/testing';
 
 describe('components/Stack', () => {
   it('renders children correctly', () => {

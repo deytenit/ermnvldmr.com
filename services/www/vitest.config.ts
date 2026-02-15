@@ -1,4 +1,4 @@
-import { reactVitestConfig } from '@ermnvldmr/rsbuild-config/vitest';
+import { reactVitestConfig } from '@ermnvldmr/rsbuild-config/dev';
 import { mergeConfig } from 'vitest/config';
 
 export default mergeConfig(reactVitestConfig, {

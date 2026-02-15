@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Breadcrumbs } from './Breadcrumbs';
-import { render, screen } from '../../test-utils';
+import { render, screen } from '../../lib/testing';
 import { Link } from '../Link/Link';
 
 describe('components/Breadcrumbs', () => {

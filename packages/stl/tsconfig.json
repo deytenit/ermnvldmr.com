@@ -3,8 +3,9 @@
   "compilerOptions": {
     "outDir": "./dist",
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "types": ["vitest/globals"]
   },
   "include": ["src/**/*"],
-  "exclude": ["dist", "**/*.test.ts", "**/*.test.tsx"]
+  "exclude": ["dist"]
 }

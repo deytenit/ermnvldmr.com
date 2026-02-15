@@ -1,0 +1,46 @@
+import { pluginBabel } from '@rsbuild/plugin-babel';
+
+import type { StorybookConfig } from 'storybook-react-rsbuild';
+
+export const baseStorybookConfig: Partial<StorybookConfig> = {
+  addons: [
+    '@storybook/addon-essentials',
+    '@storybook/addon-interactions',
+    '@storybook/addon-a11y',
+    '@storybook/addon-themes',
+    '@storybook/addon-coverage',
+  ],
+  framework: {
+    name: 'storybook-react-rsbuild',
+    options: {},
+  },
+  typescript: {
+    check: false,
+    reactDocgen: 'react-docgen-typescript',
+    reactDocgenTypescriptOptions: {
+      shouldExtractLiteralValuesFromEnum: true,
+      propFilter: (prop) => (prop.parent ? !prop.parent.fileName.includes('node_modules') : true),
+    },
+  },
+  rsbuildFinal: (config) => {
+    // Add Babel plugin with istanbul for coverage
+    config.plugins = config.plugins ?? [];
+    config.plugins.push(
+      pluginBabel({
+        include: /\.(?:jsx|tsx)$/,
+        exclude: /[\\/]node_modules[\\/]/,
+        babelLoaderOptions: (opts) => {
+          opts.plugins = opts.plugins ?? [];
+          opts.plugins.push([
+            'babel-plugin-istanbul',
+            {
+              exclude: ['**/*.stories.tsx', '**/*.test.tsx', 'node_modules/**'],
+              extension: ['.js', '.jsx', '.ts', '.tsx'],
+            },
+          ]);
+        },
+      })
+    );
+    return config;
+  },
+};

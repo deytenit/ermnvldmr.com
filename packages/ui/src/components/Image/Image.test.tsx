@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Image } from './Image';
-import { render, screen, fireEvent } from '../../test-utils';
+import { render, screen, fireEvent } from '../../lib/testing';
 
 describe('components/Image', () => {
   const defaultProps = {

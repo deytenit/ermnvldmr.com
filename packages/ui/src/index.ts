@@ -1,2 +1,3 @@
-export * from './components';
-import './styles/index.css';
+export * from './lib/index.js';
+export * from './components/index.js';
+import './static/styles.css';

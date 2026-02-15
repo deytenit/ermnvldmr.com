@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Paragraph } from './Paragraph';
-import { render, screen } from '../../test-utils';
+import { render, screen } from '../../lib/testing';
 
 describe('components/Paragraph', () => {
   it('renders as a p tag by default', () => {
