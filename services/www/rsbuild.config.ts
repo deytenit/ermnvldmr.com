@@ -1,4 +1,4 @@
-import { defineServiceConfig } from '@ermnvldmr/rsbuild-config/dev';
+import { defineServiceConfig, discoverEntries } from '@ermnvldmr/rsbuild-config/dev';
 import { pluginMdx } from '@rsbuild/plugin-mdx';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
@@ -12,12 +12,6 @@ export default defineServiceConfig({
     }),
   ],
   source: {
-    entry: {
-      index: './src/app/index.tsx',
-      'articles/index': './src/app/articles/index.tsx',
-      'articles/2026/test-article': './src/app/articles/2026/test-article.tsx',
-      'articles/2026/matrix-server-deployment-guide':
-        './src/app/articles/2026/matrix-server-deployment-guide.tsx',
-    },
+    entry: discoverEntries(import.meta.dirname, './src/app/**/*.tsx'),
   },
 });

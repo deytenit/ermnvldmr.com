@@ -22,6 +22,17 @@ export function defineServiceConfig(config: RsbuildConfig = {}): RsbuildConfig {
     plugins: [pluginReact(), pluginTypeCheck()],
     html: {
       template: './src/static/index.html',
+      tags: [
+        {
+          tag: 'style',
+          children: `
+            :root { background-color: #f6f6f6; color: #262626; }
+            .dark { background-color: #262626; color: #f6f6f6; }
+            body { margin: 0; transition: background-color 0.2s ease; }
+          `,
+          head: true,
+        },
+      ],
     },
     ...config,
   });

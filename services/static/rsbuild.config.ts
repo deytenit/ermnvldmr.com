@@ -1,11 +1,8 @@
-import { defineServiceConfig } from '@ermnvldmr/rsbuild-config/dev';
+import { defineServiceConfig, discoverEntries } from '@ermnvldmr/rsbuild-config/dev';
 
 export default defineServiceConfig({
   source: {
-    entry: {
-      index: './src/app/index.tsx',
-      error: './src/app/error.tsx',
-    },
+    entry: discoverEntries(import.meta.dirname, './src/app/**/*.tsx'),
   },
   html: {
     title: 'Static Content',

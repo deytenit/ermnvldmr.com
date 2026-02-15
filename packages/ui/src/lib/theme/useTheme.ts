@@ -41,10 +41,19 @@ export function useTheme(): UseThemeResult {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }, []);
 
+  // During hydration, we want to match what's already on the document
+  const initialTheme = typeof window !== 'undefined' 
+    ? (window.document.documentElement.classList.contains('dark') ? 'dark' : 'light')
+    : 'light';
+
   useEffect(() => {
     const root = window.document.documentElement;
     const isDark = resolveTheme(preference) === 'dark';
-    root.classList.toggle('dark', isDark);
+    
+    // Only toggle if it doesn't match to avoid redundant layout shifts
+    if (root.classList.contains('dark') !== isDark) {
+      root.classList.toggle('dark', isDark);
+    }
 
     if (preference === 'system') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -64,6 +73,6 @@ export function useTheme(): UseThemeResult {
   return {
     preference,
     setPreference,
-    resolvedTheme: resolveTheme(preference),
+    resolvedTheme: typeof window !== 'undefined' ? resolveTheme(preference) : initialTheme,
   };
 }

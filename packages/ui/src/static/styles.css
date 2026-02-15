@@ -112,6 +112,7 @@
 :root {
   /* Core palette */
   --rb-base: var(--rb-color-neutral-50);
+  --rb-background: var(--rb-base);
   --rb-outline: var(--rb-color-neutral-500);
   --rb-input: var(--rb-color-neutral-800);
   --rb-text: var(--rb-color-neutral-950);
@@ -144,6 +145,7 @@
 .dark {
   /* Core palette flips */
   --rb-base: var(--rb-color-neutral-950);
+  --rb-background: var(--rb-base);
   --rb-text: var(--rb-color-neutral-50);
   --rb-outline: var(--rb-color-neutral-500);
   --rb-input: var(--rb-color-neutral-300);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { createRoot } from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import '../../static/global.css';
 
 /**
@@ -29,10 +29,16 @@ export function createPage(Component: React.ComponentType, options: PageOptions 
   }
 
   if (rootElement) {
-    createRoot(rootElement).render(
+    const node = (
       <React.StrictMode>
         <Component />
       </React.StrictMode>
     );
+
+    if (rootElement.hasChildNodes()) {
+      hydrateRoot(rootElement, node);
+    } else {
+      createRoot(rootElement).render(node);
+    }
   }
 }

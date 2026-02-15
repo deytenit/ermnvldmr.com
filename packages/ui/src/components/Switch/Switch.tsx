@@ -60,7 +60,7 @@ export function Switch(props: SwitchProps): React.JSX.Element {
   const { inputProps } = useSwitch(props, state, ref);
   const { isFocusVisible, focusProps } = useFocusRing();
 
-  const getVariantClasses = (): string => {
+  const getVariantStyles = (): React.CSSProperties => {
     const isNegative = color.endsWith('-negative');
     const baseColor = color.replace('-negative', '');
 
@@ -76,31 +76,22 @@ export function Switch(props: SwitchProps): React.JSX.Element {
     const backgroundColor = isNegative ? colorValues.text : colorValues.base;
 
     if (!state.isSelected) {
-      switch (variant) {
-        case 'solid':
-          return 'bg-[var(--rb-muted-base)]';
-        case 'outline':
-          return 'bg-transparent border-[var(--rb-muted-base)] border-2';
-        case 'ghost':
-          return 'bg-transparent border-transparent';
-        default:
-          return 'bg-[var(--rb-muted-base)]';
-      }
+      return {};
     }
 
     switch (variant) {
       case 'solid':
-        return `bg-[${backgroundColor}]`;
+        return { backgroundColor };
       case 'outline':
-        return `bg-transparent border-[${backgroundColor}] border-2`;
+        return { borderColor: backgroundColor };
       case 'ghost':
-        return `bg-[${backgroundColor}]/20 border-transparent`;
+        return { backgroundColor: `${backgroundColor}33`, borderColor: 'transparent' }; // 33 is 20% opacity in hex
       default:
-        return `bg-[${backgroundColor}]`;
+        return { backgroundColor };
     }
   };
 
-  const getThumbClasses = (): string => {
+  const getThumbStyles = (): React.CSSProperties => {
     const isNegative = color.endsWith('-negative');
     const baseColor = color.replace('-negative', '');
 
@@ -112,20 +103,20 @@ export function Switch(props: SwitchProps): React.JSX.Element {
       neutral: { text: 'var(--rb-text)' },
     };
 
-    const thumbColor = isNegative ? 'var(--rb-background)' : colors[baseColor].text;
+    const thumbColor = isNegative ? 'var(--rb-base)' : colors[baseColor].text;
 
     if (!state.isSelected) {
-      return 'bg-[var(--rb-text)]';
+      return {};
     }
 
     switch (variant) {
       case 'solid':
-        return `bg-[${thumbColor}]`;
+        return { backgroundColor: thumbColor };
       case 'outline':
       case 'ghost':
-        return `bg-[${isNegative ? 'var(--rb-text)' : 'var(--rb-' + baseColor + '-base)'}]`;
+        return { backgroundColor: isNegative ? 'var(--rb-text)' : `var(--rb-${baseColor}-base)` };
       default:
-        return `bg-[${thumbColor}]`;
+        return { backgroundColor: thumbColor };
     }
   };
 
@@ -142,19 +133,22 @@ export function Switch(props: SwitchProps): React.JSX.Element {
       </VisuallyHidden>
       <div
         aria-hidden="true"
+        style={getVariantStyles()}
         className={cn(
           'relative w-11 h-6 transition-all duration-200 ease-in-out rounded-full outline-none flex items-center',
-          getVariantClasses(),
+          !state.isSelected && (variant === 'solid' ? 'bg-[var(--rb-muted-base)]' : variant === 'outline' ? 'bg-transparent border-[var(--rb-muted-base)] border-2' : 'bg-transparent border-transparent'),
+          state.isSelected && variant === 'outline' && 'bg-transparent border-2',
           isFocusVisible && 'ring-2 ring-offset-2 ring-[var(--rb-ring)]',
           props.isDisabled && 'grayscale-[0.5]'
         )}
       >
         <div
+          style={getThumbStyles()}
           className={cn(
             'w-4 h-4 transition-all duration-200 ease-in-out transform rounded-full shadow-sm',
+            !state.isSelected && 'bg-[var(--rb-text)]',
             variant === 'outline' ? 'ml-0.5' : 'ml-1',
-            state.isSelected ? (variant === 'outline' ? 'translate-x-4.5' : 'translate-x-5') : 'translate-x-0',
-            getThumbClasses()
+            state.isSelected ? (variant === 'outline' ? 'translate-x-4.5' : 'translate-x-5') : 'translate-x-0'
           )}
         />
       </div>
