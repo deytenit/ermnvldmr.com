@@ -28,8 +28,8 @@ export function IndexLayout({ children }: IndexLayoutProps): React.JSX.Element {
   const currentYear = new Date().getFullYear();
 
   return (
-    <VStack align="center" className="min-h-screen bg-[var(--rb-background)] transition-colors duration-200" justify="between">
-      <VStack align="stretch" as="main" className="min-h-[105vh] py-8 mx-auto" justify="start">
+    <VStack align="center" className="min-h-screen w-screen bg-[var(--rb-background)] transition-colors duration-200" justify="between">
+      <VStack align="center" as="main" className="min-h-[105vh] py-8 mx-auto" justify="start">
         {children}
       </VStack>
       <VStack as="footer" className="w-full" gap={0}>

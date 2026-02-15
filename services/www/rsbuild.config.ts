@@ -16,6 +16,8 @@ export default defineServiceConfig({
       index: './src/app/index.tsx',
       'articles/index': './src/app/articles/index.tsx',
       'articles/2026/test-article': './src/app/articles/2026/test-article.tsx',
+      'articles/2026/matrix-server-deployment-guide':
+        './src/app/articles/2026/matrix-server-deployment-guide.tsx',
     },
   },
 });

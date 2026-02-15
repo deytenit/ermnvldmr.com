@@ -68,7 +68,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
 
   return (
     <IndexLayout>
-      <Container as="article" className={cn('min-w-[720px]', className)}>
+      <Container as="article" className={cn('w-8/12', className)}>
         <VStack className="w-full" gap={8}>
           <VStack as="header" gap={4}>
             <HStack align="center" gap={2} wrap="wrap">

@@ -1,5 +1,6 @@
 import React from 'react';
 import * as TestArticle from './articles/2026/test-article.mdx';
+import * as MatrixServerDeploymentGuide from './articles/2026/matrix-server-deployment-guide.mdx';
 
 export interface Article {
   slug: string;
@@ -40,6 +41,10 @@ function register(module: unknown, slug: string): Article {
 
 export const articles: Record<string, Article> = {
   'test-article': register(TestArticle, '2026/test-article'),
+  'matrix-server-deployment-guide': register(
+    MatrixServerDeploymentGuide,
+    '2026/matrix-server-deployment-guide'
+  ),
 };
 
 export const sortedArticles = Object.values(articles).sort(
