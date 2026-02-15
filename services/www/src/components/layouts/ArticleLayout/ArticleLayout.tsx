@@ -2,6 +2,8 @@ import { cn } from '@ermnvldmr/stl';
 import { VStack, HStack, Markdown, Container, Time, Header, Paragraph, Text } from '@ermnvldmr/ui';
 import React from 'react';
 
+import { IndexLayout } from '../IndexLayout/IndexLayout';
+
 /**
  * Props for the ArticleLayout component.
  */
@@ -65,40 +67,41 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
   );
 
   return (
-    <Container as="article" className={cn('mx-auto max-w-3xl px-6 py-12 md:py-20', className)}>
-      <VStack as="header" className="pb-12" gap={4}>
-        <HStack align="center" className="flex-wrap" gap={4}>
-          {displayDate}
-          {tags && tags.length > 0 && (
-            <HStack className="flex-wrap" gap={2}>
-              {tags.map((tag) => (
-                <Text
-                  key={tag}
-                  className="before:text-muted-foreground/50 before:mr-0.5 before:content-['#']"
-                  color="muted"
-                  size="s"
-                >
-                  {tag}
-                </Text>
-              ))}
+    <IndexLayout>
+      <Container as="article" className={cn('min-w-[720px]', className)}>
+        <VStack className="w-full" gap={8}>
+          <VStack as="header" gap={4}>
+            <HStack align="center" gap={2} wrap="wrap">
+              {displayDate}
+              {tags && tags.length > 0 && (
+                <HStack gap={1} wrap="wrap">
+                  {tags.map((tag) => (
+                    <Text
+                      key={tag}
+                      className="before:content-['#']"
+                      color="muted"
+                      size="s"
+                    >
+                      {tag}
+                    </Text>
+                  ))}
+                </HStack>
+              )}
             </HStack>
-          )}
-        </HStack>
-
-        <Header className="leading-tight" level={1}>
-          {title}
-        </Header>
-
-        {description && (
-          <Paragraph italic className="leading-relaxed" color="muted" size="l">
-            {description}
-          </Paragraph>
-        )}
-      </VStack>
-
-      <Container as="section" className="article-content">
-        <Markdown>{children}</Markdown>
+            <Header level={1}>
+              {title}
+            </Header>
+            {description && (
+              <Paragraph italic color="muted" size="l">
+                {description}
+              </Paragraph>
+            )}
+          </VStack>
+          <Container as="section" className='w-full'>
+            <Markdown>{children}</Markdown>
+          </Container>
+        </VStack>
       </Container>
-    </Container>
+    </IndexLayout>
   );
 };

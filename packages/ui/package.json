@@ -46,6 +46,7 @@
     "lucide-react": "^0.503.0",
     "react-aria": "^3.45.0",
     "react-icons": "^5.5.0",
+    "react-stately": "^3.44.0",
     "tw-animate-css": "^1.2.8"
   },
   "devDependencies": {

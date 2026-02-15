@@ -3,6 +3,6 @@ import { mergeConfig } from 'vitest/config';
 
 export default mergeConfig(baseVitestConfig, {
   test: {
-    // Package specific overrides
+    environment: 'jsdom',
   },
 });

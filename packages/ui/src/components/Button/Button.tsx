@@ -173,7 +173,7 @@ const ButtonComponent = forwardRef<HTMLElement, ButtonProps>(function Button(pro
   };
 
   const sharedClasses = cn(
-    'inline-flex items-center justify-center font-medium transition-all duration-200 select-none outline-none relative overflow-hidden',
+    'inline-flex items-center justify-center font-medium transition-all duration-200 select-none outline-none relative overflow-hidden cursor-pointer',
     'active:scale-[0.98]',
     sizeClasses[size],
     roundedClasses[rounded],
@@ -181,7 +181,7 @@ const ButtonComponent = forwardRef<HTMLElement, ButtonProps>(function Button(pro
     fullWidth && 'w-full',
     isDisabled && 'opacity-50 cursor-not-allowed grayscale-[0.5] active:scale-100',
     isFocusVisible && 'ring-2 ring-[var(--rb-ring)] ring-offset-2',
-    isHovered && !isDisabled && 'brightness-95 dark:brightness-105',
+    isHovered && !isDisabled && 'brightness-90 dark:brightness-110',
     className
   );
 
