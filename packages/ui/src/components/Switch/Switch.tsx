@@ -133,7 +133,6 @@ export function Switch(props: SwitchProps): React.JSX.Element {
       </VisuallyHidden>
       <div
         aria-hidden="true"
-        style={getVariantStyles()}
         className={cn(
           'relative w-11 h-6 transition-all duration-200 ease-in-out rounded-full outline-none flex items-center',
           !state.isSelected && (variant === 'solid' ? 'bg-[var(--rb-muted-base)]' : variant === 'outline' ? 'bg-transparent border-[var(--rb-muted-base)] border-2' : 'bg-transparent border-transparent'),
@@ -141,15 +140,16 @@ export function Switch(props: SwitchProps): React.JSX.Element {
           isFocusVisible && 'ring-2 ring-offset-2 ring-[var(--rb-ring)]',
           props.isDisabled && 'grayscale-[0.5]'
         )}
+        style={getVariantStyles()}
       >
         <div
-          style={getThumbStyles()}
           className={cn(
             'w-4 h-4 transition-all duration-200 ease-in-out transform rounded-full shadow-sm',
             !state.isSelected && 'bg-[var(--rb-text)]',
             variant === 'outline' ? 'ml-0.5' : 'ml-1',
             state.isSelected ? (variant === 'outline' ? 'translate-x-4.5' : 'translate-x-5') : 'translate-x-0'
           )}
+          style={getThumbStyles()}
         />
       </div>
       {children && (

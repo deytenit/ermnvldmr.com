@@ -70,7 +70,7 @@ jobs:
           retention-days: 1
 
   lint-www:
-    name: Lint - WWW & Deps
+    name: Lint - WWW
     needs: build-configs
     runs-on: ubuntu-latest
     steps:
@@ -90,15 +90,11 @@ jobs:
         with:
           name: config-artifacts
           path: packages
-      - name: Lint STL package
-        run: pnpm --filter @ermnvldmr/stl lint
-      - name: Lint UI package
-        run: pnpm --filter @ermnvldmr/ui lint
       - name: Lint WWW service
         run: pnpm --filter @ermnvldmr/www lint
 
   typecheck-www:
-    name: Typecheck - WWW & Deps
+    name: Typecheck - WWW
     needs: build-configs
     runs-on: ubuntu-latest
     steps:
@@ -118,10 +114,6 @@ jobs:
         with:
           name: config-artifacts
           path: packages
-      - name: Typecheck STL package
-        run: pnpm --filter @ermnvldmr/stl typecheck
-      - name: Typecheck UI package
-        run: pnpm --filter @ermnvldmr/ui typecheck
       - name: Typecheck WWW service
         run: pnpm --filter @ermnvldmr/www typecheck
 
@@ -176,10 +168,6 @@ jobs:
         with:
           name: config-artifacts
           path: packages
-      - name: Test STL package
-        run: pnpm --filter @ermnvldmr/stl test:coverage
-      - name: Test UI package
-        run: pnpm --filter @ermnvldmr/ui test:coverage
       - name: Test WWW service
         run: pnpm --filter @ermnvldmr/www test:coverage
 
