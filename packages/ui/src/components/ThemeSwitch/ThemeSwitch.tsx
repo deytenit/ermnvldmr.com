@@ -45,7 +45,7 @@ export function ThemeSwitch(): React.JSX.Element {
         onPress={() => setPreference('system')}
       >
         <Text bold={preference === 'system'} size="s" type="label">
-          Auto
+          Follow system theme
         </Text>
       </Button>
     </HStack>

@@ -18,7 +18,11 @@ export function discoverEntries(root: string, pattern: string): Record<string, s
     const appMatch = file.match(/src\/app\/(.*)\.tsx$/);
     let name = appMatch ? appMatch[1] : filename;
     
-    name = name.replace(/\/index$/, '') || 'index';
+    // If it's src/app/articles/index.tsx -> name is 'articles/index'
+    // We want it to be 'articles/index' to generate 'dist/articles/index.html'
+    // Rsbuild automatically maps 'articles/index' entry to 'dist/articles/index.html'
+    // The previous replace(/\/index$/, '') was stripping the 'index' making it 'articles'
+    // which generates 'dist/articles.html' instead of 'dist/articles/index.html'
     
     entries[name] = join(root, file);
   }

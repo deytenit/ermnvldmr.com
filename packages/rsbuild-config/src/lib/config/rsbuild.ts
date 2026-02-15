@@ -22,6 +22,9 @@ export function defineServiceConfig(config: RsbuildConfig = {}): RsbuildConfig {
     plugins: [pluginReact(), pluginTypeCheck()],
     html: {
       template: './src/static/index.html',
+      meta: {
+        description: 'Thoughts and creations of mine',
+      },
       tags: [
         {
           tag: 'style',

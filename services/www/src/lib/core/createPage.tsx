@@ -29,6 +29,16 @@ export function createPage(Component: React.ComponentType, options: PageOptions 
     document.title = options.title;
   }
 
+  if (options.description) {
+    let metaDescription = document.querySelector('meta[name="description"]');
+    if (!metaDescription) {
+      metaDescription = document.createElement('meta');
+      metaDescription.setAttribute('name', 'description');
+      document.head.appendChild(metaDescription);
+    }
+    metaDescription.setAttribute('content', options.description);
+  }
+
   if (rootElement) {
     const node = (
       <React.StrictMode>

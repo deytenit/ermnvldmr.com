@@ -68,7 +68,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
 
   return (
     <IndexLayout>
-      <Container as="article" className={cn('w-8/12', className)}>
+      <Container as="article" bg="transparent" className={cn('w-full md:w-8/12', className)}>
         <VStack className="w-full" gap={8}>
           <VStack as="header" gap={4}>
             <HStack align="center" gap={2} wrap="wrap">
@@ -97,7 +97,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
               </Paragraph>
             )}
           </VStack>
-          <Container as="section" className='w-full'>
+          <Container as="section" bg="transparent" className='w-full'>
             <Markdown>{children}</Markdown>
           </Container>
         </VStack>
