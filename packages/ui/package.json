@@ -30,8 +30,8 @@
     "test:coverage": "vitest run --coverage",
     "storybook": "storybook dev -p 6007 -c .config/storybook",
     "build-storybook": "storybook build -c .config/storybook",
-    "test:storybook": "@storybook/test-runner",
-    "test:storybook:ci": "concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"http-server storybook-static --port 6006 --silent\" \"wait-on tcp:127.0.0.1:6006 && test-storybook --coverage --url http://127.0.0.1:6006\"",
+    "test:storybook": "test-storybook --config-dir .config/storybook",
+    "test:storybook:ci": "concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"http-server storybook-static --port 6006 --silent\" \"wait-on tcp:127.0.0.1:6006 && test-storybook --coverage --config-dir .config/storybook --url http://127.0.0.1:6006\"",
     "lint": "eslint src --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist coverage storybook-static"

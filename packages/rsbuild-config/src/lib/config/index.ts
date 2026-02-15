@@ -1,2 +1,2 @@
-export * from './rsbuild';
-export * from './vitest';
+export * from './rsbuild.js';
+export * from './vitest.js';

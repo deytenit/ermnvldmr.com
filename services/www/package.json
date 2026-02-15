@@ -13,13 +13,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:storybook": "test-storybook --coverage",
+    "test:storybook": "test-storybook --coverage --config-dir .config/storybook",
     "test:storybook:ci": "concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"http-server storybook-static --port 6006 --silent\" \"wait-on tcp:127.0.0.1:6006 && pnpm run test:storybook\"",
     "check": "pnpm run lint && pnpm run typecheck && pnpm run test",
     "clean": "rm -rf dist .turbo node_modules coverage storybook-static",
-    "storybook": "storybook dev -p 6006",
+    "storybook": "storybook dev -p 6006 -c .config/storybook",
     "storybook:preview": "http-server storybook-static --port 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build -c .config/storybook"
   },
   "dependencies": {
     "@ermnvldmr/stl": "workspace:*",

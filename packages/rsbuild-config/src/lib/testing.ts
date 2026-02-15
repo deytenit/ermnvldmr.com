@@ -1,1 +1,1 @@
-export * from './config/vitest';
+export * from './config/vitest.js';
