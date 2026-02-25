@@ -40,6 +40,9 @@ enableGitInfo: true
 
 # Hextra theme parameters
 params:
+  author:
+    name: Vladimir Eremin
+    email: personal@ermnvldmr.com
   description: 'Documentation for ermnvldmr.com services and infrastructure'
 
   # Search configuration
