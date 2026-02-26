@@ -257,9 +257,9 @@ Use for large screenshots, detailed logs, or deep-dive explanations that disrupt
 Use when the user must choose _one_ path (e.g., OS specific, Language specific).
 
 ```markdown
-{{< tabs items="JSON,YAML" >}}
-{{< tab >}} **JSON** content here... {{< /tab >}}
-{{< tab >}} **YAML** content here... {{< /tab >}}
+{{< tabs >}}
+{{< tab name="JSON" >}} **JSON** content here... {{< /tab >}}
+{{< tab name="YAML" >}} **YAML** content here... {{< /tab >}}
 {{< /tabs >}}
 ```
 

@@ -17,8 +17,8 @@ Quetza relies on environment variables for configuration. **Never** commit these
 
 ## 2. Deployment Strategies
 
-{{< tabs items="Docker (Recommended),Source" >}}
-{{< tab >}}
+{{< tabs >}}
+{{< tab name="Docker (Recommended)" >}}
 **Docker** ensures a consistent runtime environment.
 
 1.  **Build** the image:
@@ -35,7 +35,7 @@ docker run -d \
   quetza-bot
 `
     {{< /tab >}}
-    {{< tab >}}
+    {{< tab name="Source" >}}
     **Source** deployment is useful for development.
 
 3.  **Install** dependencies:
