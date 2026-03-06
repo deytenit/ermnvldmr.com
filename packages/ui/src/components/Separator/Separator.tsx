@@ -35,14 +35,14 @@ const THINNED_TYPE_CLASSES: Record<
   Record<Exclude<SeparatorThinnedType, 'none'>, string>
 > = {
   horizontal: {
-    thinned: '[mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]',
-    'thinned-start': '[mask-image:linear-gradient(to_right,transparent,black_10%,black)]',
-    'thinned-end': '[mask-image:linear-gradient(to_right,black,black_90%,transparent)]',
+    thinned: '[mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)]',
+    'thinned-start': '[mask-image:linear-gradient(to_right,transparent,black_20%,black)]',
+    'thinned-end': '[mask-image:linear-gradient(to_right,black,black_80%,transparent)]',
   },
   vertical: {
-    thinned: '[mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)]',
-    'thinned-start': '[mask-image:linear-gradient(to_bottom,transparent,black_10%,black)]',
-    'thinned-end': '[mask-image:linear-gradient(to_bottom,black,black_90%,transparent)]',
+    thinned: '[mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]',
+    'thinned-start': '[mask-image:linear-gradient(to_bottom,transparent,black_20%,black)]',
+    'thinned-end': '[mask-image:linear-gradient(to_bottom,black,black_80%,transparent)]',
   },
 };
 
@@ -54,29 +54,11 @@ const THINNED_TYPE_CLASSES: Record<
  * - Multiple color options (black, outline, outline-light) with theme support
  * - Horizontal and vertical orientations
  * - Optional thinned gradient fade effect at line ends ('thinned', 'thinned-start', 'thinned-end', 'none')
- * - 2px stroke width following print design standards
+ * - 1px stroke width for subtle division
  * - Semantic HTML with proper ARIA attributes for accessibility
  *
  * The component uses CSS mask-image for the thinned effect and CSS custom properties
  * for theme-aware colors. Double separators have 4px spacing between lines.
- *
- * @example
- * ```tsx
- * // Basic horizontal separator (defaults to thinned)
- * <Separator />
- *
- * // Double-line separator with black color
- * <Separator type="double" color="black" />
- *
- * // Vertical separator without thinned ends
- * <Separator direction="vertical" thinned="none" />
- *
- * // Separator with only the end thinned
- * <Separator thinned="thinned-end" />
- *
- * // Light separator for subtle content division
- * <Separator color="outline-light" />
- * ```
  */
 export const Separator = memo(function Separator({
   type = 'single',
@@ -93,8 +75,8 @@ export const Separator = memo(function Separator({
   // Color mapping to CSS custom properties
   const colorClasses = {
     black: 'border-foreground',
-    outline: 'border-border',
-    'outline-light': 'border-muted',
+    outline: 'border-[var(--rb-outline)]',
+    'outline-light': 'border-[var(--rb-outline)]/40',
   };
 
   // Base line styles
@@ -102,8 +84,8 @@ export const Separator = memo(function Separator({
     'border-0',
     'border-solid',
     colorClasses[finalColor],
-    // 2px stroke as specified
-    direction === 'horizontal' ? 'border-t-2' : 'border-l-2',
+    // 1px stroke for subtler appearance
+    direction === 'horizontal' ? 'border-t' : 'border-l',
   ];
 
   // Thinned effect using CSS mask
