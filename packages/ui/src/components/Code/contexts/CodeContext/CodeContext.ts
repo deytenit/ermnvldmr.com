@@ -1,5 +1,7 @@
 import { createContext, useContext } from 'react';
 
+import type { CodeLanguage } from '../../lib/highlighter/highlighter';
+
 /**
  * Value for the Code context.
  */
@@ -8,6 +10,8 @@ export interface CodeContextValue {
   isInCodeBlock: boolean;
   /** Whether to show line numbers in the block. */
   showLineNumbers?: boolean;
+  /** The language of the code in the block. */
+  language?: CodeLanguage;
 }
 
 /**

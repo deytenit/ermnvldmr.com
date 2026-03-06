@@ -1,8 +1,16 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import React from 'react';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 import { Code } from './Code';
 import { CodeBlock } from './CodeBlock/CodeBlock';
+
+// Mock shiki
+vi.mock('shiki', () => ({
+  createHighlighter: vi.fn().mockResolvedValue({
+    codeToHtml: vi.fn().mockReturnValue('<pre><code><span class="line">highlighted code</span></code></pre>'),
+  }),
+}));
 
 // Mock clipboard API
 const mockWriteText = vi.fn().mockImplementation(() => Promise.resolve());
@@ -15,6 +23,7 @@ Object.assign(navigator, {
 describe('Code Component', () => {
   beforeEach(() => {
     mockWriteText.mockClear();
+    vi.clearAllMocks();
   });
 
   it('renders inline code correctly', () => {
@@ -46,7 +55,6 @@ describe('Code Component', () => {
 
     await act(async () => {
       fireEvent.click(codeElement);
-      await Promise.resolve();
     });
 
     expect(mockWriteText).toHaveBeenCalledWith('copied!');
@@ -64,7 +72,6 @@ describe('Code Component', () => {
     const copyButton = screen.getByLabelText('Copy code');
     await act(async () => {
       fireEvent.click(copyButton);
-      await Promise.resolve();
     });
 
     expect(mockWriteText).toHaveBeenCalledWith('block copy');
@@ -76,9 +83,22 @@ describe('Code Component', () => {
     const codeElement = screen.getByText('extracted');
     await act(async () => {
       fireEvent.click(codeElement);
-      await Promise.resolve();
     });
 
     expect(mockWriteText).toHaveBeenCalledWith('extracted');
+  });
+
+  it('uses shiki for highlighting when language is provided in block mode', async () => {
+    await act(async () => {
+      render(
+        <CodeBlock language="typescript">
+          <Code>const x: number = 1;</Code>
+        </CodeBlock>
+      );
+    });
+
+    // Wait for shiki async highlighting
+    const highlighted = await screen.findByText('highlighted code');
+    expect(highlighted).toBeInTheDocument();
   });
 });

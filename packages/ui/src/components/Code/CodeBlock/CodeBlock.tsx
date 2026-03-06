@@ -7,6 +7,7 @@ import { Container } from '../../Container/Container';
 import { CodeContext, type CodeContextValue } from '../contexts/CodeContext/CodeContext';
 
 import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
+import type { CodeLanguage } from '../lib/highlighter/highlighter';
 
 /**
  * Props for the CodeBlock component.
@@ -20,6 +21,11 @@ export interface CodeBlockProps extends ClassNameProps, TestIdProps {
    * displayed in the top-left corner.
    */
   label?: string;
+
+  /**
+   * The language of the code block.
+   */
+  language?: CodeLanguage;
 
   /**
    * Whether to render line number gutters.
@@ -49,6 +55,7 @@ export interface CodeBlockProps extends ClassNameProps, TestIdProps {
 export const CodeBlock = memo(function CodeBlock({
   children,
   label,
+  language,
   showLineNumbers = true,
   copyValue,
   maxHeight,
@@ -92,8 +99,9 @@ export const CodeBlock = memo(function CodeBlock({
     () => ({
       isInCodeBlock: true,
       showLineNumbers,
+      language,
     }),
-    [showLineNumbers]
+    [showLineNumbers, language]
   );
 
   return (

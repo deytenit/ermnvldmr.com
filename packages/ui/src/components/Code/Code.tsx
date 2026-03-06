@@ -3,8 +3,12 @@ import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { usePress } from 'react-aria';
 
 import { useCodeContext } from './contexts/CodeContext/CodeContext';
+import { codeHighlighter } from './lib/highlighter/highlighter';
 
 import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
+import type { CodeLanguage } from './lib/highlighter/highlighter';
+
+export type { CodeLanguage };
 
 /**
  * Props for the Code component.
@@ -18,6 +22,12 @@ export interface CodeProps extends ClassNameProps, TestIdProps {
    * If omitted in inline mode, the component will attempt to extract text from `children`.
    */
   copyValue?: string;
+
+  /**
+   * The language of the code. Only used when rendered inside a CodeBlock.
+   * If provided, shiki will be used for syntax highlighting.
+   */
+  language?: CodeLanguage;
 }
 
 /**
@@ -30,12 +40,16 @@ export interface CodeProps extends ClassNameProps, TestIdProps {
 export const Code = memo(function Code({
   children,
   copyValue,
+  language: propsLanguage,
   className,
   'data-testid': testId,
 }: CodeProps) {
   const context = useCodeContext();
   const [isCopied, setIsCopied] = useState(false);
   const codeRef = useRef<HTMLElement>(null);
+  const [highlightedHtml, setHighlightedHtml] = useState<string | null>(null);
+
+  const language = propsLanguage ?? context?.language;
 
   const handleCopy = useCallback(async () => {
     try {
@@ -67,6 +81,22 @@ export const Code = memo(function Code({
     }
   }, [isCopied]);
 
+  useEffect(() => {
+    if (context?.isInCodeBlock && language && typeof children === 'string') {
+      const highlight = async () => {
+        try {
+          const html = await codeHighlighter.highlight(children, language);
+          setHighlightedHtml(html);
+        } catch (err) {
+          console.error('Failed to highlight code:', err);
+        }
+      };
+      void highlight();
+    } else {
+      setHighlightedHtml(null);
+    }
+  }, [children, language, context?.isInCodeBlock]);
+
   const { pressProps } = usePress({
     onPress: onCopyPress,
   });
@@ -74,7 +104,39 @@ export const Code = memo(function Code({
   if (context?.isInCodeBlock) {
     const { showLineNumbers } = context;
 
-    let content = children;
+    let content: React.ReactNode = children;
+
+    if (highlightedHtml) {
+      return (
+        <div
+          ref={codeRef as any}
+          className={cn(
+            'block min-w-full font-mono text-sm',
+            '[&>pre]:!bg-transparent [&>pre]:!p-0 [&>pre]:!m-0',
+            showLineNumbers && [
+              '[&>pre>code]:[counter-reset:line]',
+              '[&>pre>code>.line]:relative [&>pre>code>.line]:pl-10',
+              '[&>pre>code>.line]:[counter-increment:line]',
+              '[&>pre>code>.line]:before:content-[counter(line)]',
+              '[&>pre>code>.line]:before:absolute [&>pre>code>.line]:before:left-0 [&>pre>code>.line]:before:top-0',
+              '[&>pre>code>.line]:before:inline-block',
+              '[&>pre>code>.line]:before:w-8',
+              '[&>pre>code>.line]:before:text-right',
+              '[&>pre>code>.line]:before:text-[var(--rb-muted-text)]/50',
+              '[&>pre>code>.line]:before:select-none',
+              '[&>pre>code>.line]:before:border-r',
+              '[&>pre>code>.line]:before:border-[var(--rb-outline)]/10',
+              '[&>pre>code>.line]:before:pr-3',
+              '[&>pre>code>.line]:before:font-mono [&>pre>code>.line]:before:text-[10px]',
+            ],
+            className
+          )}
+          dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+          data-testid={testId}
+        />
+      );
+    }
+
     if (typeof children === 'string') {
       content = children
         .trimEnd()
