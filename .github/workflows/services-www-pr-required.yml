@@ -1,0 +1,280 @@
+name: services/www - pr/required
+
+on:
+  pull_request:
+    branches: [next]
+    paths:
+      - 'services/www/**'
+      - 'packages/ui/**'
+      - 'packages/stl/**'
+      - '.github/workflows/services-www-pr-required.yml'
+      - 'pnpm-lock.yaml'
+
+concurrency:
+  group: ci-pr-www-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  setup-stage:
+    name: Setup - Stage
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache-pnpm-store.outputs.cache-hit }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+
+      - name: Setup Node.js with pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Cache pnpm store
+        id: cache-pnpm-store
+        uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+  build-configs:
+    name: Build - Configs
+    needs: setup-stage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build Rsbuild config
+        run: pnpm --filter @ermnvldmr/rsbuild-config build
+      - name: Build Storybook config
+        run: pnpm --filter @ermnvldmr/storybook-config build
+      - name: Upload Rsbuild Config
+        uses: actions/upload-artifact@v4
+        with:
+          name: rsbuild-config-dist-${{ github.run_id }}
+          path: packages/rsbuild-config/dist
+          retention-days: 1
+      - name: Upload Storybook Config
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-config-dist-${{ github.run_id }}
+          path: packages/storybook-config/dist
+          retention-days: 1
+
+  lint-www:
+    name: Lint - WWW
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Rsbuild Config
+        uses: actions/download-artifact@v4
+        with:
+          name: rsbuild-config-dist-${{ github.run_id }}
+          path: packages/rsbuild-config/dist
+      - name: Download Storybook Config
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-config-dist-${{ github.run_id }}
+          path: packages/storybook-config/dist
+      - name: Lint WWW service
+        run: pnpm --filter @ermnvldmr/www lint
+
+  typecheck-www:
+    name: Typecheck - WWW
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Rsbuild Config
+        uses: actions/download-artifact@v4
+        with:
+          name: rsbuild-config-dist-${{ github.run_id }}
+          path: packages/rsbuild-config/dist
+      - name: Download Storybook Config
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-config-dist-${{ github.run_id }}
+          path: packages/storybook-config/dist
+      - name: Typecheck WWW service
+        run: pnpm --filter @ermnvldmr/www typecheck
+
+  build-storybook:
+    name: Build - Storybook
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Rsbuild Config
+        uses: actions/download-artifact@v4
+        with:
+          name: rsbuild-config-dist-${{ github.run_id }}
+          path: packages/rsbuild-config/dist
+      - name: Download Storybook Config
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-config-dist-${{ github.run_id }}
+          path: packages/storybook-config/dist
+      - name: Build WWW Storybook
+        run: pnpm --filter @ermnvldmr/www build-storybook
+      - name: Upload Storybook build
+        uses: actions/upload-artifact@v4
+        with:
+          name: www-storybook-static-${{ github.run_id }}
+          path: services/www/storybook-static/
+          retention-days: 1
+
+  test-www:
+    name: Test - Unit
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Rsbuild Config
+        uses: actions/download-artifact@v4
+        with:
+          name: rsbuild-config-dist-${{ github.run_id }}
+          path: packages/rsbuild-config/dist
+      - name: Download Storybook Config
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-config-dist-${{ github.run_id }}
+          path: packages/storybook-config/dist
+      - name: Test WWW service
+        run: pnpm --filter @ermnvldmr/www test:coverage
+      - name: Upload Unit coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./services/www/coverage/lcov.info
+          flags: www
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  test-storybook:
+    name: Test - Storybook
+    needs: build-storybook
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Rsbuild Config
+        uses: actions/download-artifact@v4
+        with:
+          name: rsbuild-config-dist-${{ github.run_id }}
+          path: packages/rsbuild-config/dist
+      - name: Download Storybook Config
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-config-dist-${{ github.run_id }}
+          path: packages/storybook-config/dist
+      - name: Install Playwright browsers
+        run: pnpm --filter @ermnvldmr/www exec playwright install --with-deps chromium
+      - name: Download Storybook build
+        uses: actions/download-artifact@v4
+        with:
+          name: www-storybook-static-${{ github.run_id }}
+          path: services/www/storybook-static/
+      - name: Serve Storybook and run tests with coverage
+        run: pnpm --filter @ermnvldmr/www test:storybook:ci
+      - name: Upload Storybook coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./services/www/coverage/storybook/lcov.info
+          flags: www-storybook
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  build-www:
+    name: Build - WWW Service
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Rsbuild Config
+        uses: actions/download-artifact@v4
+        with:
+          name: rsbuild-config-dist-${{ github.run_id }}
+          path: packages/rsbuild-config/dist
+      - name: Download Storybook Config
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-config-dist-${{ github.run_id }}
+          path: packages/storybook-config/dist
+      - name: Build WWW service
+        run: pnpm --filter @ermnvldmr/www build
