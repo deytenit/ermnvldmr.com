@@ -1,4 +1,13 @@
-import { Container, HStack, Link, ThemeSwitch, useTheme, VStack, Text, Separator } from '@ermnvldmr/ui';
+import {
+  Container,
+  HStack,
+  Link,
+  ThemeSwitch,
+  useTheme,
+  VStack,
+  Text,
+  Separator,
+} from '@ermnvldmr/ui';
 import React from 'react';
 
 /**
@@ -28,7 +37,11 @@ export function IndexLayout({ children }: IndexLayoutProps): React.JSX.Element {
   const currentYear = new Date().getFullYear();
 
   return (
-    <VStack align="center" className="min-h-screen w-screen bg-[var(--rb-background)] transition-colors duration-200" justify="between">
+    <VStack
+      align="center"
+      className="min-h-screen w-screen bg-[var(--rb-background)] transition-colors duration-200"
+      justify="between"
+    >
       <VStack align="center" as="main" className="min-h-[105vh] py-8 mx-auto" justify="start">
         {children}
       </VStack>

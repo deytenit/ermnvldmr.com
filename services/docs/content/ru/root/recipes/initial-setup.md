@@ -184,9 +184,9 @@ mkdir -p /srv/com-ermnvldmr-root-$NODE-{tier1,tier2,tier3}
 
 # Настроить уровни и непривилегированных пользователей
 cd $REPO_DIR
-sudo -u adam .scripts/ops/setup-tiers $NODE 
-  /srv/com-ermnvldmr-root-$NODE-tier1 
-  /srv/com-ermnvldmr-root-$NODE-tier2 
+sudo -u adam .scripts/ops/setup-tiers $NODE
+  /srv/com-ermnvldmr-root-$NODE-tier1
+  /srv/com-ermnvldmr-root-$NODE-tier2
   /srv/com-ermnvldmr-root-$NODE-tier3
 
 sudo -u adam .scripts/ops/setup-noroot-users $NODE

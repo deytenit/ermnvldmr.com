@@ -11,10 +11,10 @@ This guide is for **educational purposes** only. It describes how to deploy a pr
 
 Centralized platforms often compromise data for analytics or are subject to external policy shifts. By hosting your own Matrix instance, you achieve:
 
-* **Data Sovereignty**: You own the hardware and the database.
-* **End-to-End Encryption (E2EE)**: Messages are encrypted locally on devices; the server only relays ciphertext.
-* **Infrastructure Resilience**: Your communication is independent of large provider outages.
-* **Metadata Privacy**: You control logs regarding who communicates with whom.
+- **Data Sovereignty**: You own the hardware and the database.
+- **End-to-End Encryption (E2EE)**: Messages are encrypted locally on devices; the server only relays ciphertext.
+- **Infrastructure Resilience**: Your communication is independent of large provider outages.
+- **Metadata Privacy**: You control logs regarding who communicates with whom.
 
 ---
 
@@ -49,19 +49,19 @@ services:
     image: traefik:v3.0
     container_name: matrix-proxy
     command:
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare"
-      - "--certificatesresolvers.myresolver.acme.email=${ADMIN_EMAIL}"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--entrypoints.web.address=:80'
+      - '--entrypoints.websecure.address=:443'
+      - '--entrypoints.web.http.redirections.entrypoint.to=websecure'
+      - '--certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare'
+      - '--certificatesresolvers.myresolver.acme.email=${ADMIN_EMAIL}'
+      - '--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json'
     environment:
       - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - traefik_certs:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -72,39 +72,39 @@ services:
   synapse:
     image: ghcr.io/element-hq/synapse:v1.146.0
     container_name: matrix-synapse
-    user: "1000:1000"
+    user: '1000:1000'
     depends_on:
       postgres: { condition: service_healthy }
     volumes:
       - synapse_data:/data
     environment:
-      SYNAPSE_SERVER_NAME: "${DOMAIN}"
-      SYNAPSE_REPORT_STATS: "no"
-      SYNAPSE_CONFIG_PATH: "/data/homeserver.yaml"
+      SYNAPSE_SERVER_NAME: '${DOMAIN}'
+      SYNAPSE_REPORT_STATS: 'no'
+      SYNAPSE_CONFIG_PATH: '/data/homeserver.yaml'
     networks:
       - proxy
       - internal
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.synapse.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.services.synapse.loadbalancer.server.port=8008"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.synapse.rule=Host(`${DOMAIN}`)'
+      - 'traefik.http.services.synapse.loadbalancer.server.port=8008'
     restart: unless-stopped
 
   postgres:
     image: postgres:16-alpine
     container_name: matrix-db
-    user: "1000:1000"
+    user: '1000:1000'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: synapse
       POSTGRES_USER: synapse
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+      POSTGRES_INITDB_ARGS: '--encoding=UTF-8 --lc-collate=C --lc-ctype=C'
     networks:
       - internal
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U synapse"]
+      test: ['CMD-SHELL', 'pg_isready -U synapse']
       interval: 10s
     restart: unless-stopped
 
@@ -113,20 +113,20 @@ services:
     container_name: matrix-livekit
     command: --config /etc/livekit.yaml --node-ip ${SERVER_IP}
     environment:
-      LIVEKIT_KEYS: "${LK_KEY}: ${LK_SECRET}"
+      LIVEKIT_KEYS: '${LK_KEY}: ${LK_SECRET}'
     volumes:
       - ./livekit.yaml:/etc/livekit.yaml:ro
     ports:
-      - "7880:7880" 
-      - "7881:7881" 
-      - "50000-50020:50000-50020/udp"
+      - '7880:7880'
+      - '7881:7881'
+      - '50000-50020:50000-50020/udp'
     networks:
       - proxy
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.lk.rule=Host(`${DOMAIN}`) && PathPrefix(`/livekit`)"
-      - "traefik.http.middlewares.lk-strip.stripprefix.prefixes=/livekit"
-      - "traefik.http.routers.lk.middlewares=lk-strip"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.lk.rule=Host(`${DOMAIN}`) && PathPrefix(`/livekit`)'
+      - 'traefik.http.middlewares.lk-strip.stripprefix.prefixes=/livekit'
+      - 'traefik.http.routers.lk.middlewares=lk-strip'
     restart: unless-stopped
 
   lk-jwt:
@@ -134,31 +134,30 @@ services:
     container_name: matrix-lk-jwt
     environment:
       LIVEKIT_URL: wss://${DOMAIN}/livekit
-      LIVEKIT_KEY: "${LK_KEY}"
-      LIVEKIT_SECRET: "${LK_SECRET}"
+      LIVEKIT_KEY: '${LK_KEY}'
+      LIVEKIT_SECRET: '${LK_SECRET}'
     networks:
       - proxy
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.lk-jwt.rule=Host(`${DOMAIN}`) && PathPrefix(`/livekit/jwt`)"
-      - "traefik.http.middlewares.lk-jwt-strip.stripprefix.prefixes=/livekit/jwt"
-      - "traefik.http.routers.lk-jwt.middlewares=lk-jwt-strip"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.lk-jwt.rule=Host(`${DOMAIN}`) && PathPrefix(`/livekit/jwt`)'
+      - 'traefik.http.middlewares.lk-jwt-strip.stripprefix.prefixes=/livekit/jwt'
+      - 'traefik.http.routers.lk-jwt.middlewares=lk-jwt-strip'
     restart: unless-stopped
 
   coturn:
     image: coturn/coturn:4.8-alpine
     container_name: matrix-coturn
-    user: "1000:1000"
+    user: '1000:1000'
     ports:
-      - "3478:3478"
-      - "3478:3478/udp"
-      - "5349:5349"
-      - "5349:5349/udp"
-      - "49152-49172:49152-49172/udp"
+      - '3478:3478'
+      - '3478:3478/udp'
+      - '5349:5349'
+      - '5349:5349/udp'
+      - '49152-49172:49152-49172/udp'
     volumes:
       - ./turnserver.conf:/etc/coturn/turnserver.conf:ro
     restart: unless-stopped
-
 ```
 
 ---
@@ -264,19 +263,18 @@ Add to `homeserver.yaml` to allow email verification:
 
 ```yaml
 email:
-  smtp_host: "smtp.gmail.com"
+  smtp_host: 'smtp.gmail.com'
   smtp_port: 587
-  smtp_user: "yourname@gmail.com"
-  smtp_pass: "xxxx xxxx xxxx xxxx" # Google App Password
+  smtp_user: 'yourname@gmail.com'
+  smtp_pass: 'xxxx xxxx xxxx xxxx' # Google App Password
   force_tls: true
-
 ```
 
 ---
 
 ## Resources
 
-* [Synapse GitHub](https://github.com/element-hq/synapse)
-* [LiveKit GitHub](https://github.com/livekit/livekit)
-* [lk-jwt-service GitHub](https://github.com/element-hq/lk-jwt-service)
-* [Element X Apps](https://www.google.com/search?q=https://element.io/element-x)
+- [Synapse GitHub](https://github.com/element-hq/synapse)
+- [LiveKit GitHub](https://github.com/livekit/livekit)
+- [lk-jwt-service GitHub](https://github.com/element-hq/lk-jwt-service)
+- [Element X Apps](https://www.google.com/search?q=https://element.io/element-x)

@@ -1,4 +1,4 @@
-import { Header, Link, Separator, Article , VStack } from '@ermnvldmr/ui';
+import { Header, Link, Separator, Article, VStack } from '@ermnvldmr/ui';
 import React from 'react';
 
 import { sortedArticles } from '../../../content/registry';
@@ -11,9 +11,7 @@ createPage(
     return (
       <IndexLayout>
         <VStack className="w-full" gap={8}>
-          <Header level={1}>
-            Articles
-          </Header>
+          <Header level={1}>Articles</Header>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             {sortedArticles.map((article, index) => (
               <React.Fragment key={article.slug}>
@@ -22,7 +20,10 @@ createPage(
                     <Separator className="w-full" type="double" />
                   </div>
                 )}
-                <Link className="group block h-full no-underline!" href={`/articles/${article.slug}`}>
+                <Link
+                  className="group block h-full no-underline!"
+                  href={`/articles/${article.slug}`}
+                >
                   <Article
                     additionalText={article.tags?.join(' • ')}
                     headline={article.title}

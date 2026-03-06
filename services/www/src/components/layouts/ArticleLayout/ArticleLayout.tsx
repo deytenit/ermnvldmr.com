@@ -76,28 +76,21 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
               {tags && tags.length > 0 && (
                 <HStack gap={1} wrap="wrap">
                   {tags.map((tag) => (
-                    <Text
-                      key={tag}
-                      className="before:content-['#']"
-                      color="muted"
-                      size="s"
-                    >
+                    <Text key={tag} className="before:content-['#']" color="muted" size="s">
                       {tag}
                     </Text>
                   ))}
                 </HStack>
               )}
             </HStack>
-            <Header level={1}>
-              {title}
-            </Header>
+            <Header level={1}>{title}</Header>
             {description && (
               <Paragraph italic color="muted" size="l">
                 {description}
               </Paragraph>
             )}
           </VStack>
-          <Container as="section" bg="transparent" className='w-full'>
+          <Container as="section" bg="transparent" className="w-full">
             <Markdown>{children}</Markdown>
           </Container>
         </VStack>

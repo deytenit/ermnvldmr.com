@@ -29,11 +29,14 @@ describe('lib/window/localStorage', () => {
       },
       dispatchEvent: vi.fn(),
     });
-    vi.stubGlobal('StorageEvent', class {
-      constructor(type: string, init: any) {
-        Object.assign(this, { type, ...init });
+    vi.stubGlobal(
+      'StorageEvent',
+      class {
+        constructor(type: string, init: any) {
+          Object.assign(this, { type, ...init });
+        }
       }
-    });
+    );
   });
 
   afterEach(() => {

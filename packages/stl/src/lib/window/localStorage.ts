@@ -51,7 +51,10 @@ export function createLocalStorage<T>(key: string, defaultValue: T): StorageMana
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         return JSON.parse(item) as T;
       } catch (error) {
-        console.error(`[createLocalStorage] Failed to parse key "${key}", falling back to default.`, error);
+        console.error(
+          `[createLocalStorage] Failed to parse key "${key}", falling back to default.`,
+          error
+        );
         return defaultValue;
       }
     },

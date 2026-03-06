@@ -27,7 +27,10 @@ export function IndexLayout({ children }: IndexLayoutProps): React.JSX.Element {
   const currentYear = new Date().getFullYear();
 
   return (
-    <VStack className="min-h-screen bg-[var(--rb-background)] transition-colors duration-200" justify="between">
+    <VStack
+      className="min-h-screen bg-[var(--rb-background)] transition-colors duration-200"
+      justify="between"
+    >
       <VStack as="main" className="min-h-[105vh] w-full flex-1">
         {children}
       </VStack>

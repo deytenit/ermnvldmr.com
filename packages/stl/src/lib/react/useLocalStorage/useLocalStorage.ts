@@ -39,7 +39,7 @@ export function useLocalStorage<T>(
   const getSnapshot = useCallback(() => manager.get(), [manager]);
 
   const value = useSyncExternalStore(subscribe, getSnapshot, () => {
-    // During SSR, we can't access localStorage. 
+    // During SSR, we can't access localStorage.
     // However, createLocalStorage is designed to throw if accessed during SSR.
     // This hook is intended to be used in client-side components.
     return manager.get();

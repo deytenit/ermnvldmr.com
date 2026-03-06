@@ -25,11 +25,11 @@ describe('lib/react/useLocalStorage', () => {
   it('should update state when setter is called', () => {
     const manager = createLocalStorage(KEY, DEFAULT_VALUE);
     const { result } = renderHook(() => useLocalStorage(manager));
-    
+
     act(() => {
       result.current[1]('new value');
     });
-    
+
     expect(result.current[0]).toBe('new value');
     expect(window.localStorage.getItem(KEY)).toBe(JSON.stringify('new value'));
   });

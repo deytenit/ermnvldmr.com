@@ -7,7 +7,7 @@ import { render, screen } from '../../lib/testing';
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -33,20 +33,20 @@ describe('components/ThemeSwitch', () => {
   it('toggles theme when switch is clicked', async () => {
     const user = userEvent.setup();
     render(<ThemeSwitch />);
-    
+
     const toggle = screen.getByRole('switch');
     await user.click(toggle);
-    
+
     expect(window.localStorage.getItem('ermnvldmr/ui/lib/theme')).toContain('dark');
   });
 
   it('sets system theme when auto is clicked', async () => {
     const user = userEvent.setup();
     render(<ThemeSwitch />);
-    
+
     const autoButton = screen.getByLabelText('Follow system theme');
     await user.click(autoButton);
-    
+
     expect(window.localStorage.getItem('ermnvldmr/ui/lib/theme')).toContain('system');
   });
 });
