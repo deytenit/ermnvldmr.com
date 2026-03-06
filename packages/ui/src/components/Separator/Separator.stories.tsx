@@ -11,7 +11,7 @@ import type { Meta, StoryObj } from '@storybook/react';
  * - Single or double line variants inspired by newspaper layout traditions
  * - Multiple color options (black, outline, outline-light) with theme support
  * - Horizontal and vertical orientations
- * - Optional thinned gradient fade effect at line ends (10% fade length)
+ * - Optional thinned gradient fade effect at line ends ('thinned', 'thinned-start', 'thinned-end', 'none')
  * - 2px stroke width following print design standards
  * - Semantic div elements with proper ARIA separator role for accessibility
  */
@@ -44,14 +44,15 @@ const meta: Meta<typeof Separator> = {
       description: 'Orientation of the separator',
     },
     thinned: {
-      control: 'boolean',
-      description: 'Whether line ends should be thinned with gradient fade (10% fade length)',
+      control: 'select',
+      options: ['thinned', 'thinned-start', 'thinned-end', 'none'],
+      description: 'How line ends should be thinned with gradient fade',
     },
   },
   args: {
     type: 'single',
     direction: 'horizontal',
-    thinned: true,
+    thinned: 'thinned',
   },
 };
 
@@ -191,7 +192,7 @@ export const VerticalDouble: Story = {
  */
 export const NonThinned: Story = {
   args: {
-    thinned: false,
+    thinned: 'none',
   },
   decorators: [
     (Story) => (
@@ -251,19 +252,27 @@ export const AllTypes: Story = {
 };
 
 /**
- * Comparison between thinned and non-thinned effects.
- * Demonstrates the 10% gradient fade at line ends.
+ * Comparison between different thinning effects.
+ * Demonstrates the gradient fade at line ends.
  */
 export const ThinnedComparison: Story = {
   render: () => (
     <div className="space-y-8 w-96">
       <div>
-        <h3 className="text-sm font-medium mb-2">With Thinned Ends (Default)</h3>
-        <Separator thinned />
+        <h3 className="text-sm font-medium mb-2">Full Thinned (Default)</h3>
+        <Separator thinned="thinned" />
       </div>
       <div>
-        <h3 className="text-sm font-medium mb-2">Without Thinned Ends</h3>
-        <Separator thinned={false} />
+        <h3 className="text-sm font-medium mb-2">Thinned Start Only</h3>
+        <Separator thinned="thinned-start" />
+      </div>
+      <div>
+        <h3 className="text-sm font-medium mb-2">Thinned End Only</h3>
+        <Separator thinned="thinned-end" />
+      </div>
+      <div>
+        <h3 className="text-sm font-medium mb-2">No Fading (None)</h3>
+        <Separator thinned="none" />
       </div>
     </div>
   ),

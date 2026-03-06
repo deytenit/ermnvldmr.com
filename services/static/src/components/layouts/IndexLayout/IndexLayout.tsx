@@ -35,7 +35,7 @@ export function IndexLayout({ children }: IndexLayoutProps): React.JSX.Element {
         {children}
       </VStack>
       <VStack as="footer" className="w-full" gap={0}>
-        <Separator thinned={false} />
+        <Separator thinned="none" />
         <Container className="w-full" padding={12}>
           <HStack align="center" className="w-full" justify="between">
             <VStack align="start" gap={1}>
