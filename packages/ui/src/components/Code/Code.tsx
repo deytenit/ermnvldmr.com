@@ -124,11 +124,13 @@ export const Code = memo(function Code({
       aria-label="Copy code snippet"
       className={cn(
         'relative inline-block rounded-sm px-1.5 py-0.5 text-sm font-mono',
-        'bg-[var(--rb-muted-base)]/50 text-[var(--rb-text)] border border-[var(--rb-outline)]/20',
+        'text-[var(--rb-color-red-600)] dark:text-[var(--rb-color-red-400)]',
         'cursor-pointer transition-all duration-200',
-        'hover:bg-[var(--rb-muted-base)]/80',
+        'hover:text-[var(--rb-color-red-500)] hover:bg-[var(--rb-color-red-500)]/10',
         'active:scale-95',
-        isCopied && 'ring-1 ring-[var(--rb-secondary-base)]',
+        isCopied
+          ? 'bg-[var(--rb-color-red-500)]/20 ring-1 ring-[var(--rb-color-red-500)]/40'
+          : 'bg-transparent ring-1 ring-transparent',
         className
       )}
       data-testid={testId}
