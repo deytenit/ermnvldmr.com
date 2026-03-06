@@ -1,4 +1,4 @@
-import { Header, Link, Separator, Article, VStack } from '@ermnvldmr/ui';
+import { Header, Separator, Article, VStack } from '@ermnvldmr/ui';
 import React from 'react';
 
 import { sortedArticles } from '../../../content/registry';
@@ -20,22 +20,19 @@ createPage(
                     <Separator className="w-full" type="double" />
                   </div>
                 )}
-                <Link
-                  className="group block h-full no-underline!"
+                <Article
+                  className="h-full"
                   href={`/articles/${article.slug}`}
+                  additionalText={article.tags?.join(' • ')}
+                  headline={article.title}
+                  subHeadline={article.createdDate.toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
                 >
-                  <Article
-                    additionalText={article.tags?.join(' • ')}
-                    headline={article.title}
-                    subHeadline={article.createdDate.toLocaleDateString(undefined, {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  >
-                    {article.description}
-                  </Article>
-                </Link>
+                  {article.description}
+                </Article>
               </React.Fragment>
             ))}
           </div>
@@ -46,5 +43,5 @@ createPage(
   {
     title: `Articles | ${SITE_TITLE}`,
     description: 'Browse all articles and projects.',
-  }
+  },
 );

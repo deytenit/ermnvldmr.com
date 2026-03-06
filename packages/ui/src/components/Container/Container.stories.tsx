@@ -26,6 +26,9 @@ const meta: Meta<typeof Container> = {
       control: 'select',
       options: ['none', 'sm', 'md', 'lg', 'full'],
     },
+    href: {
+      control: 'text',
+    },
   },
 };
 
@@ -42,6 +45,14 @@ export const Default: Story = {
     bg: 'base',
     border: true,
     rounded: 'md',
+  },
+};
+
+export const AsLink: Story = {
+  args: {
+    ...Default.args,
+    href: '#',
+    children: 'This container is a link.',
   },
 };
 

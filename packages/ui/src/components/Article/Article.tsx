@@ -6,20 +6,29 @@ import { Separator } from '../Separator/Separator';
 import { Text } from '../Text/Text';
 import { VStack } from '../VStack/VStack';
 
+import type { ClassNameProps } from '@ermnvldmr/stl';
 import type { ContainerProps } from '../Container/Container';
 
 /**
  * Props for the Article component.
  */
-export interface ArticleProps {
+export interface ArticleProps extends ClassNameProps {
   /** The main article headline */
   headline: string;
   /** Optional sub-headline displayed between separators */
   subHeadline?: string;
   /** Optional additional text (e.g., author) displayed at the bottom in gray italic label */
   additionalText?: string;
-  /** Press interaction handler propagated to the wrapping Container */
+  /**
+   * Press interaction handler.
+   * @note Cannot be used with `href`.
+   */
   onPress?: ContainerProps['onPress'];
+  /**
+   * If provided, the container will be rendered as an `<a>` tag for navigation.
+   * @note Cannot be used with `onPress`.
+   */
+  href?: ContainerProps['href'];
   /** The main article body content */
   children: React.ReactNode;
 }
@@ -28,38 +37,38 @@ export interface ArticleProps {
  * A article component with a structured layout.
  *
  * Features:
- * - Centered medium headline (headline-m)
- * - Single-line separators
- * - Optional centered italic sub-headline (label-m)
+ * - Left-aligned medium headline (headline-m)
+ * - Single-line separators with optional end fade
+ * - Optional italic sub-headline (label-m)
  * - Main body text (body-m)
  * - Optional bottom gray italic label (label-s)
- * - Interactive wrapper via Container
+ * - Interactive wrapper via Container, supporting both `onPress` and `href`
  */
 export const Article = memo(function Article({
   headline,
   subHeadline,
   additionalText,
   onPress,
+  href,
   children,
+  className,
 }: ArticleProps) {
   return (
-    <Container padding={4} onPress={onPress}>
+    <Container padding={4} href={href} onPress={onPress} className={className}>
       <VStack align="stretch" gap={4}>
-        <Header className="text-center" level={4}>
-          {headline}
-        </Header>
+        <Header level={4}>{headline}</Header>
 
-        <VStack align="center" gap={2}>
+        <VStack align="stretch" gap={2}>
           {subHeadline ? (
             <>
-              <Separator className="w-3/4" type="single" />
-              <Text italic className="text-center" size="m" type="label">
+              <Separator thinned="none" type="single" />
+              <Text italic size="m" type="label">
                 {subHeadline}
               </Text>
-              <Separator className="w-3/4" type="single" />
+              <Separator thinned="thinned-end" type="single" />
             </>
           ) : (
-            <Separator className="w-3/4" type="single" />
+            <Separator thinned="thinned-end" type="single" />
           )}
         </VStack>
 

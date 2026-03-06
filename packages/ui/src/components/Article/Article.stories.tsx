@@ -8,6 +8,7 @@ const meta: Meta<typeof Article> = {
   tags: ['autodocs'],
   argTypes: {
     onPress: { action: 'pressed' },
+    href: { control: 'text' },
   },
 };
 
@@ -35,9 +36,9 @@ export const Full: Story = {
   },
 };
 
-export const Interactive: Story = {
+export const Linked: Story = {
   args: {
     ...Full.args,
-    onPress: () => alert('Article clicked!'),
+    href: '#',
   },
 };
