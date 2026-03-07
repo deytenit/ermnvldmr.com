@@ -54,7 +54,7 @@ export const Article = memo(function Article({
   className,
 }: ArticleProps) {
   return (
-    <Container className={className} href={href} padding={4} onPress={onPress}>
+    <Container border className={className} href={href} padding={4} rounded="md" onPress={onPress}>
       <VStack align="stretch" gap={4}>
         <VStack align="stretch" gap={2}>
           <Header level={4}>{headline}</Header>

@@ -19,7 +19,7 @@ describe('components/Breadcrumbs', () => {
     expect(screen.getByRole('navigation')).toHaveAttribute('aria-label', 'Breadcrumb');
     expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument();
     expect(screen.getByText('/')).toBeInTheDocument();
-    
+
     const currentItem = screen.getByText('Current').parentElement;
     expect(currentItem).toHaveAttribute('aria-current', 'page');
   });
@@ -54,6 +54,16 @@ describe('components/Breadcrumbs', () => {
     const button = screen.getByRole('button', { name: 'Clickable' });
     fireEvent.click(button);
     expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders as a non-submit button when onClick is provided', () => {
+    render(
+      <Breadcrumbs>
+        <Breadcrumbs.Item onClick={vi.fn()}>Clickable</Breadcrumbs.Item>
+      </Breadcrumbs>
+    );
+    const button = screen.getByRole('button', { name: 'Clickable' });
+    expect(button).toHaveAttribute('type', 'button');
   });
 
   it('supports different separator variants', () => {

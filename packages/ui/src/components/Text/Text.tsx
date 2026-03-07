@@ -1,4 +1,4 @@
-import { cn, castRef, genericMemo } from '@ermnvldmr/stl';
+import { cn, genericMemo, useIntersectionObserver, castMutableRef } from '@ermnvldmr/stl';
 import React, { forwardRef, useState, useEffect, useRef } from 'react';
 
 import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
@@ -62,6 +62,8 @@ export interface TextProps
   maxLines?: number;
   /** Delay in milliseconds before the text appears after entering the viewport. */
   delay?: number;
+  /** Underlying element's HTML type attribute (e.g. "button", "submit") */
+  htmlType?: string;
 }
 
 /**
@@ -86,6 +88,7 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
     maxLines,
     delay,
     as: Component = 'span',
+    htmlType,
     className,
     'data-testid': testId,
     ...props
@@ -94,31 +97,33 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
 ) {
   const [isVisible, setIsVisible] = useState(delay === undefined);
   const internalRef = useRef<HTMLElement>(null);
-  const targetRef = ref ? castRef<HTMLElement>(ref) : internalRef;
+
+  // Sync internalRef with forwarded ref
+  useEffect(() => {
+    if (!ref) return;
+    if (typeof ref === 'function') {
+      ref(internalRef.current);
+    } else {
+      castMutableRef<HTMLElement>(ref).current = internalRef.current;
+    }
+  }, [ref]);
+
+  const isIntersecting = useIntersectionObserver(internalRef, {
+    threshold: 0.1,
+    once: true,
+  });
 
   useEffect(() => {
-    if (delay === undefined) return;
-
-    const node = targetRef.current;
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          if (delay > 0) {
-            setTimeout(() => setIsVisible(true), delay);
-          } else {
-            setIsVisible(true);
-          }
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [delay, targetRef]);
+    if (delay !== undefined && isIntersecting) {
+      if (delay > 0) {
+        const timer = setTimeout(() => setIsVisible(true), delay);
+        return () => clearTimeout(timer);
+      } else {
+        setIsVisible(true);
+      }
+    }
+    return undefined;
+  }, [delay, isIntersecting]);
 
   // Base typography styles mapping
   const typeStyles: Record<TextType, Record<TextSize, string>> = {
@@ -183,7 +188,7 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
   return (
     <Component
       {...props}
-      ref={targetRef}
+      ref={internalRef}
       className={cn(
         typeStyles[type][size],
         colorClasses[color],
@@ -201,6 +206,7 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
         className
       )}
       data-testid={testId}
+      type={htmlType ?? (Component === 'button' ? 'button' : undefined)}
     >
       {children}
     </Component>
@@ -208,6 +214,3 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
 });
 
 export const Text = genericMemo(TextComponent);
-
-
-

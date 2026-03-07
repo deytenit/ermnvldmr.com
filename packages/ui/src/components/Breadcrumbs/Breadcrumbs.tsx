@@ -56,29 +56,29 @@ const BreadcrumbsItem = memo(function BreadcrumbsItem({
   onClick,
   'data-testid': testId,
 }: BreadcrumbsItemProps) {
-  const isClickable = !!(href || onClick);
+  const isClickable = !!(href ?? onClick);
 
   return (
     <li
+      aria-current={isCurrent ? 'page' : undefined}
       className={cn(
         'group flex items-center transition-all duration-200',
         !isCurrent && isClickable && 'cursor-pointer',
         className
       )}
       data-testid={testId}
-      aria-current={isCurrent ? 'page' : undefined}
     >
       <Text
         as={href ? 'a' : onClick ? 'button' : 'span'}
-        href={href}
-        onClick={onClick}
-        color={isCurrent ? 'default' : 'muted'}
-        size="m"
-        type="label"
         className={cn(
           'transition-all duration-200',
           !isCurrent && 'group-hover:text-[var(--rb-text)] group-hover:underline underline-offset-4'
         )}
+        color={isCurrent ? 'default' : 'muted'}
+        href={href}
+        size="m"
+        type="label"
+        onClick={onClick}
       >
         {children}
       </Text>

@@ -5,10 +5,10 @@ import { articles } from '../../../../content/registry';
 import { ArticleLayout } from '../../../components/Layout/ArticleLayout';
 import { createPage } from '../../../lib/core/createPage';
 
-const article = articles['test-article'];
+const article = articles['xray-core-subnet-mimicry'];
 
 createPage(
-  function TestArticlePage(): React.JSX.Element {
+  function XrayCoreSubnetMimicryPage(): React.JSX.Element {
     return (
       <ArticleLayout
         createdDate={article.createdDate}

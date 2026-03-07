@@ -115,4 +115,18 @@ describe('components/Text', () => {
     expect(el).toHaveClass('line-clamp-2');
     expect(el).not.toHaveClass('truncate');
   });
+
+  it('applies type="button" by default when as="button"', () => {
+    render(<Text as="button">Button Text</Text>);
+    expect(screen.getByRole('button')).toHaveAttribute('type', 'button');
+  });
+
+  it('allows overriding type attribute with htmlType', () => {
+    render(
+      <Text as="button" htmlType="submit">
+        Submit Text
+      </Text>
+    );
+    expect(screen.getByRole('button')).toHaveAttribute('type', 'submit');
+  });
 });

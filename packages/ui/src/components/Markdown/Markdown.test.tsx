@@ -29,7 +29,7 @@ describe('Markdown Components', () => {
     );
 
     expect(screen.getByText('Heading 1')).toBeInTheDocument();
-    expect(screen.getByText('This is a paragraph.')).toBeInTheDocument();
+    expect(screen.getByText('This is a paragraph.')).toHaveClass('mb-4');
     expect(screen.getByRole('link')).toHaveAttribute('href', 'https://example.com');
     expect(screen.getByRole('list')).toBeInTheDocument();
     expect(screen.getByRole('table')).toBeInTheDocument();

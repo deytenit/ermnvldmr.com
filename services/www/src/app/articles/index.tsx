@@ -1,4 +1,4 @@
-import { Separator, Article, VStack, Breadcrumbs } from '@ermnvldmr/ui';
+import { Article, Breadcrumbs } from '@ermnvldmr/ui';
 import React from 'react';
 
 import { sortedArticles } from '../../../content/registry';
@@ -23,32 +23,25 @@ createPage(
         paddingY="medium"
         title="Articles"
       >
-        <VStack className="w-full" gap={8}>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-            {sortedArticles.map((article, index) => (
-              <React.Fragment key={article.slug}>
-                {index > 0 && index % 2 === 0 && (
-                  <div className="col-span-1 py-8 md:col-span-2">
-                    <Separator className="w-full" type="double" />
-                  </div>
-                )}
-                <Article
-                  additionalText={article.tags?.join(' • ')}
-                  className="h-full"
-                  headline={article.title}
-                  href={`/articles/${article.slug}`}
-                  subHeadline={article.createdDate.toLocaleDateString(undefined, {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                >
-                  {article.description}
-                </Article>
-              </React.Fragment>
-            ))}
-          </div>
-        </VStack>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+          {sortedArticles.map((article) => (
+            <React.Fragment key={article.slug}>
+              <Article
+                additionalText={article.tags?.join(' • ')}
+                className="h-full"
+                headline={article.title}
+                href={`/articles/${article.slug}`}
+                subHeadline={article.createdDate.toLocaleDateString(undefined, {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              >
+                {article.description}
+              </Article>
+            </React.Fragment>
+          ))}
+        </div>
       </DefaultLayout>
     );
   },
