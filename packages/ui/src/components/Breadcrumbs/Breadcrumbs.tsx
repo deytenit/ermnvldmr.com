@@ -30,19 +30,56 @@ const BreadcrumbsRoot = memo(function Breadcrumbs({ children, ...props }: Breadc
 });
 
 /**
+ * Props for the individual Breadcrumbs item.
+ */
+export interface BreadcrumbsItemProps extends TestIdProps {
+  /** Content to be rendered inside the item */
+  children: React.ReactNode;
+  /** Optional className for the list item */
+  className?: string;
+  /** Whether this is the current page */
+  isCurrent?: boolean;
+  /** Optional href for the item (renders as a link) */
+  href?: string;
+  /** Optional click handler for the item */
+  onClick?: React.MouseEventHandler<HTMLElement>;
+}
+
+/**
  * Individual step in the breadcrumb trail.
  */
 const BreadcrumbsItem = memo(function BreadcrumbsItem({
   children,
   className,
+  isCurrent,
+  href,
+  onClick,
   'data-testid': testId,
-}: {
-  children: React.ReactNode;
-  className?: string;
-} & TestIdProps) {
+}: BreadcrumbsItemProps) {
+  const isClickable = !!(href ?? onClick);
+
   return (
-    <li className={className} data-testid={testId}>
-      <Text color="muted" size="m" type="label">
+    <li
+      aria-current={isCurrent ? 'page' : undefined}
+      className={cn(
+        'group flex items-center transition-all duration-200',
+        !isCurrent && isClickable && 'cursor-pointer',
+        className
+      )}
+      data-testid={testId}
+    >
+      <Text
+        as={href ? 'a' : onClick ? 'button' : 'span'}
+        className={cn(
+          'transition-all duration-200',
+          !isCurrent && 'group-hover:text-[var(--rb-text)] group-hover:underline underline-offset-4'
+        )}
+        color={isCurrent ? 'default' : 'muted'}
+        href={href}
+        size="m"
+        type="label"
+        onClick={onClick}
+      >
         {children}
       </Text>
     </li>

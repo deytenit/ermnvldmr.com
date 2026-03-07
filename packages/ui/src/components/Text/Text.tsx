@@ -1,5 +1,5 @@
-import { cn, castRef, genericMemo } from '@ermnvldmr/stl';
-import React, { forwardRef } from 'react';
+import { cn, genericMemo, useIntersectionObserver, castMutableRef } from '@ermnvldmr/stl';
+import React, { forwardRef, useState, useEffect, useRef } from 'react';
 
 import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
 
@@ -60,6 +60,10 @@ export interface TextProps
   overflow?: 'ellipsis' | 'clip';
   /** Maximum number of lines to show (truncates with ellipsis) */
   maxLines?: number;
+  /** Delay in milliseconds before the text appears after entering the viewport. */
+  delay?: number;
+  /** Underlying element's HTML type attribute (e.g. "button", "submit") */
+  htmlType?: string;
 }
 
 /**
@@ -82,13 +86,45 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
     wrap,
     overflow,
     maxLines,
+    delay,
     as: Component = 'span',
+    htmlType,
     className,
     'data-testid': testId,
     ...props
   },
   ref
 ) {
+  const [isVisible, setIsVisible] = useState(delay === undefined);
+  const internalRef = useRef<HTMLElement>(null);
+
+  // Sync internalRef with forwarded ref
+  useEffect(() => {
+    if (!ref) return;
+    if (typeof ref === 'function') {
+      ref(internalRef.current);
+    } else {
+      castMutableRef<HTMLElement>(ref).current = internalRef.current;
+    }
+  }, [ref]);
+
+  const isIntersecting = useIntersectionObserver(internalRef, {
+    threshold: 0.1,
+    once: true,
+  });
+
+  useEffect(() => {
+    if (delay !== undefined && isIntersecting) {
+      if (delay > 0) {
+        const timer = setTimeout(() => setIsVisible(true), delay);
+        return () => clearTimeout(timer);
+      } else {
+        setIsVisible(true);
+      }
+    }
+    return undefined;
+  }, [delay, isIntersecting]);
+
   // Base typography styles mapping
   const typeStyles: Record<TextType, Record<TextSize, string>> = {
     display: {
@@ -152,7 +188,7 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
   return (
     <Component
       {...props}
-      ref={castRef<HTMLElement>(ref)}
+      ref={internalRef}
       className={cn(
         typeStyles[type][size],
         colorClasses[color],
@@ -163,9 +199,14 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
         align && alignClasses[align],
         wrap && wrapClasses[wrap],
         truncationClass,
+        delay !== undefined &&
+          (isVisible
+            ? 'animate-in fade-in slide-in-from-bottom-2 duration-1000 ease-out'
+            : 'opacity-0'),
         className
       )}
       data-testid={testId}
+      type={htmlType ?? (Component === 'button' ? 'button' : undefined)}
     >
       {children}
     </Component>

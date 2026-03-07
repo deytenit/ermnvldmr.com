@@ -1,6 +1,7 @@
 import React from 'react';
 import * as TestArticle from './articles/2026/test-article.mdx';
 import * as MatrixServerDeploymentGuide from './articles/2026/matrix-server-deployment-guide.mdx';
+import * as XrayCoreSubnetMimicry from './articles/2026/xray-core-subnet-mimicry.mdx';
 
 export interface Article {
   slug: string;
@@ -45,6 +46,7 @@ export const articles: Record<string, Article> = {
     MatrixServerDeploymentGuide,
     '2026/matrix-server-deployment-guide'
   ),
+  'xray-core-subnet-mimicry': register(XrayCoreSubnetMimicry, '2026/xray-core-subnet-mimicry'),
 };
 
 export const sortedArticles = Object.values(articles).sort(

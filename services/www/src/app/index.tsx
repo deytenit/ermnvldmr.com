@@ -9,24 +9,56 @@ createPage(
   function HomePage(): React.JSX.Element {
     return (
       <DefaultLayout centerVertically headerAddonLeft={<Header level={3}>{SITE_TITLE}</Header>}>
-        <VStack gap={4}>
-          <Header level={2}>Welcome to my page!</Header>
-          <Paragraph>
-            If you see this page, my website is successfuly installed and working.
-            <br />
-            It will be further configured.
-          </Paragraph>
-          <Paragraph>
-            For the source code and support please refer to{' '}
-            <Link href="https://github.com/deytenit/ermnvldmr.com/">ermnvldmr.com monorepo</Link>.
-            <br />
-            Pictures of mine are available at{' '}
-            <Link href="https://ermnvldmr.com/instagram">@deytenit</Link>.
-          </Paragraph>
-          <Paragraph>
-            Check out my <Link href="/articles">thoughts and articles on various matters</Link>.
-          </Paragraph>
-          <Paragraph italic>Thank you for visiting!</Paragraph>
+        <VStack gap={24}>
+          <Header delay={0} level={1}>
+            Welcome to my corner of the internet.
+          </Header>
+          <VStack gap={12}>
+            <Paragraph delay={300} size="l" type="title">
+              You are arrived right as the lights turned on. The core foundation is solid and the
+              site is officially live,
+              <br />
+              but the metaphorical boxes are still being unpacked. Expect this space to evolve
+              continuously as everything finds its proper place.
+            </Paragraph>
+            <Paragraph delay={350} size="l" type="title">
+              Sharing the underlying architecture is a core philosophy here. If you are curious
+              about the specifics of how it is all built,
+              <br />
+              you can inspect the{' '}
+              <Link href="https://github.com/deytenit/ermnvldmr.com/" size="l" type="title">
+                ermnvldmr.com repository
+              </Link>{' '}
+              to see the complete blueprints.
+            </Paragraph>
+            <Paragraph delay={400} size="l" type="title">
+              For a look at the world away from terminal screens and code editors, the{' '}
+              <Link href="https://ermnvldmr.com/instagram" size="l" type="title">
+                @deytenit
+              </Link>{' '}
+              visual diary captures those moments.
+            </Paragraph>
+            <Paragraph delay={450} size="l" type="title">
+              Whenever you are ready to look around, feel free to dive into{' '}
+              <Link href="/articles" size="l" type="title">
+                the growing collection of articles
+              </Link>
+              .
+              <br />
+              It is a dedicated space covering everything from technical deep-dives to everyday
+              reflections.
+            </Paragraph>
+            <Paragraph delay={500} size="l" type="title">
+              Even though the rest of the environment is still a work in progress, the communication
+              lines are fully operational.
+              <br />
+              Whether you want to discuss tech, share a perspective on a recent read, or simply make
+              a connection, the mailbox is open at...
+            </Paragraph>
+          </VStack>
+          <Link delay={1000} href="mailto:personal@ermnvldmr.com" size="l" type="title">
+            personal@ermnvldmr.com
+          </Link>
         </VStack>
       </DefaultLayout>
     );

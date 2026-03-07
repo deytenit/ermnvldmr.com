@@ -33,6 +33,18 @@ export const Default: Story = {
   ),
 };
 
+export const Interactive: Story = {
+  render: () => (
+    <Breadcrumbs>
+      <Breadcrumbs.Item href="/">Home</Breadcrumbs.Item>
+      <Breadcrumbs.Separator variant="arrow" />
+      <Breadcrumbs.Item onClick={() => alert('Clicked!')}>Click Me</Breadcrumbs.Item>
+      <Breadcrumbs.Separator variant="arrow" />
+      <Breadcrumbs.Item isCurrent>Current Page</Breadcrumbs.Item>
+    </Breadcrumbs>
+  ),
+};
+
 export const WithArrows: Story = {
   render: () => (
     <Breadcrumbs>
