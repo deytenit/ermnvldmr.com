@@ -69,15 +69,11 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
 
   const breadcrumbs = (
     <Breadcrumbs>
-      <Breadcrumbs.Item>
-        <a href="/">Home</a>
-      </Breadcrumbs.Item>
+      <Breadcrumbs.Item href="/">Home</Breadcrumbs.Item>
       <Breadcrumbs.Separator />
-      <Breadcrumbs.Item>
-        <a href="/articles">Articles</a>
-      </Breadcrumbs.Item>
+      <Breadcrumbs.Item href="/articles">Articles</Breadcrumbs.Item>
       <Breadcrumbs.Separator />
-      <Breadcrumbs.Item>{title}</Breadcrumbs.Item>
+      <Breadcrumbs.Item isCurrent>{title}</Breadcrumbs.Item>
     </Breadcrumbs>
   );
 

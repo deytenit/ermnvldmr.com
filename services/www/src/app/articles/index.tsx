@@ -10,11 +10,9 @@ createPage(
   function ArticlesList(): React.JSX.Element {
     const breadcrumbs = (
       <Breadcrumbs>
-        <Breadcrumbs.Item>
-          <a href="/">Home</a>
-        </Breadcrumbs.Item>
+        <Breadcrumbs.Item href="/">Home</Breadcrumbs.Item>
         <Breadcrumbs.Separator />
-        <Breadcrumbs.Item>Articles</Breadcrumbs.Item>
+        <Breadcrumbs.Item isCurrent>Articles</Breadcrumbs.Item>
       </Breadcrumbs>
     );
 

@@ -1,5 +1,5 @@
 import { cn, castRef, genericMemo } from '@ermnvldmr/stl';
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useState, useEffect, useRef } from 'react';
 
 import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
 
@@ -60,6 +60,8 @@ export interface TextProps
   overflow?: 'ellipsis' | 'clip';
   /** Maximum number of lines to show (truncates with ellipsis) */
   maxLines?: number;
+  /** Delay in milliseconds before the text appears after entering the viewport. */
+  delay?: number;
 }
 
 /**
@@ -82,6 +84,7 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
     wrap,
     overflow,
     maxLines,
+    delay,
     as: Component = 'span',
     className,
     'data-testid': testId,
@@ -89,6 +92,34 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
   },
   ref
 ) {
+  const [isVisible, setIsVisible] = useState(delay === undefined);
+  const internalRef = useRef<HTMLElement>(null);
+  const targetRef = ref ? castRef<HTMLElement>(ref) : internalRef;
+
+  useEffect(() => {
+    if (delay === undefined) return;
+
+    const node = targetRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (delay > 0) {
+            setTimeout(() => setIsVisible(true), delay);
+          } else {
+            setIsVisible(true);
+          }
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [delay, targetRef]);
+
   // Base typography styles mapping
   const typeStyles: Record<TextType, Record<TextSize, string>> = {
     display: {
@@ -152,7 +183,7 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
   return (
     <Component
       {...props}
-      ref={castRef<HTMLElement>(ref)}
+      ref={targetRef}
       className={cn(
         typeStyles[type][size],
         colorClasses[color],
@@ -163,6 +194,10 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
         align && alignClasses[align],
         wrap && wrapClasses[wrap],
         truncationClass,
+        delay !== undefined &&
+          (isVisible
+            ? 'animate-in fade-in slide-in-from-bottom-2 duration-1000 ease-out'
+            : 'opacity-0'),
         className
       )}
       data-testid={testId}
@@ -173,3 +208,6 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
 });
 
 export const Text = genericMemo(TextComponent);
+
+
+

@@ -24,6 +24,8 @@ export interface LinkProps extends AriaLinkOptions, ClassNameProps {
   size?: TextSize;
   /** Text color variant */
   color?: TextColor;
+  /** Delay in milliseconds before the link appears after entering the viewport. */
+  delay?: number;
 }
 
 /**
@@ -33,7 +35,7 @@ export interface LinkProps extends AriaLinkOptions, ClassNameProps {
  * It uses standard design system colors (--rb-ring) and provides responsive hover/focus states.
  */
 export const Link = memo(function Link(props: LinkProps) {
-  const { children, className, href, isExternal, type, size, color, ...otherProps } = props;
+  const { children, className, href, isExternal, type, size, color, delay, ...otherProps } = props;
 
   // We use a specific ref type that useLink expects.
   // Since Link can be an 'a' or a 'span', we use HTMLElement as common denominator.
@@ -59,6 +61,7 @@ export const Link = memo(function Link(props: LinkProps) {
         as="a"
         className={sharedClasses}
         color={color}
+        delay={delay}
         href={href}
         size={size}
         type={type}
@@ -75,6 +78,7 @@ export const Link = memo(function Link(props: LinkProps) {
       as="span"
       className={sharedClasses}
       color={color}
+      delay={delay}
       size={size}
       type={type}
     >
