@@ -84,9 +84,17 @@ export interface ContainerProps extends ClassNameProps, TestIdProps {
   shadow?: boolean;
   /** Whether to show a border */
   border?: boolean;
-  /** Press interaction handler */
+  /**
+   * Press interaction handler.
+   * Cannot be used with `href`.
+   */
   onPress?: PressEvents['onPress'];
-  /** The HTML element to use for rendering */
+  /**
+   * If provided, the container will be rendered as an `<a>` tag.
+   * Cannot be used with `onPress`.
+   */
+  href?: string;
+  /** The HTML element to use for rendering. Overridden to `a` if `href` is provided. */
   as?: React.ElementType;
 }
 
@@ -105,17 +113,26 @@ export const Container = memo(function Container({
   shadow = false,
   border = false,
   onPress,
+  href,
   as: Component = 'div',
   className,
   'data-testid': testId,
 }: ContainerProps) {
+  if (process.env.NODE_ENV !== 'production' && onPress && href) {
+    console.warn('[@ermnvldmr/ui] Container cannot have both `onPress` and `href` props.');
+  }
+
+  const isLink = href != null;
+  const isPressable = !!onPress && !isLink;
+
   const ref = React.useRef<HTMLElement>(null);
   const { pressProps } = usePress({
     onPress,
-    isDisabled: !onPress,
+    isDisabled: !isPressable,
   });
 
-  const interactionProps = onPress ? pressProps : {};
+  const interactionProps = isPressable ? pressProps : {};
+  const FinalComponent = isLink ? 'a' : Component;
 
   const bgClasses: Record<ContainerBackground, string> = {
     base: 'bg-[var(--rb-container-base)] text-[var(--rb-container-text)]',
@@ -181,7 +198,7 @@ export const Container = memo(function Container({
   };
 
   return (
-    <Component
+    <FinalComponent
       {...interactionProps}
       ref={ref}
       className={cn(
@@ -192,12 +209,14 @@ export const Container = memo(function Container({
         paddingClasses[padding],
         shadow && 'shadow-md',
         border && 'border border-[var(--rb-outline)]',
-        onPress && 'cursor-pointer active:opacity-80 transition-opacity',
+        (isPressable || isLink) &&
+          'cursor-pointer transition-all duration-200 hover:brightness-95 active:opacity-80',
         className
       )}
       data-testid={testId}
+      href={href}
     >
       {children}
-    </Component>
+    </FinalComponent>
   );
 });

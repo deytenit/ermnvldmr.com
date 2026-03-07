@@ -19,17 +19,31 @@ describe('components/Article', () => {
     expect(screen.getByText('Reporting by John Doe')).toBeInTheDocument();
   });
 
-  it('renders separators only when appropriate', () => {
+  it('renders separators correctly based on subHeadline presence', () => {
     const { rerender } = render(<Article headline="Title">Body</Article>);
-    // Should have 1 separator (between title and body)
-    expect(screen.getAllByRole('separator')).toHaveLength(1);
+    let separators = screen.getAllByRole('separator');
+    expect(separators).toHaveLength(1);
+    expect(separators[0].className).toContain('mask-image');
 
     rerender(
       <Article headline="Title" subHeadline="Sub">
         Body
       </Article>
     );
-    // Should have 2 separators (Title-Sub and Sub-Body)
-    expect(screen.getAllByRole('separator')).toHaveLength(2);
+    separators = screen.getAllByRole('separator');
+    expect(separators).toHaveLength(1);
+    expect(separators[0].className).toContain('mask-image');
+  });
+
+  it('renders as a link when href is provided', () => {
+    render(
+      <Article {...props} href="/test-article">
+        Article body content
+      </Article>
+    );
+
+    const articleContainer = screen.getByText('Breaking News').closest('a');
+    expect(articleContainer).toBeInTheDocument();
+    expect(articleContainer).toHaveAttribute('href', '/test-article');
   });
 });

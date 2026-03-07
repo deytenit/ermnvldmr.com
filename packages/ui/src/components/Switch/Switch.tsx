@@ -135,7 +135,12 @@ export function Switch(props: SwitchProps): React.JSX.Element {
         aria-hidden="true"
         className={cn(
           'relative w-11 h-6 transition-all duration-200 ease-in-out rounded-full outline-none flex items-center',
-          !state.isSelected && (variant === 'solid' ? 'bg-[var(--rb-muted-base)]' : variant === 'outline' ? 'bg-transparent border-[var(--rb-muted-base)] border-2' : 'bg-transparent border-transparent'),
+          !state.isSelected &&
+            (variant === 'solid'
+              ? 'bg-[var(--rb-muted-base)]'
+              : variant === 'outline'
+                ? 'bg-transparent border-[var(--rb-muted-base)] border-2'
+                : 'bg-transparent border-transparent'),
           state.isSelected && variant === 'outline' && 'bg-transparent border-2',
           isFocusVisible && 'ring-2 ring-offset-2 ring-[var(--rb-ring)]',
           props.isDisabled && 'grayscale-[0.5]'
@@ -147,13 +152,22 @@ export function Switch(props: SwitchProps): React.JSX.Element {
             'w-4 h-4 transition-all duration-200 ease-in-out transform rounded-full shadow-sm',
             !state.isSelected && 'bg-[var(--rb-text)]',
             variant === 'outline' ? 'ml-0.5' : 'ml-1',
-            state.isSelected ? (variant === 'outline' ? 'translate-x-4.5' : 'translate-x-5') : 'translate-x-0'
+            state.isSelected
+              ? variant === 'outline'
+                ? 'translate-x-4.5'
+                : 'translate-x-5'
+              : 'translate-x-0'
           )}
           style={getThumbStyles()}
         />
       </div>
       {children && (
-        <Text bold={state.isSelected} color={state.isSelected ? 'default' : 'muted'} size="s" type="label">
+        <Text
+          bold={state.isSelected}
+          color={state.isSelected ? 'default' : 'muted'}
+          size="s"
+          type="label"
+        >
           {children}
         </Text>
       )}

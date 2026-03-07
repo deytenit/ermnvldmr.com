@@ -2,7 +2,7 @@ import { MARKDOWN_COMPONENTS } from '@ermnvldmr/ui';
 import React from 'react';
 
 import { articles } from '../../../../content/registry';
-import { ArticleLayout } from '../../../components/layouts/ArticleLayout/ArticleLayout';
+import { ArticleLayout } from '../../../components/Layout/ArticleLayout';
 import { createPage } from '../../../lib/core/createPage';
 
 const article = articles['test-article'];

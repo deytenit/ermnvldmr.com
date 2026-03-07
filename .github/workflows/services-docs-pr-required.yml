@@ -1,0 +1,50 @@
+name: services/docs - pr/required
+
+on:
+  pull_request:
+    branches: [next]
+    paths:
+      - 'services/docs/**'
+      - '.github/workflows/services-docs-pr-required.yml'
+
+concurrency:
+  group: ci-pr-docs-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  setup-hugo:
+    name: Setup - Hugo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: 'latest'
+          extended: true
+
+  build-hugo:
+    name: Build - Hugo Site
+    needs: setup-hugo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: 'latest'
+          extended: true
+
+      - name: Build Hugo site
+        working-directory: services/docs
+        run: hugo --gc --minify

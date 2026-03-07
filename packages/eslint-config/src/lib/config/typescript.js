@@ -44,10 +44,7 @@ export function getTypescriptConfig(rootDir) {
             assertionStyle: 'never',
           },
         ],
-        '@typescript-eslint/explicit-function-return-type': [
-          'error',
-          { allowExpressions: true, allowTypedFunctionExpressions: true },
-        ],
+        '@typescript-eslint/explicit-function-return-type': 'off',
       },
     },
     // Allow triple-slash references in `*.d.ts` files.

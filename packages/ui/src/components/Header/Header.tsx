@@ -1,6 +1,8 @@
 import React, { memo } from 'react';
 
+import { Separator } from '../Separator/Separator';
 import { Text } from '../Text/Text';
+import { VStack } from '../VStack/VStack';
 
 import type { TextProps, TextType, TextSize } from '../Text/Text';
 
@@ -19,7 +21,14 @@ export interface HeaderProps extends Omit<TextProps, 'as'> {
  * typography variants in the design system, ensuring accessibility
  * and visual consistency.
  */
-export const Header = memo(function Header({ level, type, size, children, ...props }: HeaderProps) {
+export const Header = memo(function Header({
+  level,
+  type,
+  size,
+  children,
+  className,
+  ...props
+}: HeaderProps) {
   // Default mappings from level to type and size
   const levelMapping: Record<number, { type: TextType; size: TextSize }> = {
     1: { type: 'display', size: 'l' },
@@ -41,9 +50,26 @@ export const Header = memo(function Header({ level, type, size, children, ...pro
   } as const;
   const Tag = tags[level];
 
-  return (
-    <Text as={Tag} size={size ?? defaultStyles.size} type={type ?? defaultStyles.type} {...props}>
+  const content = (
+    <Text
+      as={Tag}
+      className={className}
+      size={size ?? defaultStyles.size}
+      type={type ?? defaultStyles.type}
+      {...props}
+    >
       {children}
     </Text>
   );
+
+  if (level <= 2) {
+    return (
+      <VStack className="w-fit" gap={0.5}>
+        {content}
+        <Separator thinned="thinned-end" />
+      </VStack>
+    );
+  }
+
+  return content;
 });

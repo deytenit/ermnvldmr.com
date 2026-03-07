@@ -90,6 +90,24 @@ export const LongWithScroll: StoryObj<typeof CodeBlock> = {
   },
 };
 
+export const ShikiHighlight: StoryObj<typeof CodeBlock> = {
+  render: (args) => (
+    <CodeBlock {...args}>
+      <Code>
+        {`import React from 'react';
+
+export const MyComponent = () => {
+  return <div>Hello World</div>;
+};`}
+      </Code>
+    </CodeBlock>
+  ),
+  args: {
+    label: 'ShikiHighlight.tsx',
+    language: 'tsx',
+  },
+};
+
 export const PlainText: StoryObj<typeof CodeBlock> = {
   render: (args) => (
     <CodeBlock {...args}>

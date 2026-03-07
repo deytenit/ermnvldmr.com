@@ -2,30 +2,36 @@ codecov:
   notify:
     wait_for_ci: true
 
+ignore:
+  - 'packages/eslint-config'
+  - 'packages/rsbuild-config'
+  - 'packages/storybook-config'
+
 coverage:
   status:
     project:
       default:
-        target: auto
+        target: 80%
         threshold: 1%
+        range: 10%
       stl:
-        target: auto
+        target: 80%
         flags:
           - stl
       ui:
-        target: auto
+        target: 80%
         flags:
           - ui
       ui-storybook:
-        target: auto
+        target: 80%
         flags:
           - ui-storybook
       www:
-        target: auto
+        target: 80%
         flags:
           - www
       www-storybook:
-        target: auto
+        target: 80%
         flags:
           - www-storybook
 

@@ -17,12 +17,16 @@ describe('components/Switch', () => {
 
     const checkbox = screen.getByRole('switch');
     await user.click(checkbox);
-    
+
     expect(handleChange).toHaveBeenCalledWith(true);
   });
 
   it('respects isSelected prop', () => {
-    render(<Switch isSelected onChange={() => {}}>Switch</Switch>);
+    render(
+      <Switch isSelected onChange={() => {}}>
+        Switch
+      </Switch>
+    );
     const checkbox = screen.getByRole('switch');
     expect(checkbox).toBeChecked();
   });
@@ -30,11 +34,15 @@ describe('components/Switch', () => {
   it('respects isDisabled prop', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
-    render(<Switch isDisabled onChange={handleChange}>Switch</Switch>);
+    render(
+      <Switch isDisabled onChange={handleChange}>
+        Switch
+      </Switch>
+    );
 
     const checkbox = screen.getByRole('switch');
     expect(checkbox).toBeDisabled();
-    
+
     await user.click(checkbox);
     expect(handleChange).not.toHaveBeenCalled();
   });

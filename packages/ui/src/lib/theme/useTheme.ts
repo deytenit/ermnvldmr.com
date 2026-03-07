@@ -30,11 +30,7 @@ export interface UseThemeResult {
  * ```
  */
 export function useTheme(): UseThemeResult {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  const [preference, setPreference] = useLocalStorage(themeStorage) as [
-    ThemePreference,
-    (val: ThemePreference) => void,
-  ];
+  const [preference, setPreference] = useLocalStorage(themeStorage);
 
   const resolveTheme = useCallback((pref: ThemePreference): 'light' | 'dark' => {
     if (pref !== 'system') return pref;
@@ -42,14 +38,17 @@ export function useTheme(): UseThemeResult {
   }, []);
 
   // During hydration, we want to match what's already on the document
-  const initialTheme = typeof window !== 'undefined' 
-    ? (window.document.documentElement.classList.contains('dark') ? 'dark' : 'light')
-    : 'light';
+  const initialTheme =
+    typeof window !== 'undefined'
+      ? window.document.documentElement.classList.contains('dark')
+        ? 'dark'
+        : 'light'
+      : 'light';
 
   useEffect(() => {
     const root = window.document.documentElement;
     const isDark = resolveTheme(preference) === 'dark';
-    
+
     // Only toggle if it doesn't match to avoid redundant layout shifts
     if (root.classList.contains('dark') !== isDark) {
       root.classList.toggle('dark', isDark);

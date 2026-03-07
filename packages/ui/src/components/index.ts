@@ -11,6 +11,7 @@ export * from './Link/Link';
 export * from './List/List';
 export * from './Markdown/Markdown';
 export * from './Paragraph/Paragraph';
+export * from './Page/index';
 export * from './Separator/Separator';
 export * from './Stack/Stack';
 export * from './Stub/Stub';

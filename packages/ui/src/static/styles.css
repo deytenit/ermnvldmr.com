@@ -169,6 +169,7 @@
   --rb-color-violet-900: #3b2c83;
   --rb-color-violet-950: #231a4c;
 
+  --rb-color-neutral-25: #fafafa;
   --rb-color-neutral-50: #f6f6f6;
   --rb-color-neutral-100: #e7e7e7;
   --rb-color-neutral-200: #d1d1d1;
@@ -180,12 +181,13 @@
   --rb-color-neutral-800: #454545;
   --rb-color-neutral-900: #3d3d3d;
   --rb-color-neutral-950: #262626;
+  --rb-color-neutral-975: #141414;
 }
 
 :root {
   /* Core palette */
   --rb-base: var(--rb-color-neutral-50);
-  --rb-background: var(--rb-base);
+  --rb-background: var(--rb-color-neutral-25);
   --rb-outline: var(--rb-color-neutral-500);
   --rb-input: var(--rb-color-neutral-800);
   --rb-text: var(--rb-color-neutral-950);
@@ -218,7 +220,7 @@
 .dark {
   /* Core palette flips */
   --rb-base: var(--rb-color-neutral-950);
-  --rb-background: var(--rb-base);
+  --rb-background: var(--rb-color-neutral-975);
   --rb-text: var(--rb-color-neutral-50);
   --rb-outline: var(--rb-color-neutral-500);
   --rb-input: var(--rb-color-neutral-300);
@@ -246,13 +248,6 @@
   --rb-chart-3: var(--rb-color-yellow-400);
   --rb-chart-4: var(--rb-color-orange-400);
   --rb-chart-5: var(--rb-color-red-400);
-}
-
-@layer base {
-  body {
-    background-color: var(--rb-base);
-    color: var(--rb-text);
-  }
 }
 
 @keyframes shimmer {
@@ -284,5 +279,9 @@
       var(--rb-color-neutral-800) 75%
     );
     background-size: 200% 100%;
+  }
+
+  .dark .shiki span {
+    color: var(--shiki-dark) !important;
   }
 }

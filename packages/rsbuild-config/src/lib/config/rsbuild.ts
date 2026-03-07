@@ -3,6 +3,8 @@ import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginTypeCheck } from '@rsbuild/plugin-type-check';
 import { pluginDts } from 'rsbuild-plugin-dts';
 
+import { mergeConfig } from '../utils/merge.js';
+
 /**
  * Defines a standard Rsbuild configuration for services (apps).
  *
@@ -18,7 +20,7 @@ import { pluginDts } from 'rsbuild-plugin-dts';
  * ```
  */
 export function defineServiceConfig(config: RsbuildConfig = {}): RsbuildConfig {
-  return defineConfig({
+  const defaultConfig: RsbuildConfig = {
     plugins: [pluginReact(), pluginTypeCheck()],
     output: {
       distPath: {
@@ -40,23 +42,25 @@ export function defineServiceConfig(config: RsbuildConfig = {}): RsbuildConfig {
             rel: 'preload',
             as: 'font',
             type: 'font/woff2',
-            href: '/static/font/lato-var.woff2',
+            href: '/static/font/lato-400.woff2',
             crossorigin: true,
           },
         },
         {
-          tag: 'style',
-          children: `
-            :root { background-color: #f6f6f6; color: #262626; }
-            .dark { background-color: #262626; color: #f6f6f6; }
-            body { margin: 0; transition: background-color 0.2s ease; }
-          `,
-          head: true,
+          tag: 'link',
+          attrs: {
+            rel: 'preload',
+            as: 'font',
+            type: 'font/woff2',
+            href: '/static/font/lato-700.woff2',
+            crossorigin: true,
+          },
         },
       ],
     },
-    ...config,
-  });
+  };
+
+  return defineConfig(mergeConfig(defaultConfig, config));
 }
 
 /**
@@ -74,7 +78,7 @@ export function defineServiceConfig(config: RsbuildConfig = {}): RsbuildConfig {
  * ```
  */
 export function definePackageConfig(config: RsbuildConfig = {}): RsbuildConfig {
-  return defineConfig({
+  const defaultConfig: RsbuildConfig = {
     plugins: [pluginReact(), pluginTypeCheck(), pluginDts()],
     output: {
       distPath: {
@@ -86,6 +90,7 @@ export function definePackageConfig(config: RsbuildConfig = {}): RsbuildConfig {
     tools: {
       htmlPlugin: false,
     },
-    ...config,
-  });
+  };
+
+  return defineConfig(mergeConfig(defaultConfig, config));
 }

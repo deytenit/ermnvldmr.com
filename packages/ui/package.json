@@ -8,15 +8,19 @@
   "exports": {
     ".": {
       "import": "./dist/index.js",
-      "types": "./dist/ui/src/index.d.ts"
+      "style": "./dist/styles/*.css",
+      "types": "./dist/ui/src/index.d.ts",
+      "default": "./src/index.ts"
     },
     "./testing": {
       "import": "./dist/testing.js",
-      "types": "./dist/ui/src/testing.d.ts"
+      "types": "./dist/ui/src/testing.d.ts",
+      "default": "./src/testing.ts"
     },
     "./dev": {
       "import": "./dist/dev.js",
-      "types": "./dist/ui/src/dev.d.ts"
+      "types": "./dist/ui/src/dev.d.ts",
+      "default": "./src/dev.ts"
     }
   },
   "files": [
@@ -47,6 +51,7 @@
     "react-aria": "^3.45.0",
     "react-icons": "^5.5.0",
     "react-stately": "^3.44.0",
+    "shiki": "^4.0.1",
     "tw-animate-css": "^1.2.8"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import { Container, HStack, ThemeSwitch, useTheme, VStack, Text, Separator } from '@ermnvldmr/ui';
+import { Container, HStack, ThemeSwitch, VStack, Text, Separator, PageRoot } from '@ermnvldmr/ui';
 import React from 'react';
 
 /**
@@ -13,7 +13,6 @@ export interface IndexLayoutProps {
  * The root layout for the static service.
  *
  * @param props - The component props.
- * @param props.children - Main content slot.
  * @returns A React element representing the index layout.
  * @example
  * ```tsx
@@ -21,18 +20,13 @@ export interface IndexLayoutProps {
  * ```
  */
 export function IndexLayout({ children }: IndexLayoutProps): React.JSX.Element {
-  // Initialize theme side-effects
-  useTheme();
-
   const currentYear = new Date().getFullYear();
 
   return (
-    <VStack className="min-h-screen bg-[var(--rb-background)] transition-colors duration-200" justify="between">
-      <VStack as="main" className="min-h-[105vh] w-full flex-1">
-        {children}
-      </VStack>
+    <PageRoot className="flex flex-col justify-between">
+      <main className="flex-1 w-full">{children}</main>
       <VStack as="footer" className="w-full" gap={0}>
-        <Separator thinned={false} />
+        <Separator thinned="none" />
         <Container className="w-full" padding={12}>
           <HStack align="center" className="w-full" justify="between">
             <VStack align="start" gap={1}>
@@ -44,6 +38,6 @@ export function IndexLayout({ children }: IndexLayoutProps): React.JSX.Element {
           </HStack>
         </Container>
       </VStack>
-    </VStack>
+    </PageRoot>
   );
 }

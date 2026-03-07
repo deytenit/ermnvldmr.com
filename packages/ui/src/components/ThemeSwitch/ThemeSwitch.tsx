@@ -35,7 +35,7 @@ export function ThemeSwitch(): React.JSX.Element {
         />
         <Moon className="w-4 h-4 text-[var(--rb-text)] opacity-60" />
       </HStack>
-      <Separator direction="vertical" thinned={false} />
+      <Separator direction="vertical" thinned="none" />
       <Button
         aria-label="Follow system theme"
         color={preference === 'system' ? 'primary' : 'neutral'}
