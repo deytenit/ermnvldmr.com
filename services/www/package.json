@@ -65,7 +65,7 @@
     "prettier-plugin-tailwindcss": "^0.6.11",
     "remark-frontmatter": "^5.0.0",
     "remark-mdx-frontmatter": "^5.2.0",
-    "storybook": "^8.6.15",
+    "storybook": "^8.6.17",
     "storybook-react-rsbuild": "^1.0.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
