@@ -67,7 +67,7 @@ describe('components/Container', () => {
       </Container>
     );
     expect(consoleWarnSpy).toHaveBeenCalledWith(
-      '[@ermnvldmr/ui] Container cannot have both `onPress` and `href` props.',
+      '[@ermnvldmr/ui] Container cannot have both `onPress` and `href` props.'
     );
     consoleWarnSpy.mockRestore();
   });

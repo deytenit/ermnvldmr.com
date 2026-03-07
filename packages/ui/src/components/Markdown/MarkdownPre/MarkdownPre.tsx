@@ -1,9 +1,24 @@
 import React, { memo, useMemo } from 'react';
 
 import { CodeBlock } from '../../Code/CodeBlock/CodeBlock';
+import { SUPPORTED_LANGUAGES } from '../../Code/lib/highlighter/highlighter';
 
 import type { CodeBlockProps } from '../../Code/CodeBlock/CodeBlock';
 import type { CodeLanguage } from '../../Code/lib/highlighter/highlighter';
+
+/**
+ * Checks if a string is a valid code language.
+ * @param lang The string to check.
+ * @returns True if the string is a valid code language.
+ * @example
+ * ```typescript
+ * isCodeLanguage('typescript'); // true
+ * isCodeLanguage('foo'); // false
+ * ```
+ */
+function isCodeLanguage(lang: string): lang is CodeLanguage {
+  return SUPPORTED_LANGUAGES.some((l) => l === lang);
+}
 
 /**
  * A Markdown pre component for code blocks.
@@ -20,9 +35,10 @@ export const MarkdownPre = memo(function MarkdownPre(props: CodeBlockProps) {
       const className = children.props.className;
       const match = /language-(\w+)/.exec(className);
       if (match) {
-        // We cast here because we know it comes from markdown,
-        // shiki will handle it or fallback to plaintext if unknown at runtime.
-        return match[1] as CodeLanguage;
+        const lang = match[1];
+        if (isCodeLanguage(lang)) {
+          return lang;
+        }
       }
     }
     return undefined;

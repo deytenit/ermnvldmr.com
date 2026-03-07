@@ -12,7 +12,7 @@ import type { Meta, StoryObj } from '@storybook/react';
  * - Multiple color options (black, outline, outline-light) with theme support
  * - Horizontal and vertical orientations
  * - Optional thinned gradient fade effect at line ends ('thinned', 'thinned-start', 'thinned-end', 'none')
- * - 2px stroke width following print design standards
+ * - 1px stroke width following print design standards
  * - Semantic div elements with proper ARIA separator role for accessibility
  */
 const meta: Meta<typeof Separator> = {
@@ -64,7 +64,7 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * The default single-line separator with light outline color.
- * Uses the newspaper-standard 2px stroke with thinned gradient ends.
+ * Uses the newspaper-standard 1px stroke with thinned gradient ends.
  */
 export const Default: Story = {
   args: {},

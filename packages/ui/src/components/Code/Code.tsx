@@ -5,8 +5,8 @@ import { usePress } from 'react-aria';
 import { useCodeContext } from './contexts/CodeContext/CodeContext';
 import { codeHighlighter } from './lib/highlighter/highlighter';
 
-import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
 import type { CodeLanguage } from './lib/highlighter/highlighter';
+import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
 
 export type { CodeLanguage };
 
@@ -47,6 +47,7 @@ export const Code = memo(function Code({
   const context = useCodeContext();
   const [isCopied, setIsCopied] = useState(false);
   const codeRef = useRef<HTMLElement>(null);
+  const divRef = useRef<HTMLDivElement>(null);
   const [highlightedHtml, setHighlightedHtml] = useState<string | null>(null);
 
   const language = propsLanguage ?? context?.language;
@@ -54,10 +55,13 @@ export const Code = memo(function Code({
   const handleCopy = useCallback(async () => {
     try {
       let textToCopy = copyValue;
-      if (!textToCopy && codeRef.current) {
-        textToCopy = codeRef.current.innerText;
-        if (!textToCopy) {
-          textToCopy = codeRef.current.textContent ?? undefined;
+      if (!textToCopy) {
+        const ref = codeRef.current ?? divRef.current;
+        if (ref) {
+          textToCopy = ref.innerText;
+          if (!textToCopy) {
+            textToCopy = ref.textContent ?? undefined;
+          }
         }
       }
 
@@ -109,7 +113,9 @@ export const Code = memo(function Code({
     if (highlightedHtml) {
       return (
         <div
-          ref={codeRef as any}
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+          ref={divRef}
           className={cn(
             'block min-w-full font-mono text-sm',
             '[&>pre]:!bg-transparent [&>pre]:!p-0 [&>pre]:!m-0',
@@ -131,7 +137,6 @@ export const Code = memo(function Code({
             ],
             className
           )}
-          dangerouslySetInnerHTML={{ __html: highlightedHtml }}
           data-testid={testId}
         />
       );

@@ -21,10 +21,10 @@ createPage(
                   </div>
                 )}
                 <Article
-                  className="h-full"
-                  href={`/articles/${article.slug}`}
                   additionalText={article.tags?.join(' • ')}
+                  className="h-full"
                   headline={article.title}
+                  href={`/articles/${article.slug}`}
                   subHeadline={article.createdDate.toLocaleDateString(undefined, {
                     year: 'numeric',
                     month: 'long',
@@ -43,5 +43,5 @@ createPage(
   {
     title: `Articles | ${SITE_TITLE}`,
     description: 'Browse all articles and projects.',
-  },
+  }
 );

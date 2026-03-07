@@ -86,12 +86,12 @@ export interface ContainerProps extends ClassNameProps, TestIdProps {
   border?: boolean;
   /**
    * Press interaction handler.
-   * @note Cannot be used with `href`.
+   * Cannot be used with `href`.
    */
   onPress?: PressEvents['onPress'];
   /**
    * If provided, the container will be rendered as an `<a>` tag.
-   * @note Cannot be used with `onPress`.
+   * Cannot be used with `onPress`.
    */
   href?: string;
   /** The HTML element to use for rendering. Overridden to `a` if `href` is provided. */
@@ -119,11 +119,10 @@ export const Container = memo(function Container({
   'data-testid': testId,
 }: ContainerProps) {
   if (process.env.NODE_ENV !== 'production' && onPress && href) {
-    // eslint-disable-next-line no-console
     console.warn('[@ermnvldmr/ui] Container cannot have both `onPress` and `href` props.');
   }
 
-  const isLink = !!href;
+  const isLink = href != null;
   const isPressable = !!onPress && !isLink;
 
   const ref = React.useRef<HTMLElement>(null);
@@ -202,7 +201,6 @@ export const Container = memo(function Container({
     <FinalComponent
       {...interactionProps}
       ref={ref}
-      href={href}
       className={cn(
         'overflow-hidden',
         bgClasses[bg],
@@ -211,11 +209,12 @@ export const Container = memo(function Container({
         paddingClasses[padding],
         shadow && 'shadow-md',
         border && 'border border-[var(--rb-outline)]',
-        (onPress || href) &&
+        (isPressable || isLink) &&
           'cursor-pointer transition-all duration-200 hover:brightness-95 active:opacity-80',
-        className,
+        className
       )}
       data-testid={testId}
+      href={href}
     >
       {children}
     </FinalComponent>

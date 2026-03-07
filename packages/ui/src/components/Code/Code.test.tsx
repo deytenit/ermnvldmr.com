@@ -8,7 +8,9 @@ import { CodeBlock } from './CodeBlock/CodeBlock';
 // Mock shiki
 vi.mock('shiki', () => ({
   createHighlighter: vi.fn().mockResolvedValue({
-    codeToHtml: vi.fn().mockReturnValue('<pre><code><span class="line">highlighted code</span></code></pre>'),
+    codeToHtml: vi
+      .fn()
+      .mockReturnValue('<pre><code><span class="line">highlighted code</span></code></pre>'),
   }),
 }));
 
@@ -49,18 +51,18 @@ describe('Code Component', () => {
     expect(screen.getByText('test.ts')).toBeInTheDocument();
   });
 
-  it('copies content on click in inline mode', async () => {
+  it('copies content on click in inline mode', () => {
     render(<Code copyValue="copied!">Display Text</Code>);
     const codeElement = screen.getByText('Display Text');
 
-    await act(async () => {
+    act(() => {
       fireEvent.click(codeElement);
     });
 
     expect(mockWriteText).toHaveBeenCalledWith('copied!');
   });
 
-  it('copies content via button in block mode', async () => {
+  it('copies content via button in block mode', () => {
     render(
       <CodeBlock copyValue="block copy">
         <Code>
@@ -70,18 +72,18 @@ describe('Code Component', () => {
     );
 
     const copyButton = screen.getByLabelText('Copy code');
-    await act(async () => {
+    act(() => {
       fireEvent.click(copyButton);
     });
 
     expect(mockWriteText).toHaveBeenCalledWith('block copy');
   });
 
-  it('extracts text from children if copyValue is not provided', async () => {
+  it('extracts text from children if copyValue is not provided', () => {
     render(<Code>extracted</Code>);
 
     const codeElement = screen.getByText('extracted');
-    await act(async () => {
+    act(() => {
       fireEvent.click(codeElement);
     });
 
@@ -89,7 +91,7 @@ describe('Code Component', () => {
   });
 
   it('uses shiki for highlighting when language is provided in block mode', async () => {
-    await act(async () => {
+    act(() => {
       render(
         <CodeBlock language="typescript">
           <Code>const x: number = 1;</Code>

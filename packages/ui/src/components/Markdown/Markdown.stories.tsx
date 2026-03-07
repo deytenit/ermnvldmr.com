@@ -161,3 +161,66 @@ export const ListStyles: Story = {
     </div>
   ),
 };
+
+/**
+ * Showcases code blocks with language-specific syntax highlighting.
+ */
+export const CodeLanguages: Story = {
+  render: () => (
+    <div className="max-w-[800px] mx-auto space-y-8">
+      <div>
+        <Markdown.H3 className="mb-4">TypeScript</Markdown.H3>
+        <Markdown.Pre label="example.ts">
+          <Markdown.Code className="language-typescript">
+            {`interface User {
+  id: number;
+  name: string;
+}
+
+const greet = (user: User) => {
+  console.log(\`Hello, \${user.name}!\`);
+};`}
+          </Markdown.Code>
+        </Markdown.Pre>
+      </div>
+
+      <div>
+        <Markdown.H3 className="mb-4">Rust</Markdown.H3>
+        <Markdown.Pre label="main.rs">
+          <Markdown.Code className="language-rust">
+            {`fn main() {
+    let name = "World";
+    println!("Hello, {}!", name);
+}`}
+          </Markdown.Code>
+        </Markdown.Pre>
+      </div>
+
+      <div>
+        <Markdown.H3 className="mb-4">Python</Markdown.H3>
+        <Markdown.Pre label="script.py">
+          <Markdown.Code className="language-python">
+            {`def greet(name: str):
+    print(f"Hello, {name}!")
+
+if __name__ == "__main__":
+    greet("World")`}
+          </Markdown.Code>
+        </Markdown.Pre>
+      </div>
+
+      <div>
+        <Markdown.H3 className="mb-4">JSON</Markdown.H3>
+        <Markdown.Pre label="data.json">
+          <Markdown.Code className="language-json">
+            {`{
+  "project": "ermnvldmr.com",
+  "version": "1.0.0",
+  "private": true
+}`}
+          </Markdown.Code>
+        </Markdown.Pre>
+      </div>
+    </div>
+  ),
+};

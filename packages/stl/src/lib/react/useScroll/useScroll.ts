@@ -19,7 +19,10 @@ export interface UseScrollResult {
  * ```
  */
 export const useScroll = (): UseScrollResult => {
-  const [scroll, setScroll] = useState({ x: 0, y: 0 });
+  const [scroll, setScroll] = useState(() => ({
+    x: typeof window !== 'undefined' ? window.scrollX : 0,
+    y: typeof window !== 'undefined' ? window.scrollY : 0,
+  }));
   const ticking = useRef(false);
 
   useEffect(() => {

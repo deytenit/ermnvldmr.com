@@ -49,7 +49,7 @@ export const useResizeObserver = <T extends HTMLElement>(
     resizeObserver.observe(observeTarget);
 
     return () => {
-      resizeObserver.unobserve(observeTarget);
+      resizeObserver.disconnect();
     };
   }, [ref]);
 

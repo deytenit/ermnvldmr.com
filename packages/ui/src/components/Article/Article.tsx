@@ -6,8 +6,8 @@ import { Separator } from '../Separator/Separator';
 import { Text } from '../Text/Text';
 import { VStack } from '../VStack/VStack';
 
-import type { ClassNameProps } from '@ermnvldmr/stl';
 import type { ContainerProps } from '../Container/Container';
+import type { ClassNameProps } from '@ermnvldmr/stl';
 
 /**
  * Props for the Article component.
@@ -21,12 +21,12 @@ export interface ArticleProps extends ClassNameProps {
   additionalText?: string;
   /**
    * Press interaction handler.
-   * @note Cannot be used with `href`.
+   * Cannot be used with `href`.
    */
   onPress?: ContainerProps['onPress'];
   /**
    * If provided, the container will be rendered as an `<a>` tag for navigation.
-   * @note Cannot be used with `onPress`.
+   * Cannot be used with `onPress`.
    */
   href?: ContainerProps['href'];
   /** The main article body content */
@@ -54,7 +54,7 @@ export const Article = memo(function Article({
   className,
 }: ArticleProps) {
   return (
-    <Container padding={4} href={href} onPress={onPress} className={className}>
+    <Container className={className} href={href} padding={4} onPress={onPress}>
       <VStack align="stretch" gap={4}>
         <Header level={4}>{headline}</Header>
 

@@ -6,8 +6,8 @@ import { Button } from '../../Button/Button';
 import { Container } from '../../Container/Container';
 import { CodeContext, type CodeContextValue } from '../contexts/CodeContext/CodeContext';
 
-import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
 import type { CodeLanguage } from '../lib/highlighter/highlighter';
+import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
 
 /**
  * Props for the CodeBlock component.

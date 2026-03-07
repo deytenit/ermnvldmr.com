@@ -89,8 +89,7 @@ export const Separator = memo(function Separator({
   ];
 
   // Thinned effect using CSS mask
-  const thinnedClasses =
-    thinned !== 'none' ? [THINNED_TYPE_CLASSES[direction][thinned]] : [];
+  const thinnedClasses = thinned !== 'none' ? [THINNED_TYPE_CLASSES[direction][thinned]] : [];
 
   // Size classes - fill container by default
   const sizeClasses =

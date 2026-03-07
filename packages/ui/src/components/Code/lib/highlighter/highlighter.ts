@@ -46,24 +46,27 @@ export const SUPPORTED_LANGUAGES: CodeLanguage[] = [
  * A singleton highlighter service for code blocks.
  */
 class CodeHighlighter {
-  private static instance: CodeHighlighter;
+  private static instance: CodeHighlighter | null = null;
   private highlighter: Highlighter | null = null;
   private initializingPromise: Promise<Highlighter> | null = null;
 
-  private constructor() {}
-
   /**
    * Gets the singleton instance of the highlighter.
+   * @example
+   * ```typescript
+   * const highlighter = CodeHighlighter.getInstance();
+   * ```
    */
   public static getInstance(): CodeHighlighter {
-    if (!CodeHighlighter.instance) {
-      CodeHighlighter.instance = new CodeHighlighter();
-    }
-    return CodeHighlighter.instance;
+    return (CodeHighlighter.instance ??= new CodeHighlighter());
   }
 
   /**
    * Initializes the highlighter if it hasn't been already.
+   * @example
+   * ```typescript
+   * const highlighter = await this.getHighlighter();
+   * ```
    */
   private async getHighlighter(): Promise<Highlighter> {
     if (this.highlighter) {
@@ -92,6 +95,10 @@ class CodeHighlighter {
    * @param code - The raw source code to highlight
    * @param lang - The language of the code
    * @returns A promise resolving to the highlighted HTML
+   * @example
+   * ```typescript
+   * const html = await highlighter.highlight('const a = 1;', 'typescript');
+   * ```
    */
   public async highlight(code: string, lang: CodeLanguage): Promise<string> {
     try {
