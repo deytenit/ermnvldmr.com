@@ -1,17 +1,31 @@
-import { Header, Separator, Article, VStack } from '@ermnvldmr/ui';
+import { Separator, Article, VStack, Breadcrumbs } from '@ermnvldmr/ui';
 import React from 'react';
 
 import { sortedArticles } from '../../../content/registry';
-import { IndexLayout } from '../../components/layouts/IndexLayout/IndexLayout';
+import { DefaultLayout } from '../../components/Layout/DefaultLayout';
 import { createPage } from '../../lib/core/createPage';
 import { SITE_TITLE } from '../../lib/shared/constants';
 
 createPage(
   function ArticlesList(): React.JSX.Element {
+    const breadcrumbs = (
+      <Breadcrumbs>
+        <Breadcrumbs.Item>
+          <a href="/">Home</a>
+        </Breadcrumbs.Item>
+        <Breadcrumbs.Separator />
+        <Breadcrumbs.Item>Articles</Breadcrumbs.Item>
+      </Breadcrumbs>
+    );
+
     return (
-      <IndexLayout>
+      <DefaultLayout
+        breadcrumbs={breadcrumbs}
+        description="Browse all articles and projects."
+        paddingY="medium"
+        title="Articles"
+      >
         <VStack className="w-full" gap={8}>
-          <Header level={1}>Articles</Header>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             {sortedArticles.map((article, index) => (
               <React.Fragment key={article.slug}>
@@ -37,7 +51,7 @@ createPage(
             ))}
           </div>
         </VStack>
-      </IndexLayout>
+      </DefaultLayout>
     );
   },
   {

@@ -18,7 +18,7 @@ import type { Meta, StoryObj } from '@storybook/react';
  * Metadata for the ArticleLayout component stories.
  */
 const meta: Meta<typeof ArticleLayout> = {
-  title: 'WWW/Layouts/ArticleLayout',
+  title: 'WWW/Layout/ArticleLayout',
   component: ArticleLayout,
   tags: ['autodocs'],
   args: {

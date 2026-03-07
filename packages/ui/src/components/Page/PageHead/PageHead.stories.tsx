@@ -1,8 +1,8 @@
 import React from 'react';
 
 import { PageHead } from './PageHead';
-import { Breadcrumbs } from '../Breadcrumbs/Breadcrumbs';
-import { Button } from '../Button/Button';
+import { Breadcrumbs } from '../../Breadcrumbs/Breadcrumbs';
+import { Button } from '../../Button/Button';
 
 import type { Meta, StoryObj } from '@storybook/react';
 

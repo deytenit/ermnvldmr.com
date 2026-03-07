@@ -30,11 +30,7 @@ export interface UseThemeResult {
  * ```
  */
 export function useTheme(): UseThemeResult {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  const [preference, setPreference] = useLocalStorage(themeStorage) as [
-    ThemePreference,
-    (val: ThemePreference) => void,
-  ];
+  const [preference, setPreference] = useLocalStorage(themeStorage);
 
   const resolveTheme = useCallback((pref: ThemePreference): 'light' | 'dark' => {
     if (pref !== 'system') return pref;

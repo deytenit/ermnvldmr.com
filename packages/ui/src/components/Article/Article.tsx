@@ -56,26 +56,24 @@ export const Article = memo(function Article({
   return (
     <Container className={className} href={href} padding={4} onPress={onPress}>
       <VStack align="stretch" gap={4}>
-        <Header level={4}>{headline}</Header>
-
         <VStack align="stretch" gap={2}>
-          {subHeadline ? (
-            <>
-              <Separator thinned="none" type="single" />
-              <Text italic size="m" type="label">
-                {subHeadline}
-              </Text>
+          <Header level={4}>{headline}</Header>
+          <VStack align="stretch" gap={2}>
+            {subHeadline ? (
+              <>
+                <Text italic size="m" type="label">
+                  {subHeadline}
+                </Text>
+                <Separator thinned="thinned-end" type="single" />
+              </>
+            ) : (
               <Separator thinned="thinned-end" type="single" />
-            </>
-          ) : (
-            <Separator thinned="thinned-end" type="single" />
-          )}
+            )}
+          </VStack>
         </VStack>
-
         <Text size="m" type="body">
           {children}
         </Text>
-
         {additionalText && (
           <VStack align="end">
             <Text italic color="muted" size="s" type="label">

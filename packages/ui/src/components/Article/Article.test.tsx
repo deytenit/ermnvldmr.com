@@ -31,9 +31,8 @@ describe('components/Article', () => {
       </Article>
     );
     separators = screen.getAllByRole('separator');
-    expect(separators).toHaveLength(2);
-    expect(separators[0].className).not.toContain('mask-image');
-    expect(separators[1].className).toContain('mask-image');
+    expect(separators).toHaveLength(1);
+    expect(separators[0].className).toContain('mask-image');
   });
 
   it('renders as a link when href is provided', () => {

@@ -1,14 +1,14 @@
-import { Header, Paragraph, Link, VStack } from '@ermnvldmr/ui';
+import { Paragraph, Link, VStack, Header } from '@ermnvldmr/ui';
 import React from 'react';
 
-import { IndexLayout } from '../components/layouts/IndexLayout/IndexLayout';
+import { DefaultLayout } from '../components/Layout/DefaultLayout';
 import { createPage } from '../lib/core/createPage';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../lib/shared/constants';
 
 createPage(
   function HomePage(): React.JSX.Element {
     return (
-      <IndexLayout>
+      <DefaultLayout centerVertically headerAddonLeft={<Header level={3}>{SITE_TITLE}</Header>}>
         <VStack gap={4}>
           <Header level={2}>Welcome to my page!</Header>
           <Paragraph>
@@ -28,7 +28,7 @@ createPage(
           </Paragraph>
           <Paragraph italic>Thank you for visiting!</Paragraph>
         </VStack>
-      </IndexLayout>
+      </DefaultLayout>
     );
   },
   { title: SITE_TITLE, description: SITE_DESCRIPTION }

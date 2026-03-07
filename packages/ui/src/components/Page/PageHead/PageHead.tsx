@@ -1,10 +1,11 @@
 import { cn, useScroll, useResizeObserver } from '@ermnvldmr/stl';
 import React, { type ReactNode, useRef, useEffect, useState } from 'react';
 
-import { Header } from '../Header/Header';
-import { HStack } from '../HStack/HStack';
-import { Text } from '../Text/Text';
-import { VStack } from '../VStack/VStack';
+import { Header } from '../../Header/Header';
+import { HStack } from '../../HStack/HStack';
+import { Text } from '../../Text/Text';
+import { VStack } from '../../VStack/VStack';
+import { PageContainer } from '../PageContainer/PageContainer';
 
 /**
  * Defines the positioning and behavior of the PageHead component.
@@ -28,7 +29,7 @@ export interface PageHeadProps {
   /** The main heading text. */
   heading: string;
   /** The caption text displayed below the heading. */
-  caption?: string;
+  caption?: ReactNode;
   /** The breadcrumbs navigation component. */
   breadcrumbs?: ReactNode;
   /** A component to be displayed on the left side of the header. */
@@ -77,55 +78,69 @@ export const PageHead = ({
   }, [scrollY, strategy]);
 
   const rootClasses = cn(
-    'page-head w-full transition-all duration-200 bg-[var(--rb-background)] fixed top-0 z-10',
+    'page-head w-full transition-all duration-200 bg-[var(--rb-background)] fixed top-0 z-10 border-b border-[var(--rb-outline)]/10',
     {
-      'px-6 py-4': !isCollapsed,
-      'px-4 py-2': isCollapsed,
-      'shadow-md': isCollapsed,
+      'shadow-md bg-[var(--rb-background)]/90 backdrop-blur-md': isCollapsed,
     },
     className
+  );
+
+  const expandedContent = (
+    <PageContainer paddingY="medium">
+      <VStack align="stretch" gap={6}>
+        <HStack align="center" justify="between">
+          <HStack align="center" gap={4}>
+            {addonLeft && <div>{addonLeft}</div>}
+            {breadcrumbs && <div className="hidden sm:block">{breadcrumbs}</div>}
+          </HStack>
+          {addonRight && <div>{addonRight}</div>}
+        </HStack>
+        <VStack gap={2}>
+          <Header level={1}>{heading}</Header>
+          {typeof caption === 'string' ? (
+            <Text color="muted" size="l" type="body">
+              {caption}
+            </Text>
+          ) : (
+            caption
+          )}
+        </VStack>
+      </VStack>
+    </PageContainer>
+  );
+
+  const collapsedContent = (
+    <PageContainer paddingY="none">
+      <HStack align="center" className="h-14" justify="between">
+        <HStack align="center" className="min-w-0 flex-1" gap={4}>
+          {addonLeft && <div className="flex-shrink-0">{addonLeft}</div>}
+          <Header level={4} overflow="ellipsis">
+            {heading}
+          </Header>
+        </HStack>
+        {addonRight && <div className="flex-shrink-0 ml-4">{addonRight}</div>}
+      </HStack>
+    </PageContainer>
   );
 
   return (
     <>
       <header ref={headerRef} className={rootClasses}>
         <div
-          className={cn('transition-opacity duration-200', {
-            'opacity-0 hidden': isCollapsed,
-            'opacity-100': !isCollapsed,
+          className={cn('transition-all duration-300', {
+            'opacity-0 invisible h-0 overflow-hidden': isCollapsed,
+            'opacity-100 visible': !isCollapsed,
           })}
         >
-          <VStack align="stretch" gap={2}>
-            <HStack align="center" justify="between">
-              <HStack align="center" gap={4}>
-                {addonLeft && <div>{addonLeft}</div>}
-                {breadcrumbs && <div>{breadcrumbs}</div>}
-              </HStack>
-              {addonRight && <div>{addonRight}</div>}
-            </HStack>
-            <VStack gap={2}>
-              <Header level={1}>{heading}</Header>
-              {caption && (
-                <Text color="muted" size="l" type="body">
-                  {caption}
-                </Text>
-              )}
-            </VStack>
-          </VStack>
+          {expandedContent}
         </div>
         <div
-          className={cn('transition-opacity duration-200', {
-            'opacity-100': isCollapsed,
-            'opacity-0 hidden': !isCollapsed,
+          className={cn('transition-all duration-300', {
+            'opacity-100 visible': isCollapsed,
+            'opacity-0 invisible h-0 overflow-hidden': !isCollapsed,
           })}
         >
-          <HStack align="center" justify="between">
-            <HStack align="center" gap={2}>
-              {addonLeft && <div>{addonLeft}</div>}
-              <Header level={3}>{heading}</Header>
-            </HStack>
-            {addonRight && <div>{addonRight}</div>}
-          </HStack>
+          {collapsedContent}
         </div>
       </header>
       <div style={{ height }} />
