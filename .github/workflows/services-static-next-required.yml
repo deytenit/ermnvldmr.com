@@ -7,6 +7,7 @@ on:
       - 'services/static/**'
       - 'packages/ui/**'
       - 'packages/stl/**'
+      - 'packages/i18n/**'
       - '.github/workflows/services-static-next-required.yml'
       - 'pnpm-lock.yaml'
 
@@ -63,11 +64,19 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Build Rsbuild config
         run: pnpm --filter @ermnvldmr/rsbuild-config build
+      - name: Build i18n
+        run: pnpm --filter @ermnvldmr/i18n build
       - name: Upload Config Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: rsbuild-config-dist
           path: packages/rsbuild-config/dist
+          retention-days: 1
+      - name: Upload i18n dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: i18n-dist
+          path: packages/i18n/dist
           retention-days: 1
 
   lint-static:
@@ -91,6 +100,11 @@ jobs:
         with:
           name: rsbuild-config-dist
           path: packages/rsbuild-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist
+          path: packages/i18n/dist
       - name: Lint static service
         run: pnpm --filter @ermnvldmr/static lint
 
@@ -115,6 +129,11 @@ jobs:
         with:
           name: rsbuild-config-dist
           path: packages/rsbuild-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist
+          path: packages/i18n/dist
       - name: Typecheck static service
         run: pnpm --filter @ermnvldmr/static typecheck
 
@@ -139,6 +158,11 @@ jobs:
         with:
           name: rsbuild-config-dist
           path: packages/rsbuild-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist
+          path: packages/i18n/dist
       - name: Build static service
         run: pnpm --filter @ermnvldmr/static build
       - name: Upload build artifacts

@@ -41,7 +41,7 @@ describe('components/Breadcrumbs', () => {
       </Breadcrumbs>
     );
     const link = screen.getByRole('link', { name: 'Test Link' });
-    expect(link).toHaveAttribute('href', '/test-url');
+    expect(link).toHaveAttribute('href', '/en/test-url');
   });
 
   it('supports onClick on Item', () => {
