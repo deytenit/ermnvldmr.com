@@ -112,12 +112,14 @@ export function ssgPlugin(): RsbuildPlugin {
           pruneSource?: boolean;
         }) => { process(html: string): Promise<string> };
 
-        // critters `path` is the filesystem root that corresponds to publicPath '/'.
-        // It resolves <link href="/css/..."> to webDistPath + '/css/...'.
-        // Note: critters does NOT transform url() references inside CSS — only the link tags.
+        // critters `path` is the filesystem root that corresponds to publicPath.
+        // It resolves <link href="..."> to webDistPath. Use configured assetPrefix for locale builds.
+        const configuredAssetPrefix =
+          (config.output as { assetPrefix?: string } | undefined)?.assetPrefix ?? '/';
+
         const critters = new Critters({
           path: webDistPath,
-          publicPath: '/',
+          publicPath: configuredAssetPrefix,
           preload: 'swap',     // <link rel="preload" as="style" onload="this.rel='stylesheet'">
           inlineFonts: false,  // fonts are handled via separate <link rel="preload"> tags
           pruneSource: false,  // keep full CSS file for post-hydration correctness
@@ -160,7 +162,14 @@ export function ssgPlugin(): RsbuildPlugin {
           // Run critters: inline critical CSS, make main stylesheet async
           const processed = await critters.process(injected);
 
-          await fs.writeFile(webHtmlPath, processed, 'utf8');
+          // Set <html lang> to the current build locale
+          const locale = process.env.LOCALE ?? 'en';
+          const localized = processed.replace(
+            /<html([^>]*)\slang="[^"]*"/,
+            `<html$1 lang="${locale}"`
+          );
+
+          await fs.writeFile(webHtmlPath, localized, 'utf8');
           console.log(`[ssg-plugin] ✓ ${entryName}`);
         }
 
