@@ -6,7 +6,8 @@ import { pluginMdx } from '@rsbuild/plugin-mdx';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 
-const fontBase = 'static/font';
+const locale = process.env.LOCALE ?? 'en';
+const fontBase = `/${locale}/static/font`;
 
 export default defineServiceConfig(
   mergeConfig(localeRsbuildConfig(), {
@@ -44,6 +45,7 @@ export default defineServiceConfig(
             href: `${fontBase}/lato-400.woff2`,
             crossorigin: true,
           },
+          publicPath: false,
         },
         {
           tag: 'link',
@@ -54,6 +56,7 @@ export default defineServiceConfig(
             href: `${fontBase}/lato-700.woff2`,
             crossorigin: true,
           },
+          publicPath: false,
         },
         {
           tag: 'link',
@@ -64,6 +67,7 @@ export default defineServiceConfig(
             href: `${fontBase}/eb-garamond-var.woff2`,
             crossorigin: true,
           },
+          publicPath: false,
         },
       ],
     },
