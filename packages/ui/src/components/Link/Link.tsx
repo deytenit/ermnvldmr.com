@@ -1,3 +1,4 @@
+import { localePath } from '@ermnvldmr/i18n';
 import { castRef, cn } from '@ermnvldmr/stl';
 import React, { memo, useRef } from 'react';
 import { useLink } from 'react-aria';
@@ -50,6 +51,9 @@ export const Link = memo(function Link(props: LinkProps) {
   );
 
   if (href) {
+    // Auto-prefix internal absolute paths with the current build locale.
+    // External URLs (http/https/mailto/tel) and relative paths are left as-is.
+    const resolvedHref = href.startsWith('/') ? localePath(href) : href;
     const isAutoExternal = isExternal ?? href.startsWith('http');
     const externalProps = isAutoExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {};
 
@@ -62,7 +66,7 @@ export const Link = memo(function Link(props: LinkProps) {
         className={sharedClasses}
         color={color}
         delay={delay}
-        href={href}
+        href={resolvedHref}
         size={size}
         type={type}
       >

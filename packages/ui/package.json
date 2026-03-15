@@ -41,6 +41,7 @@
     "clean": "rm -rf dist coverage storybook-static"
   },
   "dependencies": {
+    "@ermnvldmr/i18n": "workspace:*",
     "@ermnvldmr/stl": "workspace:*",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.12",

@@ -241,6 +241,9 @@ importers:
 
   packages/ui:
     dependencies:
+      '@ermnvldmr/i18n':
+        specifier: workspace:*
+        version: link:../i18n
       '@ermnvldmr/stl':
         specifier: workspace:*
         version: link:../stl
