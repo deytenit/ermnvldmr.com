@@ -24,6 +24,11 @@ export function localeRsbuildConfig(): RsbuildConfig {
         'process.env.LOCALE': JSON.stringify(locale),
       },
     },
+    server: {
+      // Dev server serves pages under the locale base so localePath() links
+      // resolve correctly in dev without any NODE_ENV branching.
+      base: `/${locale}`,
+    },
     output: {
       distPath: {
         root: `dist/${locale}`,
