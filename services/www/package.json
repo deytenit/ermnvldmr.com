@@ -26,8 +26,6 @@
     "@ermnvldmr/ui": "workspace:*",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "simplex-noise": "^4.0.3",
-    "suncalc": "^1.9.0",
     "tailwindcss": "^4.1.4"
   },
   "devDependencies": {
@@ -50,9 +48,9 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@testing-library/user-event": "^14.6.1",
+    "@types/node": "*",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
-    "@types/suncalc": "^1.9.2",
     "@vitest/coverage-v8": "^4.0.18",
     "babel-plugin-istanbul": "^7.0.1",
     "concurrently": "^9.1.2",
@@ -70,7 +68,6 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "vitest": "^4.0.18",
-    "wait-on": "^8.0.3",
-    "@types/node": "*"
+    "wait-on": "^8.0.3"
   }
 }
