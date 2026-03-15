@@ -184,6 +184,33 @@
   --rb-color-neutral-975: #141414;
 }
 
+@theme {
+  /* display */
+  --text-rb-display-l: 3.5625rem; --text-rb-display-l--line-height: 4rem;     --text-rb-display-l--letter-spacing: -0.015625rem;
+  --text-rb-display-m: 2.8125rem; --text-rb-display-m--line-height: 3.25rem;  --text-rb-display-m--letter-spacing: 0rem;
+  --text-rb-display-s: 2.25rem;   --text-rb-display-s--line-height: 2.75rem;  --text-rb-display-s--letter-spacing: 0rem;
+
+  /* headline */
+  --text-rb-headline-l: 2rem;     --text-rb-headline-l--line-height: 2.5rem;  --text-rb-headline-l--letter-spacing: 0rem;
+  --text-rb-headline-m: 1.75rem;  --text-rb-headline-m--line-height: 2.25rem; --text-rb-headline-m--letter-spacing: 0rem;
+  --text-rb-headline-s: 1.5rem;   --text-rb-headline-s--line-height: 2rem;    --text-rb-headline-s--letter-spacing: 0rem;
+
+  /* title */
+  --text-rb-title-l: 1.375rem;    --text-rb-title-l--line-height: 1.75rem;  --text-rb-title-l--letter-spacing: 0rem;
+  --text-rb-title-m: 1rem;        --text-rb-title-m--line-height: 1.5rem;   --text-rb-title-m--letter-spacing: 0.009375rem;
+  --text-rb-title-s: 0.875rem;    --text-rb-title-s--line-height: 1.25rem;  --text-rb-title-s--letter-spacing: 0.00625rem;
+
+  /* body — baseline raised: m = 1rem (was 14px/0.875rem) */
+  --text-rb-body-l: 1.125rem;     --text-rb-body-l--line-height: 1.75rem;   --text-rb-body-l--letter-spacing: 0.03125rem;
+  --text-rb-body-m: 1rem;         --text-rb-body-m--line-height: 1.5rem;    --text-rb-body-m--letter-spacing: 0.015625rem;
+  --text-rb-body-s: 0.875rem;     --text-rb-body-s--line-height: 1.25rem;   --text-rb-body-s--letter-spacing: 0.025rem;
+
+  /* label */
+  --text-rb-label-l: 0.875rem;    --text-rb-label-l--line-height: 1.25rem;  --text-rb-label-l--letter-spacing: 0.00625rem;  --text-rb-label-l--font-weight: 500;
+  --text-rb-label-m: 0.75rem;     --text-rb-label-m--line-height: 1rem;     --text-rb-label-m--letter-spacing: 0.03125rem;  --text-rb-label-m--font-weight: 500;
+  --text-rb-label-s: 0.6875rem;   --text-rb-label-s--line-height: 1rem;     --text-rb-label-s--letter-spacing: 0.03125rem;  --text-rb-label-s--font-weight: 500;
+}
+
 :root {
   /* Core palette */
   --rb-base: var(--rb-color-neutral-50);
@@ -248,6 +275,39 @@
   --rb-chart-3: var(--rb-color-yellow-400);
   --rb-chart-4: var(--rb-color-orange-400);
   --rb-chart-5: var(--rb-color-red-400);
+}
+
+@layer components {
+  /* ── Scale parents — set CSS vars for all type children below ── */
+  .rb-scale-s {
+    --rb-sz-display: var(--text-rb-display-s);   --rb-lh-display: var(--text-rb-display-s--line-height);
+    --rb-sz-headline: var(--text-rb-headline-s); --rb-lh-headline: var(--text-rb-headline-s--line-height);
+    --rb-sz-title: var(--text-rb-title-s);       --rb-lh-title: var(--text-rb-title-s--line-height);
+    --rb-sz-body: var(--text-rb-body-s);         --rb-lh-body: var(--text-rb-body-s--line-height);
+    --rb-sz-label: var(--text-rb-label-s);       --rb-lh-label: var(--text-rb-label-s--line-height);
+  }
+  .rb-scale-m {
+    --rb-sz-display: var(--text-rb-display-m);   --rb-lh-display: var(--text-rb-display-m--line-height);
+    --rb-sz-headline: var(--text-rb-headline-m); --rb-lh-headline: var(--text-rb-headline-m--line-height);
+    --rb-sz-title: var(--text-rb-title-m);       --rb-lh-title: var(--text-rb-title-m--line-height);
+    --rb-sz-body: var(--text-rb-body-m);         --rb-lh-body: var(--text-rb-body-m--line-height);
+    --rb-sz-label: var(--text-rb-label-m);       --rb-lh-label: var(--text-rb-label-m--line-height);
+  }
+  .rb-scale-l {
+    --rb-sz-display: var(--text-rb-display-l);   --rb-lh-display: var(--text-rb-display-l--line-height);
+    --rb-sz-headline: var(--text-rb-headline-l); --rb-lh-headline: var(--text-rb-headline-l--line-height);
+    --rb-sz-title: var(--text-rb-title-l);       --rb-lh-title: var(--text-rb-title-l--line-height);
+    --rb-sz-body: var(--text-rb-body-l);         --rb-lh-body: var(--text-rb-body-l--line-height);
+    --rb-sz-label: var(--text-rb-label-l);       --rb-lh-label: var(--text-rb-label-l--line-height);
+  }
+
+  /* ── Type children — declare type, read from parent scale vars ── */
+  /* Fallback (second arg to var()) applies m-size when no rb-scale-* parent exists */
+  .rb-text-display  { font-family: var(--font-serif); font-size: var(--rb-sz-display,  var(--text-rb-display-m));  line-height: var(--rb-lh-display,  var(--text-rb-display-m--line-height)); }
+  .rb-text-headline { font-family: var(--font-serif); font-size: var(--rb-sz-headline, var(--text-rb-headline-m)); line-height: var(--rb-lh-headline, var(--text-rb-headline-m--line-height)); }
+  .rb-text-title    { font-family: var(--font-sans);  font-size: var(--rb-sz-title,    var(--text-rb-title-m));    line-height: var(--rb-lh-title,    var(--text-rb-title-m--line-height)); }
+  .rb-text-body     { font-family: var(--font-sans);  font-size: var(--rb-sz-body,     var(--text-rb-body-m));     line-height: var(--rb-lh-body,     var(--text-rb-body-m--line-height)); }
+  .rb-text-label    { font-family: var(--font-sans);  font-weight: 500; font-size: var(--rb-sz-label, var(--text-rb-label-m)); line-height: var(--rb-lh-label, var(--text-rb-label-m--line-height)); }
 }
 
 @keyframes shimmer {
