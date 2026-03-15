@@ -76,6 +76,11 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+/* Safelist: text-rb-{type}-{size} utilities are assembled via template literals
+   in getTypographyClassNames and cannot be detected by Tailwind's static scanner.
+   @source inline forces inclusion regardless of source scanning. */
+@source inline("text-rb-display-l text-rb-display-m text-rb-display-s text-rb-headline-l text-rb-headline-m text-rb-headline-s text-rb-title-l text-rb-title-m text-rb-title-s text-rb-body-l text-rb-body-m text-rb-body-s text-rb-label-l text-rb-label-m text-rb-label-s");
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
