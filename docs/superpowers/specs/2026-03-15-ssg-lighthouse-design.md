@@ -90,9 +90,12 @@ No parameters required. The plugin reads entry/output information from the Rsbui
 2. **Determine SSR entries**: same entry sources, same names.
 3. **Programmatic node build** using `createRsbuild` from `@rsbuild/core`:
    ```ts
-   const { createRsbuild } = await import('@rsbuild/core');
+   import { createRsbuild } from '@rsbuild/core';
+   import { pluginReact } from '@rsbuild/plugin-react';
+
    const ssrBuild = await createRsbuild({
      rsbuildConfig: {
+       plugins: [pluginReact()],          // required: JSX transform for .tsx entries
        source: { entry: collectedEntries },
        output: {
          target: 'node',
@@ -106,16 +109,23 @@ No parameters required. The plugin reads entry/output information from the Rsbui
    ```
    Rsbuild with `output.target: 'node'` excludes CSS from the bundle automatically.
 
-4. **For each entry** (clearing `require.cache` between entries):
+4. **Collect web HTML output paths** from `api.context.distPath` (web dist root) and the entry name map from `api.context.entry`. For each entry name `foo`, the web HTML file is at `{webDistPath}/foo.html` (for top-level entries) or `{webDistPath}/foo/index.html` (for nested entries). The mapping is computed from entry names using the same convention `discoverEntries` applies.
+
+5. **For each entry** (clearing require cache between entries via `createRequire`):
    ```ts
-   delete require.cache[require.resolve(ssrBundlePath)];
-   const { default: Component } = require(ssrBundlePath);
+   import { createRequire } from 'node:module';
+   // packages/rsbuild-config is ESM ("type": "module") — raw require() is not available
+   const _require = createRequire(import.meta.url);
+
+   _require.cache && delete _require.cache[_require.resolve(ssrBundlePath)];
+   const { default: Component } = _require(ssrBundlePath);
    const { renderToString } = await import('react-dom/server');
-   const html = renderToString(React.createElement(React.StrictMode,
-     null, React.createElement(Component)));
+   const html = renderToString(
+     React.createElement(React.StrictMode, null, React.createElement(Component))
+   );
    ```
 
-5. **Inject** into the web HTML file: replace `<div id="root"></div>` with `<div id="root">${html}</div>`.
+7. **Inject** into the web HTML file: replace `<div id="root"></div>` with `<div id="root">${html}</div>`. Use a regex that tolerates attribute whitespace: `/<div id="root"[^>]*><\/div>/`.
 
 6. **Run critters**:
    ```ts
@@ -206,6 +216,10 @@ if (typeof window === 'undefined' || typeof window.localStorage === 'undefined')
 
 **Other hooks** (`useIntersectionObserver`, `useResizeObserver`, `useScroll`) — all use `useEffect`/`useState` internally. React does not invoke effects during `renderToString`, so these are SSR-safe without changes.
 
+**`createLocalStorage` test update:** The existing `"should throw if window is undefined"` test must be replaced with assertions for no-op behavior: `get()` returns `defaultValue`, `set()` and `remove()` are silent no-ops.
+
+**`toLocaleDateString` hydration safety:** `articles/index.tsx` calls `date.toLocaleDateString(undefined, options)`. Passing `undefined` as locale uses the runtime's default locale — Node.js during SSG and the browser during hydration may produce different strings, causing a hydration mismatch warning. Fix: use a fixed locale (`'en-US'`) on both the server and client side.
+
 ---
 
 ## 5. Font Preloads
@@ -255,10 +269,10 @@ Remove `simplex-noise` and `suncalc` — both are listed as `dependencies` but a
 | `packages/rsbuild-config/src/lib/config/rsbuild.ts` | Add EB Garamond preload; activate `ssgPlugin` |
 | `packages/rsbuild-config/package.json` | Add `critters` dependency |
 | `packages/stl/src/lib/window/localStorage.ts` | Return no-op instead of throw in SSR context |
-| `packages/stl/src/lib/window/localStorage.test.ts` | Add SSR context test (no `window`) |
+| `packages/stl/src/lib/window/localStorage.test.ts` | Replace `"should throw if window is undefined"` with no-op behavior assertions |
 | `services/www/src/lib/core/createPage.tsx` | Add `typeof window === 'undefined'` guard |
 | `services/www/src/app/index.tsx` | Add `export default HomePage` |
-| `services/www/src/app/articles/index.tsx` | Add `export default ArticlesList` |
+| `services/www/src/app/articles/index.tsx` | Add `export default ArticlesList`; fix `toLocaleDateString(undefined, …)` → `toLocaleDateString('en-US', …)` to avoid hydration mismatch |
 | `services/www/src/app/articles/2026/matrix-server-deployment-guide.tsx` | Add `export default` |
 | `services/www/src/app/articles/2026/test-article.tsx` | Add `export default` |
 | `services/www/src/app/articles/2026/xray-core-subnet-mimicry.tsx` | Add `export default` |
