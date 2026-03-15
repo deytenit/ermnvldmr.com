@@ -57,7 +57,7 @@ const BreadcrumbsItem = memo(function BreadcrumbsItem({
   onClick,
   'data-testid': testId,
 }: BreadcrumbsItemProps) {
-  const resolvedHref = href !== undefined ? localePath(href) : undefined;
+  const resolvedHref = localePath(href);
   const isClickable = !!(resolvedHref ?? onClick);
 
   return (

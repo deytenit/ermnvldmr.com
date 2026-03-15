@@ -23,7 +23,14 @@ import { LOCALE, LOCALES, type Locale } from './locale.js';
  * localePath('mailto:a@b.com')     → 'mailto:a@b.com'      (unchanged)
  * localePath('#section')           → '#section'             (unchanged)
  */
-export function localePath(href: string): string {
+export function localePath(href: string): string;
+export function localePath(href: null): null;
+export function localePath(href: undefined): undefined;
+export function localePath(href: string | undefined): string | undefined;
+export function localePath(href: string | null): string | null;
+export function localePath(href: string | null | undefined): string | null | undefined;
+export function localePath(href: string | null | undefined): string | null | undefined {
+  if (href == null) return href;
   // Only rewrite absolute internal paths.
   if (!href.startsWith('/')) return href;
   // Already carries any locale prefix — leave it alone.
