@@ -135,12 +135,17 @@ const fontFamilyClasses: Record<TextType, string> = {
 
 // className generation (replaces typeStyles[type][size])
 cn(
-  `text-rb-${type}-${size}`,  // Tailwind utility from @theme
-  fontFamilyClasses[type],
+  `text-rb-${type}-${size}`,  // Tailwind utility from @theme (size + line-height)
+  fontFamilyClasses[type],    // font-family not carried by @theme tokens
+  type === 'label' && 'font-medium',  // @theme font-weight companion may not apply
   colorClasses[color],
   // ... rest unchanged
 )
 ```
+
+> **Implementation note — letter-spacing:** Tailwind v4's `--text-{name}--letter-spacing` companion is documented but browser/tooling support should be confirmed. During implementation, verify that `text-rb-body-m` applies tracking correctly. If not, add an explicit `tracking-[<value>]` utility per size, or define a `trackingClasses` map analogous to `fontFamilyClasses`.
+>
+> **Implementation note — label font-weight:** `--text-rb-label-*--font-weight: 500` is defined in `@theme` but the Tailwind utility may not honour the `font-weight` companion. The explicit `type === 'label' && 'font-medium'` guard ensures it is always applied.
 
 #### WCAG compliance
 
@@ -164,7 +169,7 @@ On mobile viewports, page content begins immediately after the PageHead spacer w
 
 ### Solution
 
-In `DefaultLayout.tsx`, add `className="max-sm:pt-6"` to the `PageContainer`:
+Wrap `PageContainer` children in an inner div with `pt-6 sm:pt-0`. This is **additive** — it does not conflict with `paddingY` (which controls the outer container's `py-*`), but adds breathing room between the PageHead spacer and the visible content on mobile.
 
 ```tsx
 <PageContainer
@@ -172,13 +177,16 @@ In `DefaultLayout.tsx`, add `className="max-sm:pt-6"` to the `PageContainer`:
   centerVertically={centerVertically}
   paddingY={paddingY}
   width={width}
-  className="max-sm:pt-6"
 >
-  {children}
+  <div className="pt-6 sm:pt-0">
+    {children}
+  </div>
 </PageContainer>
 ```
 
-`pt-6` = `1.5rem` — enough breathing room without disrupting vertical centering on tablet/desktop. Applies only below the `sm` breakpoint (< 640px).
+`pt-6` = `1.5rem` — enough breathing room without disrupting vertical centering on tablet/desktop. The inner div approach ensures extra top space is always additive regardless of `paddingY` value.
+
+> **Alternative considered:** conditionally applying `className="max-sm:pt-6"` on the PageContainer directly only when `paddingY === 'none'`. Rejected because it couples layout logic to a specific prop value and would silently fail for other `paddingY` settings.
 
 #### Files to change
 
@@ -218,7 +226,9 @@ The `grid-rows-[0fr] → grid-rows-[1fr]` pattern is the modern standard for ani
 </div>
 ```
 
-**Why the spacer also animates smoothly:** `useResizeObserver` fires on every animation frame during a CSS transition, so `<div style={{ height }}/>` tracks the header height continuously — no jump in page layout.
+**Why the spacer tracks the animation:** `useResizeObserver` fires when layout changes. During a CSS `grid-template-rows` transition the browser continuously re-lays out the grid, causing the ResizeObserver to fire on each layout recalc and update `<div style={{ height }}/>` incrementally. This is the expected behavior in Chrome, Firefox, and Safari.
+
+> **Implementation note:** Confirm smooth spacer animation during implementation. If the spacer still jumps (e.g. in a specific browser), the fallback is to animate the spacer height with a matching CSS transition: `transition-[height] duration-300 ease-in-out` using a CSS variable set by a JS `style` attribute updated in sync.
 
 Remove `opacity-0 invisible h-0 overflow-hidden` toggle logic. Keep existing `isCollapsed` state and `useScroll`/`useResizeObserver` hooks unchanged.
 
@@ -232,10 +242,10 @@ Remove `opacity-0 invisible h-0 overflow-hidden` toggle logic. Keep existing `is
 
 ### 4a. Font preload (Quick win — Est. −200ms critical path)
 
-`eb-garamond-var.woff2` (41 KiB) is discovered only after CSS is parsed — it sits 431ms into the critical path. Add a `<link rel="preload">` in `rsbuild.config.ts` alongside the existing Lato preloads:
+`eb-garamond-var.woff2` (41 KiB) is discovered only after CSS is parsed — it sits 431ms into the critical path. Add a `<link rel="preload">` in the shared rsbuild config alongside the existing Lato preloads:
 
 ```ts
-// rsbuild.config.ts
+// packages/rsbuild-config/src/lib/config/rsbuild.ts  (shared default config)
 {
   tag: 'link',
   attrs: {
@@ -250,9 +260,11 @@ Remove `opacity-0 invisible h-0 overflow-hidden` toggle logic. Keep existing `is
 
 Also add preload for the italic variant if used above-the-fold.
 
+> **Implementation note:** `mergeConfig` concatenates `html.tags` arrays, so the new preload belongs in `packages/rsbuild-config/src/lib/config/rsbuild.ts` (shared defaults) — not in `services/www/rsbuild.config.ts`. Confirm after build that the preload `href` (`/static/font/eb-garamond-var.woff2`) matches the final output path from the `output.distPath.font` config.
+
 #### Files to change
 
-- `packages/rsbuild-config/src/lib/config/rsbuild.ts` (default config) or `services/www/rsbuild.config.ts`
+- `packages/rsbuild-config/src/lib/config/rsbuild.ts`
 
 ---
 
