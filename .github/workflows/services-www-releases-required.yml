@@ -60,6 +60,8 @@ jobs:
         run: pnpm --filter @ermnvldmr/rsbuild-config build
       - name: Build Storybook config
         run: pnpm --filter @ermnvldmr/storybook-config build
+      - name: Build i18n
+        run: pnpm --filter @ermnvldmr/i18n build
       - name: Upload Config Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -67,6 +69,7 @@ jobs:
           path: |
             packages/rsbuild-config/dist
             packages/storybook-config/dist
+            packages/i18n/dist
           retention-days: 1
 
   lint-www:
