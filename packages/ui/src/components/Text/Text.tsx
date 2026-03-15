@@ -1,8 +1,6 @@
 import { cn, genericMemo, useIntersectionObserver, castMutableRef } from '@ermnvldmr/stl';
 import React, { forwardRef, useState, useEffect, useRef } from 'react';
 
-import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
-
 import {
   getTypographyClassNames,
   type TextType,
@@ -12,6 +10,8 @@ import {
   type TextWrap,
   type TextOverflow,
 } from '../../lib/typography';
+
+import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
 
 export type { TextType, TextSize, TextColor, TextAlign, TextWrap, TextOverflow };
 
