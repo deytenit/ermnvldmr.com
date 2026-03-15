@@ -6,47 +6,55 @@ import { DefaultLayout } from '../../components/Layout/DefaultLayout';
 import { createPage } from '../../lib/core/createPage';
 import { SITE_TITLE } from '../../lib/shared/constants';
 
-createPage(
-  function ArticlesList(): React.JSX.Element {
-    const breadcrumbs = (
-      <Breadcrumbs>
-        <Breadcrumbs.Item href="/">Home</Breadcrumbs.Item>
-        <Breadcrumbs.Separator />
-        <Breadcrumbs.Item isCurrent>Articles</Breadcrumbs.Item>
-      </Breadcrumbs>
-    );
+/**
+ * Articles list page component.
+ *
+ * @example
+ * ```tsx
+ * createPage(ArticlesList, { title: `Articles | ${SITE_TITLE}`, description: '...' });
+ * ```
+ */
+function ArticlesList(): React.JSX.Element {
+  const breadcrumbs = (
+    <Breadcrumbs>
+      <Breadcrumbs.Item href="/">Home</Breadcrumbs.Item>
+      <Breadcrumbs.Separator />
+      <Breadcrumbs.Item isCurrent>Articles</Breadcrumbs.Item>
+    </Breadcrumbs>
+  );
 
-    return (
-      <DefaultLayout
-        breadcrumbs={breadcrumbs}
-        description="Browse all articles and projects."
-        paddingY="medium"
-        title="Articles"
-      >
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-          {sortedArticles.map((article) => (
-            <React.Fragment key={article.slug}>
-              <Article
-                additionalText={article.tags?.join(' • ')}
-                className="h-full"
-                headline={article.title}
-                href={`/articles/${article.slug}`}
-                subHeadline={article.createdDate.toLocaleDateString(undefined, {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              >
-                {article.description}
-              </Article>
-            </React.Fragment>
-          ))}
-        </div>
-      </DefaultLayout>
-    );
-  },
-  {
-    title: `Articles | ${SITE_TITLE}`,
-    description: 'Browse all articles and projects.',
-  }
-);
+  return (
+    <DefaultLayout
+      breadcrumbs={breadcrumbs}
+      description="Browse all articles and projects."
+      paddingY="medium"
+      title="Articles"
+    >
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+        {sortedArticles.map((article) => (
+          <React.Fragment key={article.slug}>
+            <Article
+              additionalText={article.tags?.join(' • ')}
+              className="h-full"
+              headline={article.title}
+              href={`/articles/${article.slug}`}
+              subHeadline={article.createdDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            >
+              {article.description}
+            </Article>
+          </React.Fragment>
+        ))}
+      </div>
+    </DefaultLayout>
+  );
+}
+
+createPage(ArticlesList, {
+  title: `Articles | ${SITE_TITLE}`,
+  description: 'Browse all articles and projects.',
+});
+export default ArticlesList;

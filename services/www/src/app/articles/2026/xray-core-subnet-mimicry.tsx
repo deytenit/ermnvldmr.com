@@ -7,22 +7,30 @@ import { createPage } from '../../../lib/core/createPage';
 
 const article = articles['xray-core-subnet-mimicry'];
 
-createPage(
-  function XrayCoreSubnetMimicryPage(): React.JSX.Element {
-    return (
-      <ArticleLayout
-        createdDate={article.createdDate}
-        description={article.description}
-        tags={article.tags}
-        title={article.title}
-        updatedDate={article.updatedDate}
-      >
-        <article.Component components={MARKDOWN_COMPONENTS} />
-      </ArticleLayout>
-    );
-  },
-  {
-    title: `${article.title} - Vladimir Eremin`,
-    description: article.description,
-  }
-);
+/**
+ * Xray Core subnet mimicry article page.
+ *
+ * @example
+ * ```tsx
+ * createPage(XrayCoreSubnetMimicryPage, { title: '...', description: '...' });
+ * ```
+ */
+function XrayCoreSubnetMimicryPage(): React.JSX.Element {
+  return (
+    <ArticleLayout
+      createdDate={article.createdDate}
+      description={article.description}
+      tags={article.tags}
+      title={article.title}
+      updatedDate={article.updatedDate}
+    >
+      <article.Component components={MARKDOWN_COMPONENTS} />
+    </ArticleLayout>
+  );
+}
+
+createPage(XrayCoreSubnetMimicryPage, {
+  title: `${article.title} - Vladimir Eremin`,
+  description: article.description,
+});
+export default XrayCoreSubnetMimicryPage;
