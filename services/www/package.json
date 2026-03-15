@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "rsbuild dev",
     "build": "rsbuild build",
+    "build:analyze": "RSDOCTOR=true rsbuild build",
     "preview": "rsbuild preview",
     "lint": "eslint src --max-warnings 0",
     "format": "prettier --write .",
@@ -35,6 +36,7 @@
     "@rsbuild/core": "^1.2.11",
     "@rsbuild/plugin-babel": "^1.1.0",
     "@rsbuild/plugin-mdx": "^1.1.1",
+    "@rsdoctor/rspack-plugin": "^1.5.3",
     "@storybook/addon-a11y": "^8.6.15",
     "@storybook/addon-coverage": "^3.0.0",
     "@storybook/addon-essentials": "^8.6.15",
