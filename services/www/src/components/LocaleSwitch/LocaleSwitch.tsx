@@ -1,4 +1,5 @@
 import { LOCALE, OTHER_LOCALE, OTHER_LOCALE_LABEL, localeHref } from '@ermnvldmr/i18n';
+import { Link } from '@ermnvldmr/ui';
 import React from 'react';
 
 /**
@@ -7,7 +8,7 @@ import React from 'react';
  * EN build → "In Russian", RU build → "На Английском".
  *
  * @param props - Component props.
- * @returns An anchor element linking to the equivalent page in the other locale.
+ * @returns A Link element linking to the equivalent page in the other locale.
  */
 export interface LocaleSwitchProps {
   /** Current page path (e.g. "/en/articles") — required for accurate SSG rendering */
@@ -21,8 +22,8 @@ export const LocaleSwitch: React.FC<LocaleSwitchProps> = ({ currentPath }) => {
   const href = localeHref(path, OTHER_LOCALE);
 
   return (
-    <a aria-label={`Switch language to ${OTHER_LOCALE}`} href={href}>
+    <Link color="muted" href={href} size="s">
       {OTHER_LOCALE_LABEL}
-    </a>
+    </Link>
   );
 };

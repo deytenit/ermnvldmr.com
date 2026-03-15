@@ -43,10 +43,10 @@ export const Footer = ({ currentPath }: FooterProps) => {
               CC-BY 4.0
             </Link>
           </VStack>
-          <HStack gap={8}>
-            <LocaleSwitch currentPath={currentPath} />
+          <VStack align="end" gap={4}>
             <ThemeSwitch />
-          </HStack>
+            <LocaleSwitch currentPath={currentPath} />
+          </VStack>
         </HStack>
       </Container>
     </VStack>
