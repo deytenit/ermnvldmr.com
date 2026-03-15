@@ -17,7 +17,8 @@ export interface StorageManager<T> {
 /**
  * Creates a type-safe manager for a localStorage key.
  *
- * This utility is browser-only and will throw if accessed during SSR.
+ * In SSR/SSG context (no window), returns a no-op manager that always
+ * returns the default value. In the browser, uses localStorage as usual.
  * Ensure you use a strict namespace for the key to avoid monorepo collisions.
  * Recommended format: `ermnvldmr/{package}/{path}/{module}`
  * Example: `ermnvldmr/ui/lib/theme`
@@ -31,15 +32,15 @@ export interface StorageManager<T> {
  * const theme = createLocalStorage('ermnvldmr/ui/lib/theme', 'system');
  * console.log(theme.get());
  * ```
- *
- * @throws Error if window or localStorage is undefined.
  */
 export function createLocalStorage<T>(key: string, defaultValue: T): StorageManager<T> {
   if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') {
-    throw new Error(
-      `[createLocalStorage] Attempted to access storage for key "${key}" outside of a browser environment. ` +
-        'This utility is strictly for client-side use.'
-    );
+    return {
+      key,
+      get: () => defaultValue,
+      set: () => {},
+      remove: () => {},
+    };
   }
 
   const manager: StorageManager<T> = {

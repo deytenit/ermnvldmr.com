@@ -44,9 +44,15 @@ describe('lib/window/localStorage', () => {
     for (const key in mockStorage) delete mockStorage[key];
   });
 
-  it('should throw if window is undefined', () => {
+  it('returns a no-op manager when window is undefined (SSR/SSG context)', () => {
     vi.stubGlobal('window', undefined);
-    expect(() => createLocalStorage(KEY, DEFAULT_VALUE)).toThrow();
+    const manager = createLocalStorage(KEY, DEFAULT_VALUE);
+    expect(manager.key).toBe(KEY);
+    expect(manager.get()).toEqual(DEFAULT_VALUE);
+    expect(() => manager.set({ foo: 'x' })).not.toThrow();
+    expect(() => manager.remove()).not.toThrow();
+    // get() still returns defaultValue after set (no-op in SSR)
+    expect(manager.get()).toEqual(DEFAULT_VALUE);
   });
 
   it('should get default value if empty', () => {
