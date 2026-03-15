@@ -23,6 +23,7 @@
     "build-storybook": "storybook build -c .config/storybook"
   },
   "dependencies": {
+    "@ermnvldmr/i18n": "workspace:*",
     "@ermnvldmr/stl": "workspace:*",
     "@ermnvldmr/ui": "workspace:*",
     "react": "^19.1.0",

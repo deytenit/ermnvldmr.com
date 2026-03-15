@@ -36,38 +36,6 @@ export function defineServiceConfig(config: RsbuildConfig = {}): RsbuildConfig {
       meta: {
         description: 'Thoughts and creations of mine',
       },
-      tags: [
-        {
-          tag: 'link',
-          attrs: {
-            rel: 'preload',
-            as: 'font',
-            type: 'font/woff2',
-            href: '/static/font/lato-400.woff2',
-            crossorigin: true,
-          },
-        },
-        {
-          tag: 'link',
-          attrs: {
-            rel: 'preload',
-            as: 'font',
-            type: 'font/woff2',
-            href: '/static/font/lato-700.woff2',
-            crossorigin: true,
-          },
-        },
-        {
-          tag: 'link',
-          attrs: {
-            rel: 'preload',
-            as: 'font',
-            type: 'font/woff2',
-            href: '/static/font/eb-garamond-var.woff2',
-            crossorigin: true,
-          },
-        },
-      ],
     },
   };
 
