@@ -1,10 +1,19 @@
 import { Container, HStack, Link, ThemeSwitch, VStack, Text } from '@ermnvldmr/ui';
 import React from 'react';
 
+import { LocaleSwitch } from '../LocaleSwitch/LocaleSwitch';
 import { RainbowSeparator } from '../RainbowSeparator';
+import { t } from './Footer.i18n';
 
 /**
- /**
+ * Props for the Footer component.
+ */
+export interface FooterProps {
+  /** Current page path for locale switching. */
+  currentPath?: string;
+}
+
+/**
  * The standard footer for the www service.
  * Displays copyright information, license, and theme switcher.
  *
@@ -14,7 +23,7 @@ import { RainbowSeparator } from '../RainbowSeparator';
  * <Footer />
  * ```
  */
-export const Footer = () => {
+export const Footer = ({ currentPath }: FooterProps) => {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -28,13 +37,16 @@ export const Footer = () => {
         >
           <VStack align="start" gap={1}>
             <Text color="muted" size="s">
-              © {currentYear} Vladimir Eremin
+              © {currentYear} {t('Vladimir Eremin')}
             </Text>
             <Link href="https://creativecommons.org/licenses/by/4.0/" size="s">
               CC-BY 4.0
             </Link>
           </VStack>
-          <ThemeSwitch />
+          <VStack align="end" gap={4}>
+            <ThemeSwitch />
+            <LocaleSwitch currentPath={currentPath} />
+          </VStack>
         </HStack>
       </Container>
     </VStack>

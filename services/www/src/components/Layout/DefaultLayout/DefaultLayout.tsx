@@ -26,7 +26,7 @@ export interface DefaultLayoutProps {
   width?: PageWidth;
   /**
    * Vertical padding scale.
-   * @default 'none'
+   * @default 'small'
    */
   paddingY?: PagePadding;
   /**
@@ -34,6 +34,8 @@ export interface DefaultLayoutProps {
    * @default false
    */
   centerVertically?: boolean;
+  /** Current page path for locale switching. */
+  currentPath?: string;
 }
 
 /**
@@ -56,11 +58,12 @@ export function DefaultLayout({
   breadcrumbs,
   headerAddonLeft,
   width = 'default',
-  paddingY = 'none',
+  paddingY = 'small',
   centerVertically = false,
+  currentPath,
 }: DefaultLayoutProps): React.JSX.Element {
   return (
-    <IndexLayout footer={<Footer />}>
+    <IndexLayout footer={<Footer currentPath={currentPath} />}>
       <PageHead
         breadcrumbs={breadcrumbs}
         caption={description}

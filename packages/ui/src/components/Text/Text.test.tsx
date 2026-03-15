@@ -129,4 +129,32 @@ describe('components/Text', () => {
     );
     expect(screen.getByRole('button')).toHaveAttribute('type', 'submit');
   });
+
+  // TDD: fails before implementation (old code uses text-[14px], not text-rb-body-m)
+  it('applies text-rb-{type}-{size} class', () => {
+    render(<Text size="m" type="body">Content</Text>);
+    expect(screen.getByText('Content')).toHaveClass('text-rb-body-m');
+  });
+
+  it('does not apply legacy px-based font-size classes', () => {
+    render(<Text size="m" type="body">Content</Text>);
+    expect(screen.getByText('Content')).not.toHaveClass('text-[14px]');
+    expect(screen.getByText('Content')).not.toHaveClass('leading-[20px]');
+  });
+
+  // Regression guards: pass before and after
+  it('applies font-medium for label type', () => {
+    render(<Text size="m" type="label">Label</Text>);
+    expect(screen.getByText('Label')).toHaveClass('font-medium');
+  });
+
+  it('applies font-sans for body type', () => {
+    render(<Text size="m" type="body">Body</Text>);
+    expect(screen.getByText('Body')).toHaveClass('font-sans');
+  });
+
+  it('applies font-serif for display type', () => {
+    render(<Text size="l" type="display">Display</Text>);
+    expect(screen.getByText('Display')).toHaveClass('font-serif');
+  });
 });

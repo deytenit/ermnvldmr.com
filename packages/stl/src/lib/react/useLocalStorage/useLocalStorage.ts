@@ -39,9 +39,8 @@ export function useLocalStorage<T>(
   const getSnapshot = useCallback(() => manager.get(), [manager]);
 
   const value = useSyncExternalStore(subscribe, getSnapshot, () => {
-    // During SSR, we can't access localStorage.
-    // However, createLocalStorage is designed to throw if accessed during SSR.
-    // This hook is intended to be used in client-side components.
+    // SSR snapshot: createLocalStorage returns a no-op manager in Node context,
+    // so manager.get() safely returns defaultValue without accessing localStorage.
     return manager.get();
   });
 

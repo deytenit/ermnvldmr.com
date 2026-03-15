@@ -1,3 +1,4 @@
+import { localePath } from '@ermnvldmr/i18n';
 import { cn } from '@ermnvldmr/stl';
 import { ChevronRight } from 'lucide-react';
 import React, { memo } from 'react';
@@ -56,7 +57,8 @@ const BreadcrumbsItem = memo(function BreadcrumbsItem({
   onClick,
   'data-testid': testId,
 }: BreadcrumbsItemProps) {
-  const isClickable = !!(href ?? onClick);
+  const resolvedHref = localePath(href);
+  const isClickable = !!(resolvedHref ?? onClick);
 
   return (
     <li
@@ -69,13 +71,13 @@ const BreadcrumbsItem = memo(function BreadcrumbsItem({
       data-testid={testId}
     >
       <Text
-        as={href ? 'a' : onClick ? 'button' : 'span'}
+        as={resolvedHref ? 'a' : onClick ? 'button' : 'span'}
         className={cn(
           'transition-all duration-200',
           !isCurrent && 'group-hover:text-[var(--rb-text)] group-hover:underline underline-offset-4'
         )}
         color={isCurrent ? 'default' : 'muted'}
-        href={href}
+        href={resolvedHref}
         size="m"
         type="label"
         onClick={onClick}

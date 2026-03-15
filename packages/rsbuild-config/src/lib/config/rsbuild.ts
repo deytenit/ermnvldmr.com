@@ -4,6 +4,7 @@ import { pluginTypeCheck } from '@rsbuild/plugin-type-check';
 import { pluginDts } from 'rsbuild-plugin-dts';
 
 import { mergeConfig } from '../utils/merge.js';
+import { ssgPlugin } from './ssg.js';
 
 /**
  * Defines a standard Rsbuild configuration for services (apps).
@@ -21,7 +22,7 @@ import { mergeConfig } from '../utils/merge.js';
  */
 export function defineServiceConfig(config: RsbuildConfig = {}): RsbuildConfig {
   const defaultConfig: RsbuildConfig = {
-    plugins: [pluginReact(), pluginTypeCheck()],
+    plugins: [pluginReact(), pluginTypeCheck(), ssgPlugin()],
     output: {
       distPath: {
         font: 'static/font',
@@ -35,28 +36,6 @@ export function defineServiceConfig(config: RsbuildConfig = {}): RsbuildConfig {
       meta: {
         description: 'Thoughts and creations of mine',
       },
-      tags: [
-        {
-          tag: 'link',
-          attrs: {
-            rel: 'preload',
-            as: 'font',
-            type: 'font/woff2',
-            href: '/static/font/lato-400.woff2',
-            crossorigin: true,
-          },
-        },
-        {
-          tag: 'link',
-          attrs: {
-            rel: 'preload',
-            as: 'font',
-            type: 'font/woff2',
-            href: '/static/font/lato-700.woff2',
-            crossorigin: true,
-          },
-        },
-      ],
     },
   };
 

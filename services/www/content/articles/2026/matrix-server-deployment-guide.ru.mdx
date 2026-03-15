@@ -1,0 +1,280 @@
+---
+title: 'Руководство по развёртыванию Matrix-сервера'
+description: 'Развёртывание серверов Synapse и LiveKit с нуля'
+createdDate: 2026-02-15
+tags: ['matrix', 'deployment', 'guide']
+---
+
+Это руководство предназначено **только для образовательных целей**. В нем показано, как развернуть приватную коммуникационную инфраструктуру, чтобы лучше понять децентрализованный протокол Matrix и техническую реализацию медиа-релеев.
+
+## Зачем поднимать сервер самостоятельно?
+
+Централизованные платформы нередко жертвуют приватностью данных ради аналитики или зависят от внешних изменений политики. При развертывании собственного Matrix-инстанса вы получаете:
+
+- **Суверенитет данных**: железо и база данных находятся под вашим контролем.
+- **Сквозное шифрование (E2EE)**: сообщения шифруются локально на устройствах, сервер передает только шифртекст.
+- **Устойчивость инфраструктуры**: ваши коммуникации не зависят от простоев крупных провайдеров.
+- **Приватность метаданных**: вы сами определяете, какие логи о взаимодействиях пользователей сохраняются.
+
+---
+
+## Обзор технического стека
+
+1. **Synapse**: "homeserver", который реализует Matrix-протокол, логику учетных записей и синхронизацию сообщений.
+2. **Postgres**: база данных. Для production обязательна по соображениям производительности (SQLite подходит только для тестов).
+3. **Coturn (STUN/TURN)**: при звонках между двумя участниками фаерволы часто мешают прямому соединению. Coturn работает как релей и помогает обойти NAT-ограничения.
+4. **LiveKit**: современный медиадвижок (SFU). Если Coturn нужен в первую очередь для 1:1-звонков, то LiveKit эффективно обрабатывает групповые звонки через мультиплексирование аудио/видеопотоков.
+5. **lk-jwt-service**: сервис-аутентификатор. Проверяет, что пользователь авторизован в вашем Synapse-сервере, и выдает временный токен (JWT) для входа в звонок.
+
+---
+
+## 1. Стек развертывания
+
+Эта конфигурация универсальна, использует **Docker Volumes** и настроена под **UID 1000:1000** для базового харднинга.
+
+```yaml
+networks:
+  proxy:
+    name: matrix-proxy
+  internal:
+    internal: true
+
+volumes:
+  synapse_data:
+  postgres_data:
+  traefik_certs:
+
+services:
+  traefik:
+    image: traefik:v3.0
+    container_name: matrix-proxy
+    command:
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--entrypoints.web.address=:80'
+      - '--entrypoints.websecure.address=:443'
+      - '--entrypoints.web.http.redirections.entrypoint.to=websecure'
+      - '--certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare'
+      - '--certificatesresolvers.myresolver.acme.email=${ADMIN_EMAIL}'
+      - '--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json'
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - traefik_certs:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  synapse:
+    image: ghcr.io/element-hq/synapse:v1.146.0
+    container_name: matrix-synapse
+    user: '1000:1000'
+    depends_on:
+      postgres: { condition: service_healthy }
+    volumes:
+      - synapse_data:/data
+    environment:
+      SYNAPSE_SERVER_NAME: '${DOMAIN}'
+      SYNAPSE_REPORT_STATS: 'no'
+      SYNAPSE_CONFIG_PATH: '/data/homeserver.yaml'
+    networks:
+      - proxy
+      - internal
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.synapse.rule=Host(`${DOMAIN}`)'
+      - 'traefik.http.services.synapse.loadbalancer.server.port=8008'
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: matrix-db
+    user: '1000:1000'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: synapse
+      POSTGRES_USER: synapse
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_INITDB_ARGS: '--encoding=UTF-8 --lc-collate=C --lc-ctype=C'
+    networks:
+      - internal
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U synapse']
+      interval: 10s
+    restart: unless-stopped
+
+  livekit:
+    image: livekit/livekit-server:v1.9
+    container_name: matrix-livekit
+    command: --config /etc/livekit.yaml --node-ip ${SERVER_IP}
+    environment:
+      LIVEKIT_KEYS: '${LK_KEY}: ${LK_SECRET}'
+    volumes:
+      - ./livekit.yaml:/etc/livekit.yaml:ro
+    ports:
+      - '7880:7880'
+      - '7881:7881'
+      - '50000-50020:50000-50020/udp'
+    networks:
+      - proxy
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.lk.rule=Host(`${DOMAIN}`) && PathPrefix(`/livekit`)'
+      - 'traefik.http.middlewares.lk-strip.stripprefix.prefixes=/livekit'
+      - 'traefik.http.routers.lk.middlewares=lk-strip'
+    restart: unless-stopped
+
+  lk-jwt:
+    image: ghcr.io/element-hq/lk-jwt-service:0.4.1
+    container_name: matrix-lk-jwt
+    environment:
+      LIVEKIT_URL: wss://${DOMAIN}/livekit
+      LIVEKIT_KEY: '${LK_KEY}'
+      LIVEKIT_SECRET: '${LK_SECRET}'
+    networks:
+      - proxy
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.lk-jwt.rule=Host(`${DOMAIN}`) && PathPrefix(`/livekit/jwt`)'
+      - 'traefik.http.middlewares.lk-jwt-strip.stripprefix.prefixes=/livekit/jwt'
+      - 'traefik.http.routers.lk-jwt.middlewares=lk-jwt-strip'
+    restart: unless-stopped
+
+  coturn:
+    image: coturn/coturn:4.8-alpine
+    container_name: matrix-coturn
+    user: '1000:1000'
+    ports:
+      - '3478:3478'
+      - '3478:3478/udp'
+      - '5349:5349'
+      - '5349:5349/udp'
+      - '49152-49172:49152-49172/udp'
+    volumes:
+      - ./turnserver.conf:/etc/coturn/turnserver.conf:ro
+    restart: unless-stopped
+```
+
+---
+
+## 2. Конфигурация
+
+Создайте файл `.env` в той же директории. **Не пропускайте шаг генерации секретов ниже.**
+
+```bash
+# --- Infrastructure ---
+DOMAIN=matrix.example.com
+SERVER_IP=1.2.3.4
+ADMIN_EMAIL=admin@example.com
+
+# --- Cloudflare (for Traefik SSL) ---
+CF_DNS_API_TOKEN=your_cloudflare_api_token_here
+
+# --- Database ---
+DB_PASSWORD=generate_this_with_openssl
+
+# --- LiveKit Secrets ---
+# API Key can be any alphanumeric string
+LK_KEY=matrix_lk_key
+# Secret MUST be generated
+LK_SECRET=generate_this_with_openssl
+
+# --- Coturn / Synapse VoIP ---
+# Used for STUN/TURN authentication
+TURN_SECRET=generate_this_with_openssl
+
+```
+
+### Генерация секретов
+
+Используйте `openssl`, чтобы создать надежные случайные строки для параметров в `.env`:
+
+```bash
+# Generate DB_PASSWORD, LK_SECRET, and TURN_SECRET
+openssl rand -hex 32
+
+```
+
+---
+
+## 3. Вариант с Nginx и сертификатами
+
+Если вы не используете Traefik, получите сертификаты через **Certbot**:
+
+```bash
+sudo certbot certonly --standalone -d matrix.example.com
+
+```
+
+### Конфиг Nginx
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name matrix.example.com;
+
+    ssl_certificate /etc/letsencrypt/live/matrix.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/matrix.example.com/privkey.pem;
+
+    location /_matrix {
+        proxy_pass http://synapse:8008;
+        proxy_set_header Host $host;
+    }
+
+    location /livekit/ {
+        rewrite ^/livekit/(.*) /$1 break;
+        proxy_pass http://livekit:7880;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+    }
+
+    location /livekit/jwt/ {
+        rewrite ^/livekit/jwt/(.*) /$1 break;
+        proxy_pass http://lk-jwt:8080;
+    }
+}
+
+```
+
+---
+
+## 4. Регистрация пользователей
+
+### Ручная регистрация (администратором)
+
+Для приватных серверов отключите публичную регистрацию в `homeserver.yaml` и добавляйте пользователей через CLI:
+
+```bash
+docker exec -it matrix-synapse register_new_matrix_user \
+    -c /data/homeserver.yaml http://localhost:8008 \
+    --user <username> --password <password> --admin
+
+```
+
+### SMTP (внешняя регистрация)
+
+Добавьте в `homeserver.yaml`, чтобы включить подтверждение по email:
+
+```yaml
+email:
+  smtp_host: 'smtp.gmail.com'
+  smtp_port: 587
+  smtp_user: 'yourname@gmail.com'
+  smtp_pass: 'xxxx xxxx xxxx xxxx' # Google App Password
+  force_tls: true
+```
+
+---
+
+## Ресурсы
+
+- [Synapse GitHub](https://github.com/element-hq/synapse)
+- [LiveKit GitHub](https://github.com/livekit/livekit)
+- [lk-jwt-service GitHub](https://github.com/element-hq/lk-jwt-service)
+- [Element X Apps](https://www.google.com/search?q=https://element.io/element-x)

@@ -23,6 +23,7 @@ export interface PageOptions {
  * ```
  */
 export function createPage(Component: React.ComponentType, options: PageOptions = {}): void {
+  if (typeof window === 'undefined') return; // SSG build context: skip DOM mounting
   const rootElement = document.getElementById('root');
 
   if (options.title) {

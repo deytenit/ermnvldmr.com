@@ -1,3 +1,4 @@
+import { localePath } from '@ermnvldmr/i18n';
 import { MARKDOWN_COMPONENTS } from '@ermnvldmr/ui';
 import React from 'react';
 
@@ -12,22 +13,31 @@ if (!article) {
   throw new Error('Article not found');
 }
 
-createPage(
-  function MatrixServerDeploymentGuidePage(): React.JSX.Element {
-    return (
-      <ArticleLayout
-        createdDate={article.createdDate}
-        description={article.description}
-        tags={article.tags}
-        title={article.title}
-        updatedDate={article.updatedDate}
-      >
-        <article.Component components={MARKDOWN_COMPONENTS} />
-      </ArticleLayout>
-    );
-  },
-  {
-    title: `${article.title} - Vladimir Eremin`,
-    description: article.description,
-  }
-);
+/**
+ * Matrix server deployment guide article page.
+ *
+ * @example
+ * ```tsx
+ * createPage(MatrixServerDeploymentGuidePage, { title: '...', description: '...' });
+ * ```
+ */
+function MatrixServerDeploymentGuidePage(): React.JSX.Element {
+  return (
+    <ArticleLayout
+      createdDate={article.createdDate}
+      currentPath={localePath('/articles/2026/matrix-server-deployment-guide')}
+      description={article.description}
+      tags={article.tags}
+      title={article.title}
+      updatedDate={article.updatedDate}
+    >
+      <article.Component components={MARKDOWN_COMPONENTS} />
+    </ArticleLayout>
+  );
+}
+
+createPage(MatrixServerDeploymentGuidePage, {
+  title: `${article.title} - Vladimir Eremin`,
+  description: article.description,
+});
+export default MatrixServerDeploymentGuidePage;

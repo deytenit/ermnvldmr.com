@@ -6,6 +6,7 @@ on:
     paths:
       - 'packages/ui/**'
       - 'packages/stl/**'
+      - 'packages/i18n/**'
       - '.github/workflows/packages-ui-pr-required.yml'
       - 'pnpm-lock.yaml'
 
@@ -64,6 +65,8 @@ jobs:
         run: pnpm --filter @ermnvldmr/rsbuild-config build
       - name: Build Storybook config
         run: pnpm --filter @ermnvldmr/storybook-config build
+      - name: Build i18n
+        run: pnpm --filter @ermnvldmr/i18n build
       - name: Upload Rsbuild Config
         uses: actions/upload-artifact@v4
         with:
@@ -75,6 +78,12 @@ jobs:
         with:
           name: storybook-config-dist-${{ github.run_id }}
           path: packages/storybook-config/dist
+          retention-days: 1
+      - name: Upload i18n dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
           retention-days: 1
 
   lint-ui:
@@ -103,6 +112,11 @@ jobs:
         with:
           name: storybook-config-dist-${{ github.run_id }}
           path: packages/storybook-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
       - name: Lint UI package
         run: pnpm --filter @ermnvldmr/ui lint
 
@@ -132,6 +146,11 @@ jobs:
         with:
           name: storybook-config-dist-${{ github.run_id }}
           path: packages/storybook-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
       - name: Typecheck UI package
         run: pnpm --filter @ermnvldmr/ui typecheck
 
@@ -161,6 +180,11 @@ jobs:
         with:
           name: storybook-config-dist-${{ github.run_id }}
           path: packages/storybook-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
       - name: Test UI package
         run: pnpm --filter @ermnvldmr/ui test:coverage
       - name: Upload coverage to Codecov
@@ -197,6 +221,11 @@ jobs:
         with:
           name: storybook-config-dist-${{ github.run_id }}
           path: packages/storybook-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
       - name: Build UI Storybook
         run: pnpm --filter @ermnvldmr/ui build-storybook
       - name: Upload Storybook build
@@ -232,6 +261,11 @@ jobs:
         with:
           name: storybook-config-dist-${{ github.run_id }}
           path: packages/storybook-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
       - name: Install Playwright browsers
         run: pnpm --filter @ermnvldmr/ui exec playwright install --with-deps chromium
       - name: Download Storybook build
@@ -275,5 +309,10 @@ jobs:
         with:
           name: storybook-config-dist-${{ github.run_id }}
           path: packages/storybook-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
       - name: Build UI package
         run: pnpm --filter @ermnvldmr/ui build

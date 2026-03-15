@@ -7,6 +7,7 @@ on:
       - 'services/www/**'
       - 'packages/ui/**'
       - 'packages/stl/**'
+      - 'packages/i18n/**'
       - '.github/workflows/services-www-pr-required.yml'
       - 'pnpm-lock.yaml'
 
@@ -77,6 +78,14 @@ jobs:
           name: storybook-config-dist-${{ github.run_id }}
           path: packages/storybook-config/dist
           retention-days: 1
+      - name: Build i18n package
+        run: pnpm --filter @ermnvldmr/i18n build
+      - name: Upload i18n dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
+          retention-days: 1
 
   lint-www:
     name: Lint - WWW
@@ -99,6 +108,11 @@ jobs:
         with:
           name: rsbuild-config-dist-${{ github.run_id }}
           path: packages/rsbuild-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
       - name: Download Storybook Config
         uses: actions/download-artifact@v4
         with:
@@ -128,6 +142,11 @@ jobs:
         with:
           name: rsbuild-config-dist-${{ github.run_id }}
           path: packages/rsbuild-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
       - name: Download Storybook Config
         uses: actions/download-artifact@v4
         with:
@@ -157,6 +176,11 @@ jobs:
         with:
           name: rsbuild-config-dist-${{ github.run_id }}
           path: packages/rsbuild-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
       - name: Download Storybook Config
         uses: actions/download-artifact@v4
         with:
@@ -192,6 +216,11 @@ jobs:
         with:
           name: rsbuild-config-dist-${{ github.run_id }}
           path: packages/rsbuild-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
       - name: Download Storybook Config
         uses: actions/download-artifact@v4
         with:
@@ -228,6 +257,11 @@ jobs:
         with:
           name: rsbuild-config-dist-${{ github.run_id }}
           path: packages/rsbuild-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
       - name: Download Storybook Config
         uses: actions/download-artifact@v4
         with:
@@ -271,10 +305,23 @@ jobs:
         with:
           name: rsbuild-config-dist-${{ github.run_id }}
           path: packages/rsbuild-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
       - name: Download Storybook Config
         uses: actions/download-artifact@v4
         with:
           name: storybook-config-dist-${{ github.run_id }}
           path: packages/storybook-config/dist
-      - name: Build WWW service
-        run: pnpm --filter @ermnvldmr/www build
+      - name: Build WWW service (all locales)
+        run: pnpm --filter @ermnvldmr/www build:all
+        env:
+          RSDOCTOR: 'true'
+      - name: Upload Rsdoctor report
+        uses: actions/upload-artifact@v4
+        with:
+          name: rsdoctor-report-${{ github.run_id }}
+          path: services/www/rsdoctor/
+          retention-days: 7

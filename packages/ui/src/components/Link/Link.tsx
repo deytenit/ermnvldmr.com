@@ -1,3 +1,4 @@
+import { localePath } from '@ermnvldmr/i18n';
 import { castRef, cn } from '@ermnvldmr/stl';
 import React, { memo, useRef } from 'react';
 import { useLink } from 'react-aria';
@@ -50,6 +51,7 @@ export const Link = memo(function Link(props: LinkProps) {
   );
 
   if (href) {
+    const resolvedHref = localePath(href);
     const isAutoExternal = isExternal ?? href.startsWith('http');
     const externalProps = isAutoExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {};
 
@@ -62,7 +64,7 @@ export const Link = memo(function Link(props: LinkProps) {
         className={sharedClasses}
         color={color}
         delay={delay}
-        href={href}
+        href={resolvedHref}
         size={size}
         type={type}
       >

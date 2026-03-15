@@ -1,0 +1,47 @@
+{
+  "name": "@ermnvldmr/i18n",
+  "version": "1.0.0",
+  "description": "Internationalization utilities for ermnvldmr projects",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "default": "./src/index.ts"
+    },
+    "./dev": {
+      "import": "./dist/dev.js",
+      "types": "./dist/dev.d.ts",
+      "default": "./src/dev.ts"
+    },
+    "./testing": {
+      "import": "./dist/testing.js",
+      "types": "./dist/testing.d.ts",
+      "default": "./src/testing.ts"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "rsbuild build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist coverage"
+  },
+  "peerDependencies": {
+    "react": "^19.1.0"
+  },
+  "devDependencies": {
+    "@ermnvldmr/eslint-config": "workspace:*",
+    "@ermnvldmr/rsbuild-config": "workspace:*",
+    "@rsbuild/core": "^1.2.11",
+    "@types/react": "^19.1.2",
+    "@vitest/coverage-v8": "^4.0.18",
+    "react": "^19.1.0",
+    "typescript": "^5.8.3",
+    "vitest": "^4.0.18"
+  }
+}
