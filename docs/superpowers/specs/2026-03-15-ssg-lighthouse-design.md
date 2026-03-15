@@ -86,8 +86,10 @@ No parameters required. The plugin reads entry/output information from the Rsbui
 
 ### Implementation steps inside `onAfterBuild`
 
-1. **Collect web HTML outputs** from stats: map entry name → absolute HTML path in `dist/`.
-2. **Determine SSR entries**: same entry sources, same names.
+1. **Collect entry sources and web HTML paths.** Read entry sources from `api.getRsbuildConfig().source?.entry` (the map of entry name → source path produced by `discoverEntries`). Compute each entry's web HTML path as `path.join(api.context.distPath, `${entryName}.html`)` — Rsbuild always outputs `{entryName}.html` regardless of nesting; for example entry `"articles/index"` → `dist/articles/index.html`.
+
+2. **Determine SSR output paths**: same entry names, CJS bundles in a sibling `dist-ssr/` directory: `path.join(ssrDistPath, `${entryName}.cjs`)`.
+
 3. **Programmatic node build** using `createRsbuild` from `@rsbuild/core`:
    ```ts
    import { createRsbuild } from '@rsbuild/core';
@@ -109,25 +111,32 @@ No parameters required. The plugin reads entry/output information from the Rsbui
    ```
    Rsbuild with `output.target: 'node'` excludes CSS from the bundle automatically.
 
-4. **Collect web HTML output paths** from `api.context.distPath` (web dist root) and the entry name map from `api.context.entry`. For each entry name `foo`, the web HTML file is at `{webDistPath}/foo.html` (for top-level entries) or `{webDistPath}/foo/index.html` (for nested entries). The mapping is computed from entry names using the same convention `discoverEntries` applies.
-
-5. **For each entry** (clearing require cache between entries via `createRequire`):
+4. **For each entry** (clearing Node's module cache between entries):
    ```ts
    import { createRequire } from 'node:module';
-   // packages/rsbuild-config is ESM ("type": "module") — raw require() is not available
+   // packages/rsbuild-config is ESM — raw require() unavailable; createRequire shares Node's cache
    const _require = createRequire(import.meta.url);
 
-   _require.cache && delete _require.cache[_require.resolve(ssrBundlePath)];
+   // clear cache so re-require loads a fresh module (important if multiple entries share deps)
+   delete _require.cache[_require.resolve(ssrBundlePath)];
    const { default: Component } = _require(ssrBundlePath);
+   ```
+
+5. **Render** to HTML string:
+   ```ts
    const { renderToString } = await import('react-dom/server');
    const html = renderToString(
      React.createElement(React.StrictMode, null, React.createElement(Component))
    );
    ```
 
-7. **Inject** into the web HTML file: replace `<div id="root"></div>` with `<div id="root">${html}</div>`. Use a regex that tolerates attribute whitespace: `/<div id="root"[^>]*><\/div>/`.
+6. **Inject** into the web HTML file. Read `dist/{entryName}.html`, replace the root div using a whitespace-tolerant pattern:
+   ```ts
+   const source = await fs.readFile(webHtmlPath, 'utf8');
+   const injected = source.replace(/<div id="root"[^>]*><\/div>/, `<div id="root">${html}</div>`);
+   ```
 
-6. **Run critters**:
+7. **Run critters** on the injected HTML:
    ```ts
    import Critters from 'critters';
    const critters = new Critters({
@@ -137,12 +146,12 @@ No parameters required. The plugin reads entry/output information from the Rsbui
      inlineFonts: false,     // fonts handled separately via preload tags
      pruneSource: false,     // keep full CSS for post-hydration correctness
    });
-   const processed = await critters.process(injectedHtml);
+   const processed = await critters.process(injected);
    ```
 
-7. **Write** `processed` back to the web HTML path.
+8. **Write** `processed` back to `dist/{entryName}.html`.
 
-8. **Cleanup** `dist-ssr/` after all entries are processed.
+9. **Cleanup** `dist-ssr/` after all entries are processed.
 
 ### Activation
 
