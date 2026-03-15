@@ -22,7 +22,7 @@ export const LocaleSwitch: React.FC<LocaleSwitchProps> = ({ currentPath }) => {
   const href = localeHref(path, OTHER_LOCALE);
 
   return (
-    <Link color="muted" href={href} size="s">
+    <Link className="text-neutral-400 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-400" href={href} size="s">
       {OTHER_LOCALE_LABEL}
     </Link>
   );
