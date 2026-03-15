@@ -127,20 +127,20 @@ export const PageHead = ({
     <>
       <header ref={headerRef} className={rootClasses}>
         <div
-          className={cn('transition-all duration-300', {
-            'opacity-0 invisible h-0 overflow-hidden': isCollapsed,
-            'opacity-100 visible': !isCollapsed,
-          })}
+          className={cn(
+            'grid transition-[grid-template-rows] duration-300 ease-in-out',
+            isCollapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
+          )}
         >
-          {expandedContent}
+          <div className="overflow-hidden">{expandedContent}</div>
         </div>
         <div
-          className={cn('transition-all duration-300', {
-            'opacity-100 visible': isCollapsed,
-            'opacity-0 invisible h-0 overflow-hidden': !isCollapsed,
-          })}
+          className={cn(
+            'grid transition-[grid-template-rows] duration-300 ease-in-out',
+            isCollapsed ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+          )}
         >
-          {collapsedContent}
+          <div className="overflow-hidden">{collapsedContent}</div>
         </div>
       </header>
       <div style={{ height }} />
