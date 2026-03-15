@@ -79,6 +79,7 @@ export function ssgPlugin(): RsbuildPlugin {
           rsbuildConfig: {
             plugins: ssrPlugins,
             source: { entry: entries },
+            tools: config.tools,
             output: {
               target: 'node',
               distPath: { root: ssrDistPath, js: '.' },
