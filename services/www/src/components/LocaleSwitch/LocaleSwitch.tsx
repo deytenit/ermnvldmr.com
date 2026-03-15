@@ -1,41 +1,28 @@
-import { LOCALE, LOCALES, localeHref, type Locale } from '@ermnvldmr/i18n';
+import { LOCALE, OTHER_LOCALE, OTHER_LOCALE_LABEL, localeHref } from '@ermnvldmr/i18n';
 import React from 'react';
 
-const LOCALE_LABELS: Record<Locale, string> = { en: 'EN', ru: 'RU' };
-
 /**
- * Renders locale switch links (EN/RU) for the current page.
- * Highlights the active locale and generates correct locale-prefixed hrefs.
+ * Renders a single link to the same page in the other locale.
+ * The label is expressed in the current build's language:
+ * EN build → "In Russian", RU build → "На Английском".
  *
  * @param props - Component props.
- * @returns A nav element with locale links.
+ * @returns An anchor element linking to the equivalent page in the other locale.
  */
 export interface LocaleSwitchProps {
-  /** Current page path (e.g. "/en/articles") — required for SSG rendering */
+  /** Current page path (e.g. "/en/articles") — required for accurate SSG rendering */
   currentPath?: string;
 }
 
 export const LocaleSwitch: React.FC<LocaleSwitchProps> = ({ currentPath }) => {
   const path =
-    currentPath ??
-    (typeof window !== 'undefined' ? window.location.pathname : `/${LOCALE}/`);
+    currentPath ?? (typeof window !== 'undefined' ? window.location.pathname : `/${LOCALE}/`);
+
+  const href = localeHref(path, OTHER_LOCALE);
 
   return (
-    <nav aria-label="Language switcher" className="flex gap-2">
-      {LOCALES.map((locale) => {
-        const href = localeHref(path, locale);
-        const isCurrent = locale === LOCALE;
-        return (
-          <a
-            key={locale}
-            aria-current={isCurrent ? 'true' : undefined}
-            className={isCurrent ? 'font-bold underline' : 'opacity-60 hover:opacity-100'}
-            href={href}
-          >
-            {LOCALE_LABELS[locale]}
-          </a>
-        );
-      })}
-    </nav>
+    <a aria-label={`Switch language to ${OTHER_LOCALE}`} href={href}>
+      {OTHER_LOCALE_LABEL}
+    </a>
   );
 };
