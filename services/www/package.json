@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "rsbuild dev",
     "build": "rsbuild build",
+    "build:en": "LOCALE=en rsbuild build",
+    "build:ru": "LOCALE=ru rsbuild build",
+    "build:all": "pnpm run build:en && pnpm run build:ru",
     "build:analyze": "RSDOCTOR=true rsbuild build",
     "preview": "rsbuild preview",
     "lint": "eslint src --max-warnings 0",
