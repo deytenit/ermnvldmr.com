@@ -26,7 +26,7 @@ export interface DefaultLayoutProps {
   width?: PageWidth;
   /**
    * Vertical padding scale.
-   * @default 'none'
+   * @default 'small'
    */
   paddingY?: PagePadding;
   /**
@@ -56,7 +56,7 @@ export function DefaultLayout({
   breadcrumbs,
   headerAddonLeft,
   width = 'default',
-  paddingY = 'none',
+  paddingY = 'small',
   centerVertically = false,
 }: DefaultLayoutProps): React.JSX.Element {
   return (
