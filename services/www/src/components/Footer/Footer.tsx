@@ -2,6 +2,7 @@ import { Container, HStack, Link, ThemeSwitch, VStack, Text } from '@ermnvldmr/u
 import React from 'react';
 
 import { RainbowSeparator } from '../RainbowSeparator';
+import { t } from './Footer.i18n';
 
 /**
  /**
@@ -28,7 +29,7 @@ export const Footer = () => {
         >
           <VStack align="start" gap={1}>
             <Text color="muted" size="s">
-              © {currentYear} Vladimir Eremin
+              © {currentYear} {t('Vladimir Eremin')}
             </Text>
             <Link href="https://creativecommons.org/licenses/by/4.0/" size="s">
               CC-BY 4.0

@@ -1,3 +1,4 @@
+import { localePath } from '@ermnvldmr/i18n';
 import { Markdown, Time, Text, PageColumns, PageColumn, Breadcrumbs, HStack } from '@ermnvldmr/ui';
 import React from 'react';
 

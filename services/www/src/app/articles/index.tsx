@@ -1,7 +1,9 @@
+import { localePath } from '@ermnvldmr/i18n';
 import { Article, Breadcrumbs } from '@ermnvldmr/ui';
 import React from 'react';
 
 import { sortedArticles } from '../../../content/registry';
+import { t } from './index.i18n';
 import { DefaultLayout } from '../../components/Layout/DefaultLayout';
 import { createPage } from '../../lib/core/createPage';
 import { SITE_TITLE } from '../../lib/shared/constants';
@@ -17,18 +19,18 @@ import { SITE_TITLE } from '../../lib/shared/constants';
 function ArticlesList(): React.JSX.Element {
   const breadcrumbs = (
     <Breadcrumbs>
-      <Breadcrumbs.Item href="/">Home</Breadcrumbs.Item>
+      <Breadcrumbs.Item href={localePath('/')}>{t('Home')}</Breadcrumbs.Item>
       <Breadcrumbs.Separator />
-      <Breadcrumbs.Item isCurrent>Articles</Breadcrumbs.Item>
+      <Breadcrumbs.Item isCurrent>{t('Articles')}</Breadcrumbs.Item>
     </Breadcrumbs>
   );
 
   return (
     <DefaultLayout
       breadcrumbs={breadcrumbs}
-      description="Browse all articles and projects."
+      description={t('Browse all articles and projects.')}
       paddingY="medium"
-      title="Articles"
+      title={t('Articles')}
     >
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {sortedArticles.map((article) => (
@@ -37,7 +39,7 @@ function ArticlesList(): React.JSX.Element {
               additionalText={article.tags?.join(' • ')}
               className="h-full"
               headline={article.title}
-              href={`/articles/${article.slug}`}
+              href={localePath(`/articles/${article.slug}`)}
               subHeadline={article.createdDate.toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
@@ -54,7 +56,7 @@ function ArticlesList(): React.JSX.Element {
 }
 
 createPage(ArticlesList, {
-  title: `Articles | ${SITE_TITLE}`,
-  description: 'Browse all articles and projects.',
+  title: `${t('Articles')} | ${SITE_TITLE}`,
+  description: t('Browse all articles and projects.'),
 });
 export default ArticlesList;
