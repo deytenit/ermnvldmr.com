@@ -3,27 +3,17 @@ import React, { forwardRef, useState, useEffect, useRef } from 'react';
 
 import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
 
-/**
- * Typography types.
- */
-export type TextType = 'display' | 'headline' | 'title' | 'body' | 'label';
+import {
+  getTypographyClassNames,
+  type TextType,
+  type TextSize,
+  type TextColor,
+  type TextAlign,
+  type TextWrap,
+  type TextOverflow,
+} from '../../lib/typography';
 
-/**
- * Typography sizes.
- */
-export type TextSize = 's' | 'm' | 'l';
-
-/**
- * Text color variants.
- */
-export type TextColor =
-  | 'default'
-  | 'primary'
-  | 'secondary'
-  | 'tertiary'
-  | 'error'
-  | 'muted'
-  | 'inherit';
+export type { TextType, TextSize, TextColor, TextAlign, TextWrap, TextOverflow };
 
 /**
  * Props for the Text component.
@@ -53,11 +43,11 @@ export interface TextProps
   /** Optional href for links */
   href?: string;
   /** Text alignment */
-  align?: 'left' | 'center' | 'right' | 'justify';
+  align?: TextAlign;
   /** Text wrapping behavior */
-  wrap?: 'nowrap' | 'balance' | 'pretty';
+  wrap?: TextWrap;
   /** Overflow behavior for single lines */
-  overflow?: 'ellipsis' | 'clip';
+  overflow?: TextOverflow;
   /** Maximum number of lines to show (truncates with ellipsis) */
   maxLines?: number;
   /** Delay in milliseconds before the text appears after entering the viewport. */
@@ -69,8 +59,8 @@ export interface TextProps
 /**
  * A flexible typography component that implements the design system's type scale.
  *
- * Text centralizes all typography rules, including font families, sizes,
- * line heights, and letter spacing, reducing the need for custom CSS.
+ * Text centralizes all typography rules — font families, sizes, line heights,
+ * letter spacing, colors, and decorations — via the getTypographyClassNames utility.
  */
 const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
   {
@@ -98,7 +88,6 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
   const [isVisible, setIsVisible] = useState(delay === undefined);
   const internalRef = useRef<HTMLElement>(null);
 
-  // Sync internalRef with forwarded ref
   useEffect(() => {
     if (!ref) return;
     if (typeof ref === 'function') {
@@ -125,80 +114,12 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
     return undefined;
   }, [delay, isIntersecting]);
 
-  // Base typography styles mapping
-  const typeStyles: Record<TextType, Record<TextSize, string>> = {
-    display: {
-      l: 'font-serif text-[57px] leading-[64px] tracking-[-0.25px]',
-      m: 'font-serif text-[45px] leading-[52px] tracking-normal',
-      s: 'font-serif text-[36px] leading-[44px] tracking-normal',
-    },
-    headline: {
-      l: 'font-serif text-[32px] leading-[40px] tracking-normal',
-      m: 'font-serif text-[28px] leading-[36px] tracking-normal',
-      s: 'font-serif text-[24px] leading-[32px] tracking-normal',
-    },
-    title: {
-      l: 'font-sans text-[22px] leading-[28px] tracking-normal',
-      m: 'font-sans text-[16px] leading-[24px] tracking-[0.15px]',
-      s: 'font-sans text-[14px] leading-[20px] tracking-[0.1px]',
-    },
-    body: {
-      l: 'font-sans text-[16px] leading-[24px] tracking-[0.5px]',
-      m: 'font-sans text-[14px] leading-[20px] tracking-[0.25px]',
-      s: 'font-sans text-[12px] leading-[16px] tracking-[0.4px]',
-    },
-    label: {
-      l: 'font-sans font-medium text-[14px] leading-[20px] tracking-[0.1px]',
-      m: 'font-sans font-medium text-[12px] leading-[16px] tracking-[0.5px]',
-      s: 'font-sans font-medium text-[11px] leading-[16px] tracking-[0.5px]',
-    },
-  };
-
-  const colorClasses: Record<TextColor, string> = {
-    default: 'text-[var(--rb-text)]',
-    primary: 'text-[var(--rb-primary-text)]',
-    secondary: 'text-[var(--rb-secondary-text)]',
-    tertiary: 'text-[var(--rb-tertiary-text)]',
-    error: 'text-[var(--rb-error-text)]',
-    muted: 'text-[var(--rb-muted-text)]',
-    inherit: 'text-inherit',
-  };
-
-  const alignClasses = {
-    left: 'text-left',
-    center: 'text-center',
-    right: 'text-right',
-    justify: 'text-justify',
-  };
-
-  const wrapClasses = {
-    nowrap: 'whitespace-nowrap',
-    balance: 'text-balance',
-    pretty: 'text-pretty',
-  };
-
-  let truncationClass = '';
-  if (maxLines) {
-    truncationClass = `line-clamp-${maxLines}`;
-  } else {
-    if (overflow === 'ellipsis') truncationClass = 'truncate';
-    if (overflow === 'clip') truncationClass = 'overflow-clip';
-  }
-
   return (
     <Component
       {...props}
       ref={internalRef}
       className={cn(
-        typeStyles[type][size],
-        colorClasses[color],
-        bold && 'font-bold',
-        italic && 'italic',
-        underline && 'underline',
-        strike && 'line-through',
-        align && alignClasses[align],
-        wrap && wrapClasses[wrap],
-        truncationClass,
+        getTypographyClassNames({ type, size, color, bold, italic, underline, strike, align, wrap, overflow, maxLines }),
         delay !== undefined &&
           (isVisible
             ? 'animate-in fade-in slide-in-from-bottom-2 duration-1000 ease-out'
