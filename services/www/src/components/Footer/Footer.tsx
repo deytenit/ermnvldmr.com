@@ -1,11 +1,11 @@
 import { Container, HStack, Link, ThemeSwitch, VStack, Text } from '@ermnvldmr/ui';
 import React from 'react';
 
+import { LocaleSwitch } from '../LocaleSwitch/LocaleSwitch';
 import { RainbowSeparator } from '../RainbowSeparator';
 import { t } from './Footer.i18n';
 
 /**
- /**
  * The standard footer for the www service.
  * Displays copyright information, license, and theme switcher.
  *
@@ -35,7 +35,10 @@ export const Footer = () => {
               CC-BY 4.0
             </Link>
           </VStack>
-          <ThemeSwitch />
+          <HStack gap={8}>
+            <LocaleSwitch />
+            <ThemeSwitch />
+          </HStack>
         </HStack>
       </Container>
     </VStack>
