@@ -1,5 +1,6 @@
+import { DEFAULT_LOCALE, isLocale, type Locale } from './lib/locale.js';
+
 import type { RsbuildConfig } from '@rsbuild/core';
-import { DEFAULT_LOCALE, type Locale } from './lib/locale.js';
 
 /**
  * Returns a partial Rsbuild config that enables locale-aware builds.
@@ -11,12 +12,12 @@ import { DEFAULT_LOCALE, type Locale } from './lib/locale.js';
  * import { localeRsbuildConfig } from '@ermnvldmr/i18n/dev';
  * import { defineServiceConfig, mergeConfig } from '@ermnvldmr/rsbuild-config/dev';
  *
- * const locale = process.env.LOCALE ?? 'en';
  * export default defineServiceConfig(mergeConfig(localeRsbuildConfig(), { ... }));
  * ```
  */
 export function localeRsbuildConfig(): RsbuildConfig {
-  const locale: Locale = (process.env.LOCALE as Locale | undefined) ?? DEFAULT_LOCALE;
+  const rawLocale = process.env.LOCALE ?? '';
+  const locale: Locale = isLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
 
   return {
     source: {
@@ -41,7 +42,7 @@ export function localeRsbuildConfig(): RsbuildConfig {
         // The canonical import is always `.en.mdx`; other locales are resolved here.
         if (locale !== DEFAULT_LOCALE) {
           config.plugins = [
-            ...(config.plugins ?? []),
+            ...config.plugins,
             new rspack.NormalModuleReplacementPlugin(
               /\.en\.mdx$/,
               (resource: { request: string }) => {

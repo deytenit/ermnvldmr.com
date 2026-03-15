@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { localePath, localeHref } from './path.js';
 
 describe('localePath', () => {

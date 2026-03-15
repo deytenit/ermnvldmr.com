@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest';
 import React from 'react';
+import { describe, it, expect } from 'vitest';
+
 import { createKeyset } from './keyset.js';
 
 const { t, tRaw } = createKeyset({

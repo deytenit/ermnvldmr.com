@@ -1,3 +1,4 @@
+/** The four plural categories used across EN and RU grammar rules. */
 export interface PluralForms {
   none: string;
   one: string;
@@ -8,6 +9,16 @@ export interface PluralForms {
 /**
  * Selects the correct plural form for the given count.
  * Covers both English (none/one/many) and Russian (none/one/some/many) rules.
+ *
+ * @param count - The numeric value to pluralise.
+ * @param forms - The set of plural forms to select from.
+ * @returns The appropriate plural form string.
+ * @example
+ * const forms = { none: 'no items', one: 'one item', some: '{n} items', many: '{n} items' };
+ * pluralize(0, forms)  // → 'no items'
+ * pluralize(1, forms)  // → 'one item'
+ * pluralize(3, forms)  // → '{n} items'  (some)
+ * pluralize(21, forms) // → 'one item'   (Russian rule: 21 ends in 1)
  */
 export function pluralize(count: number, forms: PluralForms): string {
   if (count === 0) return forms.none;

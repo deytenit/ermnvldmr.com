@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { pluralize } from './pluralize.js';
 
 const forms = { none: 'none', one: 'one', some: 'some', many: 'many' };
