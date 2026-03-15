@@ -6,8 +6,7 @@ import { pluginMdx } from '@rsbuild/plugin-mdx';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 
-const locale = process.env.LOCALE ?? 'en';
-const fontBase = `/${locale}/static/font`;
+const fontBase = 'static/font';
 
 export default defineServiceConfig(
   mergeConfig(localeRsbuildConfig(), {
