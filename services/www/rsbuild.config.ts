@@ -14,6 +14,7 @@ export default defineServiceConfig({
             disableClientServer: true,
             output: {
               reportDir: './rsdoctor',
+              mode: 'brief',
             },
           }),
       ].filter(Boolean),

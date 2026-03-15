@@ -278,6 +278,14 @@ jobs:
           path: packages/storybook-config/dist
       - name: Build WWW service
         run: pnpm --filter @ermnvldmr/www build
+        env:
+          RSDOCTOR: 'true'
+      - name: Upload Rsdoctor report
+        uses: actions/upload-artifact@v4
+        with:
+          name: rsdoctor-report
+          path: services/www/rsdoctor/
+          retention-days: 30
 
   release-docker:
     name: Release - Docker Image
