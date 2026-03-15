@@ -131,6 +131,7 @@ export const PageHead = ({
             'grid transition-[grid-template-rows] duration-300 ease-in-out',
             isCollapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
           )}
+          inert={isCollapsed || undefined}
         >
           <div className="overflow-hidden">{expandedContent}</div>
         </div>
@@ -139,6 +140,7 @@ export const PageHead = ({
             'grid transition-[grid-template-rows] duration-300 ease-in-out',
             isCollapsed ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
           )}
+          inert={!isCollapsed || undefined}
         >
           <div className="overflow-hidden">{collapsedContent}</div>
         </div>
