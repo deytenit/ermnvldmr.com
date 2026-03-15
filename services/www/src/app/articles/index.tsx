@@ -43,11 +43,14 @@ function ArticlesList(): React.JSX.Element {
               className="h-full"
               headline={article.title}
               href={localePath(`/articles/${article.slug}`)}
-              subHeadline={article.createdDate.toLocaleDateString(DATE_LOCALE_MAP[LOCALE] ?? 'en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
+              subHeadline={article.createdDate.toLocaleDateString(
+                DATE_LOCALE_MAP[LOCALE] ?? 'en-US',
+                {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                }
+              )}
             >
               {article.description}
             </Article>

@@ -27,15 +27,15 @@ function HomePage(): React.JSX.Element {
         </Header>
         <VStack gap={12}>
           <Paragraph delay={300} size="l" type="title">
-            You are arrived right as the lights turned on. The core foundation is solid and the
-            site is officially live,
+            You are arrived right as the lights turned on. The core foundation is solid and the site
+            is officially live,
             <br />
             but the metaphorical boxes are still being unpacked. Expect this space to evolve
             continuously as everything finds its proper place.
           </Paragraph>
           <Paragraph delay={350} size="l" type="title">
-            Sharing the underlying architecture is a core philosophy here. If you are curious
-            about the specifics of how it is all built,
+            Sharing the underlying architecture is a core philosophy here. If you are curious about
+            the specifics of how it is all built,
             <br />
             you can inspect the{' '}
             <Link href="https://github.com/deytenit/ermnvldmr.com/" size="l" type="title">
@@ -64,8 +64,8 @@ function HomePage(): React.JSX.Element {
             Even though the rest of the environment is still a work in progress, the communication
             lines are fully operational.
             <br />
-            Whether you want to discuss tech, share a perspective on a recent read, or simply make
-            a connection, the mailbox is open at...
+            Whether you want to discuss tech, share a perspective on a recent read, or simply make a
+            connection, the mailbox is open at...
           </Paragraph>
         </VStack>
         <Link delay={1000} href="mailto:personal@ermnvldmr.com" size="l" type="title">
