@@ -161,32 +161,22 @@ cn(
 
 ---
 
-## 2. Mobile Top Padding
+## 2. Content Top Padding
 
 ### Problem
 
-On mobile viewports, page content begins immediately after the PageHead spacer with no breathing room. On desktop, `centerVertically` naturally creates visual space; on mobile the shorter viewport eliminates this effect.
+When the viewport is narrow (mobile or squeezed desktop), page content begins immediately after the PageHead spacer with no breathing room. The issue is not mobile-only — it appears whenever the viewport is short enough that `centerVertically` does not create natural spacing.
 
 ### Solution
 
-Wrap `PageContainer` children in an inner div with `pt-6 sm:pt-0`. This is **additive** — it does not conflict with `paddingY` (which controls the outer container's `py-*`), but adds breathing room between the PageHead spacer and the visible content on mobile.
+Change the default `paddingY` in `DefaultLayout` from `'none'` to `'small'`. `paddingY="small"` maps to `py-4 sm:py-6` in `PageContainer`, which adds consistent vertical breathing room at all viewport sizes without any custom class.
 
 ```tsx
-<PageContainer
-  as="main"
-  centerVertically={centerVertically}
-  paddingY={paddingY}
-  width={width}
->
-  <div className="pt-6 sm:pt-0">
-    {children}
-  </div>
-</PageContainer>
+// DefaultLayout.tsx — change default
+paddingY = 'small',  // was 'none'
 ```
 
-`pt-6` = `1.5rem` — enough breathing room without disrupting vertical centering on tablet/desktop. The inner div approach ensures extra top space is always additive regardless of `paddingY` value.
-
-> **Alternative considered:** conditionally applying `className="max-sm:pt-6"` on the PageContainer directly only when `paddingY === 'none'`. Rejected because it couples layout logic to a specific prop value and would silently fail for other `paddingY` settings.
+Pages that genuinely need no vertical padding (if any) can still override by passing `paddingY="none"` explicitly.
 
 #### Files to change
 
@@ -203,6 +193,8 @@ Wrap `PageContainer` children in an inner div with `pt-6 sm:pt-0`. This is **add
 ### Solution: CSS `grid-template-rows` transition
 
 The `grid-rows-[0fr] → grid-rows-[1fr]` pattern is the modern standard for animating unknown element heights. No JS height measurement, no `max-height` guessing.
+
+**Only the expand/collapse mechanism changes.** Visual design, layout, padding, shadow, backdrop — all remain exactly as they are.
 
 ```tsx
 {/* Expanded content — animates height in/out */}
@@ -226,11 +218,11 @@ The `grid-rows-[0fr] → grid-rows-[1fr]` pattern is the modern standard for ani
 </div>
 ```
 
-**Why the spacer tracks the animation:** `useResizeObserver` fires when layout changes. During a CSS `grid-template-rows` transition the browser continuously re-lays out the grid, causing the ResizeObserver to fire on each layout recalc and update `<div style={{ height }}/>` incrementally. This is the expected behavior in Chrome, Firefox, and Safari.
+Replace `opacity-0 invisible h-0 overflow-hidden` toggle logic with the grid wrappers above. Keep `isCollapsed` state, `useScroll`, `useResizeObserver`, existing `rootClasses`, `expandedContent`, and `collapsedContent` definitions unchanged.
 
-> **Implementation note:** Confirm smooth spacer animation during implementation. If the spacer still jumps (e.g. in a specific browser), the fallback is to animate the spacer height with a matching CSS transition: `transition-[height] duration-300 ease-in-out` using a CSS variable set by a JS `style` attribute updated in sync.
+**Why the spacer tracks the animation:** During a CSS `grid-template-rows` transition the browser continuously re-lays out the grid, causing `useResizeObserver` to fire on each layout recalculation and update `<div style={{ height }}/>` incrementally. This is expected behavior in Chrome, Firefox, and Safari.
 
-Remove `opacity-0 invisible h-0 overflow-hidden` toggle logic. Keep existing `isCollapsed` state and `useScroll`/`useResizeObserver` hooks unchanged.
+> **Implementation note:** Confirm smooth spacer animation in all browsers. If the spacer jumps in a specific browser, apply a matching `transition-[height] duration-300 ease-in-out` to the spacer div via a CSS variable updated in JS.
 
 #### Files to change
 
@@ -240,55 +232,7 @@ Remove `opacity-0 invisible h-0 overflow-hidden` toggle logic. Keep existing `is
 
 ## 4. Lighthouse Performance
 
-### 4a. Font preload (Quick win — Est. −200ms critical path)
-
-`eb-garamond-var.woff2` (41 KiB) is discovered only after CSS is parsed — it sits 431ms into the critical path. Add a `<link rel="preload">` in the shared rsbuild config alongside the existing Lato preloads:
-
-```ts
-// packages/rsbuild-config/src/lib/config/rsbuild.ts  (shared default config)
-{
-  tag: 'link',
-  attrs: {
-    rel: 'preload',
-    as: 'font',
-    type: 'font/woff2',
-    href: '/static/font/eb-garamond-var.woff2',
-    crossorigin: true,
-  },
-},
-```
-
-Also add preload for the italic variant if used above-the-fold.
-
-> **Implementation note:** `mergeConfig` concatenates `html.tags` arrays, so the new preload belongs in `packages/rsbuild-config/src/lib/config/rsbuild.ts` (shared defaults) — not in `services/www/rsbuild.config.ts`. Confirm after build that the preload `href` (`/static/font/eb-garamond-var.woff2`) matches the final output path from the `output.distPath.font` config.
-
-#### Files to change
-
-- `packages/rsbuild-config/src/lib/config/rsbuild.ts`
-
----
-
-### 4b. Render-blocking CSS (Research task — Est. −450ms)
-
-The main CSS chunk `6564.34a45870.css` blocks first render. Full solution requires critical CSS extraction (inline above-the-fold styles, defer the rest).
-
-**Candidates to evaluate:**
-- `@rsbuild/plugin-inline-chunk` — inlines entire small chunks; usable if CSS can be split into critical/non-critical files.
-- `critters` — extracts and inlines critical CSS per route. Requires Rspack/Rsbuild compatibility check.
-- Manual split via `html.tags` — extract reset + base styles (`@layer base`) into a dedicated inline `<style>` tag in `rsbuild.config.ts`; load component styles async.
-
-**Scope:** This is a research and implementation task to follow separately. Not a blocker for other fixes.
-
----
-
-### 4c. Reduce unused JavaScript (Minor — Est. −63 KiB)
-
-`7341.6b80d938.js` contains ~62.6 KiB of unused code (likely a shared vendor/route chunk).
-
-**Step 1:** Add `@rsbuild/plugin-bundle-analyzer` to identify what's in the chunk.
-**Step 2:** Based on analysis — apply dynamic imports for non-critical paths or refine chunk splitting config.
-
-**Scope:** Separate task after bundle analysis.
+**Out of scope for this iteration.** Lighthouse improvements (render-blocking CSS, font critical path, unused JS) require dedicated research and have more complex trade-offs. Deferred to a separate spec.
 
 ---
 
@@ -296,9 +240,7 @@ The main CSS chunk `6564.34a45870.css` blocks first render. Full solution requir
 
 1. **Typography system** — highest impact, touches `packages/ui` (affects all services).
 2. **PageHead animation** — isolated, single file change.
-3. **Mobile padding** — trivial, single className addition.
-4. **Lighthouse: font preload** — quick win in rsbuild config.
-5. **Lighthouse: CSS blocking + unused JS** — research tasks, separate scope.
+3. **Content padding** — trivial, single default prop change.
 
 ---
 
