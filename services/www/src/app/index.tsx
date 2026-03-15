@@ -1,3 +1,4 @@
+import { localePath } from '@ermnvldmr/i18n';
 import { Paragraph, Link, VStack, Header } from '@ermnvldmr/ui';
 import React from 'react';
 
@@ -15,7 +16,11 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../lib/shared/constants';
  */
 function HomePage(): React.JSX.Element {
   return (
-    <DefaultLayout centerVertically headerAddonLeft={<Header level={3}>{SITE_TITLE}</Header>}>
+    <DefaultLayout
+      centerVertically
+      currentPath={localePath('/')}
+      headerAddonLeft={<Header level={3}>{SITE_TITLE}</Header>}
+    >
       <VStack gap={24}>
         <Header delay={0} level={1}>
           Welcome to my corner of the internet.
@@ -47,7 +52,7 @@ function HomePage(): React.JSX.Element {
           </Paragraph>
           <Paragraph delay={450} size="l" type="title">
             Whenever you are ready to look around, feel free to dive into{' '}
-            <Link href="/articles" size="l" type="title">
+            <Link href={localePath('/articles')} size="l" type="title">
               the growing collection of articles
             </Link>
             .

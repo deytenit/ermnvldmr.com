@@ -1,12 +1,14 @@
-import { localePath } from '@ermnvldmr/i18n';
+import { LOCALE, localePath } from '@ermnvldmr/i18n';
 import { Article, Breadcrumbs } from '@ermnvldmr/ui';
 import React from 'react';
 
-import { sortedArticles } from '../../../content/registry';
 import { t } from './index.i18n';
+import { sortedArticles } from '../../../content/registry';
 import { DefaultLayout } from '../../components/Layout/DefaultLayout';
 import { createPage } from '../../lib/core/createPage';
 import { SITE_TITLE } from '../../lib/shared/constants';
+
+const DATE_LOCALE_MAP: Record<string, string> = { en: 'en-US', ru: 'ru-RU' };
 
 /**
  * Articles list page component.
@@ -28,6 +30,7 @@ function ArticlesList(): React.JSX.Element {
   return (
     <DefaultLayout
       breadcrumbs={breadcrumbs}
+      currentPath={localePath('/articles')}
       description={t('Browse all articles and projects.')}
       paddingY="medium"
       title={t('Articles')}
@@ -40,7 +43,7 @@ function ArticlesList(): React.JSX.Element {
               className="h-full"
               headline={article.title}
               href={localePath(`/articles/${article.slug}`)}
-              subHeadline={article.createdDate.toLocaleDateString('en-US', {
+              subHeadline={article.createdDate.toLocaleDateString(DATE_LOCALE_MAP[LOCALE] ?? 'en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
