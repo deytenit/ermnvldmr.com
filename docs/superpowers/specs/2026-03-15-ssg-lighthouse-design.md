@@ -133,7 +133,7 @@ No parameters required. The plugin reads entry/output information from the Rsbui
 6. **Inject** into the web HTML file. Read `dist/{entryName}.html`, replace the root div using a whitespace-tolerant pattern:
    ```ts
    const source = await fs.readFile(webHtmlPath, 'utf8');
-   const injected = source.replace(/<div id="root"[^>]*><\/div>/, `<div id="root">${html}</div>`);
+   const injected = source.replace(/<div id="root"[^>]*>\s*<\/div>/, `<div id="root">${html}</div>`);
    ```
 
 7. **Run critters** on the injected HTML:
@@ -276,7 +276,7 @@ Remove `simplex-noise` and `suncalc` — both are listed as `dependencies` but a
 |------|--------|
 | `packages/rsbuild-config/src/lib/config/ssg.ts` | Full `ssgPlugin` implementation |
 | `packages/rsbuild-config/src/lib/config/rsbuild.ts` | Add EB Garamond preload; activate `ssgPlugin` |
-| `packages/rsbuild-config/package.json` | Add `critters` dependency |
+| `packages/rsbuild-config/package.json` | Add `critters` and `react` dependencies |
 | `packages/stl/src/lib/window/localStorage.ts` | Return no-op instead of throw in SSR context |
 | `packages/stl/src/lib/window/localStorage.test.ts` | Replace `"should throw if window is undefined"` with no-op behavior assertions |
 | `services/www/src/lib/core/createPage.tsx` | Add `typeof window === 'undefined'` guard |
