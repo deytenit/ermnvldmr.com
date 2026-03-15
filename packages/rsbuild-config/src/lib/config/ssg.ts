@@ -83,6 +83,14 @@ export function ssgPlugin(): RsbuildPlugin {
               target: 'node',
               distPath: { root: ssrDistPath, js: '.' },
               filename: { js: '[name].cjs' },
+              // Externalize React so the SSR bundle shares the same React instance
+              // as react-dom/server, preventing "null dispatcher" hook errors.
+              externals: {
+                react: 'commonjs react',
+                'react-dom': 'commonjs react-dom',
+                'react/jsx-runtime': 'commonjs react/jsx-runtime',
+                'react/jsx-dev-runtime': 'commonjs react/jsx-dev-runtime',
+              },
             },
           },
         });
@@ -92,8 +100,11 @@ export function ssgPlugin(): RsbuildPlugin {
 
         // ── Step 2: Render, inject, inline critical CSS ───────────────────────
         const { renderToString } = await import('react-dom/server');
-        // eslint-disable-next-line @typescript-eslint/no-require-imports -- critters types not resolved via package.json exports
-        const Critters = require('critters') as new (opts?: {
+
+        // createRequire from ESM context — needed to load CJS modules (critters, SSR bundles)
+        const _require = createRequire(import.meta.url);
+
+        const Critters = _require('critters') as new (opts?: {
           path?: string;
           publicPath?: string;
           preload?: string;
@@ -111,9 +122,6 @@ export function ssgPlugin(): RsbuildPlugin {
           inlineFonts: false,  // fonts are handled via separate <link rel="preload"> tags
           pruneSource: false,  // keep full CSS file for post-hydration correctness
         });
-
-        // createRequire from ESM context — shares Node's module cache
-        const _require = createRequire(import.meta.url);
 
         for (const entryName of entryNames) {
           const ssrBundlePath = path.join(ssrDistPath, `${entryName}.cjs`);
