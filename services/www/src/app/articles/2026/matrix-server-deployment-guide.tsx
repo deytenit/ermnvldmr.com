@@ -1,3 +1,4 @@
+import { localePath } from '@ermnvldmr/i18n';
 import { MARKDOWN_COMPONENTS } from '@ermnvldmr/ui';
 import React from 'react';
 
@@ -24,6 +25,7 @@ function MatrixServerDeploymentGuidePage(): React.JSX.Element {
   return (
     <ArticleLayout
       createdDate={article.createdDate}
+      currentPath={localePath('/articles/2026/matrix-server-deployment-guide')}
       description={article.description}
       tags={article.tags}
       title={article.title}

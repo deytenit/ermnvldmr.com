@@ -34,6 +34,8 @@ export interface DefaultLayoutProps {
    * @default false
    */
   centerVertically?: boolean;
+  /** Current page path for locale switching. */
+  currentPath?: string;
 }
 
 /**
@@ -58,9 +60,10 @@ export function DefaultLayout({
   width = 'default',
   paddingY = 'small',
   centerVertically = false,
+  currentPath,
 }: DefaultLayoutProps): React.JSX.Element {
   return (
-    <IndexLayout footer={<Footer />}>
+    <IndexLayout footer={<Footer currentPath={currentPath} />}>
       <PageHead
         breadcrumbs={breadcrumbs}
         caption={description}

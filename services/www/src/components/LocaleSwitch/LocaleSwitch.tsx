@@ -3,6 +3,13 @@ import React from 'react';
 
 const LOCALE_LABELS: Record<Locale, string> = { en: 'EN', ru: 'RU' };
 
+/**
+ * Renders locale switch links (EN/RU) for the current page.
+ * Highlights the active locale and generates correct locale-prefixed hrefs.
+ *
+ * @param props - Component props.
+ * @returns A nav element with locale links.
+ */
 export interface LocaleSwitchProps {
   /** Current page path (e.g. "/en/articles") — required for SSG rendering */
   currentPath?: string;

@@ -6,6 +6,14 @@ import { RainbowSeparator } from '../RainbowSeparator';
 import { t } from './Footer.i18n';
 
 /**
+ * Props for the Footer component.
+ */
+export interface FooterProps {
+  /** Current page path for locale switching. */
+  currentPath?: string;
+}
+
+/**
  * The standard footer for the www service.
  * Displays copyright information, license, and theme switcher.
  *
@@ -15,7 +23,7 @@ import { t } from './Footer.i18n';
  * <Footer />
  * ```
  */
-export const Footer = () => {
+export const Footer = ({ currentPath }: FooterProps) => {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -36,7 +44,7 @@ export const Footer = () => {
             </Link>
           </VStack>
           <HStack gap={8}>
-            <LocaleSwitch />
+            <LocaleSwitch currentPath={currentPath} />
             <ThemeSwitch />
           </HStack>
         </HStack>

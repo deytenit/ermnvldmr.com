@@ -1,3 +1,4 @@
+import { localePath } from '@ermnvldmr/i18n';
 import { MARKDOWN_COMPONENTS } from '@ermnvldmr/ui';
 import React from 'react';
 
@@ -19,6 +20,7 @@ function TestArticlePage(): React.JSX.Element {
   return (
     <ArticleLayout
       createdDate={article.createdDate}
+      currentPath={localePath('/articles/2026/test-article')}
       description={article.description}
       tags={article.tags}
       title={article.title}

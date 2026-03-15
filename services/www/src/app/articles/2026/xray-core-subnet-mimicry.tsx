@@ -1,3 +1,4 @@
+import { localePath } from '@ermnvldmr/i18n';
 import { MARKDOWN_COMPONENTS } from '@ermnvldmr/ui';
 import React from 'react';
 
@@ -19,6 +20,7 @@ function XrayCoreSubnetMimicryPage(): React.JSX.Element {
   return (
     <ArticleLayout
       createdDate={article.createdDate}
+      currentPath={localePath('/articles/2026/xray-core-subnet-mimicry')}
       description={article.description}
       tags={article.tags}
       title={article.title}

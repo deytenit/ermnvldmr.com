@@ -8,6 +8,8 @@ import { DefaultLayout } from '../DefaultLayout/DefaultLayout';
  * Props for the ArticleLayout component.
  */
 export interface ArticleLayoutProps {
+  /** The current page path for locale switching (e.g. "/articles/2026/slug"). */
+  currentPath?: string;
   /** The title of the article. */
   title: string;
   /** A short description or lead paragraph for the article. */
@@ -38,6 +40,7 @@ export interface ArticleLayoutProps {
  * ```
  */
 export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
+  currentPath,
   title,
   createdDate,
   updatedDate,
@@ -70,9 +73,9 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
 
   const breadcrumbs = (
     <Breadcrumbs>
-      <Breadcrumbs.Item href="/">Home</Breadcrumbs.Item>
+      <Breadcrumbs.Item href={localePath('/')}>Home</Breadcrumbs.Item>
       <Breadcrumbs.Separator />
-      <Breadcrumbs.Item href="/articles">Articles</Breadcrumbs.Item>
+      <Breadcrumbs.Item href={localePath('/articles')}>Articles</Breadcrumbs.Item>
       <Breadcrumbs.Separator />
       <Breadcrumbs.Item isCurrent>{title}</Breadcrumbs.Item>
     </Breadcrumbs>
@@ -81,6 +84,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
   return (
     <DefaultLayout
       breadcrumbs={breadcrumbs}
+      currentPath={currentPath}
       description={metadata}
       paddingY="medium"
       title={title}
