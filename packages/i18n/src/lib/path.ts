@@ -1,29 +1,37 @@
 import { LOCALE, LOCALES, type Locale } from './locale.js';
 
 /**
- * Prepends the current build locale to an absolute path.
+ * Resolves any href value to its locale-aware form.
  *
- * Idempotent: if the path already carries any known locale prefix it is
- * returned unchanged, so calling localePath on an already-prefixed value
- * (e.g. from a double-call) is safe.
+ * - Absolute internal paths (`/...`) are prefixed with the current build locale.
+ * - Everything else (external URLs, mailto/tel, relative paths, hash anchors)
+ *   is returned unchanged.
+ * - Idempotent: paths already carrying any known locale prefix are not modified.
+ *
+ * This means `localePath` can be called unconditionally on any `href` value —
+ * no need for `href.startsWith('/')` guards at the call-site.
  *
  * Works identically in dev and production: the dev server is configured with
- * `server.base = /${LOCALE}` via `localeRsbuildConfig`, so routes are always
- * served under the locale prefix in both environments.
+ * `server.base = /${LOCALE}` via `localeRsbuildConfig`.
  *
  * @example
  * // LOCALE = 'en'
- * localePath('/articles')     → '/en/articles'
- * localePath('/')             → '/en/'
- * localePath('/en/articles')  → '/en/articles'  (already prefixed, no-op)
+ * localePath('/articles')          → '/en/articles'
+ * localePath('/')                  → '/en/'
+ * localePath('/en/articles')       → '/en/articles'   (idempotent)
+ * localePath('https://github.com') → 'https://github.com'  (external, unchanged)
+ * localePath('mailto:a@b.com')     → 'mailto:a@b.com'      (unchanged)
+ * localePath('#section')           → '#section'             (unchanged)
  */
-export function localePath(path: string): string {
+export function localePath(href: string): string {
+  // Only rewrite absolute internal paths.
+  if (!href.startsWith('/')) return href;
   // Already carries any locale prefix — leave it alone.
-  if (LOCALES.some((l) => path === `/${l}` || path === `/${l}/` || path.startsWith(`/${l}/`))) {
-    return path;
+  if (LOCALES.some((l) => href === `/${l}` || href === `/${l}/` || href.startsWith(`/${l}/`))) {
+    return href;
   }
-  if (path === '/') return `/${LOCALE}/`;
-  return `/${LOCALE}${path}`;
+  if (href === '/') return `/${LOCALE}/`;
+  return `/${LOCALE}${href}`;
 }
 
 /**
