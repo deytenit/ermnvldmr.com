@@ -38,8 +38,8 @@ export function createLocalStorage<T>(key: string, defaultValue: T): StorageMana
     return {
       key,
       get: () => defaultValue,
-      set: () => {},
-      remove: () => {},
+      set: () => { /* no-op in SSR/SSG context */ },
+      remove: () => { /* no-op in SSR/SSG context */ },
     };
   }
 
