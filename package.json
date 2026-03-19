@@ -44,8 +44,7 @@
     "test": "pnpm -r test",
     "test:coverage": "pnpm -r test:coverage",
     "clean": "pnpm -r clean && rm -rf node_modules",
-    "build:deps": "pnpm -r --filter='./packages/*-config' build && pnpm --filter='./packages/i18n' build",
-    "postinstall": "pnpm build:deps"
+    "build:deps": "pnpm -r --filter='./packages/*-config' build && pnpm --filter='./packages/i18n' build"
   },
   "devDependencies": {
     "globals": "^16.0.0",
