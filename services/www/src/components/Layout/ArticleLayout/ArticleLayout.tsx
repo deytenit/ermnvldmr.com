@@ -2,8 +2,8 @@ import { localePath } from '@ermnvldmr/i18n';
 import { Markdown, Time, Text, PageColumns, PageColumn, Breadcrumbs, HStack } from '@ermnvldmr/ui';
 import React from 'react';
 
-import { DefaultLayout } from '../DefaultLayout/DefaultLayout';
 import { t } from './ArticleLayout.i18n';
+import { DefaultLayout } from '../DefaultLayout/DefaultLayout';
 
 /**
  * Props for the ArticleLayout component.

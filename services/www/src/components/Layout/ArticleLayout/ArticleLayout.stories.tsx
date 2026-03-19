@@ -45,9 +45,9 @@ export const Default: Story = {
     <ArticleLayout {...args}>
       <Header level={2}>Introduction</Header>
       <Paragraph>
-        Rsbuild provides a modern, high-performance build toolchain based on Rspack.
-        In this article, we&apos;ll explore how to set up a robust system for articles
-        and projects using MDX and React.
+        Rsbuild provides a modern, high-performance build toolchain based on Rspack. In this
+        article, we&apos;ll explore how to set up a robust system for articles and projects using
+        MDX and React.
       </Paragraph>
 
       <Blockquote>
@@ -82,8 +82,8 @@ export default defineConfig({
 
       <Header level={3}>Why Rsbuild?</Header>
       <Paragraph>
-        Rsbuild&apos;s performance is unparalleled thanks to Rspack. By using a Rust-based
-        bundler, we keep our development loop fast and our builds efficient.
+        Rsbuild&apos;s performance is unparalleled thanks to Rspack. By using a Rust-based bundler,
+        we keep our development loop fast and our builds efficient.
       </Paragraph>
 
       <List spacing="s" variant="unordered">

@@ -144,4 +144,3 @@ export const PageHead = ({
     </header>
   );
 };
-

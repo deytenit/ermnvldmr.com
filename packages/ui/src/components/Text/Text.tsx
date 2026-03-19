@@ -119,7 +119,19 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
       {...props}
       ref={internalRef}
       className={cn(
-        getTypographyClassNames({ type, size, color, bold, italic, underline, strike, align, wrap, overflow, maxLines }),
+        getTypographyClassNames({
+          type,
+          size,
+          color,
+          bold,
+          italic,
+          underline,
+          strike,
+          align,
+          wrap,
+          overflow,
+          maxLines,
+        }),
         delay !== undefined &&
           (isVisible
             ? 'animate-in fade-in slide-in-from-bottom-2 duration-1000 ease-out'

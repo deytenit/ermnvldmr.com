@@ -34,8 +34,8 @@ This compose file is a minimal configuration to run the Joplin Server and the we
 
 ```yaml
 x-environment: &shared-environment
-  TZ: "Europe/Moscow"
-  POSTGRES_DB: "joplin"
+  TZ: 'Europe/Moscow'
+  POSTGRES_DB: 'joplin'
   POSTGRES_USER: ${SHARED_USERNAME?:error}
   POSTGRES_PASSWORD: ${SHARED_PASSWORD?:error}
 
@@ -57,32 +57,32 @@ services:
     environment:
       <<: *shared-environment
       APP_PORT: 22300
-      APP_BASE_URL: "https://example.com"
-      DB_CLIENT: "pg"
-      POSTGRES_HOST: "joplin-postgres"
+      APP_BASE_URL: 'https://example.com'
+      DB_CLIENT: 'pg'
+      POSTGRES_HOST: 'joplin-postgres'
       POSTGRES_PORT: 5432
-      POSTGRES_DATABASE: "joplin"
+      POSTGRES_DATABASE: 'joplin'
     ports:
-      - "22300:22300"
+      - '22300:22300'
     restart: unless-stopped
 
   app:
-    build: 
-      context: ./app 
+    build:
+      context: ./app
       args:
         - GIT_TAG=v3.5.13
     container_name: joplin-app
     environment:
       <<: *shared-environment
     ports:
-      - "8080:8080"
+      - '8080:8080'
     restart: unless-stopped
 
 volumes:
   postgres_data:
 ```
 
-### Dockerfile 
+### Dockerfile
 
 Create an `app` directory and place this `Dockerfile` inside it to build the web client. We build our own image since the original authors don't provide one.
 
@@ -204,7 +204,7 @@ Once the web app is running at `https://example.com/app/`, you will be greeted b
 
 It is basically the same mobile Joplin app, but in-browser. It leverages the LocalStorage API for data handling. Everything is still local-first, so after logging in, it will take some time to synchronize all remote notes.
 
-But most importantly: *The Joplin web interface allows you to view and edit your notes directly from the browser.*
+But most importantly: _The Joplin web interface allows you to view and edit your notes directly from the browser._
 
 > It is said that it's only guaranteed to work on Chrome due to the required API compatibility; however, I have had great success with Firefox as well. Browsers are catching up quickly.
 
@@ -219,7 +219,7 @@ To connect to your self-hosted Joplin Server, go to **Settings > Synchronization
 
 ![Joplin Web App Setup](https://static.ermnvldmr.com/www/articles/2026/joplin-web-deployment-guide/joplin-web-setup.webp)
 
-*Enjoy!*
+_Enjoy!_
 
 ## Resources
 

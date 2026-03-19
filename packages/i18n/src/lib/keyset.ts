@@ -4,10 +4,16 @@ import { pluralize, type PluralForms } from './pluralize.js';
 import type { ReactNode } from 'react';
 
 /** A translation entry with a plain string per locale. */
-interface PlainTranslation { en: string; ru: string }
+interface PlainTranslation {
+  en: string;
+  ru: string;
+}
 
 /** A translation entry with plural forms per locale. */
-interface PluralTranslation { en: PluralForms; ru: PluralForms }
+interface PluralTranslation {
+  en: PluralForms;
+  ru: PluralForms;
+}
 
 /** Union of all supported translation shapes. */
 type Translation = PlainTranslation | PluralTranslation;

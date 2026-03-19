@@ -34,8 +34,8 @@ tags: ['joplin', 'deployment', 'guide']
 
 ```yaml
 x-environment: &shared-environment
-  TZ: "Europe/Moscow"
-  POSTGRES_DB: "joplin"
+  TZ: 'Europe/Moscow'
+  POSTGRES_DB: 'joplin'
   POSTGRES_USER: ${SHARED_USERNAME?:error}
   POSTGRES_PASSWORD: ${SHARED_PASSWORD?:error}
 
@@ -57,32 +57,32 @@ services:
     environment:
       <<: *shared-environment
       APP_PORT: 22300
-      APP_BASE_URL: "https://example.com"
-      DB_CLIENT: "pg"
-      POSTGRES_HOST: "joplin-postgres"
+      APP_BASE_URL: 'https://example.com'
+      DB_CLIENT: 'pg'
+      POSTGRES_HOST: 'joplin-postgres'
       POSTGRES_PORT: 5432
-      POSTGRES_DATABASE: "joplin"
+      POSTGRES_DATABASE: 'joplin'
     ports:
-      - "22300:22300"
+      - '22300:22300'
     restart: unless-stopped
 
   app:
-    build: 
-      context: ./app 
+    build:
+      context: ./app
       args:
         - GIT_TAG=v3.5.13
     container_name: joplin-app
     environment:
       <<: *shared-environment
     ports:
-      - "8080:8080"
+      - '8080:8080'
     restart: unless-stopped
 
 volumes:
   postgres_data:
 ```
 
-### Dockerfile 
+### Dockerfile
 
 Создайте директорию `app` и поместите в нее этот `Dockerfile` для сборки веб-клиента. Мы собираем собственный образ, так как авторы оригинала его не предоставляют.
 
@@ -204,7 +204,7 @@ docker compose up -d --build
 
 По сути, это то же самое мобильное приложение Joplin, но в браузере. Оно использует LocalStorage API для обработки данных. Все по-прежнему работает по принципу local-first, поэтому после входа в систему потребуется время для синхронизации всех удаленных заметок.
 
-Но самое главное: *Веб-интерфейс Joplin позволяет просматривать и редактировать заметки прямо из браузера.*
+Но самое главное: _Веб-интерфейс Joplin позволяет просматривать и редактировать заметки прямо из браузера._
 
 > Говорят, что работа гарантирована только в Chrome из-за требований к совместимости API; однако я добился отличных результатов и в Firefox. Браузеры быстро догоняют друг друга.
 
@@ -219,7 +219,7 @@ docker compose up -d --build
 
 ![Настройка Joplin Web](https://static.ermnvldmr.com/www/articles/2026/joplin-web-deployment-guide/joplin-web-setup.webp)
 
-*Наслаждайтесь!*
+_Наслаждайтесь!_
 
 ## Ресурсы
 

@@ -122,10 +122,10 @@ export function ssgPlugin(): RsbuildPlugin {
         const critters = new Critters({
           path: webDistPath,
           publicPath: configuredAssetPrefix,
-          preload: 'swap',              // <link rel="preload" as="style" onload="this.rel='stylesheet'">
-          inlineFonts: false,           // fonts are handled via separate <link rel="preload"> tags
-          pruneSource: false,           // keep full CSS file for post-hydration correctness
-          reduceInlineStyles: false,    // preserve theme init styles (prevents .dark rule from being stripped)
+          preload: 'swap', // <link rel="preload" as="style" onload="this.rel='stylesheet'">
+          inlineFonts: false, // fonts are handled via separate <link rel="preload"> tags
+          pruneSource: false, // keep full CSS file for post-hydration correctness
+          reduceInlineStyles: false, // preserve theme init styles (prevents .dark rule from being stripped)
         });
 
         for (const entryName of entryNames) {

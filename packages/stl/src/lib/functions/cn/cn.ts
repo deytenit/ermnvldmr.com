@@ -4,9 +4,7 @@ import { extendTailwindMerge } from 'tailwind-merge';
 const RB_TYPES = ['display', 'headline', 'title', 'body', 'label'] as const;
 const RB_SIZES = ['l', 'm', 's'] as const;
 
-const rbFontSizeClasses = RB_TYPES.flatMap((type) =>
-  RB_SIZES.map((size) => `${type}-${size}`)
-);
+const rbFontSizeClasses = RB_TYPES.flatMap((type) => RB_SIZES.map((size) => `${type}-${size}`));
 
 const twMerge = extendTailwindMerge({
   extend: {

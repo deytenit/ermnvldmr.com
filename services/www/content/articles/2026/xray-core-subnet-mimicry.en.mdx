@@ -13,15 +13,18 @@ This guide describes how to deploy a private note-taking infrastructure (or any 
 ## Technical Deep-Dive & Architecture
 
 ### The Virtual Subnet Concept
+
 We are constructing a "Flat Network" (Layer 3) over the public internet. Each node acts as an authoritative gateway for its own `/16` segment of the `10.0.0.0/8` range. This allows seamless communication between servers as if they were on the same local network.
 
 ### The Science of Interception (TPROXY)
+
 Unlike `REDIRECT`, which only works for TCP and modifies the destination IP, **TPROXY** (Transparent Proxy) allows Xray to intercept both TCP and UDP while preserving the original packet headers.
 
 - **Mechanism**: When a packet destined for `10.x.x.x` enters the `PREROUTING` or `OUTPUT` chain, the Linux Mangle table marks it with `0x1`.
 - **Preservation**: Xray's `tunnel` inbound uses the `tproxy` socket option to read the original destination IP from the socket metadata, enabling it to route the packet correctly.
 
 ### Policy Routing (Table 100)
+
 While firewall marks identify intercepted packets, they don't inherently change the routing path. To redirect this traffic to Xray, we use **Policy Routing**:
 
 1.  **The Rule (`ip rule`)**: `ip rule add fwmark 1 lookup 100` instructs the networking stack to use a custom routing table for marked packets.
@@ -30,6 +33,7 @@ While firewall marks identify intercepted packets, they don't inherently change 
 4.  **Loop Prevention**: We use `mark: 255` in Xray's outbounds to exempt its own traffic from interception, avoiding infinite routing loops.
 
 ### The Reverse Proxy Mechanism
+
 To reach servers behind NAT (Spokes) from a central Hub, Xray employs a sophisticated Reverse Proxy architecture:
 
 - **Bridge (Spoke)**: Initiates the connection to the Portal. It acts as a client for the tunnel but functionally behaves as a server once the connection is established.
@@ -39,16 +43,20 @@ To reach servers behind NAT (Spokes) from a central Hub, Xray employs a sophisti
 ## Setup Guide
 
 ### Phase 0: Prerequisites (Server A only)
+
 Server A (the Hub) requires a valid SSL certificate for XTLS-Vision. Point your domain (`A-DOMAIN`) to Server A's public IP and ensure certificates are available (e.g., via Certbot) at `/etc/letsencrypt/live/A-DOMAIN/`.
 
 ### Phase 1: Security & Identity
+
 Each connection requires a unique UUID. Generate 4 UUIDs to map the following connections:
+
 - `UUID_B_REVERSE`: Tunnel control for Server B.
 - `UUID_B_DIRECT`: Data traffic for Server B.
 - `UUID_C_REVERSE`: Tunnel control for Server C.
 - `UUID_C_DIRECT`: Data traffic for Server C.
 
 ### Phase 2: Host Networking
+
 On **EVERY** server node, perform the following:
 
 1.  **Initialize Routing**: Run the routing setup script to configure kernel parameters and Table 100.
@@ -56,6 +64,7 @@ On **EVERY** server node, perform the following:
 3.  **Reload**: Apply changes with `sudo ufw reload`.
 
 ### Phase 3: Deployment
+
 Update your `xray.jsonc` configurations with the generated UUIDs, your domain, and public IPs. Launch the stack using `docker compose up -d`. On Server A, the compose setup will also initialize the internal bridge network for services like AdGuard and Nginx.
 
 ## Configuration Examples
@@ -75,23 +84,23 @@ Full configuration available here: [a/xray.jsonc](https://github.com/deytenit/xr
       "settings": {
         "clients": [
           { "id": "REPLACE_WITH_UUID_B_REVERSE", "reverse": { "tag": "reverse-b" } },
-          { "id": "REPLACE_WITH_UUID_B_DIRECT" }
+          { "id": "REPLACE_WITH_UUID_B_DIRECT" },
           // ... repeat for other Spokes
-        ]
-      }
+        ],
+      },
     },
     {
       "tag": "proxy-enclave",
       "protocol": "tunnel",
-      "streamSettings": { "sockopt": { "tproxy": "tproxy", "mark": 255 } }
-    }
+      "streamSettings": { "sockopt": { "tproxy": "tproxy", "mark": 255 } },
+    },
   ],
   "routing": {
     "rules": [
       { "ip": ["10.2.0.0/16"], "outboundTag": "reverse-b" },
-      { "ip": ["10.3.0.0/16"], "outboundTag": "reverse-c" }
-    ]
-  }
+      { "ip": ["10.3.0.0/16"], "outboundTag": "reverse-c" },
+    ],
+  },
 }
 ```
 
@@ -109,35 +118,37 @@ Full configuration available here: [b/xray.jsonc](https://github.com/deytenit/xr
       "settings": {
         "address": "A-EXTERNAL-IP",
         "id": "REPLACE_WITH_UUID_B_REVERSE",
-        "reverse": { "tag": "reverse-b" }
-      }
+        "reverse": { "tag": "reverse-b" },
+      },
     },
     {
       "protocol": "vless",
       "tag": "forward-a",
       "settings": {
         "address": "A-EXTERNAL-IP",
-        "id": "REPLACE_WITH_UUID_B_DIRECT"
-      }
-    }
+        "id": "REPLACE_WITH_UUID_B_DIRECT",
+      },
+    },
   ],
   "routing": {
     "rules": [
-      { "inboundTag": [ "proxy-enclave" ], "outboundTag": "forward-a" },
-      { "inboundTag": [ "reverse-b" ], "outboundTag": "forward-direct" },
+      { "inboundTag": ["proxy-enclave"], "outboundTag": "forward-a" },
+      { "inboundTag": ["reverse-b"], "outboundTag": "forward-direct" },
       { "ip": ["10.2.0.0/16"], "outboundTag": "forward-direct" },
-      { "ip": ["10.0.0.0/8"], "outboundTag": "forward-a" }
-    ]
-  }
+      { "ip": ["10.0.0.0/8"], "outboundTag": "forward-a" },
+    ],
+  },
 }
 ```
 
 ## Resources & Reference
 
 For a complete, automated example of this architecture, check out the following repository:
+
 - [xray-core-subnet-mimicry on GitHub](https://github.com/deytenit/xray-core-subnet-mimicry/tree/main)
 
 Additional technical references:
+
 - [Xray-core Official Documentation](https://xtls.github.io/)
 - [Understanding TPROXY (Cloudflare Blog)](https://blog.cloudflare.com/how-we-built-spectrum/)
 - [Linux Kernel TPROXY Documentation](https://www.kernel.org/doc/Documentation/networking/tproxy.txt)

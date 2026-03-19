@@ -1,8 +1,9 @@
 import { PageHead as PageHeadOriginal, HStack, Link } from '@ermnvldmr/ui';
 import React from 'react';
 
-import type { PageHeadStrategy } from '@ermnvldmr/ui';
 import { t } from './PageHead.i18n';
+
+import type { PageHeadStrategy } from '@ermnvldmr/ui';
 
 /**
  * Props for the WWW-specific PageHead.
