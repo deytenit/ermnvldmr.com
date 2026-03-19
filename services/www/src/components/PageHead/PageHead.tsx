@@ -1,6 +1,8 @@
 import { PageHead as PageHeadOriginal, HStack, Link } from '@ermnvldmr/ui';
 import React from 'react';
 
+import { t } from './PageHead.i18n';
+
 import type { PageHeadStrategy } from '@ermnvldmr/ui';
 
 /**
@@ -34,8 +36,8 @@ export interface PageHeadProps {
 export const PageHead = ({ heading, caption, breadcrumbs, metadata, strategy }: PageHeadProps) => {
   const nav = (
     <HStack gap={4}>
-      <Link href="/articles">Articles</Link>
-      <Link href="https://github.com/deytenit">GitHub</Link>
+      <Link href="/articles">{t('Articles')}</Link>
+      <Link href="https://github.com/deytenit">{t('GitHub')}</Link>
     </HStack>
   );
 

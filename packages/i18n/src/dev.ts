@@ -35,7 +35,7 @@ export function localeRsbuildConfig(): RsbuildConfig {
         // The canonical import is always `.en.mdx`; other locales are resolved here.
         api.modifyRspackConfig((config, { rspack }) => {
           config.plugins = [
-            ...(config.plugins ?? []),
+            ...config.plugins,
             new rspack.NormalModuleReplacementPlugin(
               /\.en\.mdx$/,
               (resource: { request: string }) => {

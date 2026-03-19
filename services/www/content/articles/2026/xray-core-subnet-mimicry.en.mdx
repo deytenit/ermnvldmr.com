@@ -1,182 +1,154 @@
 ---
-title: 'Xray Subnet Mimicry'
-description: 'Building a distributed 10.0.0.0/8 private network with Xray-core'
-createdDate: 2026-03-08
-tags: ['networking', 'guide']
+title: 'Xray Subnet Mimicry (10.0.0.0/8)'
+description: 'Building a distributed private network with Xray-core and reverse tunneling'
+createdDate: 2026-03-20
+tags: ['networking', 'xray', 'guide']
 ---
 
-> This guide is for **educational purposes** only. It is designed as a technical demonstration of Xray-core's routing capabilities and private subnet mimicry. It is NOT intended for restriction evasion or illegal activities. Use this knowledge responsibly and in compliance with your local laws.
+> **EDUCATIONAL PURPOSES ONLY**
+> This project is designed as a technical demonstration of Xray-core's routing capabilities and private subnet mimicry. It is NOT intended for restriction evasion or illegal activities. Use this knowledge responsibly and in compliance with your local laws.
 
-## Why Subnet Mimicry?
+This guide describes how to deploy a private note-taking infrastructure (or any distributed service) using a contiguous `10.0.0.0/8` private subnet mimicked across distinct servers using **Xray-core** and **reverse tunneling**.
 
-By constructing a "Flat Network" (Layer 3) over the public internet, you achieve a unified private address space (`10.0.0.0/8`) distributed across distinct servers.
+## Technical Deep-Dive & Architecture
 
-- **Distributed Topology**: Each node is an authoritative gateway for its own `/16` segment (e.g., Hub on `10.1.0.0/16`, Spokes on `10.2.0.0/16` and `10.3.0.0/16`).
-- **NAT Traversal**: Spokes (Bridges) actively initiate connections to the Hub (Portal), allowing nodes behind NAT to be reachable.
-- **Centralized Resolution**: Enforce network-wide DNS policies through a central Hub resolver.
+### The Virtual Subnet Concept
 
----
+We are constructing a "Flat Network" (Layer 3) over the public internet. Each node acts as an authoritative gateway for its own `/16` segment of the `10.0.0.0/8` range. This allows seamless communication between servers as if they were on the same local network.
 
-## Technical Stack Overview
+### The Science of Interception (TPROXY)
 
-1. **Xray-core**: The routing engine handling VLESS connections, reverse tunneling, and TPROXY interception.
-2. **TPROXY**: Transparent proxying in the Linux Mangle table that intercepts TCP/UDP traffic while preserving original destination IPs.
-3. **Policy Routing**: Using `ip rule` and routing Table 100 to force intercepted packets into the local loopback for Xray to process.
-4. **Mux.cool**: A multiplexing protocol that packs hundreds of virtual connections (TCP/UDP streams) into a single physical TLS connection.
-5. **AdGuard Home**: The centralized DNS resolver for the entire subnet.
-6. **Nginx**: Used as camouflage on the main public inbound port to hide the Xray instance.
+Unlike `REDIRECT`, which only works for TCP and modifies the destination IP, **TPROXY** (Transparent Proxy) allows Xray to intercept both TCP and UDP while preserving the original packet headers.
 
----
+- **Mechanism**: When a packet destined for `10.x.x.x` enters the `PREROUTING` or `OUTPUT` chain, the Linux Mangle table marks it with `0x1`.
+- **Preservation**: Xray's `tunnel` inbound uses the `tproxy` socket option to read the original destination IP from the socket metadata, enabling it to route the packet correctly.
 
-## 1. The Deployment Stack
+### Policy Routing (Table 100)
 
-This configuration represents the Central Hub (Server A) which acts as the Portal for Spoke connections. The Hub hosts the centralized DNS and the fallback Nginx camouflage.
+While firewall marks identify intercepted packets, they don't inherently change the routing path. To redirect this traffic to Xray, we use **Policy Routing**:
 
-```yaml
-name: 'a'
+1.  **The Rule (`ip rule`)**: `ip rule add fwmark 1 lookup 100` instructs the networking stack to use a custom routing table for marked packets.
+2.  **The Table (`ip route`)**: Table 100 is configured with `local default dev lo`, treating all destination IPs as local and routing them to the loopback interface.
+3.  **The Handoff**: Xray, listening on `127.0.0.1:12345` with the `tproxy` option, intercepts the packet from the loopback interface.
+4.  **Loop Prevention**: We use `mark: 255` in Xray's outbounds to exempt its own traffic from interception, avoiding infinite routing loops.
 
-services:
-  xray:
-    image: ghcr.io/xtls/xray-core:26.1.23
-    container_name: a-xray
-    network_mode: host
-    volumes:
-      - ./xray.jsonc:/etc/xray/config.jsonc:ro
-      - /etc/letsencrypt/live:/etc/letsencrypt/live:ro
-    command: -c '/etc/xray/config.jsonc'
-    restart: unless-stopped
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
+### The Reverse Proxy Mechanism
 
-  nginx:
-    image: nginxinc/nginx-unprivileged:1.29-alpine
-    container_name: a-nginx
-    networks:
-      direct:
-        ipv4_address: 10.1.1.4
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
+To reach servers behind NAT (Spokes) from a central Hub, Xray employs a sophisticated Reverse Proxy architecture:
 
-  adguard:
-    image: adguard/adguardhome:v0.107.72
-    container_name: root-adguard
-    volumes:
-      - adguard-work:/opt/adguardhome/work
-      - adguard-conf:/opt/adguardhome/conf
-    networks:
-      direct:
-        ipv4_address: 10.1.1.3
-    restart: unless-stopped
-    cap_add:
-      - NET_BIND_SERVICE
-      - SYS_NICE
-      - CAP_CHOWN
-    security_opt:
-      - no-new-privileges:true
+- **Bridge (Spoke)**: Initiates the connection to the Portal. It acts as a client for the tunnel but functionally behaves as a server once the connection is established.
+- **Portal (Hub)**: Listens for Bridge connections and uses "Dummy Domains" to identify them, relaying traffic through the established tunnels.
+- **Multiplexing (Mux)**: Uses [Mux.cool](https://xtls.github.io/en/development/protocols/muxcool.html) to pack hundreds of virtual streams into a single physical TLS connection, reducing overhead and bypassing NAT timeouts.
 
-networks:
-  direct:
-    name: a-direct
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 10.1.0.0/16 # Using the full /16 as defined for Server A
-          gateway: 10.1.0.1
+## Setup Guide
 
-volumes:
-  adguard-work:
-    name: a-adguard-work
-  adguard-conf:
-    name: a-adguard-conf
-```
+### Phase 0: Prerequisites (Server A only)
 
----
+Server A (the Hub) requires a valid SSL certificate for XTLS-Vision. Point your domain (`A-DOMAIN`) to Server A's public IP and ensure certificates are available (e.g., via Certbot) at `/etc/letsencrypt/live/A-DOMAIN/`.
 
-## 2. Configuration & Routing
+### Phase 1: Security & Identity
 
-### Generating Identity UUIDs
-
-Each connection needs its own cryptographic "Key". You need 4 UUIDs mapped to your config files.
-
-```bash
-# Generate UUIDs for the Server B and Server C mappings
-docker run --rm ghcr.io/xtls/xray-core uuid
-```
-
-The mapping is as follows:
+Each connection requires a unique UUID. Generate 4 UUIDs to map the following connections:
 
 - `UUID_B_REVERSE`: Tunnel control for Server B.
 - `UUID_B_DIRECT`: Data traffic for Server B.
 - `UUID_C_REVERSE`: Tunnel control for Server C.
 - `UUID_C_DIRECT`: Data traffic for Server C.
 
-### Policy Routing (Table 100)
+### Phase 2: Host Networking
 
-Apply the routing configuration script on **EVERY** server node to set up the kernel parameters and routing Table 100. This tricks the kernel into handing the packet to our TPROXY inbound listening on `127.0.0.1:12345`.
+On **EVERY** server node, perform the following:
 
-```bash
-#!/usr/bin/env bash
+1.  **Initialize Routing**: Run the routing setup script to configure kernel parameters and Table 100.
+2.  **Firewall Configuration**: Update `/etc/ufw/before.rules`. Insert the specific node rules immediately after the `*filter` header. These rules handle the `mangle` table logic required for TPROXY.
+3.  **Reload**: Apply changes with `sudo ufw reload`.
 
-# 1. Enable IP Forwarding
-sudo sysctl -w net.ipv4.ip_forward=1
+### Phase 3: Deployment
 
-# 2. IP Rule for mark 0x1 -> table 100
-sudo ip rule add fwmark 0x1 lookup 100 priority 100
+Update your `xray.jsonc` configurations with the generated UUIDs, your domain, and public IPs. Launch the stack using `docker compose up -d`. On Server A, the compose setup will also initialize the internal bridge network for services like AdGuard and Nginx.
 
-# 3. Local route in table 100
-sudo ip route add local 0.0.0.0/0 dev lo table 100
+## Configuration Examples
+
+### Server A: Hub (10.1.0.0/16)
+
+The Hub handles reverse tunnel entries and routes traffic to the appropriate Spoke based on the 10.x.x.x range.
+Full configuration available here: [a/xray.jsonc](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/a/xray.jsonc)
+
+```jsonc
+{
+  "inbounds": [
+    {
+      "port": 443,
+      "protocol": "vless",
+      "tag": "proxy-direct",
+      "settings": {
+        "clients": [
+          { "id": "REPLACE_WITH_UUID_B_REVERSE", "reverse": { "tag": "reverse-b" } },
+          { "id": "REPLACE_WITH_UUID_B_DIRECT" },
+          // ... repeat for other Spokes
+        ],
+      },
+    },
+    {
+      "tag": "proxy-enclave",
+      "protocol": "tunnel",
+      "streamSettings": { "sockopt": { "tproxy": "tproxy", "mark": 255 } },
+    },
+  ],
+  "routing": {
+    "rules": [
+      { "ip": ["10.2.0.0/16"], "outboundTag": "reverse-b" },
+      { "ip": ["10.3.0.0/16"], "outboundTag": "reverse-c" },
+    ],
+  },
+}
 ```
 
----
+### Server B: Spoke (10.2.0.0/16)
 
-## 3. Firewall Interception
+The Spoke initiates the reverse connection to the Hub and handles local subnet breakout.
+Full configuration available here: [b/xray.jsonc](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/b/xray.jsonc)
 
-Open `/etc/ufw/before.rules` and insert the specific node rules immediately after the `*filter` header requirements. Below is the configuration for Server A (Hub, `10.1.0.0/16`):
-
-```text
-*mangle
-:XRAY - [0:0]
-:XRAY_MASK - [0:0]
-:DIVERT - [0:0]
-
-# --- PREROUTING CHAIN (Traffic from other containers/nodes) ---
--A XRAY -d 10.1.0.0/16 -j RETURN
--A XRAY ! -d 10.0.0.0/8 -j RETURN
--A XRAY -m mark --mark 0xff -j RETURN
--A XRAY -p udp -j TPROXY --on-ip 127.0.0.1 --on-port 12345 --tproxy-mark 1
--A XRAY -p tcp -j TPROXY --on-ip 127.0.0.1 --on-port 12345 --tproxy-mark 1
--A PREROUTING -j XRAY
-
-# --- OUTPUT CHAIN (Traffic originating from the server itself) ---
--A XRAY_MASK -d 10.1.0.0/16 -j RETURN
--A XRAY_MASK ! -d 10.0.0.0/8 -j RETURN
--A XRAY_MASK -m mark --mark 0xff -j RETURN
--A XRAY_MASK -p udp -j MARK --set-mark 1
--A XRAY_MASK -p tcp -j MARK --set-mark 1
--A OUTPUT -j XRAY_MASK
-
-# --- DIVERT Optimization ---
--A DIVERT -j MARK --set-mark 1
--A DIVERT -j ACCEPT
--I PREROUTING -p tcp -m socket -j DIVERT
-
-COMMIT
+```jsonc
+{
+  "outbounds": [
+    {
+      "protocol": "vless",
+      "tag": "forward-a-reverse",
+      "settings": {
+        "address": "A-EXTERNAL-IP",
+        "id": "REPLACE_WITH_UUID_B_REVERSE",
+        "reverse": { "tag": "reverse-b" },
+      },
+    },
+    {
+      "protocol": "vless",
+      "tag": "forward-a",
+      "settings": {
+        "address": "A-EXTERNAL-IP",
+        "id": "REPLACE_WITH_UUID_B_DIRECT",
+      },
+    },
+  ],
+  "routing": {
+    "rules": [
+      { "inboundTag": ["proxy-enclave"], "outboundTag": "forward-a" },
+      { "inboundTag": ["reverse-b"], "outboundTag": "forward-direct" },
+      { "ip": ["10.2.0.0/16"], "outboundTag": "forward-direct" },
+      { "ip": ["10.0.0.0/8"], "outboundTag": "forward-a" },
+    ],
+  },
+}
 ```
 
-Reload UFW once applied:
+## Resources & Reference
 
-```bash
-sudo ufw reload
-```
+For a complete, automated example of this architecture, check out the following repository:
 
----
+- [xray-core-subnet-mimicry on GitHub](https://github.com/deytenit/xray-core-subnet-mimicry/tree/main)
 
-## Resources
+Additional technical references:
 
 - [Xray-core Official Documentation](https://xtls.github.io/)
-- [Xray Reverse Proxy Documentation](https://xtls.github.io/en/config/reverse.html)
-- [Project X (Xray) GitHub](https://github.com/XTLS/Xray-core)
+- [Understanding TPROXY (Cloudflare Blog)](https://blog.cloudflare.com/how-we-built-spectrum/)
 - [Linux Kernel TPROXY Documentation](https://www.kernel.org/doc/Documentation/networking/tproxy.txt)
-- [Cloudflare Blog: TPROXY](https://blog.cloudflare.com/how-we-built-spectrum/)

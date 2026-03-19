@@ -23,13 +23,15 @@ Composite (see [Copyright & License](#copyright--license))
 
 #### Services
 
-- **[www](./services/www)**: Main website, built with Astro and React.
+- **[www](./services/www)**: Main website, built with Rsbuild, React, and MDX.
+- **[static](./services/static)**: Static landing pages, built with Rsbuild and React.
 - **[docs](./services/docs)**: Documentation site, built with Hugo and the Hextra theme.
 
 #### Packages
 
 - **[@ermnvldmr/ui](./packages/ui)**: Shared React component library and design system.
 - **[@ermnvldmr/stl](./packages/stl)**: Standard Template Library – common utilities and reusable logic.
+- **[@ermnvldmr/i18n](./packages/i18n)**: Internationalization utilities.
 - **[@ermnvldmr/eslint-config](./packages/eslint-config)**: Shared linting configurations.
 - **[@ermnvldmr/rsbuild-config](./packages/rsbuild-config)**: Shared build configurations (Rsbuild & Rspack).
 - **[@ermnvldmr/storybook-config](./packages/storybook-config)**: Shared Storybook configurations.

@@ -51,9 +51,6 @@ const MarkdownComponent = memo(function Markdown({ children, className }: Markdo
  *   <Markdown.H1>Title</Markdown.H1>
  *   <Markdown.P>Content goes here.</Markdown.P>
  * </Markdown>
- *
- * // Or with Astro:
- * <Content components={MARKDOWN_COMPONENTS} />
  * ```
  */
 export const Markdown = Object.assign(MarkdownComponent, {
