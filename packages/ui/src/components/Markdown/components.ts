@@ -24,7 +24,7 @@ import { MarkdownUL } from './MarkdownUL/MarkdownUL';
 import type React from 'react';
 
 /**
- * A map of HTML tags to Markdown components for use with MDX or Astro Content.
+ * A map of HTML tags to Markdown components for use with MDX or other Markdown systems.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const MARKDOWN_COMPONENTS: Record<string, React.ComponentType<any>> = {

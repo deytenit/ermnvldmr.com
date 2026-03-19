@@ -22,11 +22,11 @@ const meta: Meta<typeof ArticleLayout> = {
   component: ArticleLayout,
   tags: ['autodocs'],
   args: {
-    title: 'Building a Modern Content System with Astro 5',
+    title: 'Building a Modern Content System with Rsbuild',
     description:
-      "A deep dive into building a scalable, file-based content architecture using Astro's new Content Layer API and MDX.",
-    createdDate: new Date('2026-01-31'),
-    tags: ['engineering', 'astro', 'react'],
+      "A deep dive into building a scalable, file-based content architecture using Rsbuild's MDX support and Rspack.",
+    createdDate: new Date('2026-03-19'),
+    tags: ['engineering', 'rsbuild', 'react'],
   },
 };
 
@@ -45,9 +45,9 @@ export const Default: Story = {
     <ArticleLayout {...args}>
       <Header level={2}>Introduction</Header>
       <Paragraph>
-        Astro 5 introduces the Content Layer API, a powerful way to fetch content from any source,
-        including local files, remote APIs, and CMSs. In this article, we&apos;ll explore how to set
-        up a robust system for articles and projects.
+        Rsbuild provides a modern, high-performance build toolchain based on Rspack.
+        In this article, we&apos;ll explore how to set up a robust system for articles
+        and projects using MDX and React.
       </Paragraph>
 
       <Blockquote>
@@ -56,46 +56,45 @@ export const Default: Story = {
       </Blockquote>
 
       <Paragraph>
-        Let&apos;s look at some code. Our new <Code>content.config.ts</Code> uses the{' '}
-        <Code>glob</Code> loader to pull in MDX files from outside the <Code>src</Code> directory:
+        Let&apos;s look at some code. Our <Code>rsbuild.config.ts</Code> uses the{' '}
+        <Code>pluginMdx</Code> to handle MDX files:
       </Paragraph>
 
-      <CodeBlock label="content.config.ts">
+      <CodeBlock label="rsbuild.config.ts">
         <Code>
-          {`// services/www/src/content.config.ts
-import { defineCollection, z } from 'astro:content';
-import { glob } from 'astro/loaders';
+          {`import { defineConfig } from '@rsbuild/core';
+import { pluginReact } from '@rsbuild/plugin-react';
+import { pluginMdx } from '@rsbuild/plugin-mdx';
 
-const articles = defineCollection({
-  loader: glob({ pattern: "**/*.mdx", base: "./content/articles" }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string().optional(),
-    createdDate: z.date(),
-    updatedDate: z.date().optional(),
-    tags: z.array(z.string()).optional(),
-  }),
-});
-
-export const collections = { articles };`}
+export default defineConfig({
+  plugins: [
+    pluginReact(),
+    pluginMdx({
+      mdxOptions: {
+        remarkPlugins: [],
+        rehypePlugins: [],
+      },
+    }),
+  ],
+});`}
         </Code>
       </CodeBlock>
 
-      <Header level={3}>Why Astro 5?</Header>
+      <Header level={3}>Why Rsbuild?</Header>
       <Paragraph>
-        Astro&apos;s zero-JS by default approach is perfect for content-heavy sites. By moving our
-        content outside of the <Code>src</Code> directory, we keep our project clean and organized.
+        Rsbuild&apos;s performance is unparalleled thanks to Rspack. By using a Rust-based
+        bundler, we keep our development loop fast and our builds efficient.
       </Paragraph>
 
       <List spacing="s" variant="unordered">
         <List.Item>
-          <Text bold>Better performance:</Text> Only what you need is shipped.
+          <Text bold>Better performance:</Text> Rust-powered builds and HMR.
         </List.Item>
         <List.Item>
-          <Text bold>Improved developer experience:</Text> Fast HMR and great tooling.
+          <Text bold>Improved developer experience:</Text> Sensible defaults and great tooling.
         </List.Item>
         <List.Item>
-          <Text bold>Type safety:</Text> Zod schemas validate your frontmatter.
+          <Text bold>Type safety:</Text> Full TypeScript support out of the box.
         </List.Item>
       </List>
 

@@ -9,6 +9,6 @@
       "@ermnvldmr/ui/*": ["../../../packages/ui/src/*"]
     }
   },
-  "include": [".astro/types.d.ts", "src/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["dist", "node_modules", "**/*.config.*"]
 }

@@ -1,6 +1,5 @@
 // @ts-check
 import { baseConfig } from '@ermnvldmr/eslint-config/dev';
-import eslintPluginAstro from 'eslint-plugin-astro';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
@@ -22,18 +21,8 @@ export default [
       '**/coverage/**',
       '**/storybook-static/**',
       '**/.next/**',
-      '**/.astro/**',
       '**/*.d.ts',
     ],
-  },
-
-  // Astro
-  ...eslintPluginAstro.configs.recommended,
-  {
-    files: ['services/www/**/*.astro', 'services/static/**/*.astro'],
-    rules: {
-      // Astro specific rules can go here
-    },
   },
 
   // Storybook - recommended configuration for flat config

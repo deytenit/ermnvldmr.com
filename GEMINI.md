@@ -33,7 +33,7 @@
 │   ├── stl/                   # Standard Type Library (utilities)
 │   └── ui/                    # Shared React component library
 ├── services/                   # Independent web services
-│   ├── www/                   # Main website (Astro + React)
+│   ├── www/                   # Main website (Rsbuild + React)
 │   └── docs/                  # Documentation site (Hugo)
 ├── .github/workflows/         # CI/CD automation
 ├── pnpm-workspace.yaml        # Workspace configuration
@@ -44,7 +44,7 @@
 
 #### Configuration Packages (`packages/`)
 
-- **eslint-config**: Shared ESLint rules for TypeScript, React, and Astro
+- **eslint-config**: Shared ESLint rules for TypeScript and React
 - **rsbuild-config**: Shared Rsbuild and Rspack configurations for library and service builds
 - **storybook-config**: Shared Storybook setup and configurations
 
@@ -52,10 +52,12 @@
 
 - **stl** (Standard Type Library): Common utilities, types, and helper functions
 - **ui**: React component library with design system and Storybook stories
+- **i18n**: Internationalization utilities
 
 #### Service Packages (`services/`)
 
-- **www**: Main website built with Astro.js, React, and Tailwind CSS
+- **www**: Main website built with Rsbuild, React, and Tailwind CSS
+- **static**: Static landing pages service built with Rsbuild and React
 - **docs**: Documentation site built with Hugo and Hextra theme
 
 ### Key Directory Rules
@@ -140,7 +142,9 @@ All packages use the `@ermnvldmr/` namespace:
 - `@ermnvldmr/storybook-config` - Shared Storybook configurations
 - `@ermnvldmr/stl` - Standard Type Library
 - `@ermnvldmr/ui` - Component library
+- `@ermnvldmr/i18n` - Internationalization utilities
 - `@ermnvldmr/www` - Main website service
+- `@ermnvldmr/static` - Static landing pages service
 - `@ermnvldmr/docs` - Documentation service
 
 ### TypeScript Guidelines
@@ -306,7 +310,7 @@ Each configuration package provides standardized setups:
 #### ESLint Configuration
 
 ```javascript
-// Provides: base, react, astro configurations
+// Provides: base, react configurations
 import { baseConfig } from '@ermnvldmr/eslint-config/dev';
 ```
 
@@ -421,3 +425,11 @@ describe('components/paper/Button/Button', () => {
 ---
 
 _This guide serves as the architectural foundation for the monorepo. Focus on these stable patterns and structures rather than specific implementation details that may change over time._
+
+## 🤖 AI Agent Best Practices
+
+The following are explicit best practices and preferences intended for AI tools and agents operating within this repository:
+
+- **Build System Preference**: Rsbuild and Rspack are the standard and strongly preferred build tools for all projects in this monorepo due to their Rust-based architecture and performance. Do not introduce Vite, Astro, or Webpack unless strictly necessary.
+- **Framework Preference**: The monorepo has migrated away from Astro in favor of React + Rsbuild (with MDX support).
+- **Content Sites**: Rspress is the preferred infrastructure for any new content-heavy or documentation sites.
