@@ -179,6 +179,15 @@ export function cn(...inputs: ClassValue[]): string {
 }
 ```
 
+### Internationalization (i18n) Guidelines
+
+- **Package**: Use the `@ermnvldmr/i18n` package for all translations across services.
+- **Keyset Pattern**: Create `.i18n.ts` files alongside components that require translation.
+- **Russian Translation Style**: Embrace the Russian language fully. Prefer phonetic transliteration/transcription for global brand names and descriptive terms over keeping them in English.
+  - **Brands**: 'GitHub' → 'ГитХаб', 'Instagram' → 'Инстаграм', 'Telegram' → 'Телеграм'.
+  - **Descriptive**: 'Email' → 'Электропочта'.
+- **Source of Truth**: The English locale (`en`) serves as the primary reference for keys and structure.
+
 ### Component Development Patterns
 
 #### UI Package Components

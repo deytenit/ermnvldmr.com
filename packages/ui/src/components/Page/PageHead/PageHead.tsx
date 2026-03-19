@@ -1,5 +1,5 @@
-import { cn, useScroll, useResizeObserver } from '@ermnvldmr/stl';
-import React, { type ReactNode, useRef, useEffect, useState } from 'react';
+import { cn, useScroll } from '@ermnvldmr/stl';
+import React, { type ReactNode, useEffect, useState } from 'react';
 
 import { Header } from '../../Header/Header';
 import { HStack } from '../../HStack/HStack';
@@ -68,8 +68,6 @@ export const PageHead = ({
 }: PageHeadProps) => {
   const { y: scrollY } = useScroll();
   const [isCollapsed, setIsCollapsed] = useState(strategy.includes('always-collapsed'));
-  const headerRef = useRef<HTMLDivElement>(null);
-  const { height } = useResizeObserver(headerRef);
 
   useEffect(() => {
     if (strategy === 'collapsible-sticky') {
@@ -78,7 +76,7 @@ export const PageHead = ({
   }, [scrollY, strategy]);
 
   const rootClasses = cn(
-    'page-head w-full transition-all duration-200 bg-[var(--rb-background)] fixed top-0 z-10 border-b border-[var(--rb-outline)]/10',
+    'page-head w-full transition-all duration-200 bg-[var(--rb-background)] sticky top-0 z-10 border-b border-[var(--rb-outline)]/10',
     {
       'shadow-md bg-[var(--rb-background)]/90 backdrop-blur-md': isCollapsed,
     },
@@ -124,28 +122,26 @@ export const PageHead = ({
   );
 
   return (
-    <>
-      <header ref={headerRef} className={rootClasses}>
-        <div
-          className={cn(
-            'grid transition-[grid-template-rows] duration-300 ease-in-out',
-            isCollapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
-          )}
-          inert={isCollapsed || undefined}
-        >
-          <div className="overflow-hidden">{expandedContent}</div>
-        </div>
-        <div
-          className={cn(
-            'grid transition-[grid-template-rows] duration-300 ease-in-out',
-            isCollapsed ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-          )}
-          inert={!isCollapsed || undefined}
-        >
-          <div className="overflow-hidden">{collapsedContent}</div>
-        </div>
-      </header>
-      <div style={{ height }} />
-    </>
+    <header className={rootClasses}>
+      <div
+        className={cn(
+          'grid transition-[grid-template-rows] duration-300 ease-in-out',
+          isCollapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
+        )}
+        inert={isCollapsed || undefined}
+      >
+        <div className="overflow-hidden">{expandedContent}</div>
+      </div>
+      <div
+        className={cn(
+          'grid transition-[grid-template-rows] duration-300 ease-in-out',
+          isCollapsed ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+        )}
+        inert={!isCollapsed || undefined}
+      >
+        <div className="overflow-hidden">{collapsedContent}</div>
+      </div>
+    </header>
   );
 };
+

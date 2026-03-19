@@ -3,6 +3,7 @@ import { Markdown, Time, Text, PageColumns, PageColumn, Breadcrumbs, HStack } fr
 import React from 'react';
 
 import { DefaultLayout } from '../DefaultLayout/DefaultLayout';
+import { t } from './ArticleLayout.i18n';
 
 /**
  * Props for the ArticleLayout component.
@@ -50,7 +51,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
 }) => {
   const displayDate = updatedDate ? (
     <Text color="muted" size="s" type="label">
-      Updated <Time date={updatedDate} />
+      {t('Updated')} <Time date={updatedDate} />
     </Text>
   ) : (
     <Time color="muted" date={createdDate} size="s" type="label" />
@@ -73,9 +74,9 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
 
   const breadcrumbs = (
     <Breadcrumbs>
-      <Breadcrumbs.Item href={localePath('/')}>Home</Breadcrumbs.Item>
+      <Breadcrumbs.Item href={localePath('/')}>{t('Home')}</Breadcrumbs.Item>
       <Breadcrumbs.Separator />
-      <Breadcrumbs.Item href={localePath('/articles')}>Articles</Breadcrumbs.Item>
+      <Breadcrumbs.Item href={localePath('/articles')}>{t('Articles')}</Breadcrumbs.Item>
       <Breadcrumbs.Separator />
       <Breadcrumbs.Item isCurrent>{title}</Breadcrumbs.Item>
     </Breadcrumbs>

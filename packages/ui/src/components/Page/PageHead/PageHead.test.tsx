@@ -32,7 +32,7 @@ describe('PageHead', () => {
   it('applies the correct classes for the strategy', () => {
     render(<PageHead heading="Test" strategy="always-collapsed-fixed" />);
     const header = screen.getByRole('banner');
-    expect(header).toHaveClass('fixed');
+    expect(header).toHaveClass('sticky');
     expect(header).toHaveClass('shadow-md');
   });
 });
