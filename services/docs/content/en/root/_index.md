@@ -1,22 +1,35 @@
 ---
-title: 'Root Infrastructure'
-description: 'Documentation for the root.ermnvldmr.com infrastructure.'
+title: Root Infrastructure
+description: Documentation for the root.ermnvldmr.com infrastructure.
 weight: 1
 type: docs
 cascade:
   type: docs
 ---
 
-Comprehensive documentation for the personal infrastructure deployment and management, including setup guides and operational recipes.
+The engine powering the shared infrastructure of `root.ermnvldmr.com`. This framework provides a minimal-dependency deployment environment for independent, self-hosted projects. 
+
+The generic logic, scripts, and deployment patterns used across multiple unrelated self-hosted applications are stored in the [GitHub: ermnvldmr.com-root-commons](https://github.com/deytenit/ermnvldmr.com-root-commons) repository.
+
+## Core features
+
+- **Smart Dispatcher**: A single entrypoint (`root`) for all orchestration tasks.
+- **Tiered Storage**: Standardized classification for configuration, data, and logs.
+- **Privilege Isolation**: Project-specific non-root users for enhanced security.
+- **Namespaced Libraries**: Explicit, modular Bash utilities for consistent automation.
 
 ## Sections
 
 {{% cards %}}
+{{< card link="concepts" title="Concepts" icon="book-open" subtitle="Theoretical foundations, architecture, and security models." >}}
+{{< card link="guides" title="Guides" icon="map" subtitle="Step-by-step guides for installation and action development." >}}
 {{< card link="recipes" title="Recipes" icon="beaker" subtitle="Collection of step-by-step procedures for infrastructure maintenance and deployment." >}}
+{{< card link="reference" title="Reference" icon="code" subtitle="API and technical references for developers." >}}
 {{% /cards %}}
 
 ---
 
 **See also:**
 
+- [GitHub: ermnvldmr.com-root-commons](https://github.com/deytenit/ermnvldmr.com-root-commons)
 - [GitHub: root.ermnvldmr.com](https://github.com/deytenit/root.ermnvldmr.com)
