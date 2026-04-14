@@ -320,7 +320,7 @@ Use GitHub-flavored alerts for emphasis.
 ## 6. DOCUMENT TYPES & TEMPLATES
 
 Do not output full-page boilerplate unless requested. Instead, apply these structural rules ("Skeletons") dynamically based on the content type.
-This is also serves as the fixed categories which should populate every project's docs: Getting Started, Guides, Recipes, Concepts, Troubleshooting.
+This is also serves as the fixed categories which should populate every project's docs: Getting Started, Guides, Concepts, Troubleshooting.
 
 ### 6.1 General Skeleton (All Docs)
 
@@ -349,7 +349,7 @@ This is also serves as the fixed categories which should populate every project'
 3. **Procedure:** Strict numbered steps (or `{{% steps %}}`).
 4. **Result Control:** How to verify success.
 
-### 6.4 How-to / Recipe (Task-Oriented)
+### 6.4 How-to / Guide (Task-Oriented)
 
 - **Goal:** Solve a specific problem.
 - **Structure:**

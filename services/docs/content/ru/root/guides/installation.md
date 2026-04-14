@@ -41,10 +41,10 @@ groupadd wheel
 
 # Создать модульный файл sudoers
 # Это позволяет членам группы 'wheel' запускать sudo без пароля
-echo "%wheel ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/99-root-ermnvldmr
+echo "%wheel ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/99-custom-sudoers
 
 # Проверить синтаксис
-visudo -c -f /etc/sudoers.d/99-root-ermnvldmr
+visudo -c -f /etc/sudoers.d/99-custom-sudoers
 
 # Добавить adam в необходимые группы
 usermod -aG wheel,docker adam
@@ -92,10 +92,10 @@ chown -R adam:adam /home/adam/.ssh
 
 ```bash
 # ~/.ssh/config на стороне оператора
-Host daedalus.root.ermnvldmr.com
+Host daedalus.example.com
   Port 2222
   User adam
-  IdentityFile ~/.ssh/adam_root_ermnvldmr_com_ed25519
+  IdentityFile ~/.ssh/adam_example_com_ed25519
 ```
 
 **Усиление демона SSH**
@@ -105,7 +105,7 @@ Host daedalus.root.ermnvldmr.com
 ```bash
 # От имени root:
 # Создать выделенный файл конфигурации
-cat <<EOF > /etc/ssh/sshd_config.d/99-root-ermnvldmr.conf
+cat <<EOF > /etc/ssh/sshd_config.d/99-custom-ssh.conf
 Port 2222
 PasswordAuthentication no
 PermitEmptyPasswords no
@@ -137,21 +137,21 @@ cat /home/adam/.ssh/github_ed25519.pub
 ```
 
 > [!TIP]
-> Добавьте вывод выше в [GitHub: Repository Deploy Keys](https://github.com/deytenit/root.ermnvldmr.com/settings/keys) с правами **read access**.
+> Добавьте вывод выше в настройки Deploy Keys вашего репозитория инфраструктуры (например, `https://github.com/your-username/your-repo/settings/keys`) с правами **read access**.
 
 ### Развертывание репозитория
 
-Клонируйте инфраструктурный репозиторий и инициализируйте узел.
+Клонируйте репозиторий вашей инфраструктуры и инициализируйте узел.
 
 ```bash
 # От имени root:
-# Настроить директорию сервиса
-export REPO_DIR="/srv/root.ermnvldmr.com"
+# Настройка директории сервиса
+export REPO_DIR="/srv/your-infrastructure-repo"
 mkdir -p $REPO_DIR
 chown adam:adam $REPO_DIR
 
-# Клонировать от имени пользователя adam
-sudo -u adam git clone git@github.com:deytenit/root.ermnvldmr.com.git $REPO_DIR
+# Клонирование от имени пользователя adam
+sudo -u adam git clone git@github.com:your-username/your-repo.git $REPO_DIR
 
 # Инициализировать узел (Установите имя вашего узла, например, daedalus)
 export NODE="daedalus"
@@ -161,16 +161,15 @@ sudo -u adam ./init.sh
 
 **Специфичная для узла конфигурация**
 
-Запустите скрипты инициализации по порядку:
+Запустите скрипты инициализации с помощью диспетчера `root`:
 
 ```bash
-# От имени root:
-# Выполните последовательность для вашего конкретного узла
-cd $REPO_DIR
-./$NODE/.host/.scripts/00-base
-./$NODE/.host/.scripts/10-ufw
-./$NODE/.host/.scripts/20-crowd
-./$NODE/.host/.scripts/30-cron
+# Выполните последовательность для вашего конкретного узла (от имени пользователя 'adam')
+# Убедитесь, что вы выполнили 'source ~/.bashrc' или переподключились, если команда 'root' не найдена
+root configure base $NODE
+root configure ufw $NODE
+root configure crowdsec $NODE
+root configure cron $NODE
 ```
 
 ### Хранение и усиление безопасности
@@ -178,18 +177,17 @@ cd $REPO_DIR
 Определите уровни данных (tiers) и защитите среду, создав непривилегированных пользователей для контейнеризированных сервисов.
 
 ```bash
-# От имени root:
 # Создать (или примонтировать) директории хранилища
-mkdir -p /srv/com-ermnvldmr-root-$NODE-{tier1,tier2,tier3}
+sudo mkdir -p /srv/my-infrastructure-root-$NODE-{tier1,tier2,tier3}
 
 # Настроить уровни и непривилегированных пользователей
-cd $REPO_DIR
-sudo -u adam .scripts/ops/setup-tiers $NODE
-  /srv/com-ermnvldmr-root-$NODE-tier1
-  /srv/com-ermnvldmr-root-$NODE-tier2
-  /srv/com-ermnvldmr-root-$NODE-tier3
+root tiers link $NODE \
+  /srv/my-infrastructure-root-$NODE-tier1 \
+  /srv/my-infrastructure-root-$NODE-tier2 \
+  /srv/my-infrastructure-root-$NODE-tier3
 
-sudo -u adam .scripts/ops/setup-noroot-users $NODE
+root tiers useradd $NODE
+root tiers chown $NODE
 ```
 
 {{% /steps %}}
@@ -199,4 +197,3 @@ sudo -u adam .scripts/ops/setup-noroot-users $NODE
 **См. также:**
 
 - [Doc: Docker - Install on Debian](https://docs.docker.com/engine/install/debian/)
-- [GitHub: root.ermnvldmr.com](https://github.com/deytenit/root.ermnvldmr.com)

@@ -22,18 +22,15 @@ weight: 1
 
 **Symptom:** `/command` does not appear in Discord.
 
-### Global vs. Guild Registration
+### Global vs. Test Guild Registration
 
-- **Global:** Takes up to 1 hour to propagate.
-- **Guild:** Instant update.
-  - **Fix:** Set `DEV_GUILD_ID` in your `.env` for development.
+- **Global:** Commands pushed to the application globally can take up to 1 hour to propagate and are subject to stricter rate limits.
+- **Test Guild:** Quetza automatically pushes commands to a specific guild in development mode for instant updates.
+  - **Requirement:** Ensure `NODE_ENV=development` and `DEV_GUILD_ID` is correctly set in your `.env`.
 
-### Data Malformation
+### Rate Limits
 
-Discord rejects invalid command structures silently or with generic errors.
-
-- **Name:** Must be lowercase, alphanumeric, `-` only.
-- **Description:** Required, max 100 chars.
+Frequent updates to global commands may trigger Discord's rate limits. Use a test guild for iterative development.
 
 ## 3. Interaction Failures
 
@@ -71,5 +68,6 @@ Check your Controller.
 - **Multiple:** Events are additive. Did you register the same handler in two modules?
 - **None:** Did you export `name` and `execute` correctly?
 
-> [!TIP] > **Debug Mode:**
+> [!TIP]
+> **Debug Mode:**
 > Enable verbose logging to see exactly which modules and commands are loaded at startup.

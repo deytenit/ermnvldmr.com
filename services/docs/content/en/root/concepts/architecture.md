@@ -33,16 +33,31 @@ The framework is typically deployed as a shared [Commons](/root/glossary#commons
 {{< filetree/container >}}
 {{< filetree/folder name="configs-repo" state="open" >}}
   {{< filetree/folder name=".operator" state="open" >}}
-    {{< filetree/folder name="shared" >}}
-      {{< filetree/file name="root (dispatcher)" >}}
+    {{< filetree/folder name="shared (submodule)" state="open" >}}
+      {{< filetree/folder name="scripts" >}}
+        {{< filetree/folder name="run" >}}
+          {{< filetree/file name="root (dispatcher)" >}}
+        {{< /filetree/folder >}}
+        {{< filetree/folder name="lib" >}}
+          {{< filetree/file name="shared libraries" >}}
+        {{< /filetree/folder >}}
+        {{< filetree/folder name="actions" >}}
+          {{< filetree/file name="shared actions" >}}
+        {{< /filetree/folder >}}
+      {{< /filetree/folder >}}
     {{< /filetree/folder >}}
-    {{< filetree/folder name="local" >}}
-      {{< filetree/file name="node-specific actions" >}}
+    {{< filetree/folder name="local" state="open" >}}
+      {{< filetree/folder name="scripts" >}}
+        {{< filetree/folder name="actions" >}}
+          {{< filetree/file name="node-specific overrides" >}}
+        {{< /filetree/folder >}}
+      {{< /filetree/folder >}}
     {{< /filetree/folder >}}
   {{< /filetree/folder >}}
-  {{< filetree/folder name="node-1" >}}
+  {{< filetree/folder name="daedalus (node)" >}}
     {{< filetree/file name="docker-compose.yml" >}}
   {{< /filetree/folder >}}
+  {{< filetree/file name="init.sh (bootstrap)" >}}
 {{< /filetree/folder >}}
 {{< /filetree/container >}}
 

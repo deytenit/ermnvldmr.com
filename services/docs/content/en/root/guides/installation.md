@@ -1,60 +1,199 @@
 ---
-title: Installation
-description: Initial setup of the Root framework on a new host.
-weight: 25
+title: Initial Host Setup
+description: Setting up a fresh Debian host from scratch.
+weight: 1
 ---
 
-This guide covers the initial setup of the Root framework on a new host.
+Hardened setup for a fresh Debian host from zero to deployment.
 
-## Prerequisites {#prerequisites}
-
-- A Debian-based Linux distribution (Debian or Ubuntu).
-- Git installed.
-- Sudo privileges.
-
-## Initializing the repository {#init}
+## Setup Procedure
 
 {{% steps %}}
 
-### Step 1: Clone the configuration repository
+### Essential Packages
 
-Clone the repository containing your [Node](/root/glossary#node) configurations.
+Install `sudo` and `docker-ce` first. This is necessary because the subsequent user setup relies on the `docker` group and `sudo` configuration.
+
+**Install Sudo**
 
 ```bash
-git clone <your-configs-repo-url> ~/repo
-cd ~/repo
+# As root:
+apt update && apt install sudo -y
 ```
 
-### Step 2: Run the initialization script
+**Install Docker**
 
-The `init.sh` script sets up the [Commons](/root/glossary#commons) submodule, configures Git hooks, and adds the `root` wrapper to your `PATH`.
+Follow the [Official Docker Installation Guide for Debian](https://docs.docker.com/engine/install/debian/) to install the latest Docker Engine.
+
+### System User & Privileges
+
+The `adam` user handles all administrative tasks. SSH-key authentication and passwordless `sudo` via the `wheel` group minimize friction while maintaining security.
+
+**Create the Admin User**
 
 ```bash
-./init.sh
+# As root:
+# Create the user with a bash shell
+useradd -m -s /bin/bash adam
+
+# Create the wheel group (common for cross-distro consistency)
+groupadd wheel
+
+# Create a modular sudoers file
+# This allows members of 'wheel' to run sudo without a password
+echo "%wheel ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/99-custom-sudoers
+
+# Validate syntax
+visudo -c -f /etc/sudoers.d/99-custom-sudoers
+
+# Add adam to the necessary groups
+usermod -aG wheel,docker adam
 ```
 
-### Step 3: Refresh your shell
+### Swap Setup
 
-Source your `.bashrc` to activate the `root` command.
+Configure a swap file to ensure system stability during memory-intensive operations.
 
 ```bash
-source ~/.bashrc
+# As root:
+# Create a 2GB swap file (adjust size as needed)
+fallocate -l 2G /swap
+chmod 600 /swap
+mkswap /swap
+swapon /swap
+
+# Make it permanent
+echo '/swap none swap sw 0 0' >> /etc/fstab
+```
+
+### SSH Access & Hardening
+
+Passwords are disabled. Access is strictly via SSH keys.
+
+**Authorize Operator Key**
+
+Import your local public key to the `adam` user.
+
+```bash
+# As root:
+# Setup directories
+mkdir -p /home/adam/.ssh
+chmod 700 /home/adam/.ssh
+
+# Add your public key (Replace [PASTE_PUB_KEY_HERE])
+echo "[PASTE_PUB_KEY_HERE]" > /home/adam/.ssh/authorized_keys
+chmod 600 /home/adam/.ssh/authorized_keys
+chown -R adam:adam /home/adam/.ssh
+```
+
+**Operator Side Access**
+
+Configure your local machine for easy access to the host.
+
+```bash
+# ~/.ssh/config on operator side
+Host daedalus.example.com
+  Port 2222
+  User adam
+  IdentityFile ~/.ssh/adam_example_com_ed25519
+```
+
+**Harden SSH Daemon**
+
+Modify the SSH configuration to change the default port and disable password entry.
+
+```bash
+# As root:
+# Create a dedicated override config
+cat <<EOF > /etc/ssh/sshd_config.d/99-custom-ssh.conf
+Port 2222
+PasswordAuthentication no
+PermitEmptyPasswords no
+AllowUsers adam
+EOF
+
+# Validate syntax before restarting to avoid lockout
+sshd -t && systemctl restart ssh
+```
+
+### GitHub Access (Deploy Key)
+
+The host requires its own identity to pull updates from the GitHub repository.
+
+```bash
+# As root:
+# Generate a host-specific SSH key (no passphrase for automation)
+sudo -u adam ssh-keygen -t ed25519 -f /home/adam/.ssh/github_ed25519 -N ""
+
+# Configure SSH to use this key for GitHub
+cat <<EOF | sudo -u adam tee /home/adam/.ssh/config
+Host github.com
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/github_ed25519
+EOF
+
+# Display the public key to be added to GitHub (Settings > Deploy Keys)
+cat /home/adam/.ssh/github_ed25519.pub
+```
+
+> [!TIP]
+> Add the output above to the Deploy Keys settings of your infrastructure repository (e.g., `https://github.com/your-username/your-repo/settings/keys`) with **read access**.
+
+### Repository Deployment
+
+Clone your infrastructure repository and initialize the node.
+
+```bash
+# As root:
+# Setup the service directory
+export REPO_DIR="/srv/your-infrastructure-repo"
+mkdir -p $REPO_DIR
+chown adam:adam $REPO_DIR
+
+# Clone as the adam user
+sudo -u adam git clone git@github.com:your-username/your-repo.git $REPO_DIR
+
+# Initialize node (Set your node name, e.g., daedalus)
+export NODE="daedalus"
+cd $REPO_DIR
+sudo -u adam ./init.sh
+```
+
+**Node-Specific Configuration**
+
+Run the staged initialization scripts using the `root` dispatcher:
+
+```bash
+# Run the sequence for your specific node (as the 'adam' user)
+# Ensure you have sourced ~/.bashrc or re-logged in if 'root' is not found
+root configure base $NODE
+root configure ufw $NODE
+root configure crowdsec $NODE
+root configure cron $NODE
+```
+
+### Storage & Hardening
+
+Define the data tiers and secure the environment by creating non-root users for containerized services.
+
+```bash
+# Create (or mount) storage directories
+sudo mkdir -p /srv/my-infrastructure-root-$NODE-{tier1,tier2,tier3}
+
+# Setup tiers and non-root users
+root tiers link $NODE \
+  /srv/my-infrastructure-root-$NODE-tier1 \
+  /srv/my-infrastructure-root-$NODE-tier2 \
+  /srv/my-infrastructure-root-$NODE-tier3
+
+root tiers useradd $NODE
+root tiers chown $NODE
 ```
 
 {{% /steps %}}
-
-## Provisioning a node {#provision}
-
-Once the framework is installed, you can provision a specific [Node](/root/glossary#node).
-
-```bash
-root configure/base <node_name>
-root configure/ufw <node_name>
-```
 
 ---
 
 **See also:**
 
-- [Concept: Infrastructure architecture](/root/concepts/architecture)
-- [Reference: ROOT_ API reference](/root/reference/root-api)
+- [Doc: Docker - Install on Debian](https://docs.docker.com/engine/install/debian/)

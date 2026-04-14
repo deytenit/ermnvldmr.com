@@ -1,13 +1,13 @@
 ---
-title: Root Infrastructure
-description: Documentation for the root.ermnvldmr.com infrastructure.
+title: Documentation of ermnvldmr.com root deployment commons
+description: Documentation for the ermnvldmr.com root deployment commons framework.
 weight: 1
 type: docs
 cascade:
   type: docs
 ---
 
-The engine powering the shared infrastructure of `root.ermnvldmr.com`. This framework provides a minimal-dependency deployment environment for independent, self-hosted projects. 
+The `ermnvldmr.com-root-commons` framework provides a minimal-dependency deployment environment for independent, self-hosted projects.
 
 The generic logic, scripts, and deployment patterns used across multiple unrelated self-hosted applications are stored in the [GitHub: ermnvldmr.com-root-commons](https://github.com/deytenit/ermnvldmr.com-root-commons) repository.
 
@@ -23,7 +23,6 @@ The generic logic, scripts, and deployment patterns used across multiple unrelat
 {{% cards %}}
 {{< card link="concepts" title="Concepts" icon="book-open" subtitle="Theoretical foundations, architecture, and security models." >}}
 {{< card link="guides" title="Guides" icon="map" subtitle="Step-by-step guides for installation and action development." >}}
-{{< card link="recipes" title="Recipes" icon="beaker" subtitle="Collection of step-by-step procedures for infrastructure maintenance and deployment." >}}
 {{< card link="reference" title="Reference" icon="code" subtitle="API and technical references for developers." >}}
 {{% /cards %}}
 
@@ -32,4 +31,3 @@ The generic logic, scripts, and deployment patterns used across multiple unrelat
 **See also:**
 
 - [GitHub: ermnvldmr.com-root-commons](https://github.com/deytenit/ermnvldmr.com-root-commons)
-- [GitHub: root.ermnvldmr.com](https://github.com/deytenit/root.ermnvldmr.com)

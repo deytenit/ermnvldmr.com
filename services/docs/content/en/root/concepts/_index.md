@@ -4,7 +4,7 @@ description: Theoretical foundations, architecture, and security models.
 weight: 10
 ---
 
-Theoretical foundations, architecture, and security models for the Root infrastructure framework.
+Theoretical foundations, architecture, and security models for the ermnvldmr.com root deployment commons framework.
 
 {{% cards %}}
 {{< card link="principles" title="Infrastructure principles" icon="book-open" subtitle="Predictability, minimal dependencies, and decentralization." >}}
