@@ -65,7 +65,8 @@ Once running, use these mechanisms to check health:
 - **`/ping` Command:** Verifies network latency and API responsiveness.
 - **`/modules` Command:** Lists all loaded modules to confirm feature availability.
 
-> [!WARNING] > **Scaling Constraint:**
+> [!WARNING]
+> **Scaling Constraint:**
 > Quetza follows a single-instance-per-token model. Do not run multiple instances with the same token, as this will cause WebSocket conflicts.
 
 ---

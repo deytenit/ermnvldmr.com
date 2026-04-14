@@ -4,11 +4,19 @@ description: Standardized environment variables for path resolution and node con
 weight: 50
 ---
 
-Every [Action](/root/glossary#action) script executed via the `root` dispatcher has access to a standardized set of environment variables. These variables are the single source of truth for path resolution and node context.
+Every [Action](/root/glossary#action) script executed via the `root` dispatcher has access to a standardized set of environment variables and Bash libraries. This provides a consistent "API" for interacting with the infrastructure.
+
+## The `root` Dispatcher {#dispatcher}
+
+The `root` command (located in `.operator/shared/scripts/run/root`) is the main entrypoint for all orchestration. Its primary responsibilities include:
+
+1. **Context Resolution**: Locating the target [Node](/root/glossary#node) and its associated storage [Tiers](/root/glossary#tier).
+2. **Library Loading**: Sourcing the core namespaced libraries (e.g., `root_core`, `root_sys`).
+3. **Action Execution**: Discovering and running the requested action, prioritizing local overrides.
 
 ## Path resolution variables {#paths}
 
-These variables define the physical location of the infrastructure components.
+These variables are established by the dispatcher and are available to all actions.
 
 | Variable | Description |
 | :--- | :--- |
@@ -20,40 +28,35 @@ These variables define the physical location of the infrastructure components.
 
 ## Node context variables {#node-context}
 
-When an action targets a specific [Node](/root/glossary#node), the following variables are established by the `root_require_node` helper.
+When an action targets a specific node, the following variables are established by the `root_require_node` helper.
 
 | Variable | Description |
 | :--- | :--- |
-| `ROOT_NODE` | The identifier of the target node (e.g., `icarus`). |
+| `ROOT_NODE` | The identifier of the target node (e.g., `daedalus`). |
 | `ROOT_NODE_DIR` | Absolute path to the node configuration directory. |
 | `ROOT_TIER1` | Absolute path to the [Tier 1](/root/glossary#tier) storage directory. |
 | `ROOT_TIER2` | Absolute path to the Tier 2 storage directory. |
 | `ROOT_TIER3` | Absolute path to the Tier 3 storage directory. |
 
-## Logging helpers {#logging}
+## Core Logging Helpers {#logging}
 
-Standardized logging uses the `[$ROOT_NODE] [$ROOT_ACTION_PATH]` prefix for consistency across the orchestration logs.
+Standardized logging ensure consistent output across all actions.
 
 - `root_log_info`: Standard informational output.
-- `root_log_warn`: Warnings requiring attention but not stopping execution.
+- `root_log_warn`: Warnings requiring attention.
 - `root_log_error`: Critical errors sent to `stderr`.
 - `root_log_success`: Confirmation of successful task completion.
 
-## Help system metadata {#help}
+## The Help System {#help}
 
-The `root` [Dispatcher](/root/glossary#dispatcher) provides a built-in `--help` system. To keep action scripts "stupid", they do not implement their own help flags. Instead, the dispatcher parses a specific `action_metadata` block defined at the top of every action script.
-
-When a user runs `root <action> --help`, the dispatcher extracts and displays this YAML-formatted block without executing the script.
-
-### Example metadata
+The dispatcher provides a built-in help system by parsing an `action_metadata` block at the top of each script. This allows scripts to remain "stupid" and declarative without implementing their own CLI argument parsing.
 
 ```bash filename="example-action-metadata"
 action_metadata() {
   cat <<EOF
-description: "Brief summary of the task."
+description: "Brief summary of the action."
 args:
-  - NODE: "The node name"
-  - PARAM: "A custom parameter"
+  - NODE: "The name of the target node."
 EOF
 }
 ```

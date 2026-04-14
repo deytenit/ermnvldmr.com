@@ -1,6 +1,6 @@
 ---
 title: Interactive Voice Features
-weight: 1
+weight: 3
 ---
 
 **Goal:** Implement sophisticated voice interactions that respect guild boundaries and manage ephemeral resources.
@@ -32,7 +32,8 @@ Audio sessions are ephemeral.
 - **Transient State:** Active audio stream (Lost on disconnect).
 - **Durable State:** Queue/Playlist (Persisted in Controller until restart).
 
-> [!TIP] > **Resilience:** Separate the _Queue_ logic from the _Voice Connection_ logic. This allows the bot to reconnect without losing the user's playlist.
+> [!TIP]
+> **Resilience:** Separate the _Queue_ logic from the _Voice Connection_ logic. This allows the bot to reconnect without losing the user's playlist.
 
 ## 4. Implementation Sketch
 

@@ -1,6 +1,6 @@
 ---
 title: Conversational AI Integration
-weight: 2
+weight: 4
 ---
 
 **Goal:** Integrate Large Language Models (LLMs) while managing context and Discord's timeout constraints.
@@ -51,5 +51,6 @@ export async function execute(interaction, controller) {
 }
 ```
 
-> [!WARNING] > **API Costs:**
+> [!WARNING]
+> **API Costs:**
 > AI APIs are often billed by token. Implement strict user-based rate limits in your Controller to prevent abuse.
