@@ -9,12 +9,14 @@ import type { AccordionContentProps } from '../types';
  * The collapsible content of an Accordion item.
  *
  * Uses a CSS Grid transition for smooth height animation.
+ * @example Basic usage:
  */
 export const AccordionContent = ({ children, className }: AccordionContentProps) => {
   const { value, isOpen } = useAccordionItemContext();
 
   return (
     <div
+      aria-hidden={!isOpen}
       aria-labelledby={`accordion-trigger-${value}`}
       className={cn(
         'grid transition-[grid-template-rows] duration-200 ease-out',
@@ -22,6 +24,7 @@ export const AccordionContent = ({ children, className }: AccordionContentProps)
         className
       )}
       id={`accordion-content-${value}`}
+      inert={!isOpen ? true : undefined}
       role="region"
     >
       <div className="overflow-hidden">

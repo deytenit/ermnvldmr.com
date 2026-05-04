@@ -9,6 +9,7 @@ export const AccordionItemContext = createContext<AccordionItemContextValue | nu
 
 /**
  * Hook to access the AccordionItem context.
+ * @example Using the context:
  */
 export function useAccordionItemContext(): AccordionItemContextValue {
   const context = useContext(AccordionItemContext);

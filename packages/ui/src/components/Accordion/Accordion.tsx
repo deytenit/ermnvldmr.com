@@ -12,6 +12,7 @@ import type { AccordionProps } from './types';
  * An Accordion component that allows users to reveal and hide content sections.
  *
  * Built with a compound component pattern for maximum flexibility.
+ * @example Basic usage:
  */
 const AccordionRoot = ({
   type = 'single',

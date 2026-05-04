@@ -1,9 +1,9 @@
-import React from 'react';
+import type React from 'react';
 
 /**
  * Common props for all BentoGrid card variations.
  */
-export interface BentoCardBaseProps {
+export interface BentoCardBaseProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
    * Number of columns to span on medium screens and up.
    * @default 1

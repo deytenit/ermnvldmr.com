@@ -1,11 +1,15 @@
 import React from 'react';
 
+import { BentoGridBaseCard } from './BentoGridBaseCard';
 import { Header } from '../Header/Header';
 import { Text } from '../Text/Text';
 import { VStack } from '../VStack/VStack';
-import { BentoGridBaseCard } from './BentoGridBaseCard';
+
 import type { BentoCardBaseProps } from './types';
 
+/**
+ *
+ */
 export interface BentoGridInfoCardProps extends BentoCardBaseProps {
   /** The title of the card */
   title: string;
@@ -19,6 +23,7 @@ export interface BentoGridInfoCardProps extends BentoCardBaseProps {
 
 /**
  * A versatile Bento card for text-heavy content or feature highlights.
+ * @example Basic usage:
  */
 export const BentoGridInfoCard = ({
   title,
@@ -29,11 +34,11 @@ export const BentoGridInfoCard = ({
 }: BentoGridInfoCardProps) => {
   return (
     <BentoGridBaseCard {...baseProps}>
-      <VStack gap={4} className="h-full justify-between">
+      <VStack className="h-full justify-between" gap={4}>
         <VStack gap={2}>
           {icon && <div className="text-rb-primary-text">{icon}</div>}
           <Header level={3}>{title}</Header>
-          {description && <Text size="m" className="text-rb-muted-text">{description}</Text>}
+          {description && <Text className="text-rb-muted-text" size="m">{description}</Text>}
         </VStack>
         {footer && <div className="mt-auto">{footer}</div>}
       </VStack>

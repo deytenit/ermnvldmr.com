@@ -1,10 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import React from 'react';
-import { BentoGrid } from './BentoGrid';
 import { Star, Code, Layout, Send, Zap, Shield, Cpu, Gamepad2, Plane, BookOpen, Check, Gift } from 'lucide-react';
+import React from 'react';
 
+import { BentoGrid } from './BentoGrid';
 import { Header } from '../Header/Header';
 import { Text } from '../Text/Text';
+
+import type { Meta, StoryObj } from '@storybook/react';
 
 const meta: Meta<typeof BentoGrid> = {
   title: 'Components/BentoGrid',
@@ -23,49 +24,49 @@ export const Showcase: Story = {
     <div className="w-full max-w-6xl p-4">
       <BentoGrid>
         <BentoGrid.ImageCard
+          alt="Developer workstation"
           colSpan={2}
+          overlayDescription="A deep dive into modern web architecture and performance optimization."
+          overlayTitle="Featured Project"
           rowSpan={2}
           src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=2072"
-          alt="Developer workstation"
-          overlayTitle="Featured Project"
-          overlayDescription="A deep dive into modern web architecture and performance optimization."
         />
         <BentoGrid.InfoCard
-          icon={<Zap size={24} className="text-rb-orange-500" />}
-          title="Lightning Fast"
           description="Built on top of Rsbuild and Rspack for near-instant compilation and ultra-fast HMR."
+          icon={<Zap className="text-rb-orange-500" size={24} />}
+          title="Lightning Fast"
         />
         <BentoGrid.CTACard
-          variant="primary"
-          title="Join the Community"
-          description="Connect with other developers and share your projects."
           buttonText="Get Started"
+          description="Connect with other developers and share your projects."
           href="#"
+          title="Join the Community"
+          variant="primary"
         />
         <BentoGrid.InfoCard
-          icon={<Shield size={24} className="text-rb-green-500" />}
-          title="Type Safe"
           description="Strict TypeScript integration across the entire monorepo for maximum reliability."
           footer={<div className="text-xs opacity-50">Strict Mode Enabled</div>}
+          icon={<Shield className="text-rb-green-500" size={24} />}
+          title="Type Safe"
         />
         <BentoGrid.ImageCard
-          colSpan={2}
-          src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=2069"
           alt="Code on screen"
+          colSpan={2}
           overlayTitle="Clean Code"
+          src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=2069"
         />
         <BentoGrid.InfoCard
-          icon={<Cpu size={24} className="text-rb-blue-500" />}
-          title="Modular Architecture"
           description="Easily extend and customize the design system with our modular component library."
+          icon={<Cpu className="text-rb-blue-500" size={24} />}
+          title="Modular Architecture"
         />
         <BentoGrid.CTACard
-          title="Documentation"
-          description="Read the full documentation to learn more about the design system."
           buttonText="View Docs"
+          description="Read the full documentation to learn more about the design system."
           href="#"
+          title="Documentation"
         />
-        <BentoGrid.BaseCard colSpan={4} className="bg-rb-tertiary-base/10 border-dashed">
+        <BentoGrid.BaseCard className="bg-rb-tertiary-base/10 border-dashed" colSpan={4}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-rb-tertiary-base rounded-full text-rb-tertiary-text">
@@ -100,8 +101,8 @@ export const LayoutPatterns: Story = {
       <section>
         <h3 className="mb-4 text-xl font-bold">Mixed Spans (Hero Pattern)</h3>
         <BentoGrid>
-          <BentoGrid.BaseCard colSpan={2} rowSpan={2} className="flex items-center justify-center bg-rb-primary-base/20 border-rb-primary-base">2x2 Hero</BentoGrid.BaseCard>
-          <BentoGrid.BaseCard colSpan={2} className="flex items-center justify-center bg-rb-color-neutral-100">2x1 Wide</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-primary-base/20 border-rb-primary-base" colSpan={2} rowSpan={2}>2x2 Hero</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-color-neutral-100" colSpan={2}>2x1 Wide</BentoGrid.BaseCard>
           <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-color-neutral-100">1x1</BentoGrid.BaseCard>
           <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-color-neutral-100">1x1</BentoGrid.BaseCard>
         </BentoGrid>
@@ -111,10 +112,10 @@ export const LayoutPatterns: Story = {
         <h3 className="mb-4 text-xl font-bold">Tall & Wide Pattern</h3>
         <BentoGrid>
           <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-color-neutral-100">1x1</BentoGrid.BaseCard>
-          <BentoGrid.BaseCard colSpan={2} className="flex items-center justify-center bg-rb-secondary-base/20 border-rb-secondary-base">2x1 Wide</BentoGrid.BaseCard>
-          <BentoGrid.BaseCard rowSpan={2} className="flex items-center justify-center bg-rb-tertiary-base/20 border-rb-tertiary-base">1x2 Tall</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-secondary-base/20 border-rb-secondary-base" colSpan={2}>2x1 Wide</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-tertiary-base/20 border-rb-tertiary-base" rowSpan={2}>1x2 Tall</BentoGrid.BaseCard>
           <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-color-neutral-100">1x1</BentoGrid.BaseCard>
-          <BentoGrid.BaseCard colSpan={2} className="flex items-center justify-center bg-rb-color-neutral-100">2x1</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-color-neutral-100" colSpan={2}>2x1</BentoGrid.BaseCard>
         </BentoGrid>
       </section>
     </div>
@@ -126,36 +127,35 @@ export const AllCardTypes: Story = {
     <div className="w-full max-w-6xl p-4">
       <BentoGrid>
         <BentoGrid.InfoCard
-          icon={<Layout size={24} />}
-          title="Info Card"
           description="Used for features or information. Can have an icon and a footer."
           footer={<div className="text-xs font-mono">v1.0.0</div>}
+          icon={<Layout size={24} />}
+          title="Info Card"
         />
         <BentoGrid.ImageCard
-          src="https://images.unsplash.com/photo-1481487196290-c152efe083f5?auto=format&fit=crop&q=80&w=2048"
           alt="Abstract image"
-          overlayTitle="Image Card"
           overlayDescription="Perfect for visual showcases with text overlays."
+          overlayTitle="Image Card"
+          src="https://images.unsplash.com/photo-1481487196290-c152efe083f5?auto=format&fit=crop&q=80&w=2048"
         />
         <BentoGrid.CTACard
-          title="CTA Card (Default)"
-          description="Drives action with an outline button."
           buttonText="Learn More"
+          description="Drives action with an outline button."
           href="#"
+          title="CTA Card (Default)"
         />
         <BentoGrid.CTACard
-          variant="primary"
-          title="CTA Card (Primary)"
-          description="High prominence with a solid background."
           buttonText="Sign Up Now"
+          description="High prominence with a solid background."
           href="#"
+          title="CTA Card (Primary)"
+          variant="primary"
         />
         <BentoGrid.ListCard
           colSpan={2}
-          title="List Card"
+          defaultValue={['features']}
           description="A specialized card for categorized lists, ideal for wishlists or feature matrices."
           icon={<div className="p-2 bg-rb-blue-100 text-rb-blue-700 rounded-lg"><Star size={20} /></div>}
-          defaultValue={['features']}
           sections={[
             {
               value: 'features',
@@ -165,6 +165,7 @@ export const AllCardTypes: Story = {
               items: ['Responsive', 'Accessible', 'Themeable'],
             }
           ]}
+          title="List Card"
         />
         <BentoGrid.BaseCard className="flex flex-col gap-4">
           <div className="p-2 bg-rb-color-yellow-100 text-rb-color-yellow-900 rounded-md w-fit">
@@ -183,21 +184,20 @@ export const WishlistVariant: Story = {
     <div className="w-full max-w-6xl p-4">
       <div className="mb-8">
         <Header level={2}>My Wishlist</Header>
-        <Text size="l" className="text-rb-muted-text">Things I want and things I already have, organized by category.</Text>
+        <Text className="text-rb-muted-text" size="l">Things I want and things I already have, organized by category.</Text>
       </div>
       
       <BentoGrid>
         <BentoGrid.ListCard
           colSpan={2}
-          rowSpan={2}
-          title="Gadgets & Tech"
+          defaultValue={['wanted']}
           description="My essential list of gadgets and hardware I use for daily productivity and entertainment."
           icon={
             <div className="p-3 bg-rb-blue-100 text-rb-blue-700 rounded-xl">
               <Gamepad2 size={24} />
             </div>
           }
-          defaultValue={['wanted']}
+          rowSpan={2}
           sections={[
             {
               value: 'wanted',
@@ -222,18 +222,17 @@ export const WishlistVariant: Story = {
               ]
             }
           ]}
+          title="Gadgets & Tech"
         />
 
         <BentoGrid.ListCard
           colSpan={2}
-          title="Travel Destinations"
           description="Places I want to visit and explore around the world."
           icon={
             <div className="p-3 bg-rb-green-100 text-rb-green-700 rounded-xl">
               <Plane size={24} />
             </div>
           }
-          type="single"
           sections={[
             {
               value: 'wanted',
@@ -258,18 +257,18 @@ export const WishlistVariant: Story = {
               ]
             }
           ]}
+          title="Travel Destinations"
+          type="single"
         />
 
         <BentoGrid.ListCard
           colSpan={2}
-          title="Books to Read"
           description="My reading backlog spanning technical books, sci-fi, and fantasy."
           icon={
             <div className="p-3 bg-rb-violet-100 text-rb-violet-700 rounded-xl">
               <BookOpen size={24} />
             </div>
           }
-          type="single"
           sections={[
             {
               value: 'wanted',
@@ -283,6 +282,8 @@ export const WishlistVariant: Story = {
               ]
             }
           ]}
+          title="Books to Read"
+          type="single"
         />
       </BentoGrid>
     </div>

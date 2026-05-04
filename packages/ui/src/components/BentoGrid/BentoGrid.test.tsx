@@ -9,24 +9,23 @@ describe('BentoGrid', () => {
       <BentoGrid>
         <BentoGrid.BaseCard data-testid="base-card">Base Card Content</BentoGrid.BaseCard>
         <BentoGrid.ImageCard
-          src="test-image.jpg"
           alt="Test Image"
-          overlayTitle="Image Title"
           overlayDescription="Image Description"
+          overlayTitle="Image Title"
+          src="test-image.jpg"
         />
         <BentoGrid.InfoCard
-          title="Info Title"
           description="Info Description"
           footer={<span>Footer Content</span>}
+          title="Info Title"
         />
         <BentoGrid.CTACard
-          title="CTA Title"
-          description="CTA Description"
           buttonText="Click Me"
+          description="CTA Description"
           href="/test"
+          title="CTA Title"
         />
         <BentoGrid.ListCard
-          title="List Title"
           description="List Description"
           sections={[
             {
@@ -35,11 +34,13 @@ describe('BentoGrid', () => {
               items: ['Item A', 'Item B']
             }
           ]}
+          title="List Title"
         />
       </BentoGrid>
     );
 
     // BaseCard
+    expect(screen.getByTestId('base-card')).toBeInTheDocument();
     expect(screen.getByText('Base Card Content')).toBeInTheDocument();
 
     // ImageCard
@@ -65,6 +66,27 @@ describe('BentoGrid', () => {
     expect(screen.getByText('Item A')).toBeInTheDocument();
   });
 
+  it('renders ListCard with object items (stable keys)', () => {
+    render(
+      <BentoGrid.ListCard
+        sections={[
+          {
+            value: 's1',
+            label: 'Section 1',
+            items: [
+              { key: 'item-1', node: 'Stable Item 1' },
+              'Raw Item 2'
+            ]
+          }
+        ]}
+        title="List Title"
+      />
+    );
+
+    expect(screen.getByText('Stable Item 1')).toBeInTheDocument();
+    expect(screen.getByText('Raw Item 2')).toBeInTheDocument();
+  });
+
   it('applies span classes correctly', () => {
     render(
       <BentoGrid>
@@ -83,11 +105,11 @@ describe('BentoGrid', () => {
     render(
       <BentoGrid>
         <BentoGrid.CTACard
-          variant="primary"
-          title="Primary CTA"
-          description="Description"
           buttonText="Button"
+          description="Description"
           href="/"
+          title="Primary CTA"
+          variant="primary"
         />
       </BentoGrid>
     );

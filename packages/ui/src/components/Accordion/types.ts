@@ -1,7 +1,7 @@
+import type { HeaderProps } from '../Header/Header';
 import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
 import type { ReactNode } from 'react';
 
-import type { HeaderProps } from '../Header/Header';
 
 /**
  * Type of accordion behavior.

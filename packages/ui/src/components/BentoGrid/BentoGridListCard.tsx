@@ -2,14 +2,18 @@ import { cn } from '@ermnvldmr/stl';
 import React from 'react';
 
 import { Accordion } from '../Accordion';
-import { List } from '../List';
 import { Header } from '../Header/Header';
+import { HStack } from '../HStack/HStack';
+import { List } from '../List';
+import { BentoGridBaseCard } from './BentoGridBaseCard';
 import { Text } from '../Text/Text';
 import { VStack } from '../VStack/VStack';
-import { HStack } from '../HStack/HStack';
-import { BentoGridBaseCard } from './BentoGridBaseCard';
+
 import type { BentoCardBaseProps } from './types';
 
+/**
+ *
+ */
 export interface BentoGridListCardSection {
   /** Unique identifier for the accordion section */
   value: string;
@@ -19,10 +23,13 @@ export interface BentoGridListCardSection {
   labelIcon?: React.ReactNode;
   /** Optional class name for the label text color (e.g. 'text-rb-orange-600') */
   labelClassName?: string;
-  /** List of items to display when expanded */
-  items: React.ReactNode[];
+  /** List of items to display when expanded. Can be raw nodes or objects with keys. */
+  items: (React.ReactNode | { key: string; node: React.ReactNode })[];
 }
 
+/**
+ *
+ */
 export interface BentoGridListCardProps extends BentoCardBaseProps {
   /** Title of the card */
   title: string;
@@ -40,6 +47,16 @@ export interface BentoGridListCardProps extends BentoCardBaseProps {
 
 /**
  * A Bento card designed for categorized lists of items using Accordions.
+ *
+ * @example
+ * ```tsx
+ * <BentoGrid.ListCard
+ *   title="My List"
+ *   sections={[
+ *     { value: 's1', label: 'Section 1', items: ['Item 1', 'Item 2'] }
+ *   ]}
+ * />
+ * ```
  */
 export const BentoGridListCard = ({
   title,
@@ -52,12 +69,12 @@ export const BentoGridListCard = ({
 }: BentoGridListCardProps) => {
   return (
     <BentoGridBaseCard {...baseProps} className={cn('flex flex-col', baseProps.className)}>
-      <VStack gap={4} className="h-full">
+      <VStack className="h-full" gap={4}>
         <HStack align="center" gap={3}>
           {icon && <div>{icon}</div>}
           <Header level={3}>{title}</Header>
         </HStack>
-        
+
         {description && (
           <Text className="text-rb-muted-text">
             {description}
@@ -65,20 +82,38 @@ export const BentoGridListCard = ({
         )}
 
         <div className="flex-grow w-full">
-          <Accordion type={type} defaultValue={defaultValue} collapsible>
+          <Accordion collapsible defaultValue={defaultValue} type={type}>
             {sections.map((section) => (
               <Accordion.Item key={section.value} value={section.value}>
                 <Accordion.Trigger className={section.labelClassName}>
                   <HStack align="center" gap={2}>
                     {section.labelIcon}
-                    <Text type="label" size="l">{section.label}</Text>
+                    <Text size="l" type="body">{section.label}</Text>
                   </HStack>
                 </Accordion.Trigger>
                 <Accordion.Content>
                   <List>
-                    {section.items.map((item, index) => (
-                      <List.Item key={index}>{item}</List.Item>
-                    ))}
+                    {section.items.map((item, index) => {
+                      const content = (() => {
+                        if (item && typeof item === 'object' && 'node' in item) {
+                          return item.node;
+                        }
+                        return item;
+                      })();
+
+                      const itemKey =
+                        item && typeof item === 'object' && 'key' in item
+                          ? item.key
+                          : typeof item === 'string'
+                            ? item
+                            : index;
+
+                      return (
+                        <List.Item key={itemKey}>
+                          <Text size="m">{content}</Text>
+                        </List.Item>
+                      );
+                    })}
                   </List>
                 </Accordion.Content>
               </Accordion.Item>

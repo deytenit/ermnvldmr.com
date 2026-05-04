@@ -5,8 +5,12 @@ import type { BentoCardBaseProps } from './types';
 
 /**
  * Utility to generate Tailwind grid span classes based on props.
+ * @example Generating classes:
+ * ```ts
+ * const classes = getSpanClasses({ colSpan: 2 });
+ * ```
  */
-export const getSpanClasses = ({ colSpan = 1, rowSpan = 1 }: BentoCardBaseProps) => {
+const getSpanClasses = ({ colSpan = 1, rowSpan = 1 }: BentoCardBaseProps) => {
   const colSpans = {
     1: 'md:col-span-1',
     2: 'md:col-span-2',
@@ -25,12 +29,14 @@ export const getSpanClasses = ({ colSpan = 1, rowSpan = 1 }: BentoCardBaseProps)
 
 /**
  * Base card component that provides the foundational styling for all Bento cards.
+ * @example Basic usage:
  */
 export const BentoGridBaseCard = ({
   children,
   className,
   colSpan,
   rowSpan,
+  ...props
 }: BentoCardBaseProps) => {
   return (
     <div
@@ -39,6 +45,7 @@ export const BentoGridBaseCard = ({
         getSpanClasses({ colSpan, rowSpan }),
         className
       )}
+      {...props}
     >
       {children}
     </div>

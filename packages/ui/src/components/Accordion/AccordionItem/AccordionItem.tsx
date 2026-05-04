@@ -10,6 +10,7 @@ import type { AccordionItemProps } from '../types';
  * An individual item within an Accordion.
  *
  * Provides context for the Trigger and Content sub-components.
+ * @example Basic usage:
  */
 export const AccordionItem = ({
   value,

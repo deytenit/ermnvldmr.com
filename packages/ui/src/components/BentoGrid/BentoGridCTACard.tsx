@@ -1,13 +1,17 @@
 import { cn } from '@ermnvldmr/stl';
 import React from 'react';
 
+import { BentoGridBaseCard } from './BentoGridBaseCard';
 import { Button } from '../Button/Button';
 import { Header } from '../Header/Header';
 import { Text } from '../Text/Text';
 import { VStack } from '../VStack/VStack';
-import { BentoGridBaseCard } from './BentoGridBaseCard';
+
 import type { BentoCardBaseProps } from './types';
 
+/**
+ *
+ */
 export interface BentoGridCTACardProps extends BentoCardBaseProps {
   /** The title of the call to action */
   title: string;
@@ -27,6 +31,7 @@ export interface BentoGridCTACardProps extends BentoCardBaseProps {
 
 /**
  * A Bento card designed specifically to drive user action.
+ * @example Basic usage:
  */
 export const BentoGridCTACard = ({
   title,
@@ -45,23 +50,23 @@ export const BentoGridCTACard = ({
         className
       )}
     >
-      <VStack gap={4} className="h-full justify-between">
+      <VStack className="h-full justify-between" gap={4}>
         <VStack gap={2}>
-          <Header level={3} className={cn(variant === 'primary' && 'text-rb-primary-text')}>
+          <Header className={cn(variant === 'primary' && 'text-rb-primary-text')} level={3}>
             {title}
           </Header>
           <Text
-            size="m"
             className={cn(variant === 'primary' ? 'text-rb-primary-text/80' : 'text-rb-muted-text')}
+            size="m"
           >
             {description}
           </Text>
         </VStack>
         <div className="mt-auto">
           <Button
+            className="w-full sm:w-auto"
             href={href}
             variant={variant === 'primary' ? 'solid' : 'outline'}
-            className="w-full sm:w-auto"
           >
             {buttonText}
           </Button>

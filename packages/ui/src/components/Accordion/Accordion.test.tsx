@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import { vi } from 'vitest';
 
 import { Accordion } from './Accordion';
 
@@ -113,7 +114,7 @@ describe('Accordion', () => {
     const TestComponent = () => {
       const [value, setValue] = React.useState<string[]>(['item-1']);
       return (
-        <Accordion onValueChange={setValue} type="single" value={value}>
+        <Accordion type="single" value={value} onValueChange={setValue}>
           <Accordion.Item value="item-1">
             <Accordion.Trigger>Trigger 1</Accordion.Trigger>
             <Accordion.Content>Content 1</Accordion.Content>
@@ -133,5 +134,88 @@ describe('Accordion', () => {
     await user.click(screen.getByText('Trigger 2'));
     expect(screen.getByRole('button', { name: /Trigger 1/i })).toHaveAttribute('aria-expanded', 'false');
     expect(screen.getByRole('button', { name: /Trigger 2/i })).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('works as an uncontrolled component with defaultValue', () => {
+    render(
+      <Accordion defaultValue={['item-2']} type="single">
+        <Accordion.Item value="item-1">
+          <Accordion.Trigger>Trigger 1</Accordion.Trigger>
+          <Accordion.Content>Content 1</Accordion.Content>
+        </Accordion.Item>
+        <Accordion.Item value="item-2">
+          <Accordion.Trigger>Trigger 2</Accordion.Trigger>
+          <Accordion.Content>Content 2</Accordion.Content>
+        </Accordion.Item>
+      </Accordion>
+    );
+
+    expect(screen.getByRole('button', { name: /Trigger 1/i })).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByRole('button', { name: /Trigger 2/i })).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('renders with valid HTML structure (heading containing button)', () => {
+    render(
+      <Accordion type="single">
+        <Accordion.Item value="item-1">
+          <Accordion.Trigger level={3}>Trigger 1</Accordion.Trigger>
+          <Accordion.Content>Content 1</Accordion.Content>
+        </Accordion.Item>
+      </Accordion>
+    );
+
+    const heading = screen.getByRole('heading', { level: 3 });
+    const button = screen.getByRole('button');
+    expect(heading).toContainElement(button);
+  });
+
+  it('applies accessibility attributes to content when closed', () => {
+    render(
+      <Accordion type="single">
+        <Accordion.Item value="item-1">
+          <Accordion.Trigger>Trigger 1</Accordion.Trigger>
+          <Accordion.Content>Content 1</Accordion.Content>
+        </Accordion.Item>
+      </Accordion>
+    );
+
+    const content = screen.getByText('Content 1').closest('[role="region"]');
+    expect(content).toHaveAttribute('aria-hidden', 'true');
+    expect(content).toHaveAttribute('inert');
+  });
+
+  it('removes accessibility hiding attributes when open', async () => {
+    const user = userEvent.setup();
+    render(
+      <Accordion type="single">
+        <Accordion.Item value="item-1">
+          <Accordion.Trigger>Trigger 1</Accordion.Trigger>
+          <Accordion.Content>Content 1</Accordion.Content>
+        </Accordion.Item>
+      </Accordion>
+    );
+
+    await user.click(screen.getByText('Trigger 1'));
+    const content = screen.getByText('Content 1').closest('[role="region"]');
+    expect(content).toHaveAttribute('aria-hidden', 'false');
+    expect(content).not.toHaveAttribute('inert');
+  });
+
+  it('throws error when sub-components are used outside of Accordion', () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    
+    expect(() => render(<Accordion.Trigger>Trigger</Accordion.Trigger>)).toThrow(
+      'Accordion sub-components must be used within an Accordion component.'
+    );
+
+    expect(() => render(<Accordion.Item value="1">Item</Accordion.Item>)).toThrow(
+      'Accordion sub-components must be used within an Accordion component.'
+    );
+    
+    expect(() => render(<Accordion.Content>Content</Accordion.Content>)).toThrow(
+      'AccordionItem sub-components must be used within an AccordionItem component.'
+    );
+
+    consoleSpy.mockRestore();
   });
 });

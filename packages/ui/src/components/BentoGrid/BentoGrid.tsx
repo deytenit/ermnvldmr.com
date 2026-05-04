@@ -6,6 +6,7 @@ import { BentoGridCTACard } from './BentoGridCTACard';
 import { BentoGridImageCard } from './BentoGridImageCard';
 import { BentoGridInfoCard } from './BentoGridInfoCard';
 import { BentoGridListCard } from './BentoGridListCard';
+
 import type { BentoGridProps } from './types';
 
 const BentoGridComponent = forwardRef<HTMLDivElement, BentoGridProps>(function BentoGrid(
