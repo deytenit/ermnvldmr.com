@@ -67,19 +67,29 @@ export const PageHead = ({
   className,
 }: PageHeadProps) => {
   const { y: scrollY } = useScroll();
-  const [isCollapsed, setIsCollapsed] = useState(strategy.includes('always-collapsed'));
+  const isCollapsible = strategy === 'collapsible-sticky';
+  const isAlwaysCollapsed = strategy.startsWith('always-collapsed');
+  const [isCollapsed, setIsCollapsed] = useState(isAlwaysCollapsed);
 
   useEffect(() => {
-    if (strategy === 'collapsible-sticky') {
-      setIsCollapsed(scrollY > 10);
+    if (isCollapsible) {
+      // Trigger collapse once we've scrolled past the expanded header's height.
+      // Usually around 150-200px depending on caption length. 
+      // 200px ensures it won't snap until it's mostly gone.
+      setIsCollapsed(scrollY > 200);
     }
-  }, [scrollY, strategy]);
+  }, [scrollY, isCollapsible]);
 
   const rootClasses = cn(
-    'page-head w-full transition-all duration-200 bg-[var(--rb-background)] sticky top-0 z-10 border-b border-[var(--rb-outline)]/10',
-    {
-      'shadow-md bg-[var(--rb-background)]/90 backdrop-blur-md': isCollapsed,
-    },
+    'page-head w-full bg-[var(--rb-background)] border-b border-[var(--rb-outline)]/10',
+    // Always-collapsed or always-expanded strategies maintain their sticky/fixed behavior.
+    // Collapsible-sticky strategy keeps the root in-flow so expanded content scrolls away.
+    !isCollapsible &&
+      (strategy.includes('sticky')
+        ? 'sticky top-0 z-10'
+        : strategy.includes('fixed')
+          ? 'fixed top-0 z-10'
+          : ''),
     className
   );
 
@@ -93,7 +103,7 @@ export const PageHead = ({
           </HStack>
           {addonRight && <div>{addonRight}</div>}
         </HStack>
-        <VStack gap={2}>
+        <VStack gap={4}>
           <Header level={1}>{heading}</Header>
           {typeof caption === 'string' ? (
             <Text color="muted" size="l" type="body">
@@ -123,23 +133,29 @@ export const PageHead = ({
 
   return (
     <header className={rootClasses}>
+      {/* Expanded Content: In-flow for collapsible, or sticky/fixed for others */}
+      {!isAlwaysCollapsed && (
+        <div
+          className={cn(
+            'transition-opacity duration-300',
+            isCollapsible && isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          )}
+        >
+          {expandedContent}
+        </div>
+      )}
+
+      {/* Collapsed Content: Fixed overlay for collapsible, or absolute/relative within sticky/fixed root */}
       <div
         className={cn(
-          'grid transition-[grid-template-rows] duration-300 ease-in-out',
-          isCollapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'
+          'z-20 transition-all duration-300 transform bg-[var(--rb-background)]/90 backdrop-blur-md border-b border-[var(--rb-outline)]/10 shadow-md',
+          isAlwaysCollapsed || (isCollapsible && isCollapsed)
+            ? 'translate-y-0 opacity-100'
+            : '-translate-y-full opacity-0 pointer-events-none',
+          isCollapsible ? 'fixed top-0 left-0 right-0' : 'absolute top-0 left-0 right-0'
         )}
-        inert={isCollapsed || undefined}
       >
-        <div className="overflow-hidden">{expandedContent}</div>
-      </div>
-      <div
-        className={cn(
-          'grid transition-[grid-template-rows] duration-300 ease-in-out',
-          isCollapsed ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-        )}
-        inert={!isCollapsed || undefined}
-      >
-        <div className="overflow-hidden">{collapsedContent}</div>
+        {collapsedContent}
       </div>
     </header>
   );
