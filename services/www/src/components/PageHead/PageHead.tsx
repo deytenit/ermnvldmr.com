@@ -37,6 +37,7 @@ export const PageHead = ({ heading, caption, breadcrumbs, metadata, strategy }: 
   const nav = (
     <HStack gap={4}>
       <Link href="/articles">{t('Articles')}</Link>
+      <Link href="/wanted">{t('Wanted')}</Link>
       <Link href="https://github.com/deytenit">{t('GitHub')}</Link>
     </HStack>
   );
