@@ -20,7 +20,11 @@ function HomePage(): React.JSX.Element {
     <DefaultLayout
       centerVertically
       currentPath={localePath('/')}
-      headerAddonLeft={<Header level={3}>{SITE_TITLE}</Header>}
+      headerAddonLeft={
+        <Header className="min-w-0" level={3} overflow="ellipsis">
+          {SITE_TITLE}
+        </Header>
+      }
     >
       <VStack gap={24}>
         <Header delay={0} level={1}>

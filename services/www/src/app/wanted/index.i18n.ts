@@ -57,6 +57,18 @@ export const { t } = createKeyset({
     en: 'Genshin Impact Pop! Aether (#160)',
     ru: 'Genshin Impact Pop! Aether (#160)',
   },
+  'Taito Lycoris Recoil Desktop Cute Figure - Takina Inoue (Roomwear Ver.)': {
+    en: 'Taito Lycoris Recoil Desktop Cute Figure - Takina Inoue (Roomwear Ver.)',
+    ru: 'Taito Lycoris Recoil Desktop Cute Figure - Takina Inoue (Roomwear Ver.)',
+  },
+  'Taito Lycoris Recoil Aqua Desktop Cute Figure - Chisato Nishikigi (Roomwear Ver.)': {
+    en: 'Taito Lycoris Recoil Aqua Desktop Cute Figure - Chisato Nishikigi (Roomwear Ver.)',
+    ru: 'Taito Lycoris Recoil Aqua Desktop Cute Figure - Chisato Nishikigi (Roomwear Ver.)',
+  },
+  'Qset+ Persona 5 The Royal P5R Protagonist Ren Amamiya 80mm Figure': {
+    en: 'Qset+ Persona 5 The Royal P5R Protagonist Ren Amamiya 80mm Figure',
+    ru: 'Qset+ Persona 5 The Royal P5R Protagonist Ren Amamiya 80mm Figure',
+  },
   'LEGO Sets': {
     en: 'LEGO Sets',
     ru: 'Наборы LEGO',

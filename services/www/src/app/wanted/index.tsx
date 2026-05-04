@@ -79,7 +79,12 @@ function WantedPage(): React.JSX.Element {
                 value: 'owned',
                 label: t('Already Owned'),
                 labelIcon: <Check size={18} />,
-                items: [t('Genshin Impact Pop! Aether (#160)')],
+                items: [
+                  t('Genshin Impact Pop! Aether (#160)'),
+                  t('Taito Lycoris Recoil Desktop Cute Figure - Takina Inoue (Roomwear Ver.)'),
+                  t('Taito Lycoris Recoil Aqua Desktop Cute Figure - Chisato Nishikigi (Roomwear Ver.)'),
+                  t('Qset+ Persona 5 The Royal P5R Protagonist Ren Amamiya 80mm Figure'),
+                ],
               },
             ]}
             title={t('Figurines')}

@@ -97,11 +97,11 @@ export const PageHead = ({
     <PageContainer paddingY="medium">
       <VStack align="stretch" gap={6}>
         <HStack align="center" justify="between">
-          <HStack align="center" gap={4}>
-            {addonLeft && <div>{addonLeft}</div>}
-            {breadcrumbs && <div className="hidden sm:block">{breadcrumbs}</div>}
+          <HStack align="center" className="min-w-0 flex-1" gap={4}>
+            {addonLeft && <div className="min-w-0 flex-shrink">{addonLeft}</div>}
+            {breadcrumbs && <div className="min-w-0 flex-shrink">{breadcrumbs}</div>}
           </HStack>
-          {addonRight && <div>{addonRight}</div>}
+          {addonRight && <div className="flex-shrink-0 ml-4">{addonRight}</div>}
         </HStack>
         <VStack gap={4}>
           <Header level={1}>{heading}</Header>
@@ -121,8 +121,8 @@ export const PageHead = ({
     <PageContainer paddingY="none">
       <HStack align="center" className="h-14" justify="between">
         <HStack align="center" className="min-w-0 flex-1" gap={4}>
-          {addonLeft && <div className="flex-shrink-0">{addonLeft}</div>}
-          <Header level={4} overflow="ellipsis">
+          {addonLeft && <div className="min-w-0 flex-shrink">{addonLeft}</div>}
+          <Header className="min-w-0" level={4} overflow="ellipsis">
             {heading}
           </Header>
         </HStack>
@@ -145,14 +145,14 @@ export const PageHead = ({
         </div>
       )}
 
-      {/* Collapsed Content: Fixed overlay for collapsible, or absolute/relative within sticky/fixed root */}
+      {/* Collapsed Content: Fixed overlay for collapsible, or relative within sticky/fixed root */}
       <div
         className={cn(
           'z-20 transition-all duration-300 transform bg-[var(--rb-background)]/90 backdrop-blur-md border-b border-[var(--rb-outline)]/10 shadow-md',
           isAlwaysCollapsed || (isCollapsible && isCollapsed)
             ? 'translate-y-0 opacity-100'
             : '-translate-y-full opacity-0 pointer-events-none',
-          isCollapsible ? 'fixed top-0 left-0 right-0' : 'absolute top-0 left-0 right-0'
+          isCollapsible ? 'fixed top-0 left-0 right-0' : 'relative'
         )}
       >
         {collapsedContent}

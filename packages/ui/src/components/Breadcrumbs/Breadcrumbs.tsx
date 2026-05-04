@@ -22,8 +22,8 @@ export interface BreadcrumbsProps extends HStackProps {
  */
 const BreadcrumbsRoot = memo(function Breadcrumbs({ children, ...props }: BreadcrumbsProps) {
   return (
-    <nav aria-label="Breadcrumb">
-      <HStack align="center" as="ol" gap={2} {...props}>
+    <nav aria-label="Breadcrumb" className="min-w-0 flex-1">
+      <HStack align="center" as="ol" gap={2} {...props} className={cn('min-w-0', props.className)}>
         {children}
       </HStack>
     </nav>
@@ -64,7 +64,7 @@ const BreadcrumbsItem = memo(function BreadcrumbsItem({
     <li
       aria-current={isCurrent ? 'page' : undefined}
       className={cn(
-        'group flex items-center transition-all duration-200',
+        'group flex items-center transition-all duration-200 min-w-0 flex-shrink',
         !isCurrent && isClickable && 'cursor-pointer',
         className
       )}
@@ -73,7 +73,7 @@ const BreadcrumbsItem = memo(function BreadcrumbsItem({
       <Text
         as={resolvedHref ? 'a' : onClick ? 'button' : 'span'}
         className={cn(
-          'transition-all duration-200',
+          'transition-all duration-200 block truncate',
           !isCurrent && 'group-hover:text-[var(--rb-text)] group-hover:underline underline-offset-4'
         )}
         color={isCurrent ? 'default' : 'muted'}
@@ -81,6 +81,7 @@ const BreadcrumbsItem = memo(function BreadcrumbsItem({
         size="m"
         type="label"
         onClick={onClick}
+        overflow="ellipsis"
       >
         {children}
       </Text>
@@ -110,7 +111,7 @@ const BreadcrumbsSeparator = memo(function BreadcrumbsSeparator({
   return (
     <li
       aria-hidden="true"
-      className={cn('text-[var(--rb-muted-text)]', className)}
+      className={cn('flex-shrink-0 text-[var(--rb-muted-text)]', className)}
       data-testid={testId}
     >
       <Text color="muted" size="m" type="label">

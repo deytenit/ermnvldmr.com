@@ -69,7 +69,7 @@ export function DefaultLayout({
         caption={description}
         heading={title ?? ''}
         metadata={headerAddonLeft}
-        strategy={title ? 'collapsible-sticky' : 'always-collapsed-fixed'}
+        strategy={title ? 'collapsible-sticky' : 'always-collapsed-sticky'}
       />
       <PageContainer
         as="main"
