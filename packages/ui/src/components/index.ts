@@ -1,3 +1,4 @@
+export * from './Accordion/index';
 export * from './Article/Article';
 export * from './Blockquote/Blockquote';
 export * from './Breadcrumbs/Breadcrumbs';
