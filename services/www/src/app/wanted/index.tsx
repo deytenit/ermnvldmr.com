@@ -100,7 +100,7 @@ function WantedPage(): React.JSX.Element {
                 labelIcon: <Gift size={18} />,
                 items: [
                   t('Architectural landmarks or skylines'),
-                  t('NASA and space exploration sets (like the Saturn V)'),
+                  t('NASA and space exploration sets (like the #92176 Ideas NASA Apollo Saturn V)'),
                   t('High-fidelity Technic vehicles'),
                 ],
               },

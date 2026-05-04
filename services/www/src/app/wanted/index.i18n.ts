@@ -3,7 +3,7 @@ import { createKeyset } from '@ermnvldmr/i18n';
 export const { t } = createKeyset({
   Wanted: {
     en: 'Wanted',
-    ru: 'Желаемое',
+    ru: 'Разыскивается',
   },
   Home: { 
     en: 'Home', 
@@ -11,7 +11,7 @@ export const { t } = createKeyset({
   },
   'A quiet log of things I am planning to pick up eventually. It serves mostly as a personal reference, but also as a zero-pressure guide for friends.': {
     en: 'A quiet log of things I am planning to pick up eventually. It serves mostly as a personal reference, but also as a zero-pressure guide for friends.',
-    ru: 'Спокойный список вещей, которые я планирую со временем приобрести. В основном это личная заметка, но также и ненавязчивая шпаргалка для друзей.',
+    ru: 'Список вещей, которые я планирую со временем приобрести. В основном это личная заметка, но также и ненавязчивый вишлист.',
   },
   'How this works': {
     en: 'How this works',
@@ -27,7 +27,7 @@ export const { t } = createKeyset({
   },
   'And of course, if you are ever unsure about a specific edition or detail, we can always just talk about it.': {
     en: 'And of course, if you are ever unsure about a specific edition or detail, we can always just talk about it.',
-    ru: 'И, конечно, если вы не уверены в каком-то конкретном издании или детали, мы всегда можем это обсудить.',
+    ru: 'И, конечно, если вы не уверены в каком-то конкретном издании или деталях, можно всегда это обсудить.',
   },
   'Figurines': {
     en: 'Figurines',
@@ -63,19 +63,19 @@ export const { t } = createKeyset({
   },
   'I appreciate sets that focus on engineering and make for good display pieces, like Architecture, Technic, or the Botanical collection. I generally lean away from traditional play-sets.': {
     en: 'I appreciate sets that focus on engineering and make for good display pieces, like Architecture, Technic, or the Botanical collection. I generally lean away from traditional play-sets.',
-    ru: 'Я ценю наборы, ориентированные на инженерию, которые хорошо смотрятся на полке — например, Architecture, Technic или Botanical. Обычно я избегаю традиционных игровых наборов.',
+    ru: 'Я ценю наборы, ориентированные на инженерию, которые хорошо смотрятся на полке — например, Architecture, Technic или Botanical. Обычно я избегаю традиционных игровых наборов (friends, city, и другие подобные).',
   },
   'Architectural landmarks or skylines': {
     en: 'Architectural landmarks or skylines',
-    ru: 'Архитектурные достопримечательности или панорамы',
+    ru: 'Архитектурные наборы',
   },
-  'NASA and space exploration sets (like the Saturn V)': {
-    en: 'NASA and space exploration sets (like the Saturn V)',
-    ru: 'Наборы NASA и освоения космоса (например, Saturn V)',
+  'NASA and space exploration sets (like the #92176 Ideas NASA Apollo Saturn V)': {
+    en: 'NASA and space exploration sets (like the #92176 Ideas NASA Apollo Saturn V)',
+    ru: 'Наборы NASA и иные аэрокосмические (например, #92176 Ideas NASA Apollo Saturn V)',
   },
   'High-fidelity Technic vehicles': {
     en: 'High-fidelity Technic vehicles',
-    ru: 'Высокодетализированная техника Technic',
+    ru: 'Technic и другие высокотехнические наборы',
   },
   'Already Owned': {
     en: 'Already Owned',
@@ -187,6 +187,6 @@ export const { t } = createKeyset({
   },
   'Cast Iron Cube 10x10x10cm (just for the tactile density)': {
     en: 'Cast Iron Cube 10x10x10cm (just for the tactile density)',
-    ru: 'Чугунный куб 10x10x10 см (просто ради тактильной плотности)',
+    ru: 'Чугунный куб 10x10x10 см (по приколу)',
   },
 });
