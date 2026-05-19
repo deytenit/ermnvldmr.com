@@ -82,7 +82,7 @@
     "http-server": "^14.1.1",
     "jsdom": "^28.0.0",
     "playwright": "^1.57.0",
-    "postcss": "^8.5.14",
+    "postcss": "^8.5.15",
     "storybook": "^8.6.17",
     "storybook-react-rsbuild": "^1.0.3",
     "typescript": "^5.8.3",
