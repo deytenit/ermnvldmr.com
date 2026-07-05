@@ -1,11 +1,17 @@
 ---
 title: Documentation of ermnvldmr.com root deployment commons
 description: Documentation for the ermnvldmr.com root deployment commons framework.
-weight: 1
+weight: 2
 type: docs
 cascade:
   type: docs
 ---
+
+> [!WARNING]
+> **Deprecated.** The root framework has been superseded by the
+> [apex fleet operations framework](/apex) — a python-stdlib rewrite of the engine with a
+> shared compose core. This section is retained for reference only and no longer receives
+> updates.
 
 The `ermnvldmr.com-root-commons` framework provides a minimal-dependency deployment environment for independent, self-hosted projects.
 
