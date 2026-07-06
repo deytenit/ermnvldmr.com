@@ -4,7 +4,7 @@ import React from 'react';
 
 import { t, tRaw } from './index.i18n';
 import { DefaultLayout } from '../components/Layout/DefaultLayout';
-import { createPage } from '../lib/core/createPage';
+import { createPage } from '@ermnvldmr/ssg';
 import { SITE_TITLE } from '../lib/shared/constants';
 
 /**

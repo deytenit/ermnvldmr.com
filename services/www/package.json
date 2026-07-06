@@ -4,6 +4,8 @@
   "description": "www.ermnvldmr.com website",
   "type": "module",
   "scripts": {
+    "cli": "ermnvldmr-cli",
+    "sync:static": "pnpm cli sync:static",
     "dev": "rsbuild dev",
     "build": "rsbuild build",
     "build:en": "LOCALE=en rsbuild build",
@@ -27,6 +29,7 @@
   },
   "dependencies": {
     "@ermnvldmr/i18n": "workspace:*",
+    "@ermnvldmr/ssg": "workspace:*",
     "@ermnvldmr/stl": "workspace:*",
     "@ermnvldmr/ui": "workspace:*",
     "lucide-react": "^0.503.0",
@@ -35,6 +38,7 @@
     "tailwindcss": "^4.1.4"
   },
   "devDependencies": {
+    "@ermnvldmr/cli": "workspace:*",
     "@ermnvldmr/eslint-config": "workspace:*",
     "@ermnvldmr/rsbuild-config": "workspace:*",
     "@ermnvldmr/storybook-config": "workspace:*",

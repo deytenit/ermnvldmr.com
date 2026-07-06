@@ -41,7 +41,7 @@ export const BentoGridBaseCard = ({
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-xl border border-rb-outline bg-rb-base p-6 shadow-sm transition-all hover:shadow-md',
+        'relative overflow-hidden rounded-xl border border-outline bg-base p-6 shadow-sm transition-all hover:shadow-md',
         getSpanClasses({ colSpan, rowSpan }),
         className
       )}

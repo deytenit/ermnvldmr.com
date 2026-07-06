@@ -1,25 +1,30 @@
 import React from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
-import '../../static/global.css'; // Ensure global styles are available
 
 /**
- *
+ * Options for page creation.
  */
 export interface PageOptions {
+  /** Document title to set on mount. */
   title?: string;
+  /** Content of the meta description tag. */
   description?: string;
 }
 
 /**
- * Creates a React page component with hydration support.
+ * Mounts or hydrates a React component into the `#root` element.
+ *
+ * Skips DOM mounting during the SSG server-side render pass
+ * (`typeof window === 'undefined'`). On the client, hydrates if the
+ * root already has children (SSG output), otherwise performs a fresh
+ * `createRoot` render.
  *
  * @param Component - The React component to render.
- * @param options - Page options like title.
- * @returns The page component.
+ * @param options - Optional page metadata (title, description).
  *
  * @example
  * ```tsx
- * createPage(<App />);
+ * createPage(App, { title: 'My Page' });
  * ```
  */
 export function createPage(Component: React.ComponentType, options: PageOptions = {}): void {

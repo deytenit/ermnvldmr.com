@@ -1,9 +1,10 @@
-import { defineServiceConfig, discoverEntries } from '@ermnvldmr/rsbuild-config/dev';
+import { defineSSGServiceConfig, discoverEntries } from '@ermnvldmr/ssg/dev';
 import { THEME_INIT_SCRIPT, THEME_INIT_STYLES } from '@ermnvldmr/ui/dev';
 
-export default defineServiceConfig({
+export default defineSSGServiceConfig({
   source: {
     entry: discoverEntries(import.meta.dirname, './src/app/**/*.tsx'),
+    preEntry: ['./src/static/global.css'],
   },
   html: {
     title: 'Static Content',

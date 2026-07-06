@@ -48,6 +48,6 @@ describe('components/Time', () => {
 
     const timeElement = screen.getByText(/February 10, 2026/i);
     expect(timeElement).toHaveClass('font-bold');
-    expect(timeElement).toHaveClass('text-[var(--rb-primary-text)]');
+    expect(timeElement).toHaveClass('text-primary-text');
   });
 });

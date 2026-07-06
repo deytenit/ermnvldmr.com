@@ -76,7 +76,7 @@ export const BentoGridListCard = ({
         </HStack>
 
         {description && (
-          <Text className="text-rb-muted-text">
+          <Text className="text-muted-text">
             {description}
           </Text>
         )}

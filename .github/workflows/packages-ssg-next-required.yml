@@ -1,0 +1,141 @@
+name: packages/ssg - next/required
+
+on:
+  push:
+    branches: [next]
+    paths:
+      - 'packages/ssg/**'
+      - '.github/workflows/packages-ssg-next-required.yml'
+      - 'pnpm-lock.yaml'
+
+concurrency:
+  group: ci-ssg-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  setup-stage:
+    name: Setup - Stage
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache-pnpm-store.outputs.cache-hit }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+
+      - name: Setup Node.js with pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Cache pnpm store
+        id: cache-pnpm-store
+        uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+  build-configs:
+    name: Build - Configs
+    needs: setup-stage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build Rsbuild config
+        run: pnpm --filter @ermnvldmr/rsbuild-config build
+      - name: Upload Config Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rsbuild-config-dist
+          path: packages/rsbuild-config/dist
+          retention-days: 1
+
+  lint-ssg:
+    name: Lint - SSG
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: rsbuild-config-dist
+          path: packages/rsbuild-config/dist
+      - name: Lint SSG package
+        run: pnpm --filter @ermnvldmr/ssg lint
+
+  typecheck-ssg:
+    name: Typecheck - SSG
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: rsbuild-config-dist
+          path: packages/rsbuild-config/dist
+      - name: Typecheck SSG package
+        run: pnpm --filter @ermnvldmr/ssg typecheck
+
+  build-ssg:
+    name: Build - SSG
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Config Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: rsbuild-config-dist
+          path: packages/rsbuild-config/dist
+      - name: Build SSG package
+        run: pnpm --filter @ermnvldmr/ssg build

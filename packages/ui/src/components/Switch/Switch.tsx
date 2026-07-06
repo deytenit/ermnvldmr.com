@@ -1,4 +1,5 @@
 import { cn } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React, { useRef } from 'react';
 import { useSwitch, useFocusRing, VisuallyHidden } from 'react-aria';
 import { useToggleState } from 'react-stately';
@@ -41,6 +42,166 @@ export interface SwitchProps extends AriaSwitchProps {
   color?: SwitchColor;
 }
 
+const trackVariants = cva(
+  'relative w-11 h-6 transition-all duration-200 ease-in-out rounded-full outline-none flex items-center',
+  {
+    variants: {
+      variant: {
+        solid: 'data-[selected=false]:bg-muted',
+        outline: 'border-2 data-[selected=false]:bg-transparent data-[selected=false]:border-muted',
+        ghost: 'data-[selected=false]:bg-transparent data-[selected=false]:border-transparent',
+      },
+      color: {
+        primary: '',
+        'primary-negative': '',
+        secondary: '',
+        'secondary-negative': '',
+        tertiary: '',
+        'tertiary-negative': '',
+        error: '',
+        'error-negative': '',
+        neutral: '',
+        'neutral-negative': '',
+      },
+    },
+    compoundVariants: [
+      // primary
+      { variant: 'solid', color: 'primary', className: 'data-[selected=true]:bg-primary data-[selected=true]:border-primary' },
+      { variant: 'outline', color: 'primary', className: 'data-[selected=true]:bg-primary data-[selected=true]:border-primary' },
+      { variant: 'ghost', color: 'primary', className: 'data-[selected=true]:bg-primary/20 data-[selected=true]:border-transparent' },
+
+      // primary-negative
+      { variant: 'solid', color: 'primary-negative', className: 'data-[selected=true]:bg-primary-text data-[selected=true]:border-primary-text' },
+      { variant: 'outline', color: 'primary-negative', className: 'data-[selected=true]:bg-primary-text data-[selected=true]:border-primary-text' },
+      { variant: 'ghost', color: 'primary-negative', className: 'data-[selected=true]:bg-primary-text/20 data-[selected=true]:border-transparent' },
+
+      // secondary
+      { variant: 'solid', color: 'secondary', className: 'data-[selected=true]:bg-secondary data-[selected=true]:border-secondary' },
+      { variant: 'outline', color: 'secondary', className: 'data-[selected=true]:bg-secondary data-[selected=true]:border-secondary' },
+      { variant: 'ghost', color: 'secondary', className: 'data-[selected=true]:bg-secondary/20 data-[selected=true]:border-transparent' },
+
+      // secondary-negative
+      { variant: 'solid', color: 'secondary-negative', className: 'data-[selected=true]:bg-secondary-text data-[selected=true]:border-secondary-text' },
+      { variant: 'outline', color: 'secondary-negative', className: 'data-[selected=true]:bg-secondary-text data-[selected=true]:border-secondary-text' },
+      { variant: 'ghost', color: 'secondary-negative', className: 'data-[selected=true]:bg-secondary-text/20 data-[selected=true]:border-transparent' },
+
+      // tertiary
+      { variant: 'solid', color: 'tertiary', className: 'data-[selected=true]:bg-tertiary data-[selected=true]:border-tertiary' },
+      { variant: 'outline', color: 'tertiary', className: 'data-[selected=true]:bg-tertiary data-[selected=true]:border-tertiary' },
+      { variant: 'ghost', color: 'tertiary', className: 'data-[selected=true]:bg-tertiary/20 data-[selected=true]:border-transparent' },
+
+      // tertiary-negative
+      { variant: 'solid', color: 'tertiary-negative', className: 'data-[selected=true]:bg-tertiary-text data-[selected=true]:border-tertiary-text' },
+      { variant: 'outline', color: 'tertiary-negative', className: 'data-[selected=true]:bg-tertiary-text data-[selected=true]:border-tertiary-text' },
+      { variant: 'ghost', color: 'tertiary-negative', className: 'data-[selected=true]:bg-tertiary-text/20 data-[selected=true]:border-transparent' },
+
+      // error
+      { variant: 'solid', color: 'error', className: 'data-[selected=true]:bg-error data-[selected=true]:border-error' },
+      { variant: 'outline', color: 'error', className: 'data-[selected=true]:bg-error data-[selected=true]:border-error' },
+      { variant: 'ghost', color: 'error', className: 'data-[selected=true]:bg-error/20 data-[selected=true]:border-transparent' },
+
+      // error-negative
+      { variant: 'solid', color: 'error-negative', className: 'data-[selected=true]:bg-error-text data-[selected=true]:border-error-text' },
+      { variant: 'outline', color: 'error-negative', className: 'data-[selected=true]:bg-error-text data-[selected=true]:border-error-text' },
+      { variant: 'ghost', color: 'error-negative', className: 'data-[selected=true]:bg-error-text/20 data-[selected=true]:border-transparent' },
+
+      // neutral
+      { variant: 'solid', color: 'neutral', className: 'data-[selected=true]:bg-muted data-[selected=true]:border-muted' },
+      { variant: 'outline', color: 'neutral', className: 'data-[selected=true]:bg-muted data-[selected=true]:border-muted' },
+      { variant: 'ghost', color: 'neutral', className: 'data-[selected=true]:bg-muted/20 data-[selected=true]:border-transparent' },
+
+      // neutral-negative
+      { variant: 'solid', color: 'neutral-negative', className: 'data-[selected=true]:bg-[var(--rb-text)] data-[selected=true]:border-[var(--rb-text)]' },
+      { variant: 'outline', color: 'neutral-negative', className: 'data-[selected=true]:bg-[var(--rb-text)] data-[selected=true]:border-[var(--rb-text)]' },
+      { variant: 'ghost', color: 'neutral-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]/20 data-[selected=true]:border-transparent' },
+    ],
+    defaultVariants: {
+      variant: 'solid',
+      color: 'primary',
+    },
+  }
+);
+
+const thumbVariants = cva(
+  'w-4 h-4 transition-all duration-200 ease-in-out transform rounded-full shadow-sm data-[selected=false]:bg-[var(--rb-text)] data-[selected=false]:translate-x-0',
+  {
+    variants: {
+      variant: {
+        solid: 'ml-1 data-[selected=true]:translate-x-5',
+        outline: 'ml-0.5 data-[selected=true]:translate-x-4.5',
+        ghost: 'ml-1 data-[selected=true]:translate-x-5',
+      },
+      color: {
+        primary: '',
+        'primary-negative': '',
+        secondary: '',
+        'secondary-negative': '',
+        tertiary: '',
+        'tertiary-negative': '',
+        error: '',
+        'error-negative': '',
+        neutral: '',
+        'neutral-negative': '',
+      },
+    },
+    compoundVariants: [
+      // primary
+      { variant: 'solid', color: 'primary', className: 'data-[selected=true]:bg-primary-text' },
+      { variant: 'outline', color: 'primary', className: 'data-[selected=true]:bg-primary' },
+      { variant: 'ghost', color: 'primary', className: 'data-[selected=true]:bg-primary' },
+
+      // primary-negative
+      { variant: 'solid', color: 'primary-negative', className: 'data-[selected=true]:bg-[var(--rb-base)]' },
+      { variant: 'outline', color: 'primary-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
+      { variant: 'ghost', color: 'primary-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
+
+      // secondary
+      { variant: 'solid', color: 'secondary', className: 'data-[selected=true]:bg-secondary-text' },
+      { variant: 'outline', color: 'secondary', className: 'data-[selected=true]:bg-secondary' },
+      { variant: 'ghost', color: 'secondary', className: 'data-[selected=true]:bg-secondary' },
+
+      // secondary-negative
+      { variant: 'solid', color: 'secondary-negative', className: 'data-[selected=true]:bg-[var(--rb-base)]' },
+      { variant: 'outline', color: 'secondary-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
+      { variant: 'ghost', color: 'secondary-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
+
+      // tertiary
+      { variant: 'solid', color: 'tertiary', className: 'data-[selected=true]:bg-tertiary-text' },
+      { variant: 'outline', color: 'tertiary', className: 'data-[selected=true]:bg-tertiary' },
+      { variant: 'ghost', color: 'tertiary', className: 'data-[selected=true]:bg-tertiary' },
+
+      // tertiary-negative
+      { variant: 'solid', color: 'tertiary-negative', className: 'data-[selected=true]:bg-[var(--rb-base)]' },
+      { variant: 'outline', color: 'tertiary-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
+      { variant: 'ghost', color: 'tertiary-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
+
+      // error
+      { variant: 'solid', color: 'error', className: 'data-[selected=true]:bg-error-text' },
+      { variant: 'outline', color: 'error', className: 'data-[selected=true]:bg-error' },
+      { variant: 'ghost', color: 'error', className: 'data-[selected=true]:bg-error' },
+
+      // error-negative
+      { variant: 'solid', color: 'error-negative', className: 'data-[selected=true]:bg-[var(--rb-base)]' },
+      { variant: 'outline', color: 'error-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
+      { variant: 'ghost', color: 'error-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
+
+      // neutral
+      { variant: 'solid', color: 'neutral', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
+      { variant: 'outline', color: 'neutral', className: 'data-[selected=true]:bg-muted' },
+      { variant: 'ghost', color: 'neutral', className: 'data-[selected=true]:bg-muted' },
+
+      // neutral-negative
+      { variant: 'solid', color: 'neutral-negative', className: 'data-[selected=true]:bg-[var(--rb-base)]' },
+      { variant: 'outline', color: 'neutral-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
+      { variant: 'ghost', color: 'neutral-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
+    ],
+    defaultVariants: {
+      variant: 'solid',
+      color: 'primary',
+    },
+  }
+);
+
 /**
  * A highly accessible toggle switch component.
  *
@@ -60,66 +221,6 @@ export function Switch(props: SwitchProps): React.JSX.Element {
   const { inputProps } = useSwitch(props, state, ref);
   const { isFocusVisible, focusProps } = useFocusRing();
 
-  const getVariantStyles = (): React.CSSProperties => {
-    const isNegative = color.endsWith('-negative');
-    const baseColor = color.replace('-negative', '');
-
-    const colors: Record<string, { base: string; text: string }> = {
-      primary: { base: 'var(--rb-primary-base)', text: 'var(--rb-primary-text)' },
-      secondary: { base: 'var(--rb-secondary-base)', text: 'var(--rb-secondary-text)' },
-      tertiary: { base: 'var(--rb-tertiary-base)', text: 'var(--rb-tertiary-text)' },
-      error: { base: 'var(--rb-error-base)', text: 'var(--rb-error-text)' },
-      neutral: { base: 'var(--rb-muted-base)', text: 'var(--rb-text)' },
-    };
-
-    const colorValues = colors[baseColor];
-    const backgroundColor = isNegative ? colorValues.text : colorValues.base;
-
-    if (!state.isSelected) {
-      return {};
-    }
-
-    switch (variant) {
-      case 'solid':
-        return { backgroundColor };
-      case 'outline':
-        return { borderColor: backgroundColor };
-      case 'ghost':
-        return { backgroundColor: `${backgroundColor}33`, borderColor: 'transparent' }; // 33 is 20% opacity in hex
-      default:
-        return { backgroundColor };
-    }
-  };
-
-  const getThumbStyles = (): React.CSSProperties => {
-    const isNegative = color.endsWith('-negative');
-    const baseColor = color.replace('-negative', '');
-
-    const colors: Record<string, { text: string }> = {
-      primary: { text: 'var(--rb-primary-text)' },
-      secondary: { text: 'var(--rb-secondary-text)' },
-      tertiary: { text: 'var(--rb-tertiary-text)' },
-      error: { text: 'var(--rb-error-text)' },
-      neutral: { text: 'var(--rb-text)' },
-    };
-
-    const thumbColor = isNegative ? 'var(--rb-base)' : colors[baseColor].text;
-
-    if (!state.isSelected) {
-      return {};
-    }
-
-    switch (variant) {
-      case 'solid':
-        return { backgroundColor: thumbColor };
-      case 'outline':
-      case 'ghost':
-        return { backgroundColor: isNegative ? 'var(--rb-text)' : `var(--rb-${baseColor}-base)` };
-      default:
-        return { backgroundColor: thumbColor };
-    }
-  };
-
   return (
     <label
       className={cn(
@@ -134,31 +235,15 @@ export function Switch(props: SwitchProps): React.JSX.Element {
       <div
         aria-hidden="true"
         className={cn(
-          'relative w-11 h-6 transition-all duration-200 ease-in-out rounded-full outline-none flex items-center',
-          !state.isSelected &&
-            (variant === 'solid'
-              ? 'bg-[var(--rb-muted-base)]'
-              : variant === 'outline'
-                ? 'bg-transparent border-[var(--rb-muted-base)] border-2'
-                : 'bg-transparent border-transparent'),
-          state.isSelected && variant === 'outline' && 'bg-transparent border-2',
+          trackVariants({ variant, color }),
           isFocusVisible && 'ring-2 ring-offset-2 ring-[var(--rb-ring)]',
           props.isDisabled && 'grayscale-[0.5]'
         )}
-        style={getVariantStyles()}
+        data-selected={state.isSelected}
       >
         <div
-          className={cn(
-            'w-4 h-4 transition-all duration-200 ease-in-out transform rounded-full shadow-sm',
-            !state.isSelected && 'bg-[var(--rb-text)]',
-            variant === 'outline' ? 'ml-0.5' : 'ml-1',
-            state.isSelected
-              ? variant === 'outline'
-                ? 'translate-x-4.5'
-                : 'translate-x-5'
-              : 'translate-x-0'
-          )}
-          style={getThumbStyles()}
+          className={thumbVariants({ variant, color })}
+          data-selected={state.isSelected}
         />
       </div>
       {children && (

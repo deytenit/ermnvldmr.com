@@ -2,7 +2,7 @@ import { VStack, HStack, Header, Paragraph, Link } from '@ermnvldmr/ui';
 import React, { useEffect, useState } from 'react';
 
 import { IndexLayout } from '../components/layouts/IndexLayout/IndexLayout';
-import { createPage } from '../lib/core/createPage';
+import { createPage } from '@ermnvldmr/ssg';
 import {
   AUTHOR_EMAIL,
   AUTHOR_NAME,
@@ -12,63 +12,63 @@ import {
 } from '../lib/shared/constants';
 import { getCurrentYear, getHttpStatusUrl } from '../lib/shared/utils';
 
-createPage(
-  function ErrorPage() {
-    const [status, setStatus] = useState<number | null>(null);
+function ErrorPage() {
+  const [status, setStatus] = useState<number | null>(null);
 
-    useEffect(() => {
-      /**
-       * Type guard for PerformanceNavigationTiming.
-       * @param entry - The performance entry to check.
-       * @returns True if entry is PerformanceNavigationTiming.
-       * @example
-       * ```typescript
-       * const isNav = isNavigationTiming(entry);
-       * ```
-       */
-      function isNavigationTiming(entry: PerformanceEntry): entry is PerformanceNavigationTiming {
-        return entry.entryType === 'navigation';
-      }
+  useEffect(() => {
+    /**
+     * Type guard for PerformanceNavigationTiming.
+     * @param entry - The performance entry to check.
+     * @returns True if entry is PerformanceNavigationTiming.
+     * @example
+     * ```typescript
+     * const isNav = isNavigationTiming(entry);
+     * ```
+     */
+    function isNavigationTiming(entry: PerformanceEntry): entry is PerformanceNavigationTiming {
+      return entry.entryType === 'navigation';
+    }
 
-      const navigationData = window.performance.getEntries().find(isNavigationTiming);
+    const navigationData = window.performance.getEntries().find(isNavigationTiming);
 
-      if (navigationData?.responseStatus) {
-        setStatus(navigationData.responseStatus);
-      }
-    }, []);
+    if (navigationData?.responseStatus) {
+      setStatus(navigationData.responseStatus);
+    }
+  }, []);
 
-    return (
-      <IndexLayout>
-        <main className="h-screen w-screen">
-          <VStack align="center" className="w-full h-full" justify="center">
-            <VStack align="start" gap={8}>
-              <Header level={1}>
-                Exceptional Situation
-                {status !== null && (
-                  <>
-                    {' '}
-                    <Link href={getHttpStatusUrl(status)} size="l" type="display">
-                      #{status}
-                    </Link>
-                  </>
-                )}
-              </Header>{' '}
-              <Paragraph>
-                This location is unavailable at the moment — static content does not dwell here
-              </Paragraph>
-              <HStack className="w-full" justify="between">
-                <span>
-                  <Link href={`mailto:${AUTHOR_EMAIL}`}>{AUTHOR_NAME}</Link>, {getCurrentYear()}
-                </span>
-                <span>
-                  <Link href={SITE_URL}>ermnvldmr.com</Link>
-                </span>
-              </HStack>
-            </VStack>
+  return (
+    <IndexLayout>
+      <main className="h-screen w-screen">
+        <VStack align="center" className="w-full h-full" justify="center">
+          <VStack align="start" gap={8}>
+            <Header level={1}>
+              Exceptional Situation
+              {status !== null && (
+                <>
+                  {' '}
+                  <Link href={getHttpStatusUrl(status)} size="l" type="display">
+                    #{status}
+                  </Link>
+                </>
+              )}
+            </Header>{' '}
+            <Paragraph>
+              This location is unavailable at the moment — static content does not dwell here
+            </Paragraph>
+            <HStack className="w-full" justify="between">
+              <span>
+                <Link href={`mailto:${AUTHOR_EMAIL}`}>{AUTHOR_NAME}</Link>, {getCurrentYear()}
+              </span>
+              <span>
+                <Link href={SITE_URL}>ermnvldmr.com</Link>
+              </span>
+            </HStack>
           </VStack>
-        </main>
-      </IndexLayout>
-    );
-  },
-  { title: ERROR_TITLE, description: ERROR_DESCRIPTION }
-);
+        </VStack>
+      </main>
+    </IndexLayout>
+  );
+}
+
+createPage(ErrorPage, { title: ERROR_TITLE, description: ERROR_DESCRIPTION });
+export default ErrorPage;

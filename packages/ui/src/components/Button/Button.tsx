@@ -1,4 +1,5 @@
 import { cn, castRef, genericMemo } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React, { forwardRef, useRef } from 'react';
 import { useButton, useLink, useFocusRing, useHover } from 'react-aria';
 
@@ -77,6 +78,109 @@ interface LinkButtonProps
  */
 export type ButtonProps = ActionButtonProps | LinkButtonProps;
 
+const buttonVariants = cva(
+  'inline-flex items-center justify-center font-medium transition-all duration-200 select-none outline-none relative overflow-hidden cursor-pointer active:scale-[0.98]',
+  {
+    variants: {
+      variant: {
+        solid: '',
+        outline: '',
+        ghost: '',
+        link: '',
+      },
+      color: {
+        primary: '',
+        'primary-negative': '',
+        secondary: '',
+        'secondary-negative': '',
+        tertiary: '',
+        'tertiary-negative': '',
+        error: '',
+        'error-negative': '',
+        neutral: '',
+        'neutral-negative': '',
+      },
+      size: {
+        s: 'h-8 px-3 text-sm gap-1.5',
+        m: 'h-10 px-4 text-base gap-2',
+        l: 'h-12 px-6 text-lg gap-3',
+      },
+      rounded: {
+        none: 'rounded-none',
+        md: 'rounded-md',
+        full: 'rounded-full',
+      },
+      fullWidth: {
+        true: 'w-full',
+        false: '',
+      },
+      isDisabled: {
+        true: 'opacity-50 cursor-not-allowed grayscale-[0.5] active:scale-100',
+        false: '',
+      },
+    },
+    compoundVariants: [
+      // Primary
+      { variant: 'solid', color: 'primary', className: 'bg-primary text-primary-text' },
+      { variant: 'solid', color: 'primary-negative', className: 'bg-primary-text text-primary' },
+      { variant: 'outline', color: 'primary', className: 'bg-transparent border-2 text-primary border-primary hover:bg-primary/10' },
+      { variant: 'outline', color: 'primary-negative', className: 'bg-transparent border-2 text-primary-text border-primary-text hover:bg-primary-text/10' },
+      { variant: 'ghost', color: 'primary', className: 'bg-transparent border-transparent text-primary hover:bg-primary/10' },
+      { variant: 'ghost', color: 'primary-negative', className: 'bg-transparent border-transparent text-primary-text hover:bg-primary-text/10' },
+      { variant: 'link', color: 'primary', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-primary' },
+      { variant: 'link', color: 'primary-negative', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-primary-text' },
+
+      // Secondary
+      { variant: 'solid', color: 'secondary', className: 'bg-secondary text-secondary-text' },
+      { variant: 'solid', color: 'secondary-negative', className: 'bg-secondary-text text-secondary' },
+      { variant: 'outline', color: 'secondary', className: 'bg-transparent border-2 text-secondary border-secondary hover:bg-secondary/10' },
+      { variant: 'outline', color: 'secondary-negative', className: 'bg-transparent border-2 text-secondary-text border-secondary-text hover:bg-secondary-text/10' },
+      { variant: 'ghost', color: 'secondary', className: 'bg-transparent border-transparent text-secondary hover:bg-secondary/10' },
+      { variant: 'ghost', color: 'secondary-negative', className: 'bg-transparent border-transparent text-secondary-text hover:bg-secondary-text/10' },
+      { variant: 'link', color: 'secondary', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-secondary' },
+      { variant: 'link', color: 'secondary-negative', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-secondary-text' },
+
+      // Tertiary
+      { variant: 'solid', color: 'tertiary', className: 'bg-tertiary text-tertiary-text' },
+      { variant: 'solid', color: 'tertiary-negative', className: 'bg-tertiary-text text-tertiary' },
+      { variant: 'outline', color: 'tertiary', className: 'bg-transparent border-2 text-tertiary border-tertiary hover:bg-tertiary/10' },
+      { variant: 'outline', color: 'tertiary-negative', className: 'bg-transparent border-2 text-tertiary-text border-tertiary-text hover:bg-tertiary-text/10' },
+      { variant: 'ghost', color: 'tertiary', className: 'bg-transparent border-transparent text-tertiary hover:bg-tertiary/10' },
+      { variant: 'ghost', color: 'tertiary-negative', className: 'bg-transparent border-transparent text-tertiary-text hover:bg-tertiary-text/10' },
+      { variant: 'link', color: 'tertiary', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-tertiary' },
+      { variant: 'link', color: 'tertiary-negative', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-tertiary-text' },
+
+      // Error
+      { variant: 'solid', color: 'error', className: 'bg-error text-error-text' },
+      { variant: 'solid', color: 'error-negative', className: 'bg-error-text text-error' },
+      { variant: 'outline', color: 'error', className: 'bg-transparent border-2 text-error border-error hover:bg-error/10' },
+      { variant: 'outline', color: 'error-negative', className: 'bg-transparent border-2 text-error-text border-error-text hover:bg-error-text/10' },
+      { variant: 'ghost', color: 'error', className: 'bg-transparent border-transparent text-error hover:bg-error/10' },
+      { variant: 'ghost', color: 'error-negative', className: 'bg-transparent border-transparent text-error-text hover:bg-error-text/10' },
+      { variant: 'link', color: 'error', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-error' },
+      { variant: 'link', color: 'error-negative', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-error-text' },
+
+      // Neutral
+      { variant: 'solid', color: 'neutral', className: 'bg-muted text-[var(--rb-text)]' },
+      { variant: 'solid', color: 'neutral-negative', className: 'bg-[var(--rb-text)] text-muted' },
+      { variant: 'outline', color: 'neutral', className: 'bg-transparent border-2 text-muted border-muted hover:bg-muted/10' },
+      { variant: 'outline', color: 'neutral-negative', className: 'bg-transparent border-2 text-[var(--rb-text)] border-[var(--rb-text)] hover:bg-[var(--rb-text)]/10' },
+      { variant: 'ghost', color: 'neutral', className: 'bg-transparent border-transparent text-muted hover:bg-muted/10' },
+      { variant: 'ghost', color: 'neutral-negative', className: 'bg-transparent border-transparent text-[var(--rb-text)] hover:bg-[var(--rb-text)]/10' },
+      { variant: 'link', color: 'neutral', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-muted' },
+      { variant: 'link', color: 'neutral-negative', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-[var(--rb-text)]' },
+    ],
+    defaultVariants: {
+      variant: 'solid',
+      color: 'primary',
+      size: 'm',
+      rounded: 'md',
+      fullWidth: false,
+      isDisabled: false,
+    },
+  }
+);
+
 /**
  * A highly extensible, polymorphic button component.
  *
@@ -95,7 +199,7 @@ const ButtonComponent = forwardRef<HTMLElement, ButtonProps>(function Button(pro
     rounded = 'md',
     className,
     'data-testid': testId,
-    isDisabled,
+    isDisabled = false,
     href,
   } = props;
 
@@ -124,62 +228,14 @@ const ButtonComponent = forwardRef<HTMLElement, ButtonProps>(function Button(pro
   const { hoverProps, isHovered } = useHover({ isDisabled });
 
   // Styles mapping
-  const sizeClasses: Record<ButtonSize, string> = {
-    s: 'h-8 px-3 text-sm gap-1.5',
-    m: 'h-10 px-4 text-base gap-2',
-    l: 'h-12 px-6 text-lg gap-3',
-  };
-
   const iconClasses: Record<ButtonSize, string> = {
     s: 'w-4 h-4',
     m: 'w-5 h-5',
     l: 'w-6 h-6',
   };
 
-  const roundedClasses: Record<string, string> = {
-    none: 'rounded-none',
-    md: 'rounded-md',
-    full: 'rounded-full',
-  };
-
-  const getVariantClasses = (): string => {
-    const isNegative = color.endsWith('-negative');
-    const baseColor = color.replace('-negative', '');
-
-    const colors: Record<string, { base: string; text: string }> = {
-      primary: { base: 'var(--rb-primary-base)', text: 'var(--rb-primary-text)' },
-      secondary: { base: 'var(--rb-secondary-base)', text: 'var(--rb-secondary-text)' },
-      tertiary: { base: 'var(--rb-tertiary-base)', text: 'var(--rb-tertiary-text)' },
-      error: { base: 'var(--rb-error-base)', text: 'var(--rb-error-text)' },
-      neutral: { base: 'var(--rb-muted-base)', text: 'var(--rb-text)' },
-    };
-
-    const colorValues = colors[baseColor];
-    const backgroundColor = isNegative ? colorValues.text : colorValues.base;
-    const foregroundColor = isNegative ? colorValues.base : colorValues.text;
-
-    switch (variant) {
-      case 'solid':
-        return `bg-[${backgroundColor}] text-[${foregroundColor}] border-transparent`;
-      case 'outline':
-        return `bg-transparent text-[${backgroundColor}] border-[${backgroundColor}] border-2`;
-      case 'ghost':
-        return `bg-transparent text-[${backgroundColor}] border-transparent hover:bg-[${backgroundColor}]/10`;
-      case 'link':
-        return `bg-transparent text-[${backgroundColor}] border-transparent underline-offset-4 hover:underline px-0 h-auto`;
-      default:
-        return '';
-    }
-  };
-
   const sharedClasses = cn(
-    'inline-flex items-center justify-center font-medium transition-all duration-200 select-none outline-none relative overflow-hidden cursor-pointer',
-    'active:scale-[0.98]',
-    sizeClasses[size],
-    roundedClasses[rounded],
-    getVariantClasses(),
-    fullWidth && 'w-full',
-    isDisabled && 'opacity-50 cursor-not-allowed grayscale-[0.5] active:scale-100',
+    buttonVariants({ variant, color, size, rounded, fullWidth, isDisabled }),
     isFocusVisible && 'ring-2 ring-[var(--rb-ring)] ring-offset-2',
     isHovered && !isDisabled && 'brightness-90 dark:brightness-110',
     className

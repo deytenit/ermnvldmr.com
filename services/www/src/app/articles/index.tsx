@@ -5,7 +5,7 @@ import React from 'react';
 import { t } from './index.i18n';
 import { sortedArticles } from '../../../content/registry';
 import { DefaultLayout } from '../../components/Layout/DefaultLayout';
-import { createPage } from '../../lib/core/createPage';
+import { createPage } from '@ermnvldmr/ssg';
 import { SITE_TITLE } from '../../lib/shared/constants';
 
 const DATE_LOCALE_MAP: Record<string, string> = { en: 'en-US', ru: 'ru-RU' };

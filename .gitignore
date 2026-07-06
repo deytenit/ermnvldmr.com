@@ -18,9 +18,9 @@ storybook-static/
 test-results/
 playwright-report/
 
-# environment variables
+# environment variables (.env.dev is encrypted and tracked; .env is plaintext)
 .env
-.env.production
+.env.keys
 
 # macOS-specific files
 .DS_Store

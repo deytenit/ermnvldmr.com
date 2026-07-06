@@ -46,4 +46,25 @@ describe('components/Switch', () => {
     await user.click(checkbox);
     expect(handleChange).not.toHaveBeenCalled();
   });
+
+  it('applies correct Tailwind classes to track and thumb when selected/unselected', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<Switch color="primary" variant="solid">Switch</Switch>);
+    
+    const track = container.querySelector('[aria-hidden="true"]');
+    const thumb = track?.firstElementChild;
+
+    // Unselected state
+    expect(track).toHaveClass('data-[selected=false]:bg-muted');
+    expect(thumb).toHaveClass('data-[selected=false]:bg-[var(--rb-text)]');
+
+    // Toggle
+    const checkbox = screen.getByRole('switch');
+    await user.click(checkbox);
+
+    // Selected state
+    expect(track).toHaveClass('data-[selected=true]:bg-primary');
+    expect(thumb).toHaveClass('data-[selected=true]:bg-primary-text');
+  });
 });
+

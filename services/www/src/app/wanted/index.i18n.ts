@@ -5,38 +5,43 @@ export const { t } = createKeyset({
     en: 'Wanted',
     ru: 'Разыскивается',
   },
-  Home: { 
-    en: 'Home', 
-    ru: 'Главная' 
+  Home: {
+    en: 'Home',
+    ru: 'Главная',
   },
-  'A quiet log of things I am planning to pick up eventually. It serves mostly as a personal reference, but also as a zero-pressure guide for friends.': {
-    en: 'A quiet log of things I am planning to pick up eventually. It serves mostly as a personal reference, but also as a zero-pressure guide for friends.',
-    ru: 'Список вещей, которые я планирую со временем приобрести. В основном это личная заметка, но также и ненавязчивый вишлист.',
-  },
+  'A quiet log of things I am planning to pick up eventually. It serves mostly as a personal reference, but also as a zero-pressure guide for friends.':
+    {
+      en: 'A quiet log of things I am planning to pick up eventually. It serves mostly as a personal reference, but also as a zero-pressure guide for friends.',
+      ru: 'Список вещей, которые я планирую со временем приобрести. В основном это личная заметка, но также и ненавязчивый вишлист.',
+    },
   'How this works': {
     en: 'How this works',
     ru: 'Как это работает',
   },
-  'Think of this as a living list of things I plan to acquire over time. If you ever feel inspired to contribute, I would be genuinely thrilled, but please know it is never expected.': {
-    en: 'Think of this as a living list of things I plan to acquire over time. If you ever feel inspired to contribute, I would be genuinely thrilled, but please know it is never expected.',
-    ru: 'Считайте это живым списком вещей, которые я планирую приобрести. Если у вас когда-нибудь появится желание поучаствовать — я буду искренне рад, но, пожалуйста, знайте, что это абсолютно необязательно.',
-  },
-  'When it comes to the items themselves, authenticity and quality matter a lot to me. I would always prefer to have nothing at all rather than a replica or a knock-off.': {
-    en: 'When it comes to the items themselves, authenticity and quality matter a lot to me. I would always prefer to have nothing at all rather than a replica or a knock-off.',
-    ru: 'Когда дело доходит до самих вещей, подлинность и качество значат для меня очень много. Я всегда предпочту не иметь ничего, чем реплику или подделку.',
-  },
-  'And of course, if you are ever unsure about a specific edition or detail, we can always just talk about it.': {
-    en: 'And of course, if you are ever unsure about a specific edition or detail, we can always just talk about it.',
-    ru: 'И, конечно, если вы не уверены в каком-то конкретном издании или деталях, можно всегда это обсудить.',
-  },
-  'Figurines': {
+  'Think of this as a living list of things I plan to acquire over time. If you ever feel inspired to contribute, I would be genuinely thrilled, but please know it is never expected.':
+    {
+      en: 'Think of this as a living list of things I plan to acquire over time. If you ever feel inspired to contribute, I would be genuinely thrilled, but please know it is never expected.',
+      ru: 'Считайте это живым списком вещей, которые я планирую приобрести. Если у вас когда-нибудь появится желание поучаствовать — я буду искренне рад, но, пожалуйста, знайте, что это абсолютно необязательно.',
+    },
+  'When it comes to the items themselves, authenticity and quality matter a lot to me. I would always prefer to have nothing at all rather than a replica or a knock-off.':
+    {
+      en: 'When it comes to the items themselves, authenticity and quality matter a lot to me. I would always prefer to have nothing at all rather than a replica or a knock-off.',
+      ru: 'Когда дело доходит до самих вещей, подлинность и качество значат для меня очень много. Я всегда предпочту не иметь ничего, чем реплику или подделку.',
+    },
+  'And of course, if you are ever unsure about a specific edition or detail, we can always just talk about it.':
+    {
+      en: 'And of course, if you are ever unsure about a specific edition or detail, we can always just talk about it.',
+      ru: 'И, конечно, если вы не уверены в каком-то конкретном издании или деталях, можно всегда это обсудить.',
+    },
+  Figurines: {
     en: 'Figurines',
     ru: 'Фигурки',
   },
-  'The specifics of the edition and its authenticity are quite important here. It is usually best to know the exact details to get it right.': {
-    en: 'The specifics of the edition and its authenticity are quite important here. It is usually best to know the exact details to get it right.',
-    ru: 'Специфика издания и его подлинность здесь довольно важны. Обычно лучше знать точные детали, чтобы не ошибиться.',
-  },
+  'The specifics of the edition and its authenticity are quite important here. It is usually best to know the exact details to get it right.':
+    {
+      en: 'The specifics of the edition and its authenticity are quite important here. It is usually best to know the exact details to get it right.',
+      ru: 'Специфика издания и его подлинность здесь довольно важны. Обычно лучше знать точные детали, чтобы не ошибиться.',
+    },
   'Looking for': {
     en: 'Looking for',
     ru: 'Ищу',
@@ -61,10 +66,11 @@ export const { t } = createKeyset({
     en: 'LEGO Sets',
     ru: 'Наборы LEGO',
   },
-  'I appreciate sets that focus on engineering and make for good display pieces, like Architecture, Technic, or the Botanical collection. I generally lean away from traditional play-sets.': {
-    en: 'I appreciate sets that focus on engineering and make for good display pieces, like Architecture, Technic, or the Botanical collection. I generally lean away from traditional play-sets.',
-    ru: 'Я ценю наборы, ориентированные на инженерию, которые хорошо смотрятся на полке — например, Architecture, Technic или Botanical. Обычно я избегаю традиционных игровых наборов (friends, city, и другие подобные).',
-  },
+  'I appreciate sets that focus on engineering and make for good display pieces, like Architecture, Technic, or the Botanical collection. I generally lean away from traditional play-sets.':
+    {
+      en: 'I appreciate sets that focus on engineering and make for good display pieces, like Architecture, Technic, or the Botanical collection. I generally lean away from traditional play-sets.',
+      ru: 'Я ценю наборы, ориентированные на инженерию, которые хорошо смотрятся на полке — например, Architecture, Technic или Botanical. Обычно я избегаю традиционных игровых наборов (friends, city, и другие подобные).',
+    },
   'Architectural landmarks or skylines': {
     en: 'Architectural landmarks or skylines',
     ru: 'Архитектурные наборы',
@@ -93,10 +99,11 @@ export const { t } = createKeyset({
     en: 'Die-cast Models',
     ru: 'Дайкаст модели',
   },
-  'I enjoy high-quality pre-assembled die-cast models. I am not much into plastic kits that require glue or paint to assemble.': {
-    en: 'I enjoy high-quality pre-assembled die-cast models. I am not much into plastic kits that require glue or paint to assemble.',
-    ru: 'Мне нравятся качественные предварительно собранные дайкаст модели. Я не особо увлекаюсь пластиковыми наборами, которые нужно собирать с помощью клея и красок.',
-  },
+  'I enjoy high-quality pre-assembled die-cast models. I am not much into plastic kits that require glue or paint to assemble.':
+    {
+      en: 'I enjoy high-quality pre-assembled die-cast models. I am not much into plastic kits that require glue or paint to assemble.',
+      ru: 'Мне нравятся качественные предварительно собранные дайкаст модели. Я не особо увлекаюсь пластиковыми наборами, которые нужно собирать с помощью клея и красок.',
+    },
   'Spacecraft scale replicas (SpaceX, NASA)': {
     en: 'Spacecraft scale replicas (SpaceX, NASA)',
     ru: 'Масштабные модели космических аппаратов (SpaceX, NASA)',
@@ -117,11 +124,12 @@ export const { t } = createKeyset({
     en: 'Coffee gear',
     ru: 'Всё для кофе',
   },
-  'My current espresso setup uses a 51mm portafilter, so any accessories for it need to match that size perfectly.': {
-    en: 'My current espresso setup uses a 51mm portafilter, so any accessories for it need to match that size perfectly.',
-    ru: 'Мой текущий сетап для эспрессо использует 51-миллиметровый портафильтр, поэтому любые аксессуары для него должны идеально подходить по размеру.',
-  },
-  'AeroPress': {
+  'My current espresso setup uses a 51mm portafilter, so any accessories for it need to match that size perfectly.':
+    {
+      en: 'My current espresso setup uses a 51mm portafilter, so any accessories for it need to match that size perfectly.',
+      ru: 'Мой текущий сетап для эспрессо использует 51-миллиметровый портафильтр, поэтому любые аксессуары для него должны идеально подходить по размеру.',
+    },
+  AeroPress: {
     en: 'AeroPress',
     ru: 'AeroPress',
   },
@@ -153,7 +161,7 @@ export const { t } = createKeyset({
     en: 'French Press',
     ru: 'Френч-пресс',
   },
-  'Hobby': {
+  Hobby: {
     en: 'Hobby',
     ru: 'Хобби',
   },

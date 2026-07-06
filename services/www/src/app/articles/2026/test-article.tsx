@@ -4,7 +4,7 @@ import React from 'react';
 
 import { articles } from '../../../../content/registry';
 import { ArticleLayout } from '../../../components/Layout/ArticleLayout';
-import { createPage } from '../../../lib/core/createPage';
+import { createPage } from '@ermnvldmr/ssg';
 
 const article = articles['test-article'];
 

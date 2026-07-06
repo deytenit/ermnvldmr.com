@@ -46,17 +46,17 @@ export const BentoGridCTACard = ({
     <BentoGridBaseCard
       {...baseProps}
       className={cn(
-        variant === 'primary' && 'bg-rb-primary-base border-rb-primary-base',
+        variant === 'primary' && 'bg-primary border-primary',
         className
       )}
     >
       <VStack className="h-full justify-between" gap={4}>
         <VStack gap={2}>
-          <Header className={cn(variant === 'primary' && 'text-rb-primary-text')} level={3}>
+          <Header className={cn(variant === 'primary' && 'text-primary-text')} level={3}>
             {title}
           </Header>
           <Text
-            className={cn(variant === 'primary' ? 'text-rb-primary-text/80' : 'text-rb-muted-text')}
+            className={cn(variant === 'primary' ? 'text-primary-text/80' : 'text-muted-text')}
             size="m"
           >
             {description}

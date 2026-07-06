@@ -1,0 +1,45 @@
+{
+  "name": "@ermnvldmr/cli",
+  "version": "1.0.0",
+  "description": "Extensible CLI tool for ermnvldmr projects",
+  "type": "module",
+  "bin": {
+    "ermnvldmr-cli": "./dist/bin.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1075.0",
+    "@dotenvx/dotenvx": "^1.75.1",
+    "commander": "^13.1.0",
+    "execa": "^9.5.2",
+    "fast-glob": "^3.3.3",
+    "jiti": "^2.4.2",
+    "mime-types": "^3.0.2"
+  },
+  "devDependencies": {
+    "@ermnvldmr/eslint-config": "workspace:*",
+    "@ermnvldmr/rsbuild-config": "workspace:*",
+    "@types/mime-types": "^3.0.1",
+    "@types/node": "^22.13.0",
+    "sharp": "^0.35.2",
+    "typescript": "^5.8.2",
+    "vitest": "^4.0.18"
+  }
+}
