@@ -1,4 +1,5 @@
 import { cn } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React from 'react';
 
 /**
@@ -16,6 +17,26 @@ export interface StubProps {
   /** Whether to animate the shimmering effect */
   animate?: boolean;
 }
+
+const stubVariants = cva('bg-[var(--rb-color-neutral-100)] dark:bg-[var(--rb-color-neutral-800)]', {
+  variants: {
+    rounded: {
+      none: 'rounded-none',
+      sm: 'rounded-sm',
+      md: 'rounded-md',
+      lg: 'rounded-lg',
+      full: 'rounded-full',
+    },
+    animate: {
+      true: 'animate-shimmer',
+      false: '',
+    },
+  },
+  defaultVariants: {
+    rounded: 'md',
+    animate: true,
+  },
+});
 
 /**
  * A skeleton placeholder component with a shimmering animation.
@@ -38,22 +59,9 @@ export const Stub: React.FC<StubProps> = ({
   className,
   animate = true,
 }) => {
-  const roundedClasses = {
-    none: 'rounded-none',
-    sm: 'rounded-sm',
-    md: 'rounded-md',
-    lg: 'rounded-lg',
-    full: 'rounded-full',
-  };
-
   return (
     <div
-      className={cn(
-        'bg-[var(--rb-color-neutral-100)] dark:bg-[var(--rb-color-neutral-800)]',
-        animate && 'animate-shimmer',
-        roundedClasses[rounded],
-        className
-      )}
+      className={cn(stubVariants({ rounded, animate }), className)}
       data-testid="stub"
       style={{ width, height }}
     />

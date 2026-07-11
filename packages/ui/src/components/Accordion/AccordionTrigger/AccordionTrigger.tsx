@@ -1,4 +1,5 @@
 import { cn } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import { ChevronRight } from 'lucide-react';
 import React, { useRef } from 'react';
 import { useButton } from 'react-aria';
@@ -9,6 +10,36 @@ import { useAccordionContext } from '../contexts/AccordionContext/AccordionConte
 import { useAccordionItemContext } from '../contexts/AccordionItemContext/AccordionItemContext';
 
 import type { AccordionTriggerProps } from '../types';
+
+const triggerVariants = cva(
+  'group flex w-full items-center justify-between py-4 text-left transition-all outline-none focus-visible:ring-2 focus-visible:ring-[var(--rb-ring)] focus-visible:ring-offset-2',
+  {
+    variants: {
+      isDisabled: {
+        true: 'cursor-not-allowed opacity-50',
+        false: '',
+      },
+    },
+    defaultVariants: {
+      isDisabled: false,
+    },
+  }
+);
+
+const iconVariants = cva(
+  'size-5 shrink-0 transition-transform duration-200 text-[var(--rb-outline)]',
+  {
+    variants: {
+      isOpen: {
+        true: 'rotate-90',
+        false: '',
+      },
+    },
+    defaultVariants: {
+      isOpen: false,
+    },
+  }
+);
 
 /**
  * The interactive trigger for an Accordion item.
@@ -52,19 +83,10 @@ export const AccordionTrigger = ({
       <button
         {...buttonProps}
         ref={ref}
-        className={cn(
-          'group flex w-full items-center justify-between py-4 text-left transition-all outline-none focus-visible:ring-2 focus-visible:ring-[var(--rb-ring)] focus-visible:ring-offset-2',
-          isDisabled && 'cursor-not-allowed opacity-50',
-          className
-        )}
+        className={cn(triggerVariants({ isDisabled }), className)}
       >
         <HStack align="center" className="w-full" gap={2}>
-          <ChevronRight
-            className={cn(
-              'size-5 shrink-0 transition-transform duration-200 text-[var(--rb-outline)]',
-              isOpen && 'rotate-90'
-            )}
-          />
+          <ChevronRight className={cn(iconVariants({ isOpen }))} />
           <span className="flex-1">{children}</span>
         </HStack>
       </button>

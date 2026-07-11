@@ -1,4 +1,5 @@
 import { cn, castRef, genericMemo } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React, { forwardRef } from 'react';
 
 import { Text } from '../Text/Text';
@@ -18,6 +19,28 @@ export interface BlockquoteProps
   indent?: boolean;
 }
 
+const blockquoteVariants = cva('border-l-4 border-[var(--rb-primary)]', {
+  variants: {
+    variant: {
+      default: '',
+      inset: 'bg-[var(--rb-surface-variant)] p-6 rounded-r-lg',
+    },
+    indent: {
+      true: 'pl-6',
+      false: '',
+    },
+    gutterBottom: {
+      true: 'mb-6',
+      false: '',
+    },
+  },
+  defaultVariants: {
+    variant: 'default',
+    indent: true,
+    gutterBottom: false,
+  },
+});
+
 const BlockquoteComponent = forwardRef<HTMLQuoteElement, BlockquoteProps>(function Blockquote(
   {
     children,
@@ -34,13 +57,7 @@ const BlockquoteComponent = forwardRef<HTMLQuoteElement, BlockquoteProps>(functi
     <blockquote
       {...props}
       ref={ref}
-      className={cn(
-        'border-l-4 border-[var(--rb-primary)]',
-        indent && 'pl-6',
-        gutterBottom && 'mb-6',
-        variant === 'inset' && 'bg-[var(--rb-surface-variant)] p-6 rounded-r-lg',
-        className
-      )}
+      className={cn(blockquoteVariants({ variant, indent, gutterBottom }), className)}
       data-testid={testId}
     >
       {children}

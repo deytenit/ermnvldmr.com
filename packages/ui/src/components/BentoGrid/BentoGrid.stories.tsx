@@ -33,7 +33,7 @@ export const Showcase: Story = {
         />
         <BentoGrid.InfoCard
           description="Built on top of Rsbuild and Rspack for near-instant compilation and ultra-fast HMR."
-          icon={<Zap className="text-rb-orange-500" size={24} />}
+          icon={<Zap className="text-orange-500" size={24} />}
           title="Lightning Fast"
         />
         <BentoGrid.CTACard
@@ -46,7 +46,7 @@ export const Showcase: Story = {
         <BentoGrid.InfoCard
           description="Strict TypeScript integration across the entire monorepo for maximum reliability."
           footer={<div className="text-xs opacity-50">Strict Mode Enabled</div>}
-          icon={<Shield className="text-rb-green-500" size={24} />}
+          icon={<Shield className="text-green-500" size={24} />}
           title="Type Safe"
         />
         <BentoGrid.ImageCard
@@ -57,7 +57,7 @@ export const Showcase: Story = {
         />
         <BentoGrid.InfoCard
           description="Easily extend and customize the design system with our modular component library."
-          icon={<Cpu className="text-rb-blue-500" size={24} />}
+          icon={<Cpu className="text-blue-500" size={24} />}
           title="Modular Architecture"
         />
         <BentoGrid.CTACard
@@ -66,18 +66,18 @@ export const Showcase: Story = {
           href="#"
           title="Documentation"
         />
-        <BentoGrid.BaseCard className="bg-rb-tertiary-base/10 border-dashed" colSpan={4}>
+        <BentoGrid.BaseCard className="bg-tertiary/10 border-dashed" colSpan={4}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-rb-tertiary-base rounded-full text-rb-tertiary-text">
+              <div className="p-3 bg-tertiary rounded-full text-tertiary-text">
                 <Send size={20} />
               </div>
               <div>
-                <h4 className="font-bold text-rb-text">Subscribe to Newsletter</h4>
-                <p className="text-sm text-rb-muted-text">Stay updated with the latest releases and technical articles.</p>
+                <h4 className="font-bold text-text">Subscribe to Newsletter</h4>
+                <p className="text-sm text-muted-text">Stay updated with the latest releases and technical articles.</p>
               </div>
             </div>
-            <button className="px-6 py-2 bg-rb-text text-rb-base rounded-md font-medium">Subscribe</button>
+            <button className="px-6 py-2 bg-text text-[var(--rb-base)] rounded-md font-medium">Subscribe</button>
           </div>
         </BentoGrid.BaseCard>
       </BentoGrid>
@@ -91,31 +91,31 @@ export const LayoutPatterns: Story = {
       <section>
         <h3 className="mb-4 text-xl font-bold">Standard 4-Column Grid</h3>
         <BentoGrid>
-          <BentoGrid.BaseCard className="h-32 flex items-center justify-center bg-rb-color-neutral-100">1x1</BentoGrid.BaseCard>
-          <BentoGrid.BaseCard className="h-32 flex items-center justify-center bg-rb-color-neutral-100">1x1</BentoGrid.BaseCard>
-          <BentoGrid.BaseCard className="h-32 flex items-center justify-center bg-rb-color-neutral-100">1x1</BentoGrid.BaseCard>
-          <BentoGrid.BaseCard className="h-32 flex items-center justify-center bg-rb-color-neutral-100">1x1</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="h-32 flex items-center justify-center bg-neutral-100">1x1</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="h-32 flex items-center justify-center bg-neutral-100">1x1</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="h-32 flex items-center justify-center bg-neutral-100">1x1</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="h-32 flex items-center justify-center bg-neutral-100">1x1</BentoGrid.BaseCard>
         </BentoGrid>
       </section>
 
       <section>
         <h3 className="mb-4 text-xl font-bold">Mixed Spans (Hero Pattern)</h3>
         <BentoGrid>
-          <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-primary-base/20 border-rb-primary-base" colSpan={2} rowSpan={2}>2x2 Hero</BentoGrid.BaseCard>
-          <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-color-neutral-100" colSpan={2}>2x1 Wide</BentoGrid.BaseCard>
-          <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-color-neutral-100">1x1</BentoGrid.BaseCard>
-          <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-color-neutral-100">1x1</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="flex items-center justify-center bg-primary/20 border-primary" colSpan={2} rowSpan={2}>2x2 Hero</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="flex items-center justify-center bg-neutral-100" colSpan={2}>2x1 Wide</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="flex items-center justify-center bg-neutral-100">1x1</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="flex items-center justify-center bg-neutral-100">1x1</BentoGrid.BaseCard>
         </BentoGrid>
       </section>
 
       <section>
         <h3 className="mb-4 text-xl font-bold">Tall & Wide Pattern</h3>
         <BentoGrid>
-          <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-color-neutral-100">1x1</BentoGrid.BaseCard>
-          <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-secondary-base/20 border-rb-secondary-base" colSpan={2}>2x1 Wide</BentoGrid.BaseCard>
-          <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-tertiary-base/20 border-rb-tertiary-base" rowSpan={2}>1x2 Tall</BentoGrid.BaseCard>
-          <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-color-neutral-100">1x1</BentoGrid.BaseCard>
-          <BentoGrid.BaseCard className="flex items-center justify-center bg-rb-color-neutral-100" colSpan={2}>2x1</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="flex items-center justify-center bg-neutral-100">1x1</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="flex items-center justify-center bg-secondary/20 border-secondary" colSpan={2}>2x1 Wide</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="flex items-center justify-center bg-tertiary/20 border-tertiary" rowSpan={2}>1x2 Tall</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="flex items-center justify-center bg-neutral-100">1x1</BentoGrid.BaseCard>
+          <BentoGrid.BaseCard className="flex items-center justify-center bg-neutral-100" colSpan={2}>2x1</BentoGrid.BaseCard>
         </BentoGrid>
       </section>
     </div>
@@ -155,20 +155,20 @@ export const AllCardTypes: Story = {
           colSpan={2}
           defaultValue={['features']}
           description="A specialized card for categorized lists, ideal for wishlists or feature matrices."
-          icon={<div className="p-2 bg-rb-blue-100 text-rb-blue-700 rounded-lg"><Star size={20} /></div>}
+          icon={<div className="p-2 bg-blue-100 text-blue-700 rounded-lg"><Star size={20} /></div>}
           sections={[
             {
               value: 'features',
               label: 'Features',
               labelIcon: <Check size={18} />,
-              labelClassName: 'text-rb-green-600',
+              labelClassName: 'text-green-600',
               items: ['Responsive', 'Accessible', 'Themeable'],
             }
           ]}
           title="List Card"
         />
         <BentoGrid.BaseCard className="flex flex-col gap-4">
-          <div className="p-2 bg-rb-color-yellow-100 text-rb-color-yellow-900 rounded-md w-fit">
+          <div className="p-2 bg-yellow-100 text-yellow-900 rounded-md w-fit">
             <Code size={20} />
           </div>
           <h4 className="font-bold">Base Card (Custom)</h4>
@@ -184,7 +184,7 @@ export const WishlistVariant: Story = {
     <div className="w-full max-w-6xl p-4">
       <div className="mb-8">
         <Header level={2}>My Wishlist</Header>
-        <Text className="text-rb-muted-text" size="l">Things I want and things I already have, organized by category.</Text>
+        <Text className="text-muted-text" size="l">Things I want and things I already have, organized by category.</Text>
       </div>
       
       <BentoGrid>
@@ -193,7 +193,7 @@ export const WishlistVariant: Story = {
           defaultValue={['wanted']}
           description="My essential list of gadgets and hardware I use for daily productivity and entertainment."
           icon={
-            <div className="p-3 bg-rb-blue-100 text-rb-blue-700 rounded-xl">
+            <div className="p-3 bg-blue-100 text-blue-700 rounded-xl">
               <Gamepad2 size={24} />
             </div>
           }
@@ -203,7 +203,7 @@ export const WishlistVariant: Story = {
               value: 'wanted',
               label: 'Wanted',
               labelIcon: <Gift size={18} />,
-              labelClassName: 'text-rb-orange-600',
+              labelClassName: 'text-orange-600',
               items: [
                 'Steam Deck OLED 1TB',
                 'Sony A7C II with 35mm lens',
@@ -214,7 +214,7 @@ export const WishlistVariant: Story = {
               value: 'owned',
               label: 'Already Owned',
               labelIcon: <Check size={18} />,
-              labelClassName: 'text-rb-green-600',
+              labelClassName: 'text-green-600',
               items: [
                 'MacBook Pro M3 Max',
                 'Sony WH-1000XM5 Headphones',
@@ -229,7 +229,7 @@ export const WishlistVariant: Story = {
           colSpan={2}
           description="Places I want to visit and explore around the world."
           icon={
-            <div className="p-3 bg-rb-green-100 text-rb-green-700 rounded-xl">
+            <div className="p-3 bg-green-100 text-green-700 rounded-xl">
               <Plane size={24} />
             </div>
           }
@@ -238,7 +238,7 @@ export const WishlistVariant: Story = {
               value: 'wanted',
               label: 'Bucket List',
               labelIcon: <Gift size={18} />,
-              labelClassName: 'text-rb-orange-600',
+              labelClassName: 'text-orange-600',
               items: [
                 'Kyoto, Japan (Cherry Blossom Season)',
                 'Reykjavik, Iceland',
@@ -249,7 +249,7 @@ export const WishlistVariant: Story = {
               value: 'owned',
               label: 'Visited',
               labelIcon: <Check size={18} />,
-              labelClassName: 'text-rb-green-600',
+              labelClassName: 'text-green-600',
               items: [
                 'Paris, France',
                 'Rome, Italy',
@@ -265,7 +265,7 @@ export const WishlistVariant: Story = {
           colSpan={2}
           description="My reading backlog spanning technical books, sci-fi, and fantasy."
           icon={
-            <div className="p-3 bg-rb-violet-100 text-rb-violet-700 rounded-xl">
+            <div className="p-3 bg-violet-100 text-violet-700 rounded-xl">
               <BookOpen size={24} />
             </div>
           }
@@ -274,7 +274,7 @@ export const WishlistVariant: Story = {
               value: 'wanted',
               label: 'Reading List',
               labelIcon: <Gift size={18} />,
-              labelClassName: 'text-rb-orange-600',
+              labelClassName: 'text-orange-600',
               items: [
                 'Designing Data-Intensive Applications',
                 'The Pragmatic Programmer',

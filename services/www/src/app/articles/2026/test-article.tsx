@@ -1,10 +1,10 @@
 import { localePath } from '@ermnvldmr/i18n';
+import { createPage } from '@ermnvldmr/ssg';
 import { MARKDOWN_COMPONENTS } from '@ermnvldmr/ui';
 import React from 'react';
 
 import { articles } from '../../../../content/registry';
 import { ArticleLayout } from '../../../components/Layout/ArticleLayout';
-import { createPage } from '../../../lib/core/createPage';
 
 const article = articles['test-article'];
 

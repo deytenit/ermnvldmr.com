@@ -4,7 +4,6 @@ import { pluginTypeCheck } from '@rsbuild/plugin-type-check';
 import { pluginDts } from 'rsbuild-plugin-dts';
 
 import { mergeConfig } from '../utils/merge.js';
-import { ssgPlugin } from './ssg.js';
 
 /**
  * Defines a standard Rsbuild configuration for services (apps).
@@ -22,7 +21,7 @@ import { ssgPlugin } from './ssg.js';
  */
 export function defineServiceConfig(config: RsbuildConfig = {}): RsbuildConfig {
   const defaultConfig: RsbuildConfig = {
-    plugins: [pluginReact(), pluginTypeCheck(), ssgPlugin()],
+    plugins: [pluginReact(), pluginTypeCheck()],
     output: {
       distPath: {
         font: 'static/font',

@@ -2,20 +2,20 @@ import { getTypographyClassNames } from './getTypographyClassNames';
 
 describe('lib/typography/getTypographyClassNames', () => {
   describe('type + size → @theme token class', () => {
-    it('returns text-rb-body-m by default', () => {
-      expect(getTypographyClassNames()).toContain('text-rb-body-m');
+    it('returns text-body-m by default', () => {
+      expect(getTypographyClassNames()).toContain('text-body-m');
     });
 
     it('returns correct class for each type/size combination', () => {
       expect(getTypographyClassNames({ type: 'display', size: 'l' })).toContain(
-        'text-rb-display-l'
+        'text-display-l'
       );
       expect(getTypographyClassNames({ type: 'headline', size: 'm' })).toContain(
-        'text-rb-headline-m'
+        'text-headline-m'
       );
-      expect(getTypographyClassNames({ type: 'title', size: 's' })).toContain('text-rb-title-s');
-      expect(getTypographyClassNames({ type: 'body', size: 'l' })).toContain('text-rb-body-l');
-      expect(getTypographyClassNames({ type: 'label', size: 'm' })).toContain('text-rb-label-m');
+      expect(getTypographyClassNames({ type: 'title', size: 's' })).toContain('text-title-s');
+      expect(getTypographyClassNames({ type: 'body', size: 'l' })).toContain('text-body-l');
+      expect(getTypographyClassNames({ type: 'label', size: 'm' })).toContain('text-label-m');
     });
   });
 
@@ -53,15 +53,15 @@ describe('lib/typography/getTypographyClassNames', () => {
 
   describe('color', () => {
     it('applies default color class', () => {
-      expect(getTypographyClassNames()).toContain('text-[var(--rb-text)]');
+      expect(getTypographyClassNames()).toContain('text-text');
     });
 
     it('applies each color variant', () => {
-      expect(getTypographyClassNames({ color: 'muted' })).toContain('text-[var(--rb-muted-text)]');
+      expect(getTypographyClassNames({ color: 'muted' })).toContain('text-muted-text');
       expect(getTypographyClassNames({ color: 'primary' })).toContain(
-        'text-[var(--rb-primary-text)]'
+        'text-primary-text'
       );
-      expect(getTypographyClassNames({ color: 'error' })).toContain('text-[var(--rb-error-text)]');
+      expect(getTypographyClassNames({ color: 'error' })).toContain('text-error-text');
       expect(getTypographyClassNames({ color: 'inherit' })).toContain('text-inherit');
     });
   });

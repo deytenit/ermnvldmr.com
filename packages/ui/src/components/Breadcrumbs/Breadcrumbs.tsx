@@ -1,5 +1,6 @@
 import { localePath } from '@ermnvldmr/i18n';
 import { cn } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import { ChevronRight } from 'lucide-react';
 import React, { memo } from 'react';
 
@@ -46,6 +47,36 @@ export interface BreadcrumbsItemProps extends TestIdProps {
   onClick?: React.MouseEventHandler<HTMLElement>;
 }
 
+const itemVariants = cva('group flex items-center transition-all duration-200', {
+  variants: {
+    isCurrent: {
+      true: '',
+      false: '',
+    },
+    isClickable: {
+      true: '',
+      false: '',
+    },
+  },
+  compoundVariants: [{ isCurrent: false, isClickable: true, className: 'cursor-pointer' }],
+  defaultVariants: {
+    isCurrent: false,
+    isClickable: false,
+  },
+});
+
+const itemTextVariants = cva('transition-all duration-200', {
+  variants: {
+    isCurrent: {
+      true: '',
+      false: 'group-hover:text-[var(--rb-text)] group-hover:underline underline-offset-4',
+    },
+  },
+  defaultVariants: {
+    isCurrent: false,
+  },
+});
+
 /**
  * Individual step in the breadcrumb trail.
  */
@@ -63,19 +94,12 @@ const BreadcrumbsItem = memo(function BreadcrumbsItem({
   return (
     <li
       aria-current={isCurrent ? 'page' : undefined}
-      className={cn(
-        'group flex items-center transition-all duration-200',
-        !isCurrent && isClickable && 'cursor-pointer',
-        className
-      )}
+      className={cn(itemVariants({ isCurrent, isClickable }), className)}
       data-testid={testId}
     >
       <Text
         as={resolvedHref ? 'a' : onClick ? 'button' : 'span'}
-        className={cn(
-          'transition-all duration-200',
-          !isCurrent && 'group-hover:text-[var(--rb-text)] group-hover:underline underline-offset-4'
-        )}
+        className={cn(itemTextVariants({ isCurrent }))}
         color={isCurrent ? 'default' : 'muted'}
         href={resolvedHref}
         size="m"

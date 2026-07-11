@@ -11,6 +11,10 @@ concurrency:
   group: ci-pr-docs-${{ github.head_ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   setup-hugo:
     name: Setup - Hugo

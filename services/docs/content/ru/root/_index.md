@@ -1,11 +1,16 @@
 ---
 title: Documentation of ermnvldmr.com root deployment commons
 description: Документация общих модулей корневой инфраструктуры ermnvldmr.com.
-weight: 1
+weight: 2
 type: docs
 cascade:
   type: docs
 ---
+
+> [!WARNING]
+> **Deprecated.** The root framework has been superseded by the
+> [apex fleet operations framework](/en/apex) (documentation in English only). This
+> section is retained for reference only and no longer receives updates.
 
 Фреймворк `ermnvldmr.com-root-commons` предоставляет среду развертывания с минимальными зависимостями для независимых self-hosted проектов.
 

@@ -131,13 +131,13 @@ describe('components/Text', () => {
   });
 
   // TDD: fails before implementation (old code uses text-[14px], not text-rb-body-m)
-  it('applies text-rb-{type}-{size} class', () => {
+  it('applies text-body-m class', () => {
     render(
       <Text size="m" type="body">
         Content
       </Text>
     );
-    expect(screen.getByText('Content')).toHaveClass('text-rb-body-m');
+    expect(screen.getByText('Content')).toHaveClass('text-body-m');
   });
 
   it('does not apply legacy px-based font-size classes', () => {

@@ -1,4 +1,5 @@
 import { cn, genericMemo } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React, { forwardRef } from 'react';
 
 import { Text } from '../Text/Text';
@@ -17,6 +18,28 @@ export interface ParagraphProps extends Omit<TextProps, 'as'> {
   dropCap?: boolean;
 }
 
+const paragraphVariants = cva('', {
+  variants: {
+    gutterBottom: {
+      true: 'mb-4',
+      false: '',
+    },
+    indent: {
+      true: 'indent-8',
+      false: '',
+    },
+    dropCap: {
+      true: 'first-letter:text-7xl first-letter:font-bold first-letter:float-left first-letter:mr-3 first-letter:leading-none',
+      false: '',
+    },
+  },
+  defaultVariants: {
+    gutterBottom: false,
+    indent: false,
+    dropCap: false,
+  },
+});
+
 /**
  * A semantic paragraph component that wraps the Text component.
  *
@@ -32,13 +55,7 @@ const ParagraphComponent = forwardRef<HTMLElement, ParagraphProps>(function Para
     <Text
       ref={ref}
       as="p"
-      className={cn(
-        gutterBottom && 'mb-4',
-        indent && 'indent-8',
-        dropCap &&
-          'first-letter:text-7xl first-letter:font-bold first-letter:float-left first-letter:mr-3 first-letter:leading-none',
-        className
-      )}
+      className={cn(paragraphVariants({ gutterBottom, indent, dropCap }), className)}
       {...props}
     >
       {children}

@@ -2,6 +2,9 @@
 dist/
 *.tsbuildinfo
 
+# service static assets (local only, synced with S3)
+**/public/static/
+
 # dependencies
 node_modules/
 
@@ -18,9 +21,9 @@ storybook-static/
 test-results/
 playwright-report/
 
-# environment variables
+# environment variables (.env.dev is encrypted and tracked; .env is plaintext)
 .env
-.env.production
+.env.keys
 
 # macOS-specific files
 .DS_Store

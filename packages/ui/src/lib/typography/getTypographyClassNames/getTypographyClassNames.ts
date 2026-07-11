@@ -1,3 +1,5 @@
+import { cva } from 'class-variance-authority';
+
 /**
  * Typography type roles.
  * Determines font family and base visual treatment.
@@ -65,35 +67,92 @@ export interface TypographyOptions {
   maxLines?: number;
 }
 
-const fontFamilyClasses: Record<TextType, string> = {
-  display: 'font-serif',
-  headline: 'font-serif',
-  title: 'font-sans',
-  body: 'font-sans',
-  label: 'font-sans',
-};
+const typographyVariants = cva('', {
+  variants: {
+    type: {
+      display: 'font-serif',
+      headline: 'font-serif',
+      title: 'font-sans',
+      body: 'font-sans',
+      label: 'font-sans font-medium',
+    },
+    size: {
+      s: '',
+      m: '',
+      l: '',
+    },
+    color: {
+      default: 'text-text',
+      primary: 'text-primary-text',
+      secondary: 'text-secondary-text',
+      tertiary: 'text-tertiary-text',
+      error: 'text-error-text',
+      muted: 'text-muted-text',
+      inherit: 'text-inherit',
+    },
+    bold: {
+      true: 'font-bold',
+      false: '',
+    },
+    italic: {
+      true: 'italic',
+      false: '',
+    },
+    underline: {
+      true: 'underline',
+      false: '',
+    },
+    strike: {
+      true: 'line-through',
+      false: '',
+    },
+    align: {
+      left: 'text-left',
+      center: 'text-center',
+      right: 'text-right',
+      justify: 'text-justify',
+    },
+    wrap: {
+      nowrap: 'whitespace-nowrap',
+      balance: 'text-balance',
+      pretty: 'text-pretty',
+    },
+    overflow: {
+      ellipsis: 'truncate',
+      clip: 'overflow-clip',
+    },
+  },
+  compoundVariants: [
+    { type: 'display', size: 's', className: 'text-display-s' },
+    { type: 'display', size: 'm', className: 'text-display-m' },
+    { type: 'display', size: 'l', className: 'text-display-l' },
+    { type: 'headline', size: 's', className: 'text-headline-s' },
+    { type: 'headline', size: 'm', className: 'text-headline-m' },
+    { type: 'headline', size: 'l', className: 'text-headline-l' },
+    { type: 'title', size: 's', className: 'text-title-s' },
+    { type: 'title', size: 'm', className: 'text-title-m' },
+    { type: 'title', size: 'l', className: 'text-title-l' },
+    { type: 'body', size: 's', className: 'text-body-s' },
+    { type: 'body', size: 'm', className: 'text-body-m' },
+    { type: 'body', size: 'l', className: 'text-body-l' },
+    { type: 'label', size: 's', className: 'text-label-s' },
+    { type: 'label', size: 'm', className: 'text-label-m' },
+    { type: 'label', size: 'l', className: 'text-label-l' },
+  ],
+  defaultVariants: {
+    type: 'body',
+    size: 'm',
+    color: 'default',
+  },
+});
 
-const colorClasses: Record<TextColor, string> = {
-  default: 'text-[var(--rb-text)]',
-  primary: 'text-[var(--rb-primary-text)]',
-  secondary: 'text-[var(--rb-secondary-text)]',
-  tertiary: 'text-[var(--rb-tertiary-text)]',
-  error: 'text-[var(--rb-error-text)]',
-  muted: 'text-[var(--rb-muted-text)]',
-  inherit: 'text-inherit',
-};
-
-const alignClasses: Record<TextAlign, string> = {
-  left: 'text-left',
-  center: 'text-center',
-  right: 'text-right',
-  justify: 'text-justify',
-};
-
-const wrapClasses: Record<TextWrap, string> = {
-  nowrap: 'whitespace-nowrap',
-  balance: 'text-balance',
-  pretty: 'text-pretty',
+const lineClampMap: Record<number, string> = {
+  1: 'line-clamp-1',
+  2: 'line-clamp-2',
+  3: 'line-clamp-3',
+  4: 'line-clamp-4',
+  5: 'line-clamp-5',
+  6: 'line-clamp-6',
 };
 
 /**
@@ -102,7 +161,7 @@ const wrapClasses: Record<TextWrap, string> = {
  *
  * The returned string is safe to pass directly to `cn()` alongside other
  * classes — it contains no internal conflicts. Tailwind-merge is configured
- * (via the stl `cn` utility) to treat `text-rb-{type}-{size}` as a
+ * (via the stl `cn` utility) to treat `text-{type}-{size}` as a
  * font-size group so it never conflicts with text-color classes.
  *
  * @example
@@ -133,26 +192,21 @@ export function getTypographyClassNames(options: TypographyOptions = {}): string
 
   let truncationClass = '';
   if (maxLines) {
-    truncationClass = `line-clamp-${maxLines}`;
-  } else if (overflow === 'ellipsis') {
-    truncationClass = 'truncate';
-  } else if (overflow === 'clip') {
-    truncationClass = 'overflow-clip';
+    truncationClass = lineClampMap[maxLines] ?? `line-clamp-[${maxLines}]`;
   }
 
-  return [
-    `text-rb-${type}-${size}`,
-    fontFamilyClasses[type],
-    type === 'label' && 'font-medium',
-    colorClasses[color],
-    bold && 'font-bold',
-    italic && 'italic',
-    underline && 'underline',
-    strike && 'line-through',
-    align && alignClasses[align],
-    wrap && wrapClasses[wrap],
-    truncationClass,
-  ]
-    .filter(Boolean)
-    .join(' ');
+  const classNames = typographyVariants({
+    type,
+    size,
+    color,
+    bold,
+    italic,
+    underline,
+    strike,
+    align,
+    wrap,
+    overflow: maxLines ? undefined : overflow,
+  });
+
+  return [classNames, truncationClass].filter(Boolean).join(' ');
 }

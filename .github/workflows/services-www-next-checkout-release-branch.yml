@@ -3,6 +3,10 @@ name: services/www - next/checkout-release-branch
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   workflow-create-release-branch:
     name: Workflow - Create Release Branch

@@ -1,4 +1,5 @@
 import { cn, castRef, genericMemo } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React, { forwardRef } from 'react';
 
 import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
@@ -29,18 +30,32 @@ export interface ListProps extends ClassNameProps, TestIdProps, React.HTMLAttrib
   as?: React.ElementType;
 }
 
-const spacingStyles: Record<ListSpacing, string> = {
-  none: 'gap-0',
-  s: 'gap-1',
-  m: 'gap-2',
-  l: 'gap-4',
-};
-
-const variantStyles: Record<ListVariant, string> = {
-  unordered: 'list-disc pl-5',
-  ordered: 'list-decimal pl-5',
-  plain: 'list-none pl-0',
-};
+const listVariants = cva('m-0 flex flex-col', {
+  variants: {
+    variant: {
+      unordered: 'list-disc pl-5',
+      ordered: 'list-decimal pl-5',
+      plain: 'list-none pl-0',
+    },
+    spacing: {
+      none: 'gap-0',
+      s: 'gap-1',
+      m: 'gap-2',
+      l: 'gap-4',
+    },
+    // Hide default markers if a global custom marker is provided.
+    hasCustomMarker: {
+      true: '',
+      false: '',
+    },
+  },
+  compoundVariants: [{ hasCustomMarker: true, className: 'list-none pl-0' }],
+  defaultVariants: {
+    variant: 'unordered',
+    spacing: 'none',
+    hasCustomMarker: false,
+  },
+});
 
 const ListContext = React.createContext<{ marker?: React.ReactNode }>({});
 
@@ -65,13 +80,7 @@ const ListComponent = forwardRef<HTMLElement, ListProps>(function List(
       <Component
         {...props}
         ref={castRef<HTMLElement>(ref)}
-        className={cn(
-          'm-0 flex flex-col',
-          // Hide default markers if a global custom marker is provided
-          hasCustomMarker ? 'list-none pl-0' : variantStyles[variant],
-          spacingStyles[spacing],
-          className
-        )}
+        className={cn(listVariants({ variant, spacing, hasCustomMarker }), className)}
         data-testid={testId}
       >
         {children}

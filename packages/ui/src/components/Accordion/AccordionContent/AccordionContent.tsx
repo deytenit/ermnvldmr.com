@@ -1,9 +1,22 @@
 import { cn } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React from 'react';
 
 import { useAccordionItemContext } from '../contexts/AccordionItemContext/AccordionItemContext';
 
 import type { AccordionContentProps } from '../types';
+
+const contentVariants = cva('grid transition-[grid-template-rows] duration-200 ease-out', {
+  variants: {
+    isOpen: {
+      true: 'grid-rows-[1fr]',
+      false: 'grid-rows-[0fr]',
+    },
+  },
+  defaultVariants: {
+    isOpen: false,
+  },
+});
 
 /**
  * The collapsible content of an Accordion item.
@@ -18,11 +31,7 @@ export const AccordionContent = ({ children, className }: AccordionContentProps)
     <div
       aria-hidden={!isOpen}
       aria-labelledby={`accordion-trigger-${value}`}
-      className={cn(
-        'grid transition-[grid-template-rows] duration-200 ease-out',
-        isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
-        className
-      )}
+      className={cn(contentVariants({ isOpen }), className)}
       id={`accordion-content-${value}`}
       inert={!isOpen ? true : undefined}
       role="region"

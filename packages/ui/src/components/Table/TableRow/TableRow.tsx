@@ -1,4 +1,5 @@
 import { cn, castRef, genericMemo } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React, { forwardRef } from 'react';
 
 import { useTableContext } from '../contexts/TableContext/TableContext';
@@ -24,6 +25,28 @@ export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement>
    */
   selected?: boolean;
 }
+
+const rowVariants = cva('transition-colors', {
+  variants: {
+    hoverable: {
+      true: 'hover:bg-[var(--rb-muted-base)]/50',
+      false: '',
+    },
+    striped: {
+      true: 'even:bg-[var(--rb-muted-base)]/20',
+      false: '',
+    },
+    selected: {
+      true: 'bg-[var(--rb-muted-base)]',
+      false: '',
+    },
+  },
+  defaultVariants: {
+    hoverable: false,
+    striped: false,
+    selected: false,
+  },
+});
 
 /**
  * A table row component (tr) with hover, stripe, and border controls.
@@ -53,10 +76,7 @@ export const TableRow = genericMemo(
           {...props}
           ref={castRef<HTMLTableRowElement>(ref)}
           className={cn(
-            'transition-colors',
-            isHoverable && 'hover:bg-[var(--rb-muted-base)]/50',
-            context.striped && 'even:bg-[var(--rb-muted-base)]/20',
-            selected && 'bg-[var(--rb-muted-base)]',
+            rowVariants({ hoverable: isHoverable, striped: context.striped, selected }),
             className
           )}
         >

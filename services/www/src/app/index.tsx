@@ -1,10 +1,10 @@
 import { localePath } from '@ermnvldmr/i18n';
+import { createPage } from '@ermnvldmr/ssg';
 import { Paragraph, Link, VStack, Header } from '@ermnvldmr/ui';
 import React from 'react';
 
 import { t, tRaw } from './index.i18n';
 import { DefaultLayout } from '../components/Layout/DefaultLayout';
-import { createPage } from '../lib/core/createPage';
 import { SITE_TITLE } from '../lib/shared/constants';
 
 /**

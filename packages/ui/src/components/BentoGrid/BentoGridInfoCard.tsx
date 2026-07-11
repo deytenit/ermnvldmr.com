@@ -36,11 +36,11 @@ export const BentoGridInfoCard = ({
     <BentoGridBaseCard {...baseProps}>
       <VStack className="h-full justify-between" gap={4}>
         <VStack gap={2}>
-          {icon && <div className="text-rb-primary-text">{icon}</div>}
+          {icon && <div className="text-primary-text">{icon}</div>}
           <Header level={3}>{title}</Header>
-          {description && <Text className="text-rb-muted-text" size="m">{description}</Text>}
+          {description && <Text className="text-muted-text" size="m">{description}</Text>}
         </VStack>
-        {footer && <div className="mt-auto">{footer}</div>}
+        {footer && <div className="mt-auto w-full">{footer}</div>}
       </VStack>
     </BentoGridBaseCard>
   );

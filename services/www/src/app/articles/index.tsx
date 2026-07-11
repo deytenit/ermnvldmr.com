@@ -1,11 +1,11 @@
 import { LOCALE, localePath } from '@ermnvldmr/i18n';
-import { Article, Breadcrumbs } from '@ermnvldmr/ui';
+import { createPage } from '@ermnvldmr/ssg';
+import { BentoGrid, Breadcrumbs, HStack, Separator, Text, Time, VStack } from '@ermnvldmr/ui';
 import React from 'react';
 
 import { t } from './index.i18n';
 import { sortedArticles } from '../../../content/registry';
 import { DefaultLayout } from '../../components/Layout/DefaultLayout';
-import { createPage } from '../../lib/core/createPage';
 import { SITE_TITLE } from '../../lib/shared/constants';
 
 const DATE_LOCALE_MAP: Record<string, string> = { en: 'en-US', ru: 'ru-RU' };
@@ -35,28 +35,37 @@ function ArticlesList(): React.JSX.Element {
       paddingY="medium"
       title={t('Articles')}
     >
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        {sortedArticles.map((article) => (
-          <React.Fragment key={article.slug}>
-            <Article
-              additionalText={article.tags?.join(' • ')}
-              className="h-full"
-              headline={article.title}
-              href={localePath(`/articles/${article.slug}`)}
-              subHeadline={article.createdDate.toLocaleDateString(
-                DATE_LOCALE_MAP[LOCALE] ?? 'en-US',
-                {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                }
-              )}
-            >
-              {article.description}
-            </Article>
-          </React.Fragment>
+      <BentoGrid>
+        {sortedArticles.map((article, index) => (
+          <BentoGrid.InfoCard
+            key={article.slug}
+            colSpan={index === 0 ? 2 : 1}
+            description={article.description}
+            footer={
+              <VStack align="stretch" gap={2}>
+                <Separator thinned="thinned-end" type="single" />
+                <HStack align="center" gap={4} justify="between" wrap="wrap">
+                  <Time
+                    color="muted"
+                    date={article.createdDate}
+                    locale={DATE_LOCALE_MAP[LOCALE] ?? 'en-US'}
+                    size="s"
+                    type="label"
+                  />
+                  {article.tags?.length ? (
+                    <Text italic color="muted" size="s" type="label">
+                      {article.tags.join(' • ')}
+                    </Text>
+                  ) : null}
+                </HStack>
+              </VStack>
+            }
+            href={localePath(`/articles/${article.slug}`)}
+            rowSpan={index === 0 ? 2 : 1}
+            title={article.title}
+          />
         ))}
-      </div>
+      </BentoGrid>
     </DefaultLayout>
   );
 }

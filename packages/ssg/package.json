@@ -1,0 +1,52 @@
+{
+  "name": "@ermnvldmr/ssg",
+  "version": "0.0.1",
+  "description": "Static Site Generation framework for ermnvldmr Rsbuild + React services",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "default": "./src/index.ts"
+    },
+    "./dev": {
+      "import": "./dist/dev.js",
+      "types": "./dist/dev.d.ts",
+      "default": "./src/dev.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@ermnvldmr/eslint-config": "workspace:*",
+    "@ermnvldmr/rsbuild-config": "workspace:*",
+    "@rsbuild/core": "^1.7.3",
+    "@rsbuild/plugin-react": "^1.1.1",
+    "@rsbuild/plugin-type-check": "^1.1.1",
+    "@types/node": "*",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "critters": "^0.0.25",
+    "fast-glob": "^3.3.3",
+    "jsdom": "^28.0.0",
+    "rsbuild-plugin-dts": "^0.19.5",
+    "typescript": "^5.8.2"
+  },
+  "peerDependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  }
+}

@@ -9,7 +9,10 @@ const rbFontSizeClasses = RB_TYPES.flatMap((type) => RB_SIZES.map((size) => `${t
 const twMerge = extendTailwindMerge({
   extend: {
     classGroups: {
-      'font-size': [{ 'text-rb': rbFontSizeClasses }],
+      'font-size': [
+        { 'text-rb': rbFontSizeClasses },
+        { text: rbFontSizeClasses },
+      ],
     },
   },
 });

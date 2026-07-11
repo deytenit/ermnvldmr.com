@@ -115,7 +115,7 @@ describe('BentoGrid', () => {
     );
 
     const title = screen.getByText('Primary CTA');
-    const card = title.closest('.bg-rb-primary-base');
+    const card = title.closest('.bg-primary');
     expect(card).toBeInTheDocument();
   });
 });

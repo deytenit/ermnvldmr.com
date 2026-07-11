@@ -35,4 +35,18 @@ describe('PageHead', () => {
     expect(header).toHaveClass('fixed');
     expect(header).not.toHaveClass('sticky');
   });
+
+  it('reserves flow space below the out-of-flow bar for always-collapsed strategies', () => {
+    render(<PageHead heading="Test" strategy="always-collapsed-fixed" />);
+    const spacer = screen.getByRole('banner').nextElementSibling;
+    expect(spacer).not.toBeNull();
+    // The spacer is an invisible copy of the bar so it reserves the exact height.
+    expect(spacer).toHaveClass('invisible');
+    expect(spacer).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('does not add a spacer for in-flow strategies', () => {
+    render(<PageHead heading="Test" strategy="collapsible-sticky" />);
+    expect(screen.getByRole('banner').nextElementSibling).toBeNull();
+  });
 });

@@ -1,10 +1,10 @@
 import { localePath } from '@ermnvldmr/i18n';
+import { createPage } from '@ermnvldmr/ssg';
 import { BentoGrid, Header, Paragraph, VStack, Breadcrumbs } from '@ermnvldmr/ui';
 import { Ghost, Coffee, Plane, Check, Gift, Cuboid, BoxSelect, Cpu } from 'lucide-react';
 
 import { t } from './index.i18n';
 import { DefaultLayout } from '../../components/Layout/DefaultLayout';
-import { createPage } from '../../lib/core/createPage';
 
 /**
  * Wanted page component.
@@ -189,9 +189,7 @@ function WantedPage(): React.JSX.Element {
                 value: 'wanted',
                 label: t('Looking for'),
                 labelIcon: <Gift size={18} />,
-                items: [
-                  t('Alientek T90 Soldering Iron (or a similar compact, smart iron)'),
-                ],
+                items: [t('Alientek T90 Soldering Iron (or a similar compact, smart iron)')],
               },
             ]}
             title={t('Hobby')}

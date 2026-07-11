@@ -76,10 +76,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-/* Safelist: text-rb-{type}-{size} utilities are assembled via template literals
-   in getTypographyClassNames and cannot be detected by Tailwind's static scanner.
-   @source inline forces inclusion regardless of source scanning. */
-@source inline("text-rb-display-l text-rb-display-m text-rb-display-s text-rb-headline-l text-rb-headline-m text-rb-headline-s text-rb-title-l text-rb-title-m text-rb-title-s text-rb-body-l text-rb-body-m text-rb-body-s text-rb-label-l text-rb-label-m text-rb-label-s");
+
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -257,6 +254,7 @@
   --rb-input: var(--rb-color-neutral-800);
   --rb-text: var(--rb-color-neutral-950);
   --rb-ring: var(--rb-color-cyan-700);
+  --rb-radius-md: 0.375rem;
 
   /* Container */
   --rb-container-base: var(--rb-color-neutral-50);
@@ -418,4 +416,75 @@
   .dark .shiki span {
     color: var(--shiki-dark) !important;
   }
+}
+
+@theme {
+  /* Colors */
+  --color-primary: var(--rb-primary-base);
+  --color-primary-text: var(--rb-primary-text);
+  --color-secondary: var(--rb-secondary-base);
+  --color-secondary-text: var(--rb-secondary-text);
+  --color-tertiary: var(--rb-tertiary-base);
+  --color-tertiary-text: var(--rb-tertiary-text);
+  --color-error: var(--rb-error-base);
+  --color-error-text: var(--rb-error-text);
+  --color-muted: var(--rb-muted-base);
+  --color-muted-text: var(--rb-muted-text);
+  --color-base: var(--rb-base);
+  --color-outline: var(--rb-outline);
+  --color-text: var(--rb-text);
+  
+  /* Typography */
+  --text-display-l: var(--text-rb-display-l);
+  --text-display-l--line-height: var(--text-rb-display-l--line-height);
+  --text-display-l--letter-spacing: var(--text-rb-display-l--letter-spacing);
+  --text-display-m: var(--text-rb-display-m);
+  --text-display-m--line-height: var(--text-rb-display-m--line-height);
+  --text-display-m--letter-spacing: var(--text-rb-display-m--letter-spacing);
+  --text-display-s: var(--text-rb-display-s);
+  --text-display-s--line-height: var(--text-rb-display-s--line-height);
+  --text-display-s--letter-spacing: var(--text-rb-display-s--letter-spacing);
+
+  --text-headline-l: var(--text-rb-headline-l);
+  --text-headline-l--line-height: var(--text-rb-headline-l--line-height);
+  --text-headline-l--letter-spacing: var(--text-rb-headline-l--letter-spacing);
+  --text-headline-m: var(--text-rb-headline-m);
+  --text-headline-m--line-height: var(--text-rb-headline-m--line-height);
+  --text-headline-m--letter-spacing: var(--text-rb-headline-m--letter-spacing);
+  --text-headline-s: var(--text-rb-headline-s);
+  --text-headline-s--line-height: var(--text-rb-headline-s--line-height);
+  --text-headline-s--letter-spacing: var(--text-rb-headline-s--letter-spacing);
+
+  --text-title-l: var(--text-rb-title-l);
+  --text-title-l--line-height: var(--text-rb-title-l--line-height);
+  --text-title-l--letter-spacing: var(--text-rb-title-l--letter-spacing);
+  --text-title-m: var(--text-rb-title-m);
+  --text-title-m--line-height: var(--text-rb-title-m--line-height);
+  --text-title-m--letter-spacing: var(--text-rb-title-m--letter-spacing);
+  --text-title-s: var(--text-rb-title-s);
+  --text-title-s--line-height: var(--text-rb-title-s--line-height);
+  --text-title-s--letter-spacing: var(--text-rb-title-s--letter-spacing);
+
+  --text-body-l: var(--text-rb-body-l);
+  --text-body-l--line-height: var(--text-rb-body-l--line-height);
+  --text-body-l--letter-spacing: var(--text-rb-body-l--letter-spacing);
+  --text-body-m: var(--text-rb-body-m);
+  --text-body-m--line-height: var(--text-rb-body-m--line-height);
+  --text-body-m--letter-spacing: var(--text-rb-body-m--letter-spacing);
+  --text-body-s: var(--text-rb-body-s);
+  --text-body-s--line-height: var(--text-rb-body-s--line-height);
+  --text-body-s--letter-spacing: var(--text-rb-body-s--letter-spacing);
+
+  --text-label-l: var(--text-rb-label-l);
+  --text-label-l--line-height: var(--text-rb-label-l--line-height);
+  --text-label-l--letter-spacing: var(--text-rb-label-l--letter-spacing);
+  --text-label-m: var(--text-rb-label-m);
+  --text-label-m--line-height: var(--text-rb-label-m--line-height);
+  --text-label-m--letter-spacing: var(--text-rb-label-m--letter-spacing);
+  --text-label-s: var(--text-rb-label-s);
+  --text-label-s--line-height: var(--text-rb-label-s--line-height);
+  --text-label-s--letter-spacing: var(--text-rb-label-s--letter-spacing);
+
+  /* Utilities */
+  --radius-md: var(--rb-radius-md);
 }

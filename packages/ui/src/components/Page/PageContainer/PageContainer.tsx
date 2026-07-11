@@ -1,4 +1,5 @@
 import { cn } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React from 'react';
 
 /**
@@ -57,6 +58,39 @@ export interface PageContainerProps {
   as?: React.ElementType;
 }
 
+const pageContainerVariants = cva('w-full mx-auto', {
+  variants: {
+    width: {
+      slim: 'max-w-[var(--rb-page-width-slim,1100px)]',
+      default: 'max-w-[var(--rb-page-width-default,1600px)]',
+      wide: 'max-w-[var(--rb-page-width-wide,1920px)]',
+      full: 'max-w-full',
+    },
+    paddingX: {
+      none: 'px-0',
+      small: 'px-2 sm:px-4',
+      medium: 'px-4 sm:px-6 lg:px-8',
+      large: 'px-6 sm:px-8 lg:px-12',
+    },
+    paddingY: {
+      none: 'py-0',
+      small: 'py-4 sm:py-6',
+      medium: 'py-8 sm:py-12',
+      large: 'py-12 sm:py-24',
+    },
+    centerVertically: {
+      true: 'flex-1 flex flex-col justify-center',
+      false: '',
+    },
+  },
+  defaultVariants: {
+    width: 'default',
+    paddingX: 'medium',
+    paddingY: 'none',
+    centerVertically: false,
+  },
+});
+
 /**
  /**
  * Manages the horizontal and vertical constraints for page content.
@@ -79,37 +113,10 @@ export const PageContainer = ({
   className,
   as: Component = 'div',
 }: PageContainerProps) => {
-  const widthClasses = {
-    slim: 'max-w-[var(--rb-page-width-slim,1100px)]',
-    default: 'max-w-[var(--rb-page-width-default,1600px)]',
-    wide: 'max-w-[var(--rb-page-width-wide,1920px)]',
-    full: 'max-w-full',
-  };
-
-  const pxClasses = {
-    none: 'px-0',
-    small: 'px-2 sm:px-4',
-    medium: 'px-4 sm:px-6 lg:px-8',
-    large: 'px-6 sm:px-8 lg:px-12',
-  };
-
-  const pyClasses = {
-    none: 'py-0',
-    small: 'py-4 sm:py-6',
-    medium: 'py-8 sm:py-12',
-    large: 'py-12 sm:py-24',
-  };
-
   return (
     <Component
       className={cn(
-        'w-full mx-auto',
-        widthClasses[width],
-        pxClasses[paddingX],
-        pyClasses[paddingY],
-        {
-          'flex-1 flex flex-col justify-center': centerVertically,
-        },
+        pageContainerVariants({ width, paddingX, paddingY, centerVertically }),
         className
       )}
     >

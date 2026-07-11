@@ -1,46 +1,9 @@
 import { cn, castRef, genericMemo } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React, { forwardRef } from 'react';
 
+import type { SpacingScale } from '../../lib/scale';
 import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
-
-/**
- * Tailwind gap spacing scale values.
- */
-type GapScale =
-  | 0
-  | 0.5
-  | 1
-  | 1.5
-  | 2
-  | 2.5
-  | 3
-  | 3.5
-  | 4
-  | 5
-  | 6
-  | 7
-  | 8
-  | 9
-  | 10
-  | 11
-  | 12
-  | 14
-  | 16
-  | 20
-  | 24
-  | 28
-  | 32
-  | 36
-  | 40
-  | 44
-  | 48
-  | 52
-  | 56
-  | 60
-  | 64
-  | 72
-  | 80
-  | 96;
 
 /**
  * Flexbox direction values.
@@ -77,12 +40,101 @@ export interface StackProps extends ClassNameProps, TestIdProps {
   /** Whether items should wrap to new lines/columns */
   wrap?: FlexWrap;
   /** Spacing between items using Tailwind's spacing scale */
-  gap?: GapScale;
+  gap?: SpacingScale;
   /** Whether to enable scrolling when content overflows */
   scrollable?: boolean;
   /** The HTML element to use for rendering */
   as?: React.ElementType;
 }
+
+const stackVariants = cva('flex', {
+  variants: {
+    direction: {
+      row: 'flex-row',
+      col: 'flex-col',
+      'row-reverse': 'flex-row-reverse',
+      'col-reverse': 'flex-col-reverse',
+    },
+    justify: {
+      start: 'justify-start',
+      end: 'justify-end',
+      center: 'justify-center',
+      between: 'justify-between',
+      around: 'justify-around',
+      evenly: 'justify-evenly',
+    },
+    align: {
+      start: 'items-start',
+      end: 'items-end',
+      center: 'items-center',
+      baseline: 'items-baseline',
+      stretch: 'items-stretch',
+    },
+    wrap: {
+      nowrap: 'flex-nowrap',
+      wrap: 'flex-wrap',
+      'wrap-reverse': 'flex-wrap-reverse',
+    },
+    // Convert gap scale to Tailwind class using explicit mapping
+    // This ensures all gap classes are detected by Tailwind's static analysis
+    gap: {
+      0: '',
+      0.5: 'gap-0.5',
+      1: 'gap-1',
+      1.5: 'gap-1.5',
+      2: 'gap-2',
+      2.5: 'gap-2.5',
+      3: 'gap-3',
+      3.5: 'gap-3.5',
+      4: 'gap-4',
+      5: 'gap-5',
+      6: 'gap-6',
+      7: 'gap-7',
+      8: 'gap-8',
+      9: 'gap-9',
+      10: 'gap-10',
+      11: 'gap-11',
+      12: 'gap-12',
+      14: 'gap-14',
+      16: 'gap-16',
+      20: 'gap-20',
+      24: 'gap-24',
+      28: 'gap-28',
+      32: 'gap-32',
+      36: 'gap-36',
+      40: 'gap-40',
+      44: 'gap-44',
+      48: 'gap-48',
+      52: 'gap-52',
+      56: 'gap-56',
+      60: 'gap-60',
+      64: 'gap-64',
+      72: 'gap-72',
+      80: 'gap-80',
+      96: 'gap-96',
+    },
+    scrollable: {
+      true: '',
+      false: '',
+    },
+  },
+  // Scroll axis depends on both scrollable and direction:
+  // row directions overflow on the x-axis, column directions on the y-axis.
+  compoundVariants: [
+    { scrollable: true, direction: 'row', className: 'overflow-x-auto' },
+    { scrollable: true, direction: 'row-reverse', className: 'overflow-x-auto' },
+    { scrollable: true, direction: 'col', className: 'overflow-y-auto' },
+    { scrollable: true, direction: 'col-reverse', className: 'overflow-y-auto' },
+  ],
+  defaultVariants: {
+    direction: 'row',
+    justify: 'start',
+    align: 'start',
+    wrap: 'nowrap',
+    gap: 0,
+    scrollable: false,
+  },
+});
 
 /**
  * A flexible layout component that arranges children using CSS Flexbox.
@@ -127,96 +179,15 @@ const StackComponent = forwardRef<HTMLElement, StackProps>(function Stack(
   },
   ref
 ) {
-  const directionClasses = {
-    row: 'flex-row',
-    col: 'flex-col',
-    'row-reverse': 'flex-row-reverse',
-    'col-reverse': 'flex-col-reverse',
-  } as const;
-
-  const justifyClasses = {
-    start: 'justify-start',
-    end: 'justify-end',
-    center: 'justify-center',
-    between: 'justify-between',
-    around: 'justify-around',
-    evenly: 'justify-evenly',
-  } as const;
-
-  const alignClasses = {
-    start: 'items-start',
-    end: 'items-end',
-    center: 'items-center',
-    baseline: 'items-baseline',
-    stretch: 'items-stretch',
-  } as const;
-
-  const wrapClasses = {
-    nowrap: 'flex-nowrap',
-    wrap: 'flex-wrap',
-    'wrap-reverse': 'flex-wrap-reverse',
-  } as const;
-
-  // Convert gap scale to Tailwind class using explicit mapping
-  // This ensures all gap classes are detected by Tailwind's static analysis
-  const gapClasses = {
-    0: '',
-    0.5: 'gap-0.5',
-    1: 'gap-1',
-    1.5: 'gap-1.5',
-    2: 'gap-2',
-    2.5: 'gap-2.5',
-    3: 'gap-3',
-    3.5: 'gap-3.5',
-    4: 'gap-4',
-    5: 'gap-5',
-    6: 'gap-6',
-    7: 'gap-7',
-    8: 'gap-8',
-    9: 'gap-9',
-    10: 'gap-10',
-    11: 'gap-10',
-    12: 'gap-12',
-    14: 'gap-14',
-    16: 'gap-16',
-    20: 'gap-20',
-    24: 'gap-24',
-    28: 'gap-28',
-    32: 'gap-32',
-    36: 'gap-36',
-    40: 'gap-40',
-    44: 'gap-44',
-    48: 'gap-48',
-    52: 'gap-52',
-    56: 'gap-56',
-    60: 'gap-60',
-    64: 'gap-64',
-    72: 'gap-72',
-    80: 'gap-80',
-    96: 'gap-96',
-  } as const;
-
-  const gapClass = gapClasses[gap];
-
-  const scrollClasses = scrollable
-    ? direction.includes('row')
-      ? 'overflow-x-auto'
-      : 'overflow-y-auto'
-    : '';
-
-  const stackClasses = cn(
-    'flex',
-    directionClasses[direction],
-    justifyClasses[justify],
-    alignClasses[align],
-    wrapClasses[wrap],
-    gapClass,
-    scrollClasses,
-    className
-  );
-
   return (
-    <Component ref={castRef<HTMLElement>(ref)} className={stackClasses} data-testid={testId}>
+    <Component
+      ref={castRef<HTMLElement>(ref)}
+      className={cn(
+        stackVariants({ direction, justify, align, wrap, gap, scrollable }),
+        className
+      )}
+      data-testid={testId}
+    >
       {children}
     </Component>
   );

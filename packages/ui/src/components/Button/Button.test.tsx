@@ -79,4 +79,16 @@ describe('components/Button', () => {
     render(<Button fullWidth>Full Width</Button>);
     expect(screen.getByRole('button')).toHaveClass('w-full');
   });
+
+  it('applies correct variant and color classes', () => {
+    const { rerender } = render(<Button color="primary" variant="solid">Primary Solid</Button>);
+    expect(screen.getByRole('button')).toHaveClass('bg-primary');
+    expect(screen.getByRole('button')).toHaveClass('text-primary-text');
+    
+    rerender(<Button color="secondary" variant="outline">Secondary Outline</Button>);
+    expect(screen.getByRole('button')).toHaveClass('bg-transparent');
+    expect(screen.getByRole('button')).toHaveClass('border-secondary');
+    expect(screen.getByRole('button')).toHaveClass('text-secondary');
+  });
 });
+
