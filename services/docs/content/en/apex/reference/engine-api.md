@@ -73,11 +73,11 @@ Usage errors exit `64` instead of argparse's default `2`.
 
 ## ctx.notify {#notify}
 
-`telegram(title, bot_url, message, node=None, level="INFO")` plus the shorthands `success` / `error` / `info` / `warn`. All return `bool` — `True` only when the message was delivered; an empty `bot_url` logs a warning and returns `False`.
+`telegram(title, bot_url, message, node=None, level="INFO")` plus the shorthands `success` / `error` / `info` / `warn`. All return `bool` — `True` only when the message was delivered; an empty `bot_url` logs a warning and returns `False`. The alert `instance` defaults to the node's public host (`APEX_NODE_HOST`) — no domain or node prefix is applied.
 
 ## ctx.paths and ctx.node {#paths}
 
-`ctx.paths`: `repo_root`, `commons`, `proprietaries`, `configs`, `compositions`, `core`, `tier1..3`, `stier1..3`, `root_tier1..3`. `ctx.node`: the identity record (`name`, `cluster`, `subnet`, `fqdn`) or `None` in a standalone commons checkout. `ctx.vars()`: the template/compose environment (see [Reference: Environment variables](/apex/reference/environment)). `ctx.commons.run(args)`: delegate to the shadowed commons action — only valid in an overriding proprietary module.
+`ctx.paths`: `repo_root`, `commons`, `proprietaries`, `configs`, `compositions`, `core`, `tier1..3`, `stier1..3`, `root_tier1..3`. `ctx.node`: the identity record (`name`, `subnet`, `fqdn`, `host`) or `None` in a standalone commons checkout. `ctx.vars()`: the template/compose environment (see [Reference: Environment variables](/apex/reference/environment)). `ctx.commons.run(args)`: delegate to the shadowed commons action — only valid in an overriding proprietary module.
 
 ---
 

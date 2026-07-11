@@ -31,7 +31,10 @@ The [core composition](/apex/glossary#core-composition) encodes container-level 
 - The edge proxy never touches the Docker socket: it discovers backends through a **filtered socket proxy** that exposes read-only container/service state on an isolated network.
 - `enclave` and `socket` are `internal: true` networks — no egress, no host port exposure.
 - Core services set `no-new-privileges` and run under the project's noroot identity wherever the workload allows; capabilities are granted per service, not globally.
-- The optional log route (`/loki`) is protected by HTTP basic auth on top of TLS.
+
+## Observability {#observability}
+
+Observability is an **outbound push**, not an exposed route. The optional `alloy` core service (Grafana Alloy, one agent per node) collects host metrics (a `node_exporter`-equivalent), container metrics (cadvisor), the systemd journal, and docker container logs, and pushes them to a **central** Prometheus and Loki that live on a designated node — the metrics via `prometheus.remote_write` to `APEX_PROM_PUSH_URL`, the logs via `loki.write` to `APEX_LOKI_PUSH_URL`. Both targets are authenticated with HTTP basic auth using `APEX_OBS_BASIC_AUTH_USER` / `APEX_OBS_BASIC_AUTH_PASS`. Because the push is outbound, Alloy attaches to the `direct` network (which has egress) rather than the `internal` `enclave`; there is no node-local log store and no `/loki` route to protect.
 
 ## Secrets boundary {#secrets}
 

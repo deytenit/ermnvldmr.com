@@ -14,7 +14,7 @@ The stack is deliberately small: `git` plus the Python 3 standard library. There
 ## Core features
 
 - **Single entrypoint on the local checkout** — `apex` always acts on the checkout it runs from; there is no `<node>` argument to pass.
-- **Identity from the host** — [node identity](/apex/glossary#node-identity) is derived from the host FQDN (`<node>.a<x>.apex.ermnvldmr.com`) and the `node.env` file.
+- **Explicit identity from `node.env`** — [node identity](/apex/glossary#node-identity) is declared per node in `node.env` (`APEX_NODE_FQDN`, `APEX_NODE_HOST`, `APEX_SUBNET`); the framework assumes no particular domain, and the short node `name` is just the first label of the host.
 - **Four-pillar node repositories** — every node repository follows the same shape: the pinned `commons/` submodule, node-local [proprietaries](/apex/glossary#proprietaries), the node's [compositions](/apex/glossary#compositions), and its `node.env`.
 - **Proprietary overlay** — node-local proprietaries are [overlaid](/apex/glossary#overlay) over the shared actions; commons holds only what every node shares.
 - **Tiered storage with privilege isolation** — standardized storage [tiers](/apex/glossary#tier) with per-project privilege isolation.

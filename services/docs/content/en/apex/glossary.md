@@ -18,10 +18,6 @@ Terminology used within the apex fleet operations framework.
 
 **Capture-up** - The flow that records a host's live state back into its repository: a scheduled commit to the `sync/<node>` branch, rebased onto `main` and folded back by CI. Drift becomes a diff instead of divergence.
 
-## Cluster {#cluster}
-
-**Cluster** - A named group of nodes, `a1`, `a2`, and so on. The cluster appears in every node FQDN and owns an aligned /20 block of the enclave address space.
-
 ## Commons {#commons}
 
 **Commons** - The shared repository (`apex.ermnvldmr.com`) holding the engine, the shared actions, and the core composition. Every node consumes it as the pinned `commons/` git submodule.
@@ -48,11 +44,11 @@ Terminology used within the apex fleet operations framework.
 
 ## Node {#node}
 
-**Node** - A host managed by the framework, defined by exactly one node repository and identified by its FQDN `<node>.a<x>.apex.ermnvldmr.com`.
+**Node** - A host managed by the framework, defined by exactly one node repository and identified by the FQDN it declares in `node.env` (for example, `node1.example.com`).
 
 ## Node identity {#node-identity}
 
-**Node identity** - The resolved record of who a node is — name, cluster, subnet, FQDN — derived from the host FQDN and `node.env`.
+**Node identity** - The resolved record of who a node is — name, subnet, FQDN, public host — derived from `node.env`, with the OS hostname as a fallback for the FQDN.
 
 ## Overlay {#overlay}
 

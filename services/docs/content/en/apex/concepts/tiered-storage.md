@@ -53,18 +53,18 @@ Projects with an incomplete `APEX_UID`/`APEX_GID`/`APEX_SHARED_GID` set are skip
 | `APEX_TIER1..3` | The core project's data directories inside each tier (`compositions/apex/@tierN`). |
 | `APEX_TIER1..3_SHARED` | The shared area inside the core project's tiers. |
 
-The core composition mounts through these exclusively — for example the backup runner mounts `APEX_TIER_ROOT1` and `APEX_TIER_ROOT2` read-only.
+The core composition mounts through these exclusively; the backup runner instead mounts the fleet data root `/srv` read-only and resolves each labeled service's container mounts back to their host paths.
 
 ## Backups {#backups}
 
-`apex backup/run <telegram-bot-url>` drives the core `restic` service (profile `manual`, one-shot) end to end:
+`apex backup/run <telegram-bot-url>` drives the core `resticontainer` service (profile `manual`, one-shot) end to end. Backup intent is **label-driven**: resticontainer discovers every service carrying `restic.enable=true`, reads its `restic.backup.paths` (and optional `restic.backup.stop` / `restic.hooks.*`), resolves those container paths to host paths, and snapshots their union in a single restic run.
 
 1. Checks repository reachability with `snapshots`; initializes the repository if needed.
-2. Backs up `/data/@tier1` and `/data/@tier2` — the two read-only tier-root mounts — under the node's hostname and a fixed per-node tag.
+2. Runs `backup` with `--host <APEX_NODE_HOST>` and `--tag biweekly` — resticontainer runs each labeled service's pre-hook, stops any container flagged `restic.backup.stop`, snapshots the resolved host paths, then restarts and runs post-hooks. The run refuses to report success if no new snapshot lands (a guard against zero labels being discovered).
 3. Applies retention with `forget --prune` (7 daily, 4 weekly, 12 monthly).
 4. Sends a Telegram status either way; a success whose notification cannot be delivered still exits `1` so schedulers notice.
 
-The repository location and credentials come entirely from `APEX_RESTIC_*` configuration (see [Reference: Environment variables](/apex/reference/environment)). Tier 3 is deliberately outside the backup set — it holds reproducible data such as caches and logs.
+The repository location and credentials come entirely from `APEX_RESTIC_*` configuration (see [Reference: Environment variables](/apex/reference/environment)). Which data is captured is decided per service by its `restic.*` labels — for example the core services back up only their configuration (traefik dynamic rules, xray/adguard config), leaving reproducible tier-3 data such as caches and logs out of the set.
 
 ---
 

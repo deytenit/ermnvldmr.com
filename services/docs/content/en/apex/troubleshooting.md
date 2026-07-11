@@ -6,29 +6,21 @@ weight: 40
 
 Failure modes the [engine](/apex/glossary#engine) reports, with the exact log lines it emits.
 
-## FQDN is not apex-shaped {#fqdn-fallback}
+## APEX_NODE_FQDN falls back to the hostname {#fqdn-fallback}
 
-**Symptoms:** every action logs `FQDN '<fqdn>' is not apex-shaped; falling back to repo dir + node.env.`
+**Symptoms:** every action logs `APEX_NODE_FQDN not set in node.env; using hostname '<fqdn>'.`
 
-**Diagnosis:** the host FQDN does not match `<node>.a<x>.apex.ermnvldmr.com`. On a workstation checkout this is expected; on a live node it means the hostname is wrong.
+**Diagnosis:** `node.env` does not set `APEX_NODE_FQDN`, so the engine derived the FQDN from the OS hostname. On a node whose hostname is the intended FQDN this is harmless; otherwise traefik `Host()` routing will use the wrong name.
 
-**Solution:** on a node, set the FQDN (`hostnamectl set-hostname <node>.a<x>.apex.ermnvldmr.com`). The fallback keeps working meanwhile as long as the repository directory is named `<node>.apex.ermnvldmr.com` and `node.env` carries `APEX_CLUSTER`.
-
-## Cluster drift warning {#cluster-drift}
-
-**Symptoms:** `cluster drift: hostname says '<x>', node.env says '<y>'; hostname wins.`
-
-**Diagnosis:** `APEX_CLUSTER` in `node.env` disagrees with the cluster label in the FQDN. Resolution proceeds with the hostname's cluster.
-
-**Solution:** align `node.env` with the hostname (or fix the hostname if it is the wrong side). Remember `APEX_SUBNET` must also move if the node changed [clusters](/apex/glossary#cluster).
+**Solution:** set `APEX_NODE_FQDN` explicitly in `node.env` at the repository root (for example `APEX_NODE_FQDN=node1.example.com`).
 
 ## Identity exits 66 {#identity-66}
 
-**Symptoms:** `identity: no cluster in FQDN or node.env` or `identity: APEX_SUBNET missing from node.env`, exit `66`.
+**Symptoms:** `identity: APEX_NODE_FQDN missing from node.env and no hostname` or `identity: APEX_SUBNET missing from node.env`, exit `66`.
 
-**Diagnosis:** neither identity source can provide a required field; the engine refuses to guess.
+**Diagnosis:** a required identity field cannot be resolved. The first line means neither `APEX_NODE_FQDN` nor an OS hostname yields an FQDN; the second means `APEX_SUBNET` is absent. The engine refuses to guess.
 
-**Solution:** create or complete `node.env` — both `APEX_CLUSTER` and `APEX_SUBNET` — at the repository root.
+**Solution:** create or complete `node.env` at the repository root — set `APEX_SUBNET`, and set `APEX_NODE_FQDN` (or ensure the OS hostname is usable).
 
 ## configure/ufw exits 66 {#ufw-66}
 

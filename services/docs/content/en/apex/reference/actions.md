@@ -70,7 +70,7 @@ Debian-only. Collects pending apt upgrades (`--just-print`) and out-of-date runn
 
 `apex backup/run <telegram_bot_url>`
 
-Drives the core `restic` service one-shot (profile `manual`): repository reachability check with init-if-needed, backup of the tier-1 and tier-2 roots under the node's hostname and a fixed per-node tag, then `forget --prune` retention (7 daily / 4 weekly / 12 monthly). Each restic failure pages and exits `1`; success pages too, and a failed success-notification exits `1`.
+Drives the label-driven `resticontainer` core service one-shot (profile `manual`): repository reachability check with init-if-needed, then a single `backup` in which resticontainer discovers every service carrying `restic.*` compose labels, runs their pre-hooks, stops any container flagged `restic.backup.stop`, resolves the labeled container mounts to host paths, and snapshots the union in one restic run. The snapshot is stamped `--host <APEX_NODE_HOST>`, `--tag biweekly`, `--compression max`. A guard then proves a fresh snapshot for this host actually landed — if no `restic.*` labels were discovered the backup is a silent no-op, so it refuses to report success. Retention follows via `forget --prune` (7 daily / 4 weekly / 12 monthly). Each restic failure pages and exits `1`; success pages too, and a failed success-notification exits `1`.
 
 ## tiers {#tiers}
 

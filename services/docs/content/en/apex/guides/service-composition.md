@@ -34,6 +34,9 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.<project>.rule=Host(`...`)"
       - "traefik.http.services.<project>.loadbalancer.server.port=8080"
+      # backup intent (resticontainer, discovered from restic.* labels)
+      - "restic.enable=true"
+      - "restic.backup.paths=/config"
     restart: unless-stopped
 
   <sidecar>:
@@ -53,6 +56,7 @@ Conventions at work:
 - **Networks are referenced by key** (`direct`, `enclave`, `socket`) with `external: true` — the core composition owns their definitions.
 - **`enclave` membership plus traefik labels** publishes the service through the edge proxy; the proxy discovers it via the socket proxy, never via published ports.
 - **Data paths are tier-relative** (`./@tierN/...`) and resolve through the symlinks created by `tiers/link`.
+- **Backup is opt-in via `restic.*` labels.** `apex backup/run` drives [resticontainer](https://github.com/deytenit/resticontainer), which discovers what to snapshot from compose labels: `restic.enable=true` marks the service, `restic.backup.paths=<container-path>` names the mounts to back up (resticontainer resolves them to host paths). A service with no `restic.*` labels is simply not backed up. Back up config only where the data is regenerable.
 - The `${APEX_UID...}` trio comes from the project `.env` maintained by `tiers/useradd`.
 
 ### Provision storage and identity

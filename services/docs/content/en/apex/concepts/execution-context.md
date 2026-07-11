@@ -19,7 +19,7 @@ Every [action](/apex/glossary#action) receives a `ctx` object as its first argum
 | `ctx.systemd` | Rendering and enabling systemd units from `configs/systemd/`. |
 | `ctx.notify` | Telegram notifications; every method returns a boolean so actions can gate their exit code on delivery. |
 | `ctx.paths` | Resolved repository paths: `repo_root`, `commons`, `proprietaries`, `configs`, `compositions`, `core`, and the tier properties. |
-| `ctx.node` | The resolved [node identity](/apex/glossary#node-identity) record (`name`, `cluster`, `subnet`, `fqdn`); `None` in a standalone commons checkout. |
+| `ctx.node` | The resolved [node identity](/apex/glossary#node-identity) record (`name`, `subnet`, `fqdn`, `host`); `None` in a standalone commons checkout. |
 | `ctx.commons` | Available only in an overriding proprietary action: `ctx.commons.run(args)` delegates to the shadowed commons implementation. |
 
 Method-level signatures are listed in [Reference: Engine API](/apex/reference/engine-api).
@@ -42,7 +42,7 @@ The substitution set is `ctx.vars()` — the full process environment plus the e
 |---|---|
 | `APEX_COMMONS` | Absolute path of the commons directory (the launcher lives at `$APEX_COMMONS/apex`). |
 | `APEX_REPO_ROOT` | Absolute path of the node repository root. |
-| `APEX_NODE`, `APEX_CLUSTER`, `APEX_SUBNET`, `APEX_NODE_FQDN` | The resolved identity fields. |
+| `APEX_NODE_HOST`, `APEX_NODE_FQDN`, `APEX_SUBNET` | The resolved identity fields. |
 | `APEX_TIER1`…`APEX_TIER3` | The core project's per-[tier](/apex/glossary#tier) data directories. |
 | `APEX_TIER1_SHARED`…`APEX_TIER3_SHARED` | The shared areas inside each tier. |
 | `APEX_TIER_ROOT1`…`APEX_TIER_ROOT3` | The tier storage roots (node-level links). |
@@ -60,7 +60,7 @@ The full origin/consumer matrix is in [Reference: Environment variables](/apex/r
 
 ## Notifications {#notifications}
 
-`ctx.notify` posts Telegram messages through the standard library (`urllib`). Payloads carry the instance name `com.ermnvldmr.apex.<node>`, a status (`firing`/`resolved`), an escalation level, and the message truncated to 200 characters. Every method returns `True` only when the send succeeded; unattended actions treat a failed send of their final status message as a failure (exit `1`), so a broken notification channel is noticed instead of silently tolerated.
+`ctx.notify` posts Telegram messages through the standard library (`urllib`). Payloads carry the instance name — the node's public host `APEX_NODE_HOST` — a status (`firing`/`resolved`), an escalation level, and the message truncated to 200 characters. Every method returns `True` only when the send succeeded; unattended actions treat a failed send of their final status message as a failure (exit `1`), so a broken notification channel is noticed instead of silently tolerated.
 
 ---
 

@@ -11,7 +11,7 @@ apex splits fleet automation into one shared repository — the [commons](/apex/
 Every node repository has the same shape:
 
 {{< filetree/container >}}
-{{< filetree/folder name="<node>.apex.ermnvldmr.com" state="open" >}}
+{{< filetree/folder name="<node>.<your-domain>" state="open" >}}
   {{< filetree/folder name="commons" state="closed" >}}{{< /filetree/folder >}}
   {{< filetree/folder name="proprietaries" state="closed" >}}{{< /filetree/folder >}}
   {{< filetree/folder name="configs" state="closed" >}}{{< /filetree/folder >}}
