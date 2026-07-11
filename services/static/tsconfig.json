@@ -4,6 +4,8 @@
     "baseUrl": "./src",
     "paths": {
       "#*": ["./*"],
+      "@ermnvldmr/ssg": ["../../../packages/ssg/src"],
+      "@ermnvldmr/ssg/*": ["../../../packages/ssg/src/*"],
       "@ermnvldmr/stl": ["../../../packages/stl/src"],
       "@ermnvldmr/ui": ["../../../packages/ui/src"],
       "@ermnvldmr/ui/*": ["../../../packages/ui/src/*"]

@@ -1,8 +1,8 @@
+import { createPage } from '@ermnvldmr/ssg';
 import { VStack, HStack, Header, Paragraph, Link } from '@ermnvldmr/ui';
 import React, { useEffect, useState } from 'react';
 
 import { IndexLayout } from '../components/layouts/IndexLayout/IndexLayout';
-import { createPage } from '@ermnvldmr/ssg';
 import {
   AUTHOR_EMAIL,
   AUTHOR_NAME,
@@ -12,6 +12,14 @@ import {
 } from '../lib/shared/constants';
 import { getCurrentYear, getHttpStatusUrl } from '../lib/shared/utils';
 
+/**
+ * Static error page component.
+ *
+ * @example
+ * ```tsx
+ * createPage(ErrorPage, { title: ERROR_TITLE, description: ERROR_DESCRIPTION });
+ * ```
+ */
 function ErrorPage() {
   const [status, setStatus] = useState<number | null>(null);
 

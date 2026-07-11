@@ -54,7 +54,7 @@ jobs:
         with:
           version: 9.12.3
       - uses: actions/setup-node@v4
-         with:
+        with:
           node-version: 20
           cache: 'pnpm'
       - name: Install dependencies

@@ -1,8 +1,8 @@
+import { createPage } from '@ermnvldmr/ssg';
 import { VStack, HStack, Header, Paragraph, Link } from '@ermnvldmr/ui';
 import React from 'react';
 
 import { IndexLayout } from '../components/layouts/IndexLayout/IndexLayout';
-import { createPage } from '@ermnvldmr/ssg';
 import {
   AUTHOR_EMAIL,
   AUTHOR_NAME,
@@ -12,6 +12,14 @@ import {
 } from '../lib/shared/constants';
 import { getCurrentYear } from '../lib/shared/utils';
 
+/**
+ * Static landing page component.
+ *
+ * @example
+ * ```tsx
+ * createPage(Index, { title: SITE_TITLE, description: SITE_DESCRIPTION });
+ * ```
+ */
 function Index() {
   return (
     <IndexLayout>
