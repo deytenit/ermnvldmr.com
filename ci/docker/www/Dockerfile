@@ -13,6 +13,7 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 # Copy all package.json files to allow pnpm to fetch dependencies
 COPY packages/eslint-config/package.json ./packages/eslint-config/
 COPY packages/rsbuild-config/package.json ./packages/rsbuild-config/
+COPY packages/ssg/package.json ./packages/ssg/
 COPY packages/stl/package.json ./packages/stl/
 COPY packages/storybook-config/package.json ./packages/storybook-config/
 COPY packages/ui/package.json ./packages/ui/
