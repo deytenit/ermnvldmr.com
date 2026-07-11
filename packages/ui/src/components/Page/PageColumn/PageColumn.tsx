@@ -1,4 +1,5 @@
 import { cn } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React from 'react';
 
 /**
@@ -30,6 +31,23 @@ export interface PageColumnProps {
   as?: React.ElementType;
 }
 
+const pageColumnVariants = cva('w-full transition-all duration-200', {
+  variants: {
+    size: {
+      small: 'lg:w-[var(--rb-page-column-small,300px)] lg:flex-none',
+      full: 'flex-1',
+    },
+    sticky: {
+      true: 'lg:sticky lg:top-24 self-start',
+      false: '',
+    },
+  },
+  defaultVariants: {
+    size: 'full',
+    sticky: false,
+  },
+});
+
 /**
  /**
  * A single column unit within the PageColumns host.
@@ -49,18 +67,6 @@ export const PageColumn = ({
   as: Component = 'div',
 }: PageColumnProps) => {
   return (
-    <Component
-      className={cn(
-        'w-full transition-all duration-200',
-        {
-          'lg:w-[var(--rb-page-column-small,300px)] lg:flex-none': size === 'small',
-          'flex-1': size === 'full',
-          'lg:sticky lg:top-24 self-start': sticky,
-        },
-        className
-      )}
-    >
-      {children}
-    </Component>
+    <Component className={cn(pageColumnVariants({ size, sticky }), className)}>{children}</Component>
   );
 };

@@ -1,4 +1,5 @@
 import { cn, castRef, genericMemo } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React, { forwardRef } from 'react';
 
 import { TableContext } from './contexts/TableContext/TableContext';
@@ -26,6 +27,34 @@ export interface TableProps
   stickyHeader?: boolean;
 }
 
+const tableVariants = cva(
+  cn(
+    'w-full border-collapse caption-bottom text-sm',
+    // Mask borders at the edges to prevent doubling with container borders
+    '[&_td:first-child]:border-l-0 [&_th:first-child]:border-l-0',
+    '[&_td:last-child]:border-r-0 [&_th:last-child]:border-r-0',
+    '[&_tr:first-child_td]:border-t-0 [&_tr:first-child_th]:border-t-0',
+    '[&_tr:last-child_td]:border-b-0'
+  ),
+  {
+    variants: {
+      variant: {
+        surface: '',
+        outline: '',
+        ghost: 'border-none',
+      },
+      stickyHeader: {
+        true: 'relative',
+        false: '',
+      },
+    },
+    defaultVariants: {
+      variant: 'surface',
+      stickyHeader: false,
+    },
+  }
+);
+
 const TableComponent = forwardRef<HTMLTableElement, TableProps>(function Table(
   {
     className,
@@ -47,17 +76,7 @@ const TableComponent = forwardRef<HTMLTableElement, TableProps>(function Table(
       <table
         {...props}
         ref={castRef<HTMLTableElement>(ref)}
-        className={cn(
-          'w-full border-collapse caption-bottom text-sm',
-          // Mask borders at the edges to prevent doubling with container borders
-          '[&_td:first-child]:border-l-0 [&_th:first-child]:border-l-0',
-          '[&_td:last-child]:border-r-0 [&_th:last-child]:border-r-0',
-          '[&_tr:first-child_td]:border-t-0 [&_tr:first-child_th]:border-t-0',
-          '[&_tr:last-child_td]:border-b-0',
-          variant === 'ghost' && 'border-none',
-          stickyHeader && 'relative',
-          className
-        )}
+        className={cn(tableVariants({ variant, stickyHeader }), className)}
       >
         {children}
       </table>

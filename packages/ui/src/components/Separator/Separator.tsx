@@ -1,4 +1,5 @@
 import { cn } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React, { memo } from 'react';
 
 import { VStack } from '../VStack/VStack';
@@ -30,21 +31,61 @@ export interface SeparatorProps extends ClassNameProps, TestIdProps {
   thinned?: SeparatorThinnedType;
 }
 
-const THINNED_TYPE_CLASSES: Record<
-  'horizontal' | 'vertical',
-  Record<Exclude<SeparatorThinnedType, 'none'>, string>
-> = {
-  horizontal: {
-    thinned: '[mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)]',
-    'thinned-start': '[mask-image:linear-gradient(to_right,transparent,black_20%,black)]',
-    'thinned-end': '[mask-image:linear-gradient(to_right,black,black_80%,transparent)]',
+const separatorLineVariants = cva('border-0 border-solid', {
+  variants: {
+    color: {
+      black: 'border-foreground',
+      outline: 'border-[var(--rb-outline)]',
+      'outline-light': 'border-[var(--rb-outline)]/40',
+    },
+    direction: {
+      // 1px stroke for subtler appearance, plus size classes to fill the
+      // container (the border provides the visual line).
+      horizontal: 'border-t w-full h-0',
+      vertical: 'border-l h-full w-0',
+    },
+    thinned: {
+      thinned: '',
+      'thinned-start': '',
+      'thinned-end': '',
+      none: '',
+    },
   },
-  vertical: {
-    thinned: '[mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]',
-    'thinned-start': '[mask-image:linear-gradient(to_bottom,transparent,black_20%,black)]',
-    'thinned-end': '[mask-image:linear-gradient(to_bottom,black,black_80%,transparent)]',
-  },
-};
+  // Thinned effect using CSS mask; the gradient axis depends on direction.
+  compoundVariants: [
+    {
+      direction: 'horizontal',
+      thinned: 'thinned',
+      className: '[mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)]',
+    },
+    {
+      direction: 'horizontal',
+      thinned: 'thinned-start',
+      className: '[mask-image:linear-gradient(to_right,transparent,black_20%,black)]',
+    },
+    {
+      direction: 'horizontal',
+      thinned: 'thinned-end',
+      className: '[mask-image:linear-gradient(to_right,black,black_80%,transparent)]',
+    },
+    {
+      direction: 'vertical',
+      thinned: 'thinned',
+      className:
+        '[mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]',
+    },
+    {
+      direction: 'vertical',
+      thinned: 'thinned-start',
+      className: '[mask-image:linear-gradient(to_bottom,transparent,black_20%,black)]',
+    },
+    {
+      direction: 'vertical',
+      thinned: 'thinned-end',
+      className: '[mask-image:linear-gradient(to_bottom,black,black_80%,transparent)]',
+    },
+  ],
+});
 
 /**
  * A separator component for dividing content sections.
@@ -72,34 +113,12 @@ export const Separator = memo(function Separator({
   const defaultColor = type === 'single' ? 'outline-light' : 'outline';
   const finalColor = color ?? defaultColor;
 
-  // Color mapping to CSS custom properties
-  const colorClasses = {
-    black: 'border-foreground',
-    outline: 'border-[var(--rb-outline)]',
-    'outline-light': 'border-[var(--rb-outline)]/40',
-  };
-
-  // Base line styles
-  const lineBaseClasses = [
-    'border-0',
-    'border-solid',
-    colorClasses[finalColor],
-    // 1px stroke for subtler appearance
-    direction === 'horizontal' ? 'border-t' : 'border-l',
-  ];
-
-  // Thinned effect using CSS mask
-  const thinnedClasses = thinned !== 'none' ? [THINNED_TYPE_CLASSES[direction][thinned]] : [];
-
-  // Size classes - fill container by default
-  const sizeClasses =
-    direction === 'horizontal'
-      ? ['w-full', 'h-0'] // Full width, no height (border provides the visual)
-      : ['h-full', 'w-0']; // Full height, no width (border provides the visual)
-
   // Single line implementation
   if (type === 'single') {
-    const lineClasses = cn(...lineBaseClasses, ...thinnedClasses, ...sizeClasses, className);
+    const lineClasses = cn(
+      separatorLineVariants({ color: finalColor, direction, thinned }),
+      className
+    );
 
     return (
       <div
@@ -112,7 +131,7 @@ export const Separator = memo(function Separator({
   }
 
   // Double line implementation
-  const singleLineClasses = cn(...lineBaseClasses, ...thinnedClasses, ...sizeClasses);
+  const singleLineClasses = separatorLineVariants({ color: finalColor, direction, thinned });
 
   const containerClasses = cn(direction === 'horizontal' ? 'w-full' : 'h-full', className);
 

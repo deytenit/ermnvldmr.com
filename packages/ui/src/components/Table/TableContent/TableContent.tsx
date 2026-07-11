@@ -1,4 +1,5 @@
 import { cn, castRef, genericMemo } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React, { forwardRef } from 'react';
 
 /**
@@ -36,18 +37,49 @@ export interface TableContentProps extends React.HTMLAttributes<HTMLDivElement> 
   color?: 'default' | 'muted' | 'error' | 'success';
 }
 
-const gapClasses: Record<string, string> = {
-  s: 'gap-1.5',
-  m: 'gap-3',
-  l: 'gap-4',
-};
-
-const colorClasses: Record<string, string> = {
-  default: 'text-[var(--rb-text)]',
-  muted: 'text-[var(--rb-muted-text)]',
-  error: 'text-[var(--rb-error-text)]',
-  success: 'text-[var(--rb-success-text)]',
-};
+const contentVariants = cva('flex', {
+  variants: {
+    layout: {
+      flex: 'flex-row items-center',
+      stack: 'flex-col',
+    },
+    align: {
+      start: '',
+      center: '',
+      end: '',
+      between: '',
+    },
+    gap: {
+      s: 'gap-1.5',
+      m: 'gap-3',
+      l: 'gap-4',
+    },
+    color: {
+      default: 'text-[var(--rb-text)]',
+      muted: 'text-[var(--rb-muted-text)]',
+      error: 'text-[var(--rb-error-text)]',
+      success: 'text-[var(--rb-success-text)]',
+    },
+    variant: {
+      text: '',
+      numeric: 'tabular-nums',
+      icon: '',
+      checkbox: 'w-min mx-auto',
+    },
+  },
+  compoundVariants: [
+    // Flex layout maps alignment to justify-*
+    { layout: 'flex', align: 'start', className: 'justify-start' },
+    { layout: 'flex', align: 'center', className: 'justify-center' },
+    { layout: 'flex', align: 'end', className: 'justify-end' },
+    { layout: 'flex', align: 'between', className: 'justify-between' },
+    // Stack layout maps alignment to items-*
+    { layout: 'stack', align: 'start', className: 'items-start' },
+    { layout: 'stack', align: 'center', className: 'items-center' },
+    { layout: 'stack', align: 'end', className: 'items-end' },
+    { layout: 'stack', align: 'between', className: 'items-stretch' },
+  ],
+});
 
 /**
  * A polymorphic layout primitive for content within table cells.
@@ -85,20 +117,12 @@ export const TableContent = genericMemo(
     },
     ref
   ) {
-    const alignClasses = {
-      start: layout === 'flex' ? 'justify-start' : 'items-start',
-      center: layout === 'flex' ? 'justify-center' : 'items-center',
-      end: layout === 'flex' ? 'justify-end' : 'items-end',
-      between: layout === 'flex' ? 'justify-between' : 'items-stretch',
-    };
-
     // Determine default alignment based on variant if not explicitly provided
-    let defaultAlign: keyof typeof alignClasses = 'start';
+    let defaultAlign: NonNullable<TableContentProps['align']> = 'start';
     if (variant === 'numeric') defaultAlign = 'end';
     else if (variant === 'icon' || variant === 'checkbox') defaultAlign = 'center';
 
     const finalAlign = align ?? defaultAlign;
-    const alignmentClass = alignClasses[finalAlign];
 
     // Truncation logic
     const isTruncated = truncate || maxLines !== undefined;
@@ -109,16 +133,10 @@ export const TableContent = genericMemo(
         {...props}
         ref={castRef<HTMLDivElement>(ref)}
         className={cn(
-          'flex',
-          layout === 'flex' ? 'flex-row items-center' : 'flex-col',
-          alignmentClass,
-          gap && gapClasses[gap],
-          colorClasses[color],
+          contentVariants({ layout, align: finalAlign, gap, color, variant }),
           // When truncating, we need to handle block layout and min-width
           isTruncated && (lineCount === 1 ? 'truncate block' : 'line-clamp'),
           isTruncated && 'min-w-0',
-          variant === 'numeric' && 'tabular-nums',
-          variant === 'checkbox' && 'w-min mx-auto',
           className
         )}
         style={{

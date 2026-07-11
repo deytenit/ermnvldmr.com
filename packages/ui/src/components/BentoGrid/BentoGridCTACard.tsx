@@ -1,4 +1,5 @@
 import { cn } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React from 'react';
 
 import { BentoGridBaseCard } from './BentoGridBaseCard';
@@ -8,6 +9,42 @@ import { Text } from '../Text/Text';
 import { VStack } from '../VStack/VStack';
 
 import type { BentoCardBaseProps } from './types';
+
+const cardVariants = cva('', {
+  variants: {
+    variant: {
+      default: '',
+      primary: 'bg-primary border-primary',
+    },
+  },
+  defaultVariants: {
+    variant: 'default',
+  },
+});
+
+const headerVariants = cva('', {
+  variants: {
+    variant: {
+      default: '',
+      primary: 'text-primary-text',
+    },
+  },
+  defaultVariants: {
+    variant: 'default',
+  },
+});
+
+const descriptionVariants = cva('', {
+  variants: {
+    variant: {
+      default: 'text-muted-text',
+      primary: 'text-primary-text/80',
+    },
+  },
+  defaultVariants: {
+    variant: 'default',
+  },
+});
 
 /**
  *
@@ -45,18 +82,15 @@ export const BentoGridCTACard = ({
   return (
     <BentoGridBaseCard
       {...baseProps}
-      className={cn(
-        variant === 'primary' && 'bg-primary border-primary',
-        className
-      )}
+      className={cn(cardVariants({ variant }), className)}
     >
       <VStack className="h-full justify-between" gap={4}>
         <VStack gap={2}>
-          <Header className={cn(variant === 'primary' && 'text-primary-text')} level={3}>
+          <Header className={cn(headerVariants({ variant }))} level={3}>
             {title}
           </Header>
           <Text
-            className={cn(variant === 'primary' ? 'text-primary-text/80' : 'text-muted-text')}
+            className={cn(descriptionVariants({ variant }))}
             size="m"
           >
             {description}

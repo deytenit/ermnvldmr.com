@@ -1,4 +1,5 @@
 import { cn } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import { Check, Copy } from 'lucide-react';
 import React, { memo, useCallback, useEffect, useRef, useState, useMemo } from 'react';
 
@@ -8,6 +9,36 @@ import { CodeContext, type CodeContextValue } from '../contexts/CodeContext/Code
 
 import type { CodeLanguage } from '../lib/highlighter/highlighter';
 import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
+
+const copyButtonVariants = cva(
+  'h-7 w-7 p-0 bg-[var(--rb-container-base)]/80 backdrop-blur-sm transition-opacity',
+  {
+    variants: {
+      isCopied: {
+        true: '',
+        false: 'opacity-0 group-hover:opacity-100 focus:opacity-100',
+      },
+    },
+    defaultVariants: {
+      isCopied: false,
+    },
+  }
+);
+
+const preVariants = cva(
+  'overflow-auto p-4 text-sm font-mono leading-relaxed select-text whitespace-pre',
+  {
+    variants: {
+      hasLabel: {
+        true: 'pt-8',
+        false: '',
+      },
+    },
+    defaultVariants: {
+      hasLabel: false,
+    },
+  }
+);
 
 /**
  * Props for the CodeBlock component.
@@ -122,10 +153,7 @@ export const CodeBlock = memo(function CodeBlock({
         <div className="absolute top-2 right-2 pointer-events-auto">
           <Button
             aria-label="Copy code"
-            className={cn(
-              'h-7 w-7 p-0 bg-[var(--rb-container-base)]/80 backdrop-blur-sm transition-opacity',
-              !isCopied && 'opacity-0 group-hover:opacity-100 focus:opacity-100'
-            )}
+            className={cn(copyButtonVariants({ isCopied }))}
             color="neutral"
             size="s"
             variant="ghost"
@@ -143,10 +171,7 @@ export const CodeBlock = memo(function CodeBlock({
       {/* Code Area */}
       <pre
         ref={preRef}
-        className={cn(
-          'overflow-auto p-4 text-sm font-mono leading-relaxed select-text whitespace-pre',
-          label && 'pt-8'
-        )}
+        className={cn(preVariants({ hasLabel: !!label }))}
         style={{ maxHeight: maxHeight }}
       >
         <CodeContext.Provider value={contextValue}>{children}</CodeContext.Provider>

@@ -40,7 +40,7 @@ export const BentoGridInfoCard = ({
           <Header level={3}>{title}</Header>
           {description && <Text className="text-muted-text" size="m">{description}</Text>}
         </VStack>
-        {footer && <div className="mt-auto">{footer}</div>}
+        {footer && <div className="mt-auto w-full">{footer}</div>}
       </VStack>
     </BentoGridBaseCard>
   );

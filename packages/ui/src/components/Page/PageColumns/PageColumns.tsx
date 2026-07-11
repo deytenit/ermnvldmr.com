@@ -1,4 +1,5 @@
 import { cn } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React from 'react';
 
 /**
@@ -18,6 +19,8 @@ export interface PageColumnsProps {
   className?: string;
 }
 
+const pageColumnsVariants = cva('flex flex-col lg:flex-row w-full');
+
 /**
  /**
  * Host component for a responsive column system.
@@ -34,18 +37,12 @@ export interface PageColumnsProps {
  * ```
  */
 export const PageColumns = ({ children, gap = 6, className }: PageColumnsProps) => {
+  // `gap` accepts either a Tailwind spacing-scale number (`gap-N`) or an
+  // arbitrary class string, so the value space is not enumerable as a cva
+  // variant. Compute the numeric class here and pass strings through verbatim.
+  const gapClass = typeof gap === 'number' ? `gap-${gap}` : gap;
+
   return (
-    <div
-      className={cn(
-        'flex flex-col lg:flex-row w-full',
-        {
-          [`gap-${gap}`]: typeof gap === 'number',
-          [String(gap)]: typeof gap === 'string',
-        },
-        className
-      )}
-    >
-      {children}
-    </div>
+    <div className={cn(pageColumnsVariants(), gapClass, className)}>{children}</div>
   );
 };

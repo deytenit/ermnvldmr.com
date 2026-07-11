@@ -1,4 +1,5 @@
 import { cn } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React, { useState } from 'react';
 
 import { Stub } from '../Stub/Stub';
@@ -38,6 +39,41 @@ interface ImageBaseProps {
  */
 export type ImageProps = ImageBaseProps & ImageDimensions;
 
+const imageWrapperVariants = cva('relative overflow-hidden', {
+  variants: {
+    rounded: {
+      none: 'rounded-none',
+      sm: 'rounded-sm',
+      md: 'rounded-md',
+      lg: 'rounded-lg',
+      full: 'rounded-full',
+    },
+    shadow: {
+      none: '',
+      sm: 'shadow-sm',
+      md: 'shadow-md',
+      lg: 'shadow-lg',
+    },
+  },
+  defaultVariants: {
+    rounded: 'none',
+    shadow: 'none',
+  },
+});
+
+const imageVariants = cva('w-full h-full transition-opacity duration-300', {
+  variants: {
+    objectFit: {
+      cover: 'object-cover',
+      contain: 'object-contain',
+      fill: 'object-fill',
+    },
+  },
+  defaultVariants: {
+    objectFit: 'cover',
+  },
+});
+
 /**
  * A performance-optimized Image component with built-in CLS prevention,
  * loading states, and Rainby design system styles.
@@ -52,21 +88,6 @@ export const Image: React.FC<ImageProps> = (props) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  const roundedClasses = {
-    none: 'rounded-none',
-    sm: 'rounded-sm',
-    md: 'rounded-md',
-    lg: 'rounded-lg',
-    full: 'rounded-full',
-  };
-
-  const shadowClasses = {
-    none: '',
-    sm: 'shadow-sm',
-    md: 'shadow-md',
-    lg: 'shadow-lg',
-  };
-
   const wrapperStyle: React.CSSProperties = {
     width: 'width' in props ? props.width : undefined,
     height: 'height' in props ? props.height : undefined,
@@ -75,12 +96,7 @@ export const Image: React.FC<ImageProps> = (props) => {
 
   return (
     <div
-      className={cn(
-        'relative overflow-hidden',
-        roundedClasses[rounded],
-        shadowClasses[shadow],
-        className
-      )}
+      className={cn(imageWrapperVariants({ rounded, shadow }), className)}
       data-testid="image-wrapper"
       style={wrapperStyle}
     >
@@ -89,13 +105,7 @@ export const Image: React.FC<ImageProps> = (props) => {
       )}
       <img
         alt={alt}
-        className={cn(
-          'w-full h-full transition-opacity duration-300',
-          objectFit === 'cover' && 'object-cover',
-          objectFit === 'contain' && 'object-contain',
-          objectFit === 'fill' && 'object-fill',
-          isLoaded ? 'opacity-100' : 'opacity-0'
-        )}
+        className={cn(imageVariants({ objectFit }), isLoaded ? 'opacity-100' : 'opacity-0')}
         data-testid="image-element"
         decoding="async"
         loading="lazy"

@@ -1,4 +1,5 @@
 import { cn, castRef, genericMemo } from '@ermnvldmr/stl';
+import { cva } from 'class-variance-authority';
 import React, { forwardRef } from 'react';
 
 import { paddingClasses, borderClasses } from '../constants';
@@ -22,6 +23,18 @@ export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElem
    */
   border?: TableCellBorder;
 }
+
+const cellVariants = cva('align-middle', {
+  variants: {
+    padding: paddingClasses,
+    border: borderClasses,
+    align: {
+      left: 'text-left',
+      center: 'text-center',
+      right: 'text-right',
+    },
+  },
+});
 
 /**
  * A standard table data cell (td) with density and alignment control.
@@ -65,12 +78,7 @@ export const TableCell = genericMemo(
         {...props}
         ref={castRef<HTMLTableCellElement>(ref)}
         className={cn(
-          'align-middle',
-          paddingClasses[finalPadding],
-          borderClasses[resolvedBorder],
-          align === 'left' && 'text-left',
-          align === 'center' && 'text-center',
-          align === 'right' && 'text-right',
+          cellVariants({ padding: finalPadding, border: resolvedBorder, align }),
           className
         )}
       >

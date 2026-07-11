@@ -147,52 +147,52 @@ const thumbVariants = cva(
     compoundVariants: [
       // primary
       { variant: 'solid', color: 'primary', className: 'data-[selected=true]:bg-primary-text' },
-      { variant: 'outline', color: 'primary', className: 'data-[selected=true]:bg-primary' },
+      { variant: 'outline', color: 'primary', className: 'data-[selected=true]:bg-primary-text' },
       { variant: 'ghost', color: 'primary', className: 'data-[selected=true]:bg-primary' },
 
       // primary-negative
       { variant: 'solid', color: 'primary-negative', className: 'data-[selected=true]:bg-[var(--rb-base)]' },
-      { variant: 'outline', color: 'primary-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
+      { variant: 'outline', color: 'primary-negative', className: 'data-[selected=true]:bg-[var(--rb-base)]' },
       { variant: 'ghost', color: 'primary-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
 
       // secondary
       { variant: 'solid', color: 'secondary', className: 'data-[selected=true]:bg-secondary-text' },
-      { variant: 'outline', color: 'secondary', className: 'data-[selected=true]:bg-secondary' },
+      { variant: 'outline', color: 'secondary', className: 'data-[selected=true]:bg-secondary-text' },
       { variant: 'ghost', color: 'secondary', className: 'data-[selected=true]:bg-secondary' },
 
       // secondary-negative
       { variant: 'solid', color: 'secondary-negative', className: 'data-[selected=true]:bg-[var(--rb-base)]' },
-      { variant: 'outline', color: 'secondary-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
+      { variant: 'outline', color: 'secondary-negative', className: 'data-[selected=true]:bg-[var(--rb-base)]' },
       { variant: 'ghost', color: 'secondary-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
 
       // tertiary
       { variant: 'solid', color: 'tertiary', className: 'data-[selected=true]:bg-tertiary-text' },
-      { variant: 'outline', color: 'tertiary', className: 'data-[selected=true]:bg-tertiary' },
+      { variant: 'outline', color: 'tertiary', className: 'data-[selected=true]:bg-tertiary-text' },
       { variant: 'ghost', color: 'tertiary', className: 'data-[selected=true]:bg-tertiary' },
 
       // tertiary-negative
       { variant: 'solid', color: 'tertiary-negative', className: 'data-[selected=true]:bg-[var(--rb-base)]' },
-      { variant: 'outline', color: 'tertiary-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
+      { variant: 'outline', color: 'tertiary-negative', className: 'data-[selected=true]:bg-[var(--rb-base)]' },
       { variant: 'ghost', color: 'tertiary-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
 
       // error
       { variant: 'solid', color: 'error', className: 'data-[selected=true]:bg-error-text' },
-      { variant: 'outline', color: 'error', className: 'data-[selected=true]:bg-error' },
+      { variant: 'outline', color: 'error', className: 'data-[selected=true]:bg-error-text' },
       { variant: 'ghost', color: 'error', className: 'data-[selected=true]:bg-error' },
 
       // error-negative
       { variant: 'solid', color: 'error-negative', className: 'data-[selected=true]:bg-[var(--rb-base)]' },
-      { variant: 'outline', color: 'error-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
+      { variant: 'outline', color: 'error-negative', className: 'data-[selected=true]:bg-[var(--rb-base)]' },
       { variant: 'ghost', color: 'error-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
 
       // neutral
       { variant: 'solid', color: 'neutral', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
-      { variant: 'outline', color: 'neutral', className: 'data-[selected=true]:bg-muted' },
+      { variant: 'outline', color: 'neutral', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
       { variant: 'ghost', color: 'neutral', className: 'data-[selected=true]:bg-muted' },
 
       // neutral-negative
       { variant: 'solid', color: 'neutral-negative', className: 'data-[selected=true]:bg-[var(--rb-base)]' },
-      { variant: 'outline', color: 'neutral-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
+      { variant: 'outline', color: 'neutral-negative', className: 'data-[selected=true]:bg-[var(--rb-base)]' },
       { variant: 'ghost', color: 'neutral-negative', className: 'data-[selected=true]:bg-[var(--rb-text)]' },
     ],
     defaultVariants: {

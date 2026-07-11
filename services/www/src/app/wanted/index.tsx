@@ -1,10 +1,10 @@
 import { localePath } from '@ermnvldmr/i18n';
-import { BentoGrid, Header, Paragraph, VStack, Breadcrumbs, Image } from '@ermnvldmr/ui';
+import { createPage } from '@ermnvldmr/ssg';
+import { BentoGrid, Header, Paragraph, VStack, Breadcrumbs } from '@ermnvldmr/ui';
 import { Ghost, Coffee, Plane, Check, Gift, Cuboid, BoxSelect, Cpu } from 'lucide-react';
 
 import { t } from './index.i18n';
 import { DefaultLayout } from '../../components/Layout/DefaultLayout';
-import { createPage } from '@ermnvldmr/ssg';
 
 /**
  * Wanted page component.
@@ -36,7 +36,6 @@ function WantedPage(): React.JSX.Element {
       <VStack gap={8}>
         <VStack gap={4}>
           <Header level={3}>{t('How this works')}</Header>
-          <Image alt="" height={100} src="https://storage.yandexcloud.net/static.ermnvldmr.com/www/sample.jpg" width={200} />
           <VStack gap={4}>
             <Paragraph size="m">
               {t(
