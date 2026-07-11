@@ -1,5 +1,5 @@
 import { createReadStream, existsSync } from 'node:fs';
-import { extname, join } from 'node:path';
+import { extname, join, sep } from 'node:path';
 import { defineSSGServiceConfig, discoverEntries, mergeConfig } from '@ermnvldmr/ssg/dev';
 import { THEME_INIT_SCRIPT, THEME_INIT_STYLES } from '@ermnvldmr/ui/dev';
 import { localeRsbuildConfig } from '@ermnvldmr/i18n/dev';
@@ -41,8 +41,14 @@ export default defineSSGServiceConfig(
             const url = (req as { url?: string }).url ?? '';
             if (!url.startsWith('/static/')) return next();
 
-            const filePath = join(import.meta.dirname, 'public', url.split('?')[0] ?? url);
-            if (!existsSync(filePath)) return next();
+            // Strip the leading slash so the '/static/...' segment is treated as
+            // relative to public/ (an absolute segment would otherwise let a
+            // resolved path escape it), then confine the result to public/ to
+            // block '..' path traversal.
+            const publicDir = join(import.meta.dirname, 'public');
+            const requestedPath = (url.split('?')[0] ?? url).replace(/^\/+/, '');
+            const filePath = join(publicDir, requestedPath);
+            if (!filePath.startsWith(publicDir + sep) || !existsSync(filePath)) return next();
 
             const mime = MIME[extname(filePath)] ?? 'application/octet-stream';
             res.setHeader('Content-Type', mime);

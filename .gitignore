@@ -2,6 +2,9 @@
 dist/
 *.tsbuildinfo
 
+# service static assets (local only, synced with S3)
+**/public/static/
+
 # dependencies
 node_modules/
 

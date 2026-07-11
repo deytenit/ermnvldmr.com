@@ -3,6 +3,10 @@ name: services/www - releases/dispatch-release
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   setup-stage:
     name: Setup - Stage

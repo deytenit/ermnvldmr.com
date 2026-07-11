@@ -9,6 +9,10 @@ concurrency:
   group: ci-www-rel-${{ github.ref_name }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   setup-stage:
     name: Setup - Stage

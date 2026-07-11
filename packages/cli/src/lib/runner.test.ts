@@ -9,7 +9,7 @@ vi.mock('./runners/s3SyncRunner.js', () => ({
 }));
 
 describe('registerCommands', () => {
-  it('registers commands into a Commander instance', () => {
+  it('registers commands into a Commander instance', async () => {
     const program = new Command();
     const actionSpy = vi.fn();
     
@@ -24,8 +24,9 @@ describe('registerCommands', () => {
       ]
     });
     
-    // We simulate parsing args to run the action
-    program.parse(['node', 'script', 'test-cmd']);
+    // We simulate parsing args to run the action. The registered action is
+    // async, so parseAsync + await ensures it runs before we assert.
+    await program.parseAsync(['node', 'script', 'test-cmd']);
     expect(actionSpy).toHaveBeenCalled();
   });
 

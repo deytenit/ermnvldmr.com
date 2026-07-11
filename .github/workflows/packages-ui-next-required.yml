@@ -14,6 +14,10 @@ concurrency:
   group: ci-ui-${{ github.ref_name }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   setup-stage:
     name: Setup - Stage
