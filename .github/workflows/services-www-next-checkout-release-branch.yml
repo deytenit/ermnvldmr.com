@@ -8,8 +8,8 @@ permissions:
   actions: read
 
 jobs:
-  workflow-create-release-branch:
-    name: Workflow - Create Release Branch
+  workflow-release-branch:
+    name: Workflow - Create or Update Release Branch
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -20,19 +20,40 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Determine Branch Name
-        id: branch
+      - name: Determine Mode and Branch Name
+        id: plan
         run: |
-          BRANCH_NAME=$(bash ci/scripts/semantic-release.sh checkout services/www)
-          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          REF="${{ github.ref_name }}"
+          if [[ "$REF" =~ ^releases/www/v[0-9]+\.[0-9]+$ ]]; then
+            # Dispatched against an existing release branch: update it.
+            echo "mode=update" >> "$GITHUB_OUTPUT"
+            echo "branch_name=$REF" >> "$GITHUB_OUTPUT"
+          else
+            # Dispatched against next (or any other ref): create a new release branch.
+            BRANCH_NAME=$(bash ci/scripts/semantic-release.sh checkout services/www)
+            echo "mode=create" >> "$GITHUB_OUTPUT"
+            echo "branch_name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Create and Push Branch
+        if: steps.plan.outputs.mode == 'create'
         run: |
-          git checkout -b ${{ steps.branch.outputs.branch_name }}
-          git push origin ${{ steps.branch.outputs.branch_name }}
+          git checkout -b ${{ steps.plan.outputs.branch_name }}
+          git push origin ${{ steps.plan.outputs.branch_name }}
+
+      - name: Rebase Existing Branch onto next
+        if: steps.plan.outputs.mode == 'update'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Bring the release branch up to date with its father (next),
+          # replaying any release-branch-only commits on top of the latest next.
+          git fetch origin next
+          git rebase FETCH_HEAD
+          git push --force-with-lease origin ${{ steps.plan.outputs.branch_name }}
 
       - name: Trigger Release Workflow
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh workflow run services-www-releases-required.yml --ref ${{ steps.branch.outputs.branch_name }}
+          gh workflow run services-www-releases-required.yml --ref ${{ steps.plan.outputs.branch_name }}
