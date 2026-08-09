@@ -2,8 +2,13 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": "./src",
+    "types": ["vitest/globals", "@testing-library/jest-dom", "node"],
     "paths": {
       "#*": ["./*"],
+      "@ermnvldmr/cli": ["../../../packages/cli/src"],
+      "@ermnvldmr/cli/*": ["../../../packages/cli/src/*"],
+      "@ermnvldmr/kits": ["../../../packages/kits/src"],
+      "@ermnvldmr/kits/*": ["../../../packages/kits/src/*"],
       "@ermnvldmr/ssg": ["../../../packages/ssg/src"],
       "@ermnvldmr/ssg/*": ["../../../packages/ssg/src/*"],
       "@ermnvldmr/stl": ["../../../packages/stl/src"],
@@ -11,6 +16,6 @@
       "@ermnvldmr/ui/*": ["../../../packages/ui/src/*"]
     }
   },
-  "include": ["src/**/*", ".storybook/**/*"],
+  "include": ["src/**/*", ".storybook/**/*", ".config/**/*"],
   "exclude": ["dist", "coverage", "node_modules", "**/*.config.*"]
 }

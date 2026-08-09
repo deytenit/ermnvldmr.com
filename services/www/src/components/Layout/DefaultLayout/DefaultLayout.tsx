@@ -1,4 +1,4 @@
-import { PageContainer, type PageWidth, type PagePadding } from '@ermnvldmr/ui';
+import { PageContainer, type PagePadding, type PageWidth } from '@ermnvldmr/kits';
 import React from 'react';
 
 import { Footer } from '../../Footer';

@@ -1,280 +1,435 @@
 ---
 title: 'Руководство по развёртыванию Matrix-сервера'
-description: 'Развёртывание серверов Synapse и LiveKit с нуля'
+description: 'Разбор архитектуры и развёртывание Synapse, Coturn, LiveKit SFU и Native Matrix RTC'
 createdDate: 2026-02-15
-tags: ['matrix', 'deployment', 'guide']
+tags: ['self-hosting', 'guides', 'matrix']
 ---
 
-Это руководство предназначено **только для образовательных целей**. В нем показано, как развернуть приватную коммуникационную инфраструктуру, чтобы лучше понять децентрализованный протокол Matrix и техническую реализацию медиа-релеев.
+Развёртывание полноценного стека связи Matrix не ограничивается запуском единого веб-сервера. Matrix представляет собой открытый децентрализованный протокол для безопасного сквозного шифрования сообщений и голосовой связи в реальном времени. Если для текстовых чатов достаточно базового homeserver и базы данных, то современные мультимедийные возможности — от личных WebRTC-звонков 1:1 до групповых видеоконференций — требуют специализированных медиа-релеев и мостов аутентификации.
 
-## Зачем поднимать сервер самостоятельно?
-
-Централизованные платформы нередко жертвуют приватностью данных ради аналитики или зависят от внешних изменений политики. При развертывании собственного Matrix-инстанса вы получаете:
-
-- **Суверенитет данных**: железо и база данных находятся под вашим контролем.
-- **Сквозное шифрование (E2EE)**: сообщения шифруются локально на устройствах, сервер передает только шифртекст.
-- **Устойчивость инфраструктуры**: ваши коммуникации не зависят от простоев крупных провайдеров.
-- **Приватность метаданных**: вы сами определяете, какие логи о взаимодействиях пользователей сохраняются.
+В этой статье подробно разбирается устройство и пошаговое развёртывание производственного стека Matrix на базе **Synapse**, **PostgreSQL**, **Coturn**, **LiveKit SFU** и **lk-jwt-service**.
 
 ---
 
-## Обзор технического стека
+## Архитектура технического стека
 
-1. **Synapse**: "homeserver", который реализует Matrix-протокол, логику учетных записей и синхронизацию сообщений.
-2. **Postgres**: база данных. Для production обязательна по соображениям производительности (SQLite подходит только для тестов).
-3. **Coturn (STUN/TURN)**: при звонках между двумя участниками фаерволы часто мешают прямому соединению. Coturn работает как релей и помогает обойти NAT-ограничения.
-4. **LiveKit**: современный медиадвижок (SFU). Если Coturn нужен в первую очередь для 1:1-звонков, то LiveKit эффективно обрабатывает групповые звонки через мультиплексирование аудио/видеопотоков.
-5. **lk-jwt-service**: сервис-аутентификатор. Проверяет, что пользователь авторизован в вашем Synapse-сервере, и выдает временный токен (JWT) для входа в звонок.
+Чтобы понять взаимодействие компонентов, разберем задачи каждого из пяти ключевых сервисов:
+
+1. **Synapse**: Основной движок homeserver. Управляет аутентификацией пользователей, состоянием комнат, синхронизацией сообщений, обменом ключами сквозного шифрования (E2EE) и федерацией с другими серверами в глобальной сети Matrix.
+2. **PostgreSQL**: Реляционная база данных для Synapse. Если для коротких локальных тестов Synapse допускает SQLite, то в продакшене PostgreSQL обязателен для обработки параллельных транзакций, индексации комнат и истории сообщений.
+3. **Coturn (STUN/TURN)**: Сервер ретрансляции для обхода NAT. При звонке 1:1 устройства пытаются установить прямое peer-to-peer WebRTC-соединение. Если между участниками есть симметричный NAT или фаервол, Coturn выступает в роли ретранслятора, передавая зашифрованные аудио- и видеопакеты по протоколам UDP или TCP.
+4. **LiveKit SFU**: Высокопроизводительный Selective Forwarding Unit. Соединение peer-to-peer становится неэффективным при групповых звонках от трех участников. LiveKit принимает видео/аудиопотоки от каждого спикера и перенаправляет их остальным участникам, существенно экономя исходящий интернет-трафик клиентов.
+5. **lk-jwt-service**: Мост аутентификации для Element Call и Element X Native Matrix RTC (стандарты MSC4143 и MSC4186). Когда пользователь входит в групповой звонок в Element X, `lk-jwt-service` проверяет его сессию в Synapse и генерирует временный токен JWT для подключения к комнате LiveKit.
+6. **Обратный прокси (Traefik / Nginx)**: Входной шлюз. Терминирует SSL-сертификаты, обрабатывает WebSocket-соединения для сигнализации LiveKit (`/livekit`), проставляет заголовки CORS для веб-клиентов и отдаёт файлы автообнаружения `.well-known`.
 
 ---
 
-## 1. Стек развертывания
+## 1. Инфраструктура Docker (docker-compose.yml)
 
-Эта конфигурация универсальна, использует **Docker Volumes** и настроена под **UID 1000:1000** для базового харднинга.
+Контейнеризация обеспечит изоляцию сервисов, правильный порядок их запуска и предсказуемую сетевую связность.
+
+В нашем файле compose для PostgreSQL настроена проверка готовности (`pg_isready`), чтобы Synapse не запускался до полного создания базы данных. Дополнительные сервисы, такие как Coturn, LiveKit и `lk-jwt-service`, используют сетевой режим `network_mode: "service:synapse"` или выделенные сети контейнеров, что пробрасывает порты WebRTC и STUN/TURN непосредственно на хост.
+
+Для корректной передачи медиапотоков открываются следующие диапазона портов:
+- **Порты 3478 и 5349 (TCP/UDP)**: Сигнализация Coturn STUN и TURN.
+- **Диапазон 49152-49172 (UDP)**: Динамические каналы ретрансляции медиа Coturn.
+- **Порт 7880 (TCP)**: HTTP-сигнализация и WebSockets в LiveKit.
+- **Порт 7881 (TCP)**: Резервный TCP-порт для WebRTC в LiveKit.
+- **Диапазон 50000-50020 (UDP)**: Каналы передаче медиа в LiveKit SFU.
+
+Итоговый файл `docker-compose.yml` содержит следующую конфигурацию:
 
 ```yaml
 networks:
-  proxy:
-    name: matrix-proxy
-  internal:
-    internal: true
+  matrix:
+    name: matrix-network
 
 volumes:
   synapse_data:
   postgres_data:
-  traefik_certs:
 
 services:
-  traefik:
-    image: traefik:v3.0
-    container_name: matrix-proxy
-    command:
-      - '--providers.docker=true'
-      - '--providers.docker.exposedbydefault=false'
-      - '--entrypoints.web.address=:80'
-      - '--entrypoints.websecure.address=:443'
-      - '--entrypoints.web.http.redirections.entrypoint.to=websecure'
-      - '--certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare'
-      - '--certificatesresolvers.myresolver.acme.email=${ADMIN_EMAIL}'
-      - '--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json'
-    environment:
-      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
-    ports:
-      - '80:80'
-      - '443:443'
-    volumes:
-      - traefik_certs:/letsencrypt
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks:
-      - proxy
-    restart: unless-stopped
-
-  synapse:
-    image: ghcr.io/element-hq/synapse:v1.146.0
-    container_name: matrix-synapse
-    user: '1000:1000'
-    depends_on:
-      postgres: { condition: service_healthy }
-    volumes:
-      - synapse_data:/data
-    environment:
-      SYNAPSE_SERVER_NAME: '${DOMAIN}'
-      SYNAPSE_REPORT_STATS: 'no'
-      SYNAPSE_CONFIG_PATH: '/data/homeserver.yaml'
-    networks:
-      - proxy
-      - internal
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.synapse.rule=Host(`${DOMAIN}`)'
-      - 'traefik.http.services.synapse.loadbalancer.server.port=8008'
-    restart: unless-stopped
-
   postgres:
     image: postgres:16-alpine
     container_name: matrix-db
-    user: '1000:1000'
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: synapse
       POSTGRES_USER: synapse
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_INITDB_ARGS: '--encoding=UTF-8 --lc-collate=C --lc-ctype=C'
-    networks:
-      - internal
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U synapse']
-      interval: 10s
-    restart: unless-stopped
-
-  livekit:
-    image: livekit/livekit-server:v1.9
-    container_name: matrix-livekit
-    command: --config /etc/livekit.yaml --node-ip ${SERVER_IP}
-    environment:
-      LIVEKIT_KEYS: '${LK_KEY}: ${LK_SECRET}'
     volumes:
-      - ./livekit.yaml:/etc/livekit.yaml:ro
-    ports:
-      - '7880:7880'
-      - '7881:7881'
-      - '50000-50020:50000-50020/udp'
+      - postgres_data:/var/lib/postgresql/data
     networks:
-      - proxy
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.lk.rule=Host(`${DOMAIN}`) && PathPrefix(`/livekit`)'
-      - 'traefik.http.middlewares.lk-strip.stripprefix.prefixes=/livekit'
-      - 'traefik.http.routers.lk.middlewares=lk-strip'
+      - matrix
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U synapse -d synapse']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     restart: unless-stopped
 
-  lk-jwt:
-    image: ghcr.io/element-hq/lk-jwt-service:0.4.1
-    container_name: matrix-lk-jwt
+  synapse:
+    image: ghcr.io/element-hq/synapse:v1.146.0
+    container_name: matrix-synapse
+    depends_on:
+      postgres:
+        condition: service_healthy
     environment:
-      LIVEKIT_URL: wss://${DOMAIN}/livekit
-      LIVEKIT_KEY: '${LK_KEY}'
-      LIVEKIT_SECRET: '${LK_SECRET}'
+      SYNAPSE_SERVER_NAME: '${DOMAIN}'
+      SYNAPSE_REPORT_STATS: 'no'
+      SYNAPSE_CONFIG_PATH: '/data/homeserver.yaml'
+    volumes:
+      - ./homeserver.yaml:/data/homeserver.yaml:ro
+      - synapse_data:/data
     networks:
-      - proxy
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.lk-jwt.rule=Host(`${DOMAIN}`) && PathPrefix(`/livekit/jwt`)'
-      - 'traefik.http.middlewares.lk-jwt-strip.stripprefix.prefixes=/livekit/jwt'
-      - 'traefik.http.routers.lk-jwt.middlewares=lk-jwt-strip'
+      - matrix
+    ports:
+      # Matrix Client & Federation HTTP API
+      - '8008:8008'
+      # Порты сигнализации Coturn STUN/TURN
+      - '3478:3478/tcp'
+      - '3478:3478/udp'
+      - '5349:5349/tcp'
+      - '5349:5349/udp'
+      # Диапазон UDP-портов для медиа-релея Coturn
+      - '49152-49172:49152-49172/udp'
+      # Порты LiveKit HTTP/WebSocket и WebRTC
+      - '7880:7880/tcp'
+      - '7881:7881/tcp'
+      - '50000-50020:50000-50020/udp'
     restart: unless-stopped
 
   coturn:
     image: coturn/coturn:4.8-alpine
     container_name: matrix-coturn
-    user: '1000:1000'
-    ports:
-      - '3478:3478'
-      - '3478:3478/udp'
-      - '5349:5349'
-      - '5349:5349/udp'
-      - '49152-49172:49152-49172/udp'
+    depends_on:
+      - synapse
     volumes:
       - ./turnserver.conf:/etc/coturn/turnserver.conf:ro
+    network_mode: 'service:synapse'
+    command: ['-c', '/etc/coturn/turnserver.conf']
+    restart: unless-stopped
+
+  livekit:
+    image: livekit/livekit-server:v1.9
+    container_name: matrix-livekit
+    depends_on:
+      - synapse
+    volumes:
+      - ./livekit.yaml:/etc/livekit.yaml:ro
+    environment:
+      LIVEKIT_KEYS: '${LK_KEY}: ${LK_SECRET}'
+    network_mode: 'service:synapse'
+    command: --config /etc/livekit.yaml --node-ip ${SERVER_IP}
+    restart: unless-stopped
+
+  lk-jwt:
+    image: ghcr.io/element-hq/lk-jwt-service:0.4.1
+    container_name: matrix-lk-jwt
+    depends_on:
+      - synapse
+    environment:
+      LK_JWT_PORT: 8080
+      LIVEKIT_URL: wss://${DOMAIN}/livekit
+      LIVEKIT_KEY: '${LK_KEY}'
+      LIVEKIT_SECRET: '${LK_SECRET}'
+    network_mode: 'service:synapse'
     restart: unless-stopped
 ```
 
 ---
 
-## 2. Конфигурация
+## 2. Конфигурация Homeserver (homeserver.yaml)
 
-Создайте файл `.env` в той же директории. **Не пропускайте шаг генерации секретов ниже.**
+Synapse использует `homeserver.yaml` для определения правил работы. Разберем ключевые блоки:
 
-```bash
-# --- Infrastructure ---
-DOMAIN=matrix.example.com
-SERVER_IP=1.2.3.4
-ADMIN_EMAIL=admin@example.com
+- **Идентификация сервера (`server_name`)**: Определяет доменное имя вашего сервера и суффикс ID пользователей (например, `@user:matrix.example.com`). Изменение этого имени в будущем приведет к потере связей с другими серверами и поломке ID комнат.
+- **Подключение к базе данных (`database`)**: Настраивает подключение к PostgreSQL через модуль `psycopg2`. Параметры `cp_min` и `cp_max` управляют пулом соединений при нагрузке.
+- **Ротация медиафайлов (`media_retention`)**: Участники комнат регулярно отправляют фото и файлы. Параметр `remote_media_lifetime: 14d` регулярно удаляет кэш файлов с чужих серверов, сохраняя дисковое пространство (локальные файлы хранятся в течение года `local_media_lifetime: 365d`).
+- **Интеграция VoIP (`turn_uris` и `turn_shared_secret`)**: Передает Synapse параметры Coturn. При звонке 1:1 Synapse с помощью `turn_shared_secret` генерирует временные логин и пароль для безопасного подключения к TURN-релею.
+- **Native Matrix RTC (MSC4143 / MSC4186)**: Современные клиенты, такие как Element X и Element Call, используют спецификации MSC4143 (RTC Foci) и MSC4186 (LiveKit Call Authentication). Блок `extra_well_known_client_content` сообщает клиенту, что выпиской токенов для звонков занимается сервис `lk-jwt-service` по адресу `https://matrix.example.com/livekit/jwt`.
 
-# --- Cloudflare (for Traefik SSL) ---
-CF_DNS_API_TOKEN=your_cloudflare_api_token_here
+Полный файл `homeserver.yaml` выглядит следующим образом:
 
-# --- Database ---
-DB_PASSWORD=generate_this_with_openssl
+```yaml
+# Идентификация сервера
+server_name: "matrix.example.com"
+pid_file: /data/homeserver.pid
+public_baseurl: "https://matrix.example.com"
 
-# --- LiveKit Secrets ---
-# API Key can be any alphanumeric string
-LK_KEY=matrix_lk_key
-# Secret MUST be generated
-LK_SECRET=generate_this_with_openssl
+# Слушатели (Listeners)
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: true
+    resources:
+      - names: [client, federation]
+        compress: false
 
-# --- Coturn / Synapse VoIP ---
-# Used for STUN/TURN authentication
-TURN_SECRET=generate_this_with_openssl
+# База данных
+database:
+  name: psycopg2
+  args:
+    user: "synapse"
+    password: "YOUR_POSTGRES_PASSWORD"
+    database: "synapse"
+    host: "postgres"
+    cp_min: 5
+    cp_max: 10
 
-```
+# Безопасность и регистрация
+enable_registration: false
+enable_registration_captcha: false
+registration_shared_secret: "YOUR_REGISTRATION_SHARED_SECRET"
 
-### Генерация секретов
+# Хранение файлов и ротация
+media_store_path: "/data/media_store"
+max_upload_size: "50M"
+max_image_pixels: "32M"
+dynamic_thumbnails: true
 
-Используйте `openssl`, чтобы создать надежные случайные строки для параметров в `.env`:
+media_retention:
+  remote_media_lifetime: 14d
+  local_media_lifetime: 365d
 
-```bash
-# Generate DB_PASSWORD, LK_SECRET, and TURN_SECRET
-openssl rand -hex 32
+caches:
+  global_factor: 0.5
 
+# VoIP / Coturn (Звонки 1:1)
+turn_uris:
+  - "turn:matrix.example.com:3478?transport=udp"
+  - "turn:matrix.example.com:3478?transport=tcp"
+turn_shared_secret: "YOUR_TURN_SHARED_SECRET"
+turn_user_lifetime: 1h
+turn_allow_guests: true
+
+# Native Matrix RTC (MSC4143 / MSC4186 для звонков в Element X)
+experimental_features:
+  msc3266_enabled: true
+  msc4222_enabled: true
+
+serve_server_wellknown: true
+extra_well_known_client_content:
+  "org.matrix.msc4186.stable": {"enabled": true}
+  "org.matrix.msc4143.rtc_foci": [
+    {
+      "type": "livekit",
+      "livekit_service_url": "https://matrix.example.com/livekit/jwt"
+    }
+  ]
+
+report_stats: false
 ```
 
 ---
 
-## 3. Вариант с Nginx и сертификатами
+## 3. Конфигурация LiveKit SFU (livekit.yaml)
 
-Если вы не используете Traefik, получите сертификаты через **Certbot**:
+LiveKit распределяет медиапотоки участников групповых звонков. Основные директивы в `livekit.yaml`:
 
-```bash
-sudo certbot certonly --standalone -d matrix.example.com
+- **`bind_addresses` и `port`**: Задает служебный HTTP-порт и WebSockets на порту `7880`.
+- **`rtc.use_external_ip: true`**: Важнейшая опция для облачных серверов за NAT. Указывает LiveKit определять публичный IP-адрес хоста (`--node-ip`) и передавать его подключающимся клиентам.
+- **`rtc.port_range_start` и `rtc.port_range_end`**: Ограничивает диапазон динамических UDP-портов WebRTC от `50000` до `50020`.
+- **`room.auto_create: true`**: Разрешает автоматическое создание комнат при получении валидного JWT-токена от `lk-jwt-service`.
 
+Конфигурационный файл `livekit.yaml`:
+
+```yaml
+port: 7880
+bind_addresses:
+  - 0.0.0.0
+
+rtc:
+  tcp_port: 7881
+  port_range_start: 50000
+  port_range_end: 50020
+  use_external_ip: true
+
+room:
+  auto_create: true
+
+logging:
+  level: info
 ```
 
-### Конфиг Nginx
+---
+
+## 4. Конфигурация Coturn Relay (turnserver.conf)
+
+Coturn обеспечивает ретрансляцию трафика для 1:1 звонков. Ключевые опции в `turnserver.conf`:
+
+- **`listening-port=3478`**: Стандартный порт для приёма STUN/TURN запросов по UDP и TCP.
+- **`external-ip`**: Задает публичный IP-адрес сервера для корректного формирования адресов ретрансляции.
+- **`min-port` и `max-port`**: Ограничивает диапазоны динамических UDP-портов от `49152` до `49172`.
+- **`use-auth-secret` и `static-auth-secret`**: Включает авторизацию по секрету, совпадающему с `turn_shared_secret` в `homeserver.yaml`.
+- **`realm`**: Доменное имя сервера, необходимое для проверки HMAC-токенов.
+- **`no-multicast-peers`**: Блокирует попытки использовать релей для сканирования внутренних адресов сети.
+
+Файл `turnserver.conf` формируется следующим образом:
+
+```conf
+listening-port=3478
+listening-ip=0.0.0.0
+
+# Публичный IP-адрес вашего сервера
+external-ip=203.0.113.10
+
+min-port=49152
+max-port=49172
+
+fingerprint
+use-auth-secret
+static-auth-secret=YOUR_TURN_SHARED_SECRET
+realm=matrix.example.com
+
+total-quota=100
+stale-nonce=600
+log-file=stdout
+simple-log
+no-multicast-peers
+```
+
+---
+
+## 5. Переменные окружения и генерация секретов (.env)
+
+Вынос паролей и ключей в переменные окружения предотвращает их попадание в конфигурационные файлы и репозитории.
+
+Секреты `DB_PASSWORD`, `LK_SECRET` и `TURN_SECRET` должны быть устойчивыми криптографическими строками. Мы используем `openssl` для их генерации.
+
+Шаблон файла `.env`:
+
+```bash
+# Инфраструктура
+DOMAIN=matrix.example.com
+SERVER_IP=203.0.113.10
+ADMIN_EMAIL=admin@example.com
+
+# База данных
+DB_PASSWORD=YOUR_POSTGRES_PASSWORD
+
+# LiveKit (Групповые звонки)
+LK_KEY=matrix_lk_key
+LK_SECRET=YOUR_LIVEKIT_SECRET
+
+# Coturn (Звонки 1:1)
+TURN_SECRET=YOUR_TURN_SHARED_SECRET
+```
+
+Генерация секретов через OpenSSL:
+
+```bash
+# Выполните для создания DB_PASSWORD, LK_SECRET и TURN_SECRET
+openssl rand -hex 32
+```
+
+---
+
+## 6. Обратный прокси и автообнаружение (.well-known)
+
+Обратный прокси перенаправляет внешние запросы к нужным сервисам и выполняет требования веб-клиентов:
+
+1. **Заголовки CORS**: Веб-клиенты Element Web и Element Call выполняют междоменные запросы. Прокси должен возвращать заголовки `Access-Control-Allow-*`.
+2. **Проксирование WebSockets (`/livekit/`)**: Для работы LiveKit необходимо проксирование постоянных WebSocket-соединений (`Upgrade: $http_upgrade` и `Connection: "Upgrade"`).
+3. **Автообнаружение (`/.well-known/matrix/client` и `/.well-known/matrix/server`)**: Клиенты Matrix запрашивают эти URL при входе, чтобы автоматически определить адрес сервера и сервиса LiveKit JWT без ввода специальных портов пользователем.
+
+Ниже приведен готовый пример конфигурации **Nginx**:
 
 ```nginx
 server {
-    listen 443 ssl;
+    listen 443 ssl http2;
     server_name matrix.example.com;
 
     ssl_certificate /etc/letsencrypt/live/matrix.example.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/matrix.example.com/privkey.pem;
 
-    location /_matrix {
-        proxy_pass http://synapse:8008;
-        proxy_set_header Host $host;
+    # CORS-заголовки для веб-клиентов (Element Web / Element Call)
+    add_header Access-Control-Allow-Origin * always;
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" always;
+    add_header Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Matrix-User-ID" always;
+
+    if ($request_method = 'OPTIONS') {
+        return 204;
     }
 
+    # API клиентов и федерации Matrix
+    location /_matrix {
+        proxy_pass http://127.0.0.1:8008;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        client_max_body_size 50M;
+    }
+
+    # Сигнализация LiveKit SFU (WebSockets)
     location /livekit/ {
         rewrite ^/livekit/(.*) /$1 break;
-        proxy_pass http://livekit:7880;
+        proxy_pass http://127.0.0.1:7880;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
     }
 
+    # Сервис выписки JWT-токенов LiveKit для Element X
     location /livekit/jwt/ {
         rewrite ^/livekit/jwt/(.*) /$1 break;
-        proxy_pass http://lk-jwt:8080;
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+    }
+
+    # Автообнаружение клиента Matrix (.well-known)
+    location /.well-known/matrix/client {
+        default_type application/json;
+        return 200 '{"m.homeserver":{"base_url":"https://matrix.example.com"},"org.matrix.msc4186.stable":{"enabled":true},"org.matrix.msc4143.rtc_foci":[{"type":"livekit","livekit_service_url":"https://matrix.example.com/livekit/jwt"}]}';
+    }
+
+    # Автообнаружение федерации Matrix (.well-known)
+    location /.well-known/matrix/server {
+        default_type application/json;
+        return 200 '{"m.server":"matrix.example.com:443"}';
     }
 }
-
 ```
 
 ---
 
-## 4. Регистрация пользователей
+## 7. Создание аккаунтов и обслуживание
 
-### Ручная регистрация (администратором)
+При отключенной публичной регистрации (`enable_registration: false`) новые аккаунты создаются вручную.
 
-Для приватных серверов отключите публичную регистрацию в `homeserver.yaml` и добавляйте пользователей через CLI:
+### Регистрация администратора через CLI
+
+Выполните команду `register_new_matrix_user` внутри контейнера Synapse:
 
 ```bash
 docker exec -it matrix-synapse register_new_matrix_user \
     -c /data/homeserver.yaml http://localhost:8008 \
-    --user <username> --password <password> --admin
-
+    --user admin --password "SECURE_USER_PASSWORD" --admin
 ```
 
-### SMTP (внешняя регистрация)
+### Настройка SMTP для писем
 
-Добавьте в `homeserver.yaml`, чтобы включить подтверждение по email:
+Для включения функции восстановления паролей и подтверждения почты добавьте блок `email` в `homeserver.yaml`:
 
 ```yaml
 email:
-  smtp_host: 'smtp.gmail.com'
+  smtp_host: "smtp.example.com"
   smtp_port: 587
-  smtp_user: 'yourname@gmail.com'
-  smtp_pass: 'xxxx xxxx xxxx xxxx' # Google App Password
-  force_tls: true
+  smtp_user: "notifications@example.com"
+  smtp_pass: "YOUR_SMTP_PASSWORD"
+  require_transport_security: true
+  notif_from: "Matrix Server <notifications@example.com>"
 ```
 
 ---
 
 ## Ресурсы
 
-- [Synapse GitHub](https://github.com/element-hq/synapse)
-- [LiveKit GitHub](https://github.com/livekit/livekit)
-- [lk-jwt-service GitHub](https://github.com/element-hq/lk-jwt-service)
-- [Element X Apps](https://www.google.com/search?q=https://element.io/element-x)
+- [Документация Synapse](https://element-hq.github.io/synapse/)
+- [Документация LiveKit Server](https://docs.livekit.io/)
+- [Element lk-jwt-service GitHub](https://github.com/element-hq/lk-jwt-service)
+- [MSC4143: Native Matrix RTC Foci](https://github.com/matrix-org/matrix-spec-proposals/pull/4143)
+- [MSC4186: LiveKit Call Authentication](https://github.com/matrix-org/matrix-spec-proposals/pull/4186)

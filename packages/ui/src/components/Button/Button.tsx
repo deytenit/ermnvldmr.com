@@ -53,6 +53,8 @@ interface BaseButtonProps extends ClassNameProps, TestIdProps {
   rounded?: 'none' | 'md' | 'full';
   /** Whether the button is disabled */
   isDisabled?: boolean;
+  /** Explicitly flag button as icon-only for square aspect ratio */
+  isIconOnly?: boolean;
 }
 
 /**
@@ -101,9 +103,13 @@ const buttonVariants = cva(
         'neutral-negative': '',
       },
       size: {
-        s: 'h-8 px-3 text-sm gap-1.5',
-        m: 'h-10 px-4 text-base gap-2',
-        l: 'h-12 px-6 text-lg gap-3',
+        s: 'h-8 px-4 text-sm gap-1.5',
+        m: 'h-10 px-6 text-base gap-2',
+        l: 'h-12 px-8 text-lg gap-3',
+      },
+      isIconOnly: {
+        true: 'aspect-square px-0',
+        false: '',
       },
       rounded: {
         none: 'rounded-none',
@@ -177,6 +183,7 @@ const buttonVariants = cva(
       rounded: 'md',
       fullWidth: false,
       isDisabled: false,
+      isIconOnly: false,
     },
   }
 );
@@ -200,11 +207,15 @@ const ButtonComponent = forwardRef<HTMLElement, ButtonProps>(function Button(pro
     className,
     'data-testid': testId,
     isDisabled = false,
+    isIconOnly: isIconOnlyProp,
     href,
   } = props;
 
   const internalRef = useRef<HTMLElement>(null);
   const targetRef = ref ? castRef<HTMLElement>(ref) : internalRef;
+
+  const isIconOnly =
+    isIconOnlyProp ?? (!children && Boolean(renderStartIcon ?? renderEndIcon));
 
   // Hooks for interactions
   // We explicitly construct the props object to avoid unsafe casting of the Union type.
@@ -235,7 +246,7 @@ const ButtonComponent = forwardRef<HTMLElement, ButtonProps>(function Button(pro
   };
 
   const sharedClasses = cn(
-    buttonVariants({ variant, color, size, rounded, fullWidth, isDisabled }),
+    buttonVariants({ variant, color, size, rounded, fullWidth, isDisabled, isIconOnly }),
     isFocusVisible && 'ring-2 ring-[var(--rb-ring)] ring-offset-2',
     isHovered && !isDisabled && 'brightness-90 dark:brightness-110',
     className

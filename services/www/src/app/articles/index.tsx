@@ -1,6 +1,7 @@
 import { LOCALE, localePath } from '@ermnvldmr/i18n';
+import { BentoGrid, InfoCard, Time } from '@ermnvldmr/kits';
 import { createPage } from '@ermnvldmr/ssg';
-import { BentoGrid, Breadcrumbs, HStack, Separator, Text, Time, VStack } from '@ermnvldmr/ui';
+import { Breadcrumbs, HStack, Separator, Text, VStack } from '@ermnvldmr/ui';
 import React from 'react';
 
 import { t } from './index.i18n';
@@ -37,11 +38,16 @@ function ArticlesList(): React.JSX.Element {
     >
       <BentoGrid>
         {sortedArticles.map((article, index) => (
-          <BentoGrid.InfoCard
+          <InfoCard
             key={article.slug}
-            colSpan={index === 0 ? 2 : 1}
-            description={article.description}
-            footer={
+            bg={index === 0 ? undefined : 'transparent'}
+            colSpan={index === 0 ? 4 : 2}
+            href={localePath(`/articles/${article.slug}`)}
+            variant={index === 0 ? 'primary' : 'default'}
+          >
+            <InfoCard.Header>{article.title}</InfoCard.Header>
+            <InfoCard.Body>{article.description}</InfoCard.Body>
+            <InfoCard.Footer>
               <VStack align="stretch" gap={2}>
                 <Separator thinned="thinned-end" type="single" />
                 <HStack align="center" gap={4} justify="between" wrap="wrap">
@@ -59,11 +65,8 @@ function ArticlesList(): React.JSX.Element {
                   ) : null}
                 </HStack>
               </VStack>
-            }
-            href={localePath(`/articles/${article.slug}`)}
-            rowSpan={index === 0 ? 2 : 1}
-            title={article.title}
-          />
+            </InfoCard.Footer>
+          </InfoCard>
         ))}
       </BentoGrid>
     </DefaultLayout>

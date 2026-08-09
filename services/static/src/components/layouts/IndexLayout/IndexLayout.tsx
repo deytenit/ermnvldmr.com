@@ -1,4 +1,6 @@
-import { Container, HStack, ThemeSwitch, VStack, Text, Separator, PageRoot } from '@ermnvldmr/ui';
+import { PageRoot, ThemeSwitch } from '@ermnvldmr/kits';
+import { Container, HStack, Icon, Separator, Text, VStack } from '@ermnvldmr/ui';
+import { Monitor, Moon, Sun } from 'lucide-react';
 import React from 'react';
 
 /**
@@ -34,7 +36,11 @@ export function IndexLayout({ children }: IndexLayoutProps): React.JSX.Element {
                 © {currentYear} Vladimir Eremin
               </Text>
             </VStack>
-            <ThemeSwitch />
+            <ThemeSwitch
+              darkIcon={<Icon icon={Moon} />}
+              lightIcon={<Icon icon={Sun} />}
+              systemIcon={<Icon icon={Monitor} />}
+            />
           </HStack>
         </Container>
       </VStack>

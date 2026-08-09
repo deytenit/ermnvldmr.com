@@ -21,10 +21,10 @@ export interface BreadcrumbsProps extends HStackProps {
 /**
  * Root component for hierarchical navigation.
  */
-const BreadcrumbsRoot = memo(function Breadcrumbs({ children, ...props }: BreadcrumbsProps) {
+const BreadcrumbsRoot = memo(function Breadcrumbs({ children, className, ...props }: BreadcrumbsProps) {
   return (
-    <nav aria-label="Breadcrumb">
-      <HStack align="center" as="ol" gap={2} {...props}>
+    <nav aria-label="Breadcrumb" className={className}>
+      <HStack align="center" as="ol" className="text-label-m font-sans font-medium" gap={2} {...props}>
         {children}
       </HStack>
     </nav>
@@ -102,8 +102,6 @@ const BreadcrumbsItem = memo(function BreadcrumbsItem({
         className={cn(itemTextVariants({ isCurrent }))}
         color={isCurrent ? 'default' : 'muted'}
         href={resolvedHref}
-        size="m"
-        type="label"
         onClick={onClick}
       >
         {children}
@@ -137,7 +135,7 @@ const BreadcrumbsSeparator = memo(function BreadcrumbsSeparator({
       className={cn('text-[var(--rb-muted-text)]', className)}
       data-testid={testId}
     >
-      <Text color="muted" size="m" type="label">
+      <Text color="muted">
         {content[variant]}
       </Text>
     </li>

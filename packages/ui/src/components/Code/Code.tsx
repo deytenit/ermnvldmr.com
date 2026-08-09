@@ -4,12 +4,13 @@ import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { usePress } from 'react-aria';
 
 import { useCodeContext } from './contexts/CodeContext/CodeContext';
-import { codeHighlighter } from './lib/highlighter/highlighter';
+import { codeHighlighter, SUPPORTED_LANGUAGES } from './lib/highlighter/highlighter';
 
 import type { CodeLanguage } from './lib/highlighter/highlighter';
 import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
 
 export type { CodeLanguage };
+export { SUPPORTED_LANGUAGES };
 
 const highlightedVariants = cva('block min-w-full font-mono text-sm [&>pre]:!bg-transparent [&>pre]:!p-0 [&>pre]:!m-0', {
   variants: {
@@ -36,7 +37,7 @@ const blockVariants = cva('block min-w-full font-mono whitespace-pre', {
 });
 
 const inlineVariants = cva(
-  'relative inline-block rounded-sm px-1.5 py-0.5 text-sm font-mono text-[var(--rb-color-red-600)] dark:text-[var(--rb-color-red-400)] cursor-pointer transition-all duration-200 hover:text-[var(--rb-color-red-500)] hover:bg-[var(--rb-color-red-500)]/10 active:scale-95',
+  'relative inline-block rounded-sm px-[0.3em] py-[0.1em] text-[0.9em] font-mono text-[var(--rb-color-red-600)] dark:text-[var(--rb-color-red-400)] cursor-pointer transition-all duration-200 hover:text-[var(--rb-color-red-500)] hover:bg-[var(--rb-color-red-500)]/10 active:scale-95',
   {
     variants: {
       isCopied: {

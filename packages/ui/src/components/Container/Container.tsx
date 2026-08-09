@@ -1,6 +1,6 @@
-import { cn } from '@ermnvldmr/stl';
+import { castRef, cn, genericMemo } from '@ermnvldmr/stl';
 import { cva } from 'class-variance-authority';
-import React, { memo } from 'react';
+import React, { forwardRef } from 'react';
 import { usePress } from 'react-aria';
 
 import type { SpacingScale } from '../../lib/scale';
@@ -152,20 +152,23 @@ const containerVariants = cva('overflow-hidden', {
  * Container provides a consistent way to handle backgrounds, padding,
  * borders, and width constraints while maintaining theme consistency.
  */
-export const Container = memo(function Container({
-  children,
-  bg = 'base',
-  padding = 0,
-  maxWidth = 'none',
-  rounded = 'none',
-  shadow = false,
-  border = false,
-  onPress,
-  href,
-  as: Component = 'div',
-  className,
-  'data-testid': testId,
-}: ContainerProps) {
+const ContainerComponent = forwardRef<HTMLElement, ContainerProps>(function Container(
+  {
+    children,
+    bg = 'base',
+    padding = 0,
+    maxWidth = 'none',
+    rounded = 'none',
+    shadow = false,
+    border = false,
+    onPress,
+    href,
+    as: Component = 'div',
+    className,
+    'data-testid': testId,
+  },
+  ref
+) {
   if (process.env.NODE_ENV !== 'production' && onPress && href) {
     console.warn('[@ermnvldmr/ui] Container cannot have both `onPress` and `href` props.');
   }
@@ -173,7 +176,6 @@ export const Container = memo(function Container({
   const isLink = href != null;
   const isPressable = !!onPress && !isLink;
 
-  const ref = React.useRef<HTMLElement>(null);
   const { pressProps } = usePress({
     onPress,
     isDisabled: !isPressable,
@@ -185,7 +187,7 @@ export const Container = memo(function Container({
   return (
     <FinalComponent
       {...interactionProps}
-      ref={ref}
+      ref={castRef<HTMLElement>(ref)}
       className={cn(
         containerVariants({
           bg,
@@ -205,3 +207,6 @@ export const Container = memo(function Container({
     </FinalComponent>
   );
 });
+
+export const Container = genericMemo(ContainerComponent);
+

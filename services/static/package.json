@@ -13,9 +13,11 @@
     "clean": "rm -rf dist .turbo node_modules"
   },
   "dependencies": {
+    "@ermnvldmr/kits": "workspace:*",
     "@ermnvldmr/ssg": "workspace:*",
     "@ermnvldmr/stl": "workspace:*",
     "@ermnvldmr/ui": "workspace:*",
+    "lucide-react": "^0.503.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tailwindcss": "^4.1.4"

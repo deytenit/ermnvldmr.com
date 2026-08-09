@@ -1,4 +1,4 @@
-import { PageRoot } from '@ermnvldmr/ui';
+import { PageRoot } from '@ermnvldmr/kits';
 import React from 'react';
 
 /**

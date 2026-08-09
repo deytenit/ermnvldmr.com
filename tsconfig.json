@@ -23,6 +23,8 @@
     "useDefineForClassFields": true,
     "baseUrl": ".",
     "paths": {
+      "@ermnvldmr/kits": ["./packages/kits/src"],
+      "@ermnvldmr/kits/*": ["./packages/kits/src/*"],
       "@ermnvldmr/stl": ["./packages/stl/src"],
       "@ermnvldmr/stl/*": ["./packages/stl/src/*"],
       "@ermnvldmr/ui": ["./packages/ui/src"],

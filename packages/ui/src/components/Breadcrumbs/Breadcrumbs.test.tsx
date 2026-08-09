@@ -24,6 +24,18 @@ describe('components/Breadcrumbs', () => {
     expect(currentItem).toHaveAttribute('aria-current', 'page');
   });
 
+  it('applies typography tokens to root container and items inherit size', () => {
+    render(
+      <Breadcrumbs>
+        <Breadcrumbs.Item href="/test">Home</Breadcrumbs.Item>
+        <Breadcrumbs.Separator />
+        <Breadcrumbs.Item isCurrent>Current</Breadcrumbs.Item>
+      </Breadcrumbs>
+    );
+    const ol = screen.getByRole('list');
+    expect(ol.className).toContain('text-label-m');
+  });
+
   it('supports isCurrent state', () => {
     render(
       <Breadcrumbs>

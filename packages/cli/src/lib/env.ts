@@ -1,6 +1,7 @@
-import { config } from '@dotenvx/dotenvx';
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+
+import { config } from '@dotenvx/dotenvx';
 
 let loaded = false;
 
@@ -12,11 +13,16 @@ let loaded = false;
  * @param start - Directory to begin the search from.
  * @returns The path of the monorepo root directory, or `start` as a fallback.
  *
+ * @example
+ * ```typescript
+ * const root = findRoot(process.cwd());
+ * ```
+ *
  * @internal
  */
 function findRoot(start: string): string {
   let dir = start;
-  while (true) {
+  for (;;) {
     if (existsSync(join(dir, 'pnpm-workspace.yaml'))) {
       return dir;
     }
@@ -34,6 +40,11 @@ function findRoot(start: string): string {
  * Walks up from the current working directory to find the root, then loads the
  * `.env.dev` file located there. Safe to call multiple times — runs only once per
  * process.
+ *
+ * @example
+ * ```typescript
+ * ensureLoaded();
+ * ```
  *
  * @internal
  */

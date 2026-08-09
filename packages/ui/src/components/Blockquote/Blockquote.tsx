@@ -19,7 +19,9 @@ export interface BlockquoteProps
   indent?: boolean;
 }
 
-const blockquoteVariants = cva('border-l-4 border-[var(--rb-primary)]', {
+const blockquoteVariants = cva(
+  'border-l-4 border-[var(--rb-primary)] [&>p:last-child]:mb-0 [&>*:last-child]:mb-0',
+  {
   variants: {
     variant: {
       default: '',

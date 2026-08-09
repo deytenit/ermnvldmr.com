@@ -1,6 +1,6 @@
 import { localePath } from '@ermnvldmr/i18n';
+import { MARKDOWN_COMPONENTS } from '@ermnvldmr/kits';
 import { createPage } from '@ermnvldmr/ssg';
-import { MARKDOWN_COMPONENTS } from '@ermnvldmr/ui';
 import React from 'react';
 
 import { articles } from '../../../../content/registry';

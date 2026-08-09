@@ -1,0 +1,361 @@
+name: packages/kits - next/required
+
+on:
+  push:
+    branches: [next]
+    paths:
+      - 'packages/kits/**'
+      - 'packages/ui/**'
+      - 'packages/stl/**'
+      - 'packages/i18n/**'
+      - '.github/workflows/packages-kits-next-required.yml'
+      - 'pnpm-lock.yaml'
+
+concurrency:
+  group: ci-next-kits-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  setup-stage:
+    name: Setup - Stage
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache-pnpm-store.outputs.cache-hit }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+
+      - name: Setup Node.js with pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Cache pnpm store
+        id: cache-pnpm-store
+        uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+  build-configs:
+    name: Build - Configs & UI
+    needs: setup-stage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build Rsbuild config
+        run: pnpm --filter @ermnvldmr/rsbuild-config build
+      - name: Build Storybook config
+        run: pnpm --filter @ermnvldmr/storybook-config build
+      - name: Build i18n
+        run: pnpm --filter @ermnvldmr/i18n build
+      - name: Build UI
+        run: pnpm --filter @ermnvldmr/ui build
+      - name: Upload Rsbuild Config
+        uses: actions/upload-artifact@v4
+        with:
+          name: rsbuild-config-dist-${{ github.run_id }}
+          path: packages/rsbuild-config/dist
+          retention-days: 1
+      - name: Upload Storybook Config
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-config-dist-${{ github.run_id }}
+          path: packages/storybook-config/dist
+          retention-days: 1
+      - name: Upload i18n dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
+          retention-days: 1
+      - name: Upload UI dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-dist-${{ github.run_id }}
+          path: packages/ui/dist
+          retention-days: 1
+
+  lint-kits:
+    name: Lint - Kits
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Rsbuild Config
+        uses: actions/download-artifact@v4
+        with:
+          name: rsbuild-config-dist-${{ github.run_id }}
+          path: packages/rsbuild-config/dist
+      - name: Download Storybook Config
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-config-dist-${{ github.run_id }}
+          path: packages/storybook-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
+      - name: Download UI dist
+        uses: actions/download-artifact@v4
+        with:
+          name: ui-dist-${{ github.run_id }}
+          path: packages/ui/dist
+      - name: Lint Kits package
+        run: pnpm --filter @ermnvldmr/kits lint
+
+  typecheck-kits:
+    name: Typecheck - Kits
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Rsbuild Config
+        uses: actions/download-artifact@v4
+        with:
+          name: rsbuild-config-dist-${{ github.run_id }}
+          path: packages/rsbuild-config/dist
+      - name: Download Storybook Config
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-config-dist-${{ github.run_id }}
+          path: packages/storybook-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
+      - name: Download UI dist
+        uses: actions/download-artifact@v4
+        with:
+          name: ui-dist-${{ github.run_id }}
+          path: packages/ui/dist
+      - name: Typecheck Kits package
+        run: pnpm --filter @ermnvldmr/kits typecheck
+
+  test-kits:
+    name: Test - Unit
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Rsbuild Config
+        uses: actions/download-artifact@v4
+        with:
+          name: rsbuild-config-dist-${{ github.run_id }}
+          path: packages/rsbuild-config/dist
+      - name: Download Storybook Config
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-config-dist-${{ github.run_id }}
+          path: packages/storybook-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
+      - name: Download UI dist
+        uses: actions/download-artifact@v4
+        with:
+          name: ui-dist-${{ github.run_id }}
+          path: packages/ui/dist
+      - name: Test Kits package
+        run: pnpm --filter @ermnvldmr/kits test:coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./packages/kits/coverage/lcov.info
+          flags: kits
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  build-storybook:
+    name: Build - Storybook
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Rsbuild Config
+        uses: actions/download-artifact@v4
+        with:
+          name: rsbuild-config-dist-${{ github.run_id }}
+          path: packages/rsbuild-config/dist
+      - name: Download Storybook Config
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-config-dist-${{ github.run_id }}
+          path: packages/storybook-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
+      - name: Download UI dist
+        uses: actions/download-artifact@v4
+        with:
+          name: ui-dist-${{ github.run_id }}
+          path: packages/ui/dist
+      - name: Build Kits Storybook
+        run: pnpm --filter @ermnvldmr/kits build-storybook
+      - name: Upload Storybook build
+        uses: actions/upload-artifact@v4
+        with:
+          name: kits-storybook-static-${{ github.run_id }}
+          path: packages/kits/storybook-static/
+          retention-days: 1
+
+  test-storybook:
+    name: Test - Storybook
+    needs: build-storybook
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Rsbuild Config
+        uses: actions/download-artifact@v4
+        with:
+          name: rsbuild-config-dist-${{ github.run_id }}
+          path: packages/rsbuild-config/dist
+      - name: Download Storybook Config
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-config-dist-${{ github.run_id }}
+          path: packages/storybook-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
+      - name: Download UI dist
+        uses: actions/download-artifact@v4
+        with:
+          name: ui-dist-${{ github.run_id }}
+          path: packages/ui/dist
+      - name: Install Playwright browsers
+        run: pnpm --filter @ermnvldmr/kits exec playwright install --with-deps chromium
+      - name: Download Storybook build
+        uses: actions/download-artifact@v4
+        with:
+          name: kits-storybook-static-${{ github.run_id }}
+          path: packages/kits/storybook-static/
+      - name: Test Storybook
+        run: pnpm --filter @ermnvldmr/kits test:storybook:ci
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./packages/kits/coverage/storybook/lcov.info
+          flags: kits-storybook
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  build-kits:
+    name: Build - Kits
+    needs: build-configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Download Rsbuild Config
+        uses: actions/download-artifact@v4
+        with:
+          name: rsbuild-config-dist-${{ github.run_id }}
+          path: packages/rsbuild-config/dist
+      - name: Download Storybook Config
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-config-dist-${{ github.run_id }}
+          path: packages/storybook-config/dist
+      - name: Download i18n dist
+        uses: actions/download-artifact@v4
+        with:
+          name: i18n-dist-${{ github.run_id }}
+          path: packages/i18n/dist
+      - name: Download UI dist
+        uses: actions/download-artifact@v4
+        with:
+          name: ui-dist-${{ github.run_id }}
+          path: packages/ui/dist
+      - name: Build Kits package
+        run: pnpm --filter @ermnvldmr/kits build

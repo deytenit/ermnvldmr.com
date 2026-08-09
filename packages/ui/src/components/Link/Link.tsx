@@ -45,7 +45,7 @@ export const Link = memo(function Link(props: LinkProps) {
 
   const sharedClasses = cn(
     !color && 'text-[var(--rb-ring)]',
-    'cursor-pointer underline hover:no-underline underline-offset-4 transition-colors',
+    'cursor-pointer no-underline hover:underline underline-offset-4 transition-colors',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
     className
   );

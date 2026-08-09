@@ -1,4 +1,5 @@
-import { Header, Paragraph, VStack, PageColumns, PageColumn } from '@ermnvldmr/ui';
+import { PageColumn, PageColumns } from '@ermnvldmr/kits';
+import { Header, Paragraph, VStack } from '@ermnvldmr/ui';
 import React from 'react';
 
 import { DefaultLayout } from './DefaultLayout';
