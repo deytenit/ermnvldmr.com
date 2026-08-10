@@ -1,9 +1,27 @@
 import { getTypographyClassNames } from './getTypographyClassNames';
 
+describe('lib/typography/getTypographyClassNames (inheritance)', () => {
+  it('returns empty string when no options are provided', () => {
+    expect(getTypographyClassNames()).toBe('');
+  });
+
+  it('emits font family when only type is provided', () => {
+    expect(getTypographyClassNames({ type: 'headline' })).toBe('font-serif');
+  });
+
+  it('emits no class when only size is provided', () => {
+    expect(getTypographyClassNames({ size: 'l' })).toBe('');
+  });
+
+  it('emits color class without font size when only color is provided', () => {
+    expect(getTypographyClassNames({ color: 'primary' })).toBe('text-primary-text');
+  });
+});
+
 describe('lib/typography/getTypographyClassNames', () => {
   describe('type + size → @theme token class', () => {
-    it('returns text-body-m by default', () => {
-      expect(getTypographyClassNames()).toContain('text-body-m');
+    it('returns empty string by default', () => {
+      expect(getTypographyClassNames()).toBe('');
     });
 
     it('returns correct class for each type/size combination', () => {
@@ -52,8 +70,8 @@ describe('lib/typography/getTypographyClassNames', () => {
   });
 
   describe('color', () => {
-    it('applies default color class', () => {
-      expect(getTypographyClassNames()).toContain('text-text');
+    it('applies default color class when color is default', () => {
+      expect(getTypographyClassNames({ color: 'default' })).toContain('text-text');
     });
 
     it('applies each color variant', () => {

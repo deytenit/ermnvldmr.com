@@ -71,4 +71,12 @@ describe('components/Container', () => {
     );
     consoleWarnSpy.mockRestore();
   });
+
+  it('forwards ref to the underlying DOM element', () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(<Container ref={ref}>Ref Content</Container>);
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
+    expect(ref.current?.textContent).toBe('Ref Content');
+  });
 });
+

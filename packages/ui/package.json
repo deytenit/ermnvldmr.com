@@ -21,6 +21,12 @@
       "import": "./dist/dev.js",
       "types": "./dist/ui/src/dev.d.ts",
       "default": "./src/dev.ts"
+    },
+    "./styles": {
+      "default": "./src/static/styles.css"
+    },
+    "./styles.css": {
+      "default": "./src/static/styles.css"
     }
   },
   "files": [

@@ -1,5 +1,6 @@
 import { localePath } from '@ermnvldmr/i18n';
-import { Markdown, Time, Text, PageColumns, PageColumn, Breadcrumbs, HStack } from '@ermnvldmr/ui';
+import { Markdown, PageColumn, PageColumns, Time } from '@ermnvldmr/kits';
+import { Breadcrumbs, HStack, Text } from '@ermnvldmr/ui';
 import React from 'react';
 
 import { t } from './ArticleLayout.i18n';
@@ -50,11 +51,11 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
   className,
 }) => {
   const displayDate = updatedDate ? (
-    <Text color="muted" size="s" type="label">
+    <Text color="muted" size="l">
       {t('Updated')} <Time date={updatedDate} />
     </Text>
   ) : (
-    <Time color="muted" date={createdDate} size="s" type="label" />
+    <Time color="muted" date={createdDate} size="l" />
   );
 
   const metadata = (
@@ -63,7 +64,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
       {tags && tags.length > 0 && (
         <HStack gap={1} wrap="wrap">
           {tags.map((tag) => (
-            <Text key={tag} className="before:content-['#']" color="muted" size="s">
+            <Text key={tag} className="before:content-['#']" color="muted" size="l">
               {tag}
             </Text>
           ))}

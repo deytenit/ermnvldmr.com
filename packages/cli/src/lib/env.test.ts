@@ -11,7 +11,7 @@ vi.mock('node:fs', () => ({
 }));
 
 describe('env', () => {
-  beforeEach(async () => {
+  beforeEach(() => {
     // Reset module registry so the `loaded` singleton resets between tests
     vi.resetModules();
   });
@@ -24,7 +24,8 @@ describe('env', () => {
     env('TEST_VAR');
 
     expect(config).toHaveBeenCalledTimes(1);
-    expect(vi.mocked(config).mock.calls[0]![0]).toMatchObject({ path: expect.stringContaining('.env.dev') });
+    const firstCall = vi.mocked(config).mock.calls[0];
+    expect(firstCall[0]).toMatchObject({ path: expect.stringContaining('.env.dev') });
     delete process.env.TEST_VAR;
   });
 

@@ -62,6 +62,14 @@ export const { t } = createKeyset({
     en: 'Genshin Impact Pop! Aether (#160)',
     ru: 'Genshin Impact Pop! Aether (#160)',
   },
+  'Taito - Lycoris Recoil Desktop Cute Figure - Takina Inoue (Roomwear Ver.)': {
+    en: 'Taito - Lycoris Recoil Desktop Cute Figure - Takina Inoue (Roomwear Ver.)',
+    ru: 'Taito - Lycoris Recoil Desktop Cute Figure - Takina Inoue (Roomwear Ver.)',
+  },
+  'Taito - Lycoris Recoil Aqua Desktop Cute Figure - Chisato Nishikigi (Roomwear Ver.)': {
+    en: 'Taito - Lycoris Recoil Aqua Desktop Cute Figure - Chisato Nishikigi (Roomwear Ver.)',
+    ru: 'Taito - Lycoris Recoil Aqua Desktop Cute Figure - Chisato Nishikigi (Roomwear Ver.)',
+  },
   'LEGO Sets': {
     en: 'LEGO Sets',
     ru: 'Наборы LEGO',
@@ -94,6 +102,14 @@ export const { t } = createKeyset({
   'The Pig House (21170)': {
     en: 'The Pig House (21170)',
     ru: 'The Pig House (21170)',
+  },
+  'NASA Artemis Space Launch System (10341)': {
+    en: 'NASA Artemis Space Launch System (10341)',
+    ru: 'NASA Artemis Space Launch System (10341)',
+  },
+  'Himeji Castle (21060)': {
+    en: 'Himeji Castle (21060)',
+    ru: 'Замок Химэдзи (21060)',
   },
   'Die-cast Models': {
     en: 'Die-cast Models',
@@ -145,17 +161,21 @@ export const { t } = createKeyset({
     en: 'Freshly roasted specialty coffee beans',
     ru: 'Свежеобжаренные спешелти зерна',
   },
-  'Espresso Machine': {
-    en: 'Espresso Machine',
-    ru: 'Эспрессо-машина',
+  "De'longhi Dedica Arte EC885": {
+    en: "De'longhi Dedica Arte EC885",
+    ru: "Кофемашина De'longhi Dedica Arte ec885",
+  },
+  'Kingrinder K6': {
+    en: 'Kingrinder K6',
+    ru: 'Кофемолка Kingrinder K6',
+  },
+  'Timemore Black Mirror Basic 2': {
+    en: 'Timemore Black Mirror Basic 2',
+    ru: 'Весы Timemore Black Mirror Basic 2 (хорошие весы обязательно нужны для кофеделания)',
   },
   'Hario V60': {
     en: 'Hario V60',
     ru: 'Hario V60',
-  },
-  'Manual Hand Grinder': {
-    en: 'Manual Hand Grinder',
-    ru: 'Ручная кофемолка',
   },
   'French Press': {
     en: 'French Press',
@@ -169,9 +189,9 @@ export const { t } = createKeyset({
     en: 'Various tools and equipment for electronics and other side projects.',
     ru: 'Различные инструменты и оборудование для электроники и других проектов.',
   },
-  'Alientek T90 Soldering Iron (or a similar compact, smart iron)': {
-    en: 'Alientek T90 Soldering Iron (or a similar compact, smart iron)',
-    ru: 'Паяльник Alientek T90 (или аналогичный компактный умный паяльник)',
+  'Alientek T90B Soldering Iron': {
+    en: 'Alientek T90B Soldering Iron',
+    ru: 'Паяльник Alientek T90B',
   },
   'Other items': {
     en: 'Other items',
@@ -196,5 +216,9 @@ export const { t } = createKeyset({
   'Cast Iron Cube 10x10x10cm (just for the tactile density)': {
     en: 'Cast Iron Cube 10x10x10cm (just for the tactile density)',
     ru: 'Чугунный куб 10x10x10 см (по приколу)',
+  },
+  'Good kitchen utensils (knives, pans, and other cooking gear)': {
+    en: 'Good kitchen utensils (knives, pans, and other cooking gear)',
+    ru: 'Хорошая кухонная утварь (ножи, сковороды и прочее для готовки)',
   },
 });

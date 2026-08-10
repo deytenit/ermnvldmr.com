@@ -27,7 +27,7 @@ const triggerVariants = cva(
 );
 
 const iconVariants = cva(
-  'size-5 shrink-0 transition-transform duration-200 text-[var(--rb-outline)]',
+  'inline-icon shrink-0 transition-transform duration-200 text-[var(--rb-outline)]',
   {
     variants: {
       isOpen: {

@@ -21,6 +21,19 @@ describe('Accordion', () => {
     expect(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
   });
 
+  it('renders expansion icon with inline-icon class', () => {
+    render(
+      <Accordion type="single">
+        <Accordion.Item value="item-1">
+          <Accordion.Trigger>Trigger 1</Accordion.Trigger>
+        </Accordion.Item>
+      </Accordion>
+    );
+    const svg = screen.getByRole('button').querySelector('svg');
+    expect(svg).toHaveClass('inline-icon');
+    expect(svg).not.toHaveClass('size-5');
+  });
+
   it('toggles content on click in single mode', async () => {
     const user = userEvent.setup();
     render(

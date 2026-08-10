@@ -2,77 +2,195 @@
 title: 'Xray Subnet Mimicry (10.0.0.0/8)'
 description: 'Building a distributed private network with Xray-core and reverse tunneling'
 createdDate: 2026-03-20
-tags: ['networking', 'xray', 'guide']
+tags: ['networking', 'guides', 'xray']
 ---
 
-> **EDUCATIONAL PURPOSES ONLY**
+> **EDUCATIONAL PURPOSES ONLY**  
 > This project is designed as a technical demonstration of Xray-core's routing capabilities and private subnet mimicry. It is NOT intended for restriction evasion or illegal activities. Use this knowledge responsibly and in compliance with your local laws.
 
-This guide describes how to deploy a private note-taking infrastructure (or any distributed service) using a contiguous `10.0.0.0/8` private subnet mimicked across distinct servers using **Xray-core** and **reverse tunneling**.
+This guide describes how to deploy a private, distributed communications infrastructure across distinct remote servers using a contiguous `10.0.0.0/8` private subnet mimicked via **Xray-core**, **TPROXY**, and **VLESS reverse tunneling**.
+
+---
 
 ## Technical Deep-Dive & Architecture
 
 ### The Virtual Subnet Concept
 
-We are constructing a "Flat Network" (Layer 3) over the public internet. Each node acts as an authoritative gateway for its own `/16` segment of the `10.0.0.0/8` range. This allows seamless communication between servers as if they were on the same local network.
+We are constructing a Layer 3 "Flat Network" over the public internet. Each server node acts as an authoritative gateway for its own `/16` segment within the `10.0.0.0/8` private address space:
+
+- **Server A (Hub / Portal)**: Owns `10.1.0.0/16`
+- **Server B (Spoke / Bridge)**: Owns `10.2.0.0/16`
+- **Server C (Spoke / Bridge)**: Owns `10.3.0.0/16`
+
+This setup enables seamless inter-node communication as if all servers and hosted containers resided on the same local physical network.
 
 ### The Science of Interception (TPROXY)
 
-Unlike `REDIRECT`, which only works for TCP and modifies the destination IP, **TPROXY** (Transparent Proxy) allows Xray to intercept both TCP and UDP while preserving the original packet headers.
+Unlike `REDIRECT`, which only supports TCP and modifies packet destination IP headers to match the proxy, **TPROXY** (Transparent Proxy) intercepts both TCP and UDP packets while preserving original source and destination IP headers.
 
-- **Mechanism**: When a packet destined for `10.x.x.x` enters the `PREROUTING` or `OUTPUT` chain, the Linux Mangle table marks it with `0x1`.
-- **Preservation**: Xray's `tunnel` inbound uses the `tproxy` socket option to read the original destination IP from the socket metadata, enabling it to route the packet correctly.
+- **Marking**: When a packet destined for `10.x.x.x` enters the `PREROUTING` or `OUTPUT` iptables chain, the Mangle table marks it with `0x1`.
+- **Preservation**: Xray's `tunnel` inbound listens with `"sockopt": { "tproxy": "tproxy" }`, allowing it to read the original destination IP from socket metadata and route packets transparently.
 
 ### Policy Routing (Table 100)
 
-While firewall marks identify intercepted packets, they don't inherently change the routing path. To redirect this traffic to Xray, we use **Policy Routing**:
+Firewall marks alone do not alter routing paths; standard Linux routing tables ignore firewall marks unless directed by **Policy Routing**:
 
-1.  **The Rule (`ip rule`)**: `ip rule add fwmark 1 lookup 100` instructs the networking stack to use a custom routing table for marked packets.
-2.  **The Table (`ip route`)**: Table 100 is configured with `local default dev lo`, treating all destination IPs as local and routing them to the loopback interface.
-3.  **The Handoff**: Xray, listening on `127.0.0.1:12345` with the `tproxy` option, intercepts the packet from the loopback interface.
-4.  **Loop Prevention**: We use `mark: 255` in Xray's outbounds to exempt its own traffic from interception, avoiding infinite routing loops.
+1. **The Rule (`ip rule`)**: `ip rule add fwmark 0x1 lookup 100 priority 100` tells the kernel to route any packet marked with `0x1` using custom routing table 100.
+2. **The Table (`ip route`)**: Table 100 contains `ip route add local 0.0.0.0/0 dev lo table 100`, forcing marked packets onto the local loopback interface.
+3. **The Handoff**: Xray listens on `127.0.0.1:12345` with TPROXY enabled, grabbing the packet from loopback.
+4. **Loop Prevention**: Xray outbounds append `"sockopt": { "mark": 255 }` (`0xff`) to bypass TPROXY interception rules for its own generated traffic, preventing infinite routing loops.
 
-### The Reverse Proxy Mechanism
+---
 
-To reach servers behind NAT (Spokes) from a central Hub, Xray employs a sophisticated Reverse Proxy architecture:
+## 1. Setup Phase and Key Generation
 
-- **Bridge (Spoke)**: Initiates the connection to the Portal. It acts as a client for the tunnel but functionally behaves as a server once the connection is established.
-- **Portal (Hub)**: Listens for Bridge connections and uses "Dummy Domains" to identify them, relaying traffic through the established tunnels.
-- **Multiplexing (Mux)**: Uses [Mux.cool](https://xtls.github.io/en/development/protocols/muxcool.html) to pack hundreds of virtual streams into a single physical TLS connection, reducing overhead and bypassing NAT timeouts.
+Generate four unique UUIDs to secure the VLESS tunnel connections between the Hub and Spokes:
 
-## Setup Guide
+- `UUID_B_REVERSE`: Tunnel control for Server B (Bridge)
+- `UUID_B_DIRECT`: Data traffic for Server B
+- `UUID_C_REVERSE`: Tunnel control for Server C (Bridge)
+- `UUID_C_DIRECT`: Data traffic for Server C
 
-### Phase 0: Prerequisites (Server A only)
+---
 
-Server A (the Hub) requires a valid SSL certificate for XTLS-Vision. Point your domain (`A-DOMAIN`) to Server A's public IP and ensure certificates are available (e.g., via Certbot) at `/etc/letsencrypt/live/A-DOMAIN/`.
+## 2. Host Networking and TPROXY (routing.sh and before.rules)
 
-### Phase 1: Security & Identity
+Before launching Xray containers, each server node requires kernel routing policy rules and UFW `mangle` firewall chains.
 
-Each connection requires a unique UUID. Generate 4 UUIDs to map the following connections:
+### A. Kernel Routing Initialization (routing.sh)
 
-- `UUID_B_REVERSE`: Tunnel control for Server B.
-- `UUID_B_DIRECT`: Data traffic for Server B.
-- `UUID_C_REVERSE`: Tunnel control for Server C.
-- `UUID_C_DIRECT`: Data traffic for Server C.
+The shell script [`routing.sh`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/routing.sh) enables IPv4 forwarding, registers firewall mark `0x1` to lookup table 100, and routes all table 100 traffic to loopback (`dev lo`).
 
-### Phase 2: Host Networking
+Run this script on **all** server nodes:
 
-On **EVERY** server node, perform the following:
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-1.  **Initialize Routing**: Run the routing setup script to configure kernel parameters and Table 100.
-2.  **Firewall Configuration**: Update `/etc/ufw/before.rules`. Insert the specific node rules immediately after the `*filter` header. These rules handle the `mangle` table logic required for TPROXY.
-3.  **Reload**: Apply changes with `sudo ufw reload`.
+echo "Applying routing configuration..."
 
-### Phase 3: Deployment
+# 1. Enable IP Forwarding
+sudo sysctl -w net.ipv4.ip_forward=1
 
-Update your `xray.jsonc` configurations with the generated UUIDs, your domain, and public IPs. Launch the stack using `docker compose up -d`. On Server A, the compose setup will also initialize the internal bridge network for services like AdGuard and Nginx.
+# 2. IP Rule for mark 0x1 -> table 100
+if sudo ip rule show | grep -q 'fwmark 0x1 lookup 100'; then
+    echo "IP rule for mark 0x1 already exists."
+else
+    sudo ip rule add fwmark 0x1 lookup 100 priority 100
+    echo "IP rule added for mark 0x1."
+fi
 
-## Configuration Examples
+# 3. Local route in table 100
+if sudo ip route show table 100 2>/dev/null | grep -q 'local default dev lo'; then
+    echo "Local route in table 100 already exists."
+else
+    sudo ip route add local 0.0.0.0/0 dev lo table 100
+    echo "Local route added to table 100."
+fi
 
-### Server A: Hub (10.1.0.0/16)
+echo "Routing configuration applied successfully."
+```
 
-The Hub handles reverse tunnel entries and routes traffic to the appropriate Spoke based on the 10.x.x.x range.
-Full configuration available here: [a/xray.jsonc](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/a/xray.jsonc)
+### B. Hub Firewall Configuration (a/before.rules)
+
+On **Server A (Hub)**, append the TPROXY rules to `/etc/ufw/before.rules` (after the initial `COMMIT` line).
+
+The rule logic performs the following steps:
+1. **Excludes Local Subnet**: Packets targeting Server A's local subnet (`10.1.0.0/16`) are returned to standard processing.
+2. **Excludes External Traffic**: Packets outside `10.0.0.0/8` pass through unaffected.
+3. **Excludes Xray Mark (`0xff`)**: Traffic generated by Xray itself is ignored to prevent routing loops.
+4. **TPROXY Redirection**: Intercepts TCP and UDP traffic targeting `10.0.0.0/8` and redirects it to Xray on `127.0.0.1:12345` with mark `1`.
+
+Exact repository file: [`a/before.rules`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/a/before.rules)
+
+```ini
+*mangle
+:XRAY - [0:0]
+:XRAY_MASK - [0:0]
+:DIVERT - [0:0]
+
+# --- PREROUTING CHAIN (Traffic from containers/nodes) ---
+-A XRAY -d 10.1.0.0/16 -j RETURN
+-A XRAY ! -d 10.0.0.0/8 -j RETURN
+-A XRAY -m mark --mark 0xff -j RETURN
+-A XRAY -p udp -j TPROXY --on-ip 127.0.0.1 --on-port 12345 --tproxy-mark 1
+-A XRAY -p tcp -j TPROXY --on-ip 127.0.0.1 --on-port 12345 --tproxy-mark 1
+-A PREROUTING -j XRAY
+
+# --- OUTPUT CHAIN (Traffic originating from server host) ---
+-A XRAY_MASK -d 10.1.0.0/16 -j RETURN
+-A XRAY_MASK ! -d 10.0.0.0/8 -j RETURN
+-A XRAY_MASK -m mark --mark 0xff -j RETURN
+-A XRAY_MASK -p udp -j MARK --set-mark 1
+-A XRAY_MASK -p tcp -j MARK --set-mark 1
+-A OUTPUT -j XRAY_MASK
+
+# --- DIVERT Optimization ---
+-A DIVERT -j MARK --set-mark 1
+-A DIVERT -j ACCEPT
+-I PREROUTING -p tcp -m socket -j DIVERT
+
+COMMIT
+
+*filter
+-A ufw-before-forward -s 10.1.0.0/16 -d 10.1.0.0/16 -j ACCEPT
+-A ufw-before-forward -s 10.1.0.0/16 -d 10.0.0.0/8 -m mark --mark 0x1 -j ACCEPT
+-A ufw-before-input -s 10.1.0.0/16 -d 10.1.0.0/16 -j ACCEPT
+-A ufw-before-input -s 10.1.0.0/16 -d 10.0.0.0/8 -m mark --mark 0x1 -j ACCEPT
+```
+
+### C. Spoke Firewall Configuration (b/before.rules and c/before.rules)
+
+On **Server B (Spoke)** and **Server C (Spoke)**, apply the node-specific `/etc/ufw/before.rules`.
+
+For Server B (`10.2.0.0/16`), local traffic within `10.2.0.0/16` is exempted (`-d 10.2.0.0/16 -j RETURN`), while any packet destined for the rest of `10.0.0.0/8` (such as `10.1.x.x` or `10.3.x.x`) is intercepted via TPROXY and routed through the VLESS reverse tunnel back to Server A.
+
+Exact repository files: [`b/before.rules`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/b/before.rules) and [`c/before.rules`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/c/before.rules)
+
+```ini
+*mangle
+:XRAY - [0:0]
+:XRAY_MASK - [0:0]
+:DIVERT - [0:0]
+
+-A XRAY -d 10.2.0.0/16 -j RETURN
+-A XRAY ! -d 10.0.0.0/8 -j RETURN
+-A XRAY -m mark --mark 0xff -j RETURN
+-A XRAY -p udp -j TPROXY --on-ip 127.0.0.1 --on-port 12345 --tproxy-mark 1
+-A XRAY -p tcp -j TPROXY --on-ip 127.0.0.1 --on-port 12345 --tproxy-mark 1
+-A PREROUTING -j XRAY
+
+-A XRAY_MASK -d 10.2.0.0/16 -j RETURN
+-A XRAY_MASK ! -d 10.0.0.0/8 -j RETURN
+-A XRAY_MASK -m mark --mark 0xff -j RETURN
+-A XRAY_MASK -p udp -j MARK --set-mark 1
+-A XRAY_MASK -p tcp -j MARK --set-mark 1
+-A OUTPUT -j XRAY_MASK
+
+-A DIVERT -j MARK --set-mark 1
+-A DIVERT -j ACCEPT
+-I PREROUTING -p tcp -m socket -j DIVERT
+
+COMMIT
+
+*filter
+-A ufw-before-forward -s 10.2.0.0/16 -d 10.2.0.0/16 -j ACCEPT
+-A ufw-before-forward -s 10.2.0.0/16 -d 10.0.0.0/8 -m mark --mark 0x1 -j ACCEPT
+-A ufw-before-input -s 10.2.0.0/16 -d 10.2.0.0/16 -j ACCEPT
+-A ufw-before-input -s 10.2.0.0/16 -d 10.0.0.0/8 -m mark --mark 0x1 -j ACCEPT
+```
+
+Apply the changes on each node with `sudo ufw reload`.
+
+---
+
+## 3. Xray-core Configurations (xray.jsonc)
+
+### A. Hub Configuration (a/xray.jsonc)
+
+The Hub listens on public port 443 with VLESS and XTLS-Vision. It maps reverse tunnel incoming connections (`reverse-b`, `reverse-c`) to their respective subnet destination rules.
+
+Exact repository file: [`a/xray.jsonc`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/a/xray.jsonc)
 
 ```jsonc
 {
@@ -83,31 +201,40 @@ Full configuration available here: [a/xray.jsonc](https://github.com/deytenit/xr
       "tag": "proxy-direct",
       "settings": {
         "clients": [
-          { "id": "REPLACE_WITH_UUID_B_REVERSE", "reverse": { "tag": "reverse-b" } },
-          { "id": "REPLACE_WITH_UUID_B_DIRECT" },
-          // ... repeat for other Spokes
-        ],
-      },
+          { "id": "UUID_B_REVERSE", "reverse": { "tag": "reverse-b" } },
+          { "id": "UUID_B_DIRECT" },
+          { "id": "UUID_C_REVERSE", "reverse": { "tag": "reverse-c" } },
+          { "id": "UUID_C_DIRECT" }
+        ]
+      }
     },
     {
-      "tag": "proxy-enclave",
+      "port": 12345,
+      "listen": "127.0.0.1",
       "protocol": "tunnel",
-      "streamSettings": { "sockopt": { "tproxy": "tproxy", "mark": 255 } },
-    },
+      "tag": "proxy-enclave",
+      "streamSettings": {
+        "sockopt": {
+          "tproxy": "tproxy",
+          "mark": 255
+        }
+      }
+    }
   ],
   "routing": {
     "rules": [
       { "ip": ["10.2.0.0/16"], "outboundTag": "reverse-b" },
-      { "ip": ["10.3.0.0/16"], "outboundTag": "reverse-c" },
-    ],
-  },
+      { "ip": ["10.3.0.0/16"], "outboundTag": "reverse-c" }
+    ]
+  }
 }
 ```
 
-### Server B: Spoke (10.2.0.0/16)
+### B. Spoke Configuration (b/xray.jsonc)
 
-The Spoke initiates the reverse connection to the Hub and handles local subnet breakout.
-Full configuration available here: [b/xray.jsonc](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/b/xray.jsonc)
+The Spoke establishes VLESS client connections back to Server A (`A-EXTERNAL-IP`), maintaining a persistent reverse tunnel for incoming requests and forwarding outbound `10.0.0.0/8` traffic.
+
+Exact repository files: [`b/xray.jsonc`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/b/xray.jsonc) and [`c/xray.jsonc`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/c/xray.jsonc)
 
 ```jsonc
 {
@@ -117,37 +244,39 @@ Full configuration available here: [b/xray.jsonc](https://github.com/deytenit/xr
       "tag": "forward-a-reverse",
       "settings": {
         "address": "A-EXTERNAL-IP",
-        "id": "REPLACE_WITH_UUID_B_REVERSE",
-        "reverse": { "tag": "reverse-b" },
-      },
+        "id": "UUID_B_REVERSE",
+        "reverse": { "tag": "reverse-b" }
+      }
     },
     {
       "protocol": "vless",
       "tag": "forward-a",
       "settings": {
         "address": "A-EXTERNAL-IP",
-        "id": "REPLACE_WITH_UUID_B_DIRECT",
-      },
-    },
+        "id": "UUID_B_DIRECT"
+      }
+    }
   ],
   "routing": {
     "rules": [
       { "inboundTag": ["proxy-enclave"], "outboundTag": "forward-a" },
       { "inboundTag": ["reverse-b"], "outboundTag": "forward-direct" },
       { "ip": ["10.2.0.0/16"], "outboundTag": "forward-direct" },
-      { "ip": ["10.0.0.0/8"], "outboundTag": "forward-a" },
-    ],
-  },
+      { "ip": ["10.0.0.0/8"], "outboundTag": "forward-a" }
+    ]
+  }
 }
 ```
 
+---
+
 ## Resources & Reference
 
-For a complete, automated example of this architecture, check out the following repository:
+For the complete, runnable repository containing Docker Compose files ([`a/docker-compose.yaml`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/a/docker-compose.yaml) and [`b/docker-compose.yaml`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/b/docker-compose.yaml)), visit:
 
-- [xray-core-subnet-mimicry on GitHub](https://github.com/deytenit/xray-core-subnet-mimicry/tree/main)
+- [xray-core-subnet-mimicry Repository on GitHub](https://github.com/deytenit/xray-core-subnet-mimicry/tree/main)
 
-Additional technical references:
+Technical Documentation & Guides:
 
 - [Xray-core Official Documentation](https://xtls.github.io/)
 - [Understanding TPROXY (Cloudflare Blog)](https://blog.cloudflare.com/how-we-built-spectrum/)

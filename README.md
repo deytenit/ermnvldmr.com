@@ -29,9 +29,12 @@ Composite (see [Copyright & License](#copyright--license))
 
 #### Packages
 
-- **[@ermnvldmr/ui](./packages/ui)**: Shared React component library and design system.
-- **[@ermnvldmr/stl](./packages/stl)**: Standard Template Library – common utilities and reusable logic.
+- **[@ermnvldmr/ui](./packages/ui)**: Shared React component library and design system primitives.
+- **[@ermnvldmr/kits](./packages/kits)**: High-level application & layout component kits (`BentoGrid`, `InfoCard`, `PageHead`, `Page`, `Time`, `Markdown`, `ThemeSwitch`).
+- **[@ermnvldmr/stl](./packages/stl)**: Standard Types Library – core utilities, type definitions, and React helpers.
 - **[@ermnvldmr/i18n](./packages/i18n)**: Internationalization utilities.
+- **[@ermnvldmr/ssg](./packages/ssg)**: Build-time Static Site Generation plugin for Rsbuild.
+- **[@ermnvldmr/cli](./packages/cli)**: Monorepo CLI utility (`ermnvldmr-cli`).
 - **[@ermnvldmr/eslint-config](./packages/eslint-config)**: Shared linting configurations.
 - **[@ermnvldmr/rsbuild-config](./packages/rsbuild-config)**: Shared build configurations (Rsbuild & Rspack).
 - **[@ermnvldmr/storybook-config](./packages/storybook-config)**: Shared Storybook configurations.

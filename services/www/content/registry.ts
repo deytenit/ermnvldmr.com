@@ -1,5 +1,4 @@
 import React from 'react';
-import * as TestArticle from './articles/2026/test-article.en.mdx';
 import * as MatrixServerDeploymentGuide from './articles/2026/matrix-server-deployment-guide.en.mdx';
 import * as XrayCoreSubnetMimicry from './articles/2026/xray-core-subnet-mimicry.en.mdx';
 import * as JoplinWebDeploymentGuide from './articles/2026/joplin-web-deployment-guide.en.mdx';
@@ -42,7 +41,6 @@ function register(module: unknown, slug: string): Article {
 }
 
 export const articles: Record<string, Article> = {
-  'test-article': register(TestArticle, '2026/test-article'),
   'matrix-server-deployment-guide': register(
     MatrixServerDeploymentGuide,
     '2026/matrix-server-deployment-guide'

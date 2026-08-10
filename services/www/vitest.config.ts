@@ -4,6 +4,6 @@ import { mergeConfig } from 'vitest/config';
 export default mergeConfig(reactVitestConfig, {
   test: {
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
-    setupFiles: ['./src/setupTests.ts'],
+    setupFiles: ['./.config/vitest/setup.ts'],
   },
 });

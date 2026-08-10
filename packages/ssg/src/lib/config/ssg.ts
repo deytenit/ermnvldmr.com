@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -6,11 +7,63 @@ import React from 'react';
 
 import type { RsbuildPlugin } from '@rsbuild/core';
 
+const SSR_RUNNER_SCRIPT = `
+import { createRsbuild } from '@rsbuild/core';
+
+async function main() {
+  const entries = JSON.parse(process.argv[1]);
+  const ssrDistPath = process.argv[2];
+
+  const plugins = [];
+  try {
+    const { pluginMdx } = await import('@rsbuild/plugin-mdx');
+    const { default: remarkFrontmatter } = await import('remark-frontmatter');
+    const { default: remarkMdxFrontmatter } = await import('remark-mdx-frontmatter');
+
+    plugins.push(
+      pluginMdx({
+        mdxLoaderOptions: {
+          remarkPlugins: [remarkFrontmatter, [remarkMdxFrontmatter, { name: 'frontmatter' }]],
+        },
+      })
+    );
+  } catch (_err) {
+    // MDX plugins not installed or needed in this service
+  }
+
+  const ssrBuild = await createRsbuild({
+    rsbuildConfig: {
+      plugins,
+      source: { entry: entries },
+      output: {
+        target: 'node',
+        distPath: { root: ssrDistPath, js: '.' },
+        filename: { js: '[name].cjs' },
+        cleanDistPath: false,
+        externals: {
+          react: 'commonjs react',
+          'react-dom': 'commonjs react-dom',
+          'react/jsx-runtime': 'commonjs react/jsx-runtime',
+          'react/jsx-dev-runtime': 'commonjs react/jsx-dev-runtime',
+        },
+      },
+    },
+  });
+
+  await ssrBuild.build();
+}
+
+main().catch((err) => {
+  console.error('[ssg-runner] SSR build failed:', err);
+  process.exit(1);
+});
+`;
+
 /**
  * Rsbuild plugin for build-time Static Site Generation.
  *
  * After the web build completes:
- * 1. Builds each entry as a Node.js CJS bundle (dist-ssr/)
+ * 1. Builds each entry as a Node.js CJS bundle (dist-ssr/) via isolated process
  * 2. Renders each entry with react-dom/server renderToString
  * 3. Injects the rendered HTML into the web build's HTML files
  * 4. Runs critters to inline critical CSS and make the main stylesheet async
@@ -67,37 +120,11 @@ export function ssgPlugin(): RsbuildPlugin {
         const ssrDistPath = path.join(path.dirname(webDistPath), 'dist-ssr');
 
         console.log('[ssg-plugin] Building SSR bundles...');
-        const { createRsbuild } = await import('@rsbuild/core');
-
-        const SSG_PLUGIN_NAME = 'ermnvldmr:ssg-plugin';
-        const TYPE_CHECK_PLUGIN_NAME = 'rsbuild:type-check';
-        const ssrPlugins = (config.plugins ?? []).filter((p) => {
-          if (!p || typeof p !== 'object') return true;
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-          const name = (p as { name?: string }).name;
-          return name !== SSG_PLUGIN_NAME && name !== TYPE_CHECK_PLUGIN_NAME;
-        });
-
-        const ssrBuild = await createRsbuild({
-          rsbuildConfig: {
-            plugins: ssrPlugins,
-            source: { entry: entries },
-            tools: config.tools,
-            output: {
-              target: 'node',
-              distPath: { root: ssrDistPath, js: '.' },
-              filename: { js: '[name].cjs' },
-              externals: {
-                react: 'commonjs react',
-                'react-dom': 'commonjs react-dom',
-                'react/jsx-runtime': 'commonjs react/jsx-runtime',
-                'react/jsx-dev-runtime': 'commonjs react/jsx-dev-runtime',
-              },
-            },
-          },
-        });
-
-        await ssrBuild.build();
+        execFileSync(
+          process.execPath,
+          ['--input-type=module', '-e', SSR_RUNNER_SCRIPT, JSON.stringify(entries), ssrDistPath],
+          { stdio: 'inherit' }
+        );
         console.log('[ssg-plugin] SSR bundles ready.');
 
         const { renderToString } = await import('react-dom/server');

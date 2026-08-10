@@ -2,77 +2,195 @@
 title: 'Имитация подсети Xray (10.0.0.0/8)'
 description: 'Создание распределенной частной сети с использованием Xray-core и обратного туннелирования'
 createdDate: 2026-03-20
-tags: ['networking', 'xray', 'guide']
+tags: ['networking', 'guides', 'xray']
 ---
 
-> **ТОЛЬКО ДЛЯ ОБРАЗОВАТЕЛЬНЫХ ЦЕЛЕЙ**
+> **ТОЛЬКО ДЛЯ ОБРАЗОВАТЕЛЬНЫХ ЦЕЛЕЙ**  
 > Этот проект разработан как техническая демонстрация возможностей маршрутизации Xray-core и имитации частных подсетей. Он НЕ предназначен для обхода ограничений или незаконной деятельности. Используйте эти знания ответственно и в соответствии с местным законодательством.
 
-Это руководство описывает, как развернуть распределенную инфраструктуру (например, для заметок или любого другого сервиса), используя непрерывную частную подсеть `10.0.0.0/8`, имитируемую на различных серверах с помощью **Xray-core** и **обратного туннелирования**.
+Это руководство описывает, как развернуть распределенную частную сеть между удаленными серверами, используя единое адресное пространство `10.0.0.0/8`, имитируемое с помощью **Xray-core**, **TPROXY** и **обратного VLESS-туннелирования**.
+
+---
 
 ## Технический разбор и архитектура
 
 ### Концепция виртуальной подсети
 
-Мы создаем «плоскую сеть» (Layer 3) поверх публичного интернета. Каждый узел выступает в качестве полномочного шлюза для своего собственного сегмента `/16` из диапазона `10.0.0.0/8`. Это обеспечивает бесперебойную связь между серверами, как если бы они находились в одной локальной сети.
+Мы создаем «плоскую сеть» третьего уровня (Layer 3) поверх публичного интернета. Каждый серверный узел выступает полномочным шлюзом для своего собственного отрезка `/16` из приватного пространства `10.0.0.0/8`:
+
+- **Сервер A (Hub / Portal)**: Владеет `10.1.0.0/16`
+- **Сервер B (Spoke / Bridge)**: Владеет `10.2.0.0/16`
+- **Сервер C (Spoke / Bridge)**: Владеет `10.3.0.0/16`
+
+Это обеспечивает прозрачное взаимодействие серверов и Docker-контейнеров, как если бы они находились в одной локальной физической сети.
 
 ### Наука перехвата (TPROXY)
 
-В отличие от `REDIRECT`, который работает только для TCP и изменяет IP-адрес назначения, **TPROXY** (Transparent Proxy) позволяет Xray перехватывать как TCP, так и UDP, сохраняя при этом исходные заголовки пакетов.
+В отличие от `REDIRECT`, который поддерживает только TCP и подменяет IP-адрес назначения на адрес прокси, **TPROXY** (Transparent Proxy) перехватывает как TCP-, так и UDP-пакеты, сохраняя исходные IP-заголовки отправителя и получателя.
 
-- **Механизм**: Когда пакет, предназначенный для `10.x.x.x`, попадает в цепочку `PREROUTING` или `OUTPUT`, таблица Linux Mangle помечает его меткой `0x1`.
-- **Сохранение**: Входящий поток `tunnel` в Xray использует опцию сокета `tproxy` для чтения исходного IP-адреса назначения из метаданных сокета, что позволяет правильно маршрутизировать пакет.
+- **Маркировка**: Когда пакет, предназначенный для `10.x.x.x`, попадает в цепочку `PREROUTING` или `OUTPUT` брандмауэра iptables, таблица Mangle помечает его меткой `0x1`.
+- **Сохранение**: Входящий поток `tunnel` в Xray использует опцию сокета `"sockopt": { "tproxy": "tproxy" }`, позволяя извлекать оригинальный IP-адрес назначения из метаданных сокета и корректно маршрутизировать пакет.
 
 ### Политика маршрутизации (Таблица 100)
 
-Хотя метки брандмауэра идентифицируют перехваченные пакеты, они сами по себе не изменяют путь маршрутизации. Чтобы перенаправить этот трафик в Xray, мы используем **Policy Routing**:
+Метки брандмауэра сами по себе не меняют маршрут следования пакета. Чтобы направить трафик в Xray, применяется **Policy Routing**:
 
-1.  **Правило (`ip rule`)**: `ip rule add fwmark 1 lookup 100` предписывает сетевому стеку использовать пользовательскую таблицу маршрутизации для помеченных пакетов.
-2.  **Таблица (`ip route`)**: Таблица 100 настроена с параметром `local default dev lo`, что заставляет систему рассматривать все IP-адреса назначения как локальные и направлять их на интерфейс петли (loopback).
-3.  **Передача**: Xray, прослушивающий `127.0.0.1:12345` с опцией `tproxy`, перехватывает пакет с интерфейса loopback.
-4.  **Предотвращение петель**: Мы используем `mark: 255` в исходящих потоках Xray, чтобы исключить его собственный трафик из перехвата, предотвращая бесконечные циклы маршрутизации.
+1. **Правило (`ip rule`)**: `ip rule add fwmark 0x1 lookup 100 priority 100` предписывает ядру Linux использовать специальную таблицу маршрутизации 100 для пакетов с меткой `0x1`.
+2. **Таблица (`ip route`)**: Таблица 100 содержит правило `ip route add local 0.0.0.0/0 dev lo table 100`, направляющее все помеченные пакеты на виртуальный интерфейс loopback (`dev lo`).
+3. **Перехват**: Xray прослушивает порт `127.0.0.1:12345` с включенным TPROXY и подхватывает пакет с loopback.
+4. **Защита от петель**: Для исходящего трафика самого Xray задается метка `"sockopt": { "mark": 255 }` (`0xff`), что исключает его из правил перехвата и предотвращает бесконечную рекурсию маршрутизации.
 
-### Механизм обратного прокси
+---
 
-Для доступа к серверам за NAT (Spokes) из центрального хаба Xray использует сложную архитектуру обратного прокси:
+## 1. Подготовительный этап и генерация ключей
 
-- **Bridge (Spoke)**: Инициирует соединение с порталом. Он действует как клиент для туннеля, но функционально ведет себя как сервер после установления соединения.
-- **Portal (Hub)**: Прослушивает входящие соединения от Bridge и использует «фиктивные домены» (Dummy Domains) для их идентификации, ретранслируя трафик через установленные туннели.
-- **Мультиплексирование (Mux)**: Использует [Mux.cool](https://xtls.github.io/en/development/protocols/muxcool.html) для упаковки сотен виртуальных потоков в одно физическое TLS-соединение, что снижает накладные расходы и позволяет обходить тайм-ауты NAT.
+Сгенерируйте 4 уникальных UUID для защиты обратных туннелей VLESS между Хабом и Узлами:
 
-## Руководство по настройке
+- `UUID_B_REVERSE`: Служебный туннель управления для Сервера B (Bridge)
+- `UUID_B_DIRECT`: Передача данных для Сервера B
+- `UUID_C_REVERSE`: Служебный туннель управления для Сервера C (Bridge)
+- `UUID_C_DIRECT`: Передача данных для Сервера C
 
-### Этап 0: Предварительные требования (только для сервера А)
+---
 
-Серверу А (Hub) требуется действующий SSL-сертификат для XTLS-Vision. Направьте ваш домен (`A-DOMAIN`) на публичный IP сервера А и убедитесь, что сертификаты доступны (например, через Certbot) по адресу `/etc/letsencrypt/live/A-DOMAIN/`.
+## 2. Сетевая настройка хоста и TPROXY (routing.sh и before.rules)
 
-### Этап 1: Безопасность и идентификация
+До запуска контейнеров Xray на каждом узле необходимо активировать правила маршрутизации ядра и цепочки `mangle` в UFW.
 
-Для каждого соединения требуется уникальный UUID. Сгенерируйте 4 UUID для сопоставления следующих соединений:
+### A. Инициализация маршрутизации ядра (routing.sh)
 
-- `UUID_B_REVERSE`: Управление туннелем для сервера B.
-- `UUID_B_DIRECT`: Трафик данных для сервера B.
-- `UUID_C_REVERSE`: Управление туннелем для сервера C.
-- `UUID_C_DIRECT`: Трафик данных для сервера C.
+Скрипт [`routing.sh`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/routing.sh) включает пересылку IPv4-пакетов (ip_forward), связывает метку `0x1` с таблицей 100 и перенаправляет трафик таблицы 100 на интерфейс loopback (`dev lo`).
 
-### Этап 2: Настройка хоста
+Запустите скрипт на **всех** серверах:
 
-На **КАЖДОМ** узле сервера выполните следующее:
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-1.  **Инициализация маршрутизации**: Запустите скрипт настройки маршрутизации для конфигурации параметров ядра и таблицы 100.
-2.  **Настройка брандмауэра**: Обновите `/etc/ufw/before.rules`. Вставьте специфические правила узла сразу после заголовка `*filter`. Эти правила обрабатывают логику таблицы `mangle`, необходимую для TPROXY.
-3.  **Перезагрузка**: Примените изменения с помощью `sudo ufw reload`.
+echo "Applying routing configuration..."
 
-### Этап 3: Развертывание
+# 1. Enable IP Forwarding
+sudo sysctl -w net.ipv4.ip_forward=1
 
-Обновите конфигурации `xray.jsonc`, указав сгенерированные UUID, ваш домен и публичные IP-адреса. Запустите стек с помощью `docker compose up -d`. На сервере А установка compose также инициализирует внутреннюю мостовую сеть для таких сервисов, как AdGuard и Nginx.
+# 2. IP Rule for mark 0x1 -> table 100
+if sudo ip rule show | grep -q 'fwmark 0x1 lookup 100'; then
+    echo "IP rule for mark 0x1 already exists."
+else
+    sudo ip rule add fwmark 0x1 lookup 100 priority 100
+    echo "IP rule added for mark 0x1."
+fi
 
-## Примеры конфигурации
+# 3. Local route in table 100
+if sudo ip route show table 100 2>/dev/null | grep -q 'local default dev lo'; then
+    echo "Local route in table 100 already exists."
+else
+    sudo ip route add local 0.0.0.0/0 dev lo table 100
+    echo "Local route added to table 100."
+fi
 
-### Сервер A: Хаб (10.1.0.0/16)
+echo "Routing configuration applied successfully."
+```
 
-Хаб обрабатывает входы обратных туннелей и маршрутизирует трафик в соответствующий Spoke на основе диапазона 10.x.x.x.
-Полная конфигурация доступна здесь: [a/xray.jsonc](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/a/xray.jsonc)
+### B. Конфигурация брандмауэра Хаба (a/before.rules)
+
+На **Сервере A (Hub)** добавьте правила TPROXY в конец файла `/etc/ufw/before.rules` (после первой директивы `COMMIT`).
+
+Логика правил:
+1. **Исключение локальной подсети**: Пакеты для `10.1.0.0/16` обрабатываются стандартно.
+2. **Исключение внешнего трафика**: Трафик вне `10.0.0.0/8` не затрагивается.
+3. **Исключение метки Xray (`0xff`)**: Собственный трафик Xray игнорируется для предотвращения зацикливания.
+4. **TPROXY-перехват**: Запросы TCP и UDP к `10.0.0.0/8` направляются в Xray на `127.0.0.1:12345` с меткой `1`.
+
+Файл в репозитории: [`a/before.rules`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/a/before.rules)
+
+```ini
+*mangle
+:XRAY - [0:0]
+:XRAY_MASK - [0:0]
+:DIVERT - [0:0]
+
+# --- PREROUTING CHAIN (Трафик от контейнеров и других узлов) ---
+-A XRAY -d 10.1.0.0/16 -j RETURN
+-A XRAY ! -d 10.0.0.0/8 -j RETURN
+-A XRAY -m mark --mark 0xff -j RETURN
+-A XRAY -p udp -j TPROXY --on-ip 127.0.0.1 --on-port 12345 --tproxy-mark 1
+-A XRAY -p tcp -j TPROXY --on-ip 127.0.0.1 --on-port 12345 --tproxy-mark 1
+-A PREROUTING -j XRAY
+
+# --- OUTPUT CHAIN (Трафик, создаваемый сам хостом) ---
+-A XRAY_MASK -d 10.1.0.0/16 -j RETURN
+-A XRAY_MASK ! -d 10.0.0.0/8 -j RETURN
+-A XRAY_MASK -m mark --mark 0xff -j RETURN
+-A XRAY_MASK -p udp -j MARK --set-mark 1
+-A XRAY_MASK -p tcp -j MARK --set-mark 1
+-A OUTPUT -j XRAY_MASK
+
+# --- Оптимизация DIVERT ---
+-A DIVERT -j MARK --set-mark 1
+-A DIVERT -j ACCEPT
+-I PREROUTING -p tcp -m socket -j DIVERT
+
+COMMIT
+
+*filter
+-A ufw-before-forward -s 10.1.0.0/16 -d 10.1.0.0/16 -j ACCEPT
+-A ufw-before-forward -s 10.1.0.0/16 -d 10.0.0.0/8 -m mark --mark 0x1 -j ACCEPT
+-A ufw-before-input -s 10.1.0.0/16 -d 10.1.0.0/16 -j ACCEPT
+-A ufw-before-input -s 10.1.0.0/16 -d 10.0.0.0/8 -m mark --mark 0x1 -j ACCEPT
+```
+
+### C. Конфигурация брандмауэра узлов Spoke (b/before.rules и c/before.rules)
+
+На **Сервере B (Spoke)** и **Сервере C (Spoke)** примените соответствующие `/etc/ufw/before.rules`.
+
+Для Сервера B (`10.2.0.0/16`) локальный трафик внутри подсети `10.2.0.0/16` исключается (`-d 10.2.0.0/16 -j RETURN`), а любые пакеты к остальной части `10.0.0.0/8` (например, к `10.1.x.x` или `10.3.x.x`) перехватываются TPROXY и уходят через обратный VLESS-туннель на Сервер А.
+
+Файлы в репозитории: [`b/before.rules`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/b/before.rules) и [`c/before.rules`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/c/before.rules)
+
+```ini
+*mangle
+:XRAY - [0:0]
+:XRAY_MASK - [0:0]
+:DIVERT - [0:0]
+
+-A XRAY -d 10.2.0.0/16 -j RETURN
+-A XRAY ! -d 10.0.0.0/8 -j RETURN
+-A XRAY -m mark --mark 0xff -j RETURN
+-A XRAY -p udp -j TPROXY --on-ip 127.0.0.1 --on-port 12345 --tproxy-mark 1
+-A XRAY -p tcp -j TPROXY --on-ip 127.0.0.1 --on-port 12345 --tproxy-mark 1
+-A PREROUTING -j XRAY
+
+-A XRAY_MASK -d 10.2.0.0/16 -j RETURN
+-A XRAY_MASK ! -d 10.0.0.0/8 -j RETURN
+-A XRAY_MASK -m mark --mark 0xff -j RETURN
+-A XRAY_MASK -p udp -j MARK --set-mark 1
+-A XRAY_MASK -p tcp -j MARK --set-mark 1
+-A OUTPUT -j XRAY_MASK
+
+-A DIVERT -j MARK --set-mark 1
+-A DIVERT -j ACCEPT
+-I PREROUTING -p tcp -m socket -j DIVERT
+
+COMMIT
+
+*filter
+-A ufw-before-forward -s 10.2.0.0/16 -d 10.2.0.0/16 -j ACCEPT
+-A ufw-before-forward -s 10.2.0.0/16 -d 10.0.0.0/8 -m mark --mark 0x1 -j ACCEPT
+-A ufw-before-input -s 10.2.0.0/16 -d 10.2.0.0/16 -j ACCEPT
+-A ufw-before-input -s 10.2.0.0/16 -d 10.0.0.0/8 -m mark --mark 0x1 -j ACCEPT
+```
+
+Перезагрузите правила брандмауэра на каждом узле командой `sudo ufw reload`.
+
+---
+
+## 3. Конфигурация узлов Xray-core (xray.jsonc)
+
+### A. Конфигурация Хаба (a/xray.jsonc)
+
+Хаб прослушивает публичный порт 443 по протоколам VLESS и XTLS-Vision. Он сопоставляет входящие соединения обратных туннелей (`reverse-b`, `reverse-c`) со свойствами маршрутизации для подсетей `/16`.
+
+Файл в репозитории: [`a/xray.jsonc`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/a/xray.jsonc)
 
 ```jsonc
 {
@@ -83,31 +201,40 @@ tags: ['networking', 'xray', 'guide']
       "tag": "proxy-direct",
       "settings": {
         "clients": [
-          { "id": "REPLACE_WITH_UUID_B_REVERSE", "reverse": { "tag": "reverse-b" } },
-          { "id": "REPLACE_WITH_UUID_B_DIRECT" },
-          // ... повторите для других Spokes
-        ],
-      },
+          { "id": "UUID_B_REVERSE", "reverse": { "tag": "reverse-b" } },
+          { "id": "UUID_B_DIRECT" },
+          { "id": "UUID_C_REVERSE", "reverse": { "tag": "reverse-c" } },
+          { "id": "UUID_C_DIRECT" }
+        ]
+      }
     },
     {
-      "tag": "proxy-enclave",
+      "port": 12345,
+      "listen": "127.0.0.1",
       "protocol": "tunnel",
-      "streamSettings": { "sockopt": { "tproxy": "tproxy", "mark": 255 } },
-    },
+      "tag": "proxy-enclave",
+      "streamSettings": {
+        "sockopt": {
+          "tproxy": "tproxy",
+          "mark": 255
+        }
+      }
+    }
   ],
   "routing": {
     "rules": [
       { "ip": ["10.2.0.0/16"], "outboundTag": "reverse-b" },
-      { "ip": ["10.3.0.0/16"], "outboundTag": "reverse-c" },
-    ],
-  },
+      { "ip": ["10.3.0.0/16"], "outboundTag": "reverse-c" }
+    ]
+  }
 }
 ```
 
-### Сервер B: Узел Spoke (10.2.0.0/16)
+### B. Конфигурация Spoke (b/xray.jsonc)
 
-Spoke инициирует обратное соединение с Хабом и обрабатывает выход в локальную подсеть.
-Полная конфигурация доступна здесь: [b/xray.jsonc](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/b/xray.jsonc)
+Узел Spoke устанавливает клиенские соединения VLESS к Серверу A (`A-EXTERNAL-IP`), поддерживая постоянный обратный туннель для входящих запросов и передавая исходящий трафик `10.0.0.0/8`.
+
+Файлы в репозитории: [`b/xray.jsonc`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/b/xray.jsonc) и [`c/xray.jsonc`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/c/xray.jsonc)
 
 ```jsonc
 {
@@ -117,37 +244,39 @@ Spoke инициирует обратное соединение с Хабом �
       "tag": "forward-a-reverse",
       "settings": {
         "address": "A-EXTERNAL-IP",
-        "id": "REPLACE_WITH_UUID_B_REVERSE",
-        "reverse": { "tag": "reverse-b" },
-      },
+        "id": "UUID_B_REVERSE",
+        "reverse": { "tag": "reverse-b" }
+      }
     },
     {
       "protocol": "vless",
       "tag": "forward-a",
       "settings": {
         "address": "A-EXTERNAL-IP",
-        "id": "REPLACE_WITH_UUID_B_DIRECT",
-      },
-    },
+        "id": "UUID_B_DIRECT"
+      }
+    }
   ],
   "routing": {
     "rules": [
       { "inboundTag": ["proxy-enclave"], "outboundTag": "forward-a" },
       { "inboundTag": ["reverse-b"], "outboundTag": "forward-direct" },
       { "ip": ["10.2.0.0/16"], "outboundTag": "forward-direct" },
-      { "ip": ["10.0.0.0/8"], "outboundTag": "forward-a" },
-    ],
-  },
+      { "ip": ["10.0.0.0/8"], "outboundTag": "forward-a" }
+    ]
+  }
 }
 ```
 
+---
+
 ## Ресурсы и ссылки
 
-Для получения полного автоматизированного примера этой архитектуры посетите следующий репозиторий:
+Полный пример репозитория с конфигурациями Docker Compose ([`a/docker-compose.yaml`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/a/docker-compose.yaml) и [`b/docker-compose.yaml`](https://github.com/deytenit/xray-core-subnet-mimicry/blob/main/b/docker-compose.yaml)):
 
-- [xray-core-subnet-mimicry на GitHub](https://github.com/deytenit/xray-core-subnet-mimicry/tree/main)
+- [Репозиторий xray-core-subnet-mimicry на GitHub](https://github.com/deytenit/xray-core-subnet-mimicry/tree/main)
 
-Дополнительные технические материалы:
+Техническая документация:
 
 - [Официальная документация Xray-core](https://xtls.github.io/)
 - [Понимание TPROXY (блог Cloudflare)](https://blog.cloudflare.com/how-we-built-spectrum/)

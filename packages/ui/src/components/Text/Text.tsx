@@ -65,9 +65,9 @@ export interface TextProps
 const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
   {
     children,
-    type = 'body',
-    size = 'm',
-    color = 'default',
+    type,
+    size,
+    color,
     bold = false,
     italic = false,
     underline = false,

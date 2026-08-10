@@ -139,11 +139,7 @@ const typographyVariants = cva('', {
     { type: 'label', size: 'm', className: 'text-label-m' },
     { type: 'label', size: 'l', className: 'text-label-l' },
   ],
-  defaultVariants: {
-    type: 'body',
-    size: 'm',
-    color: 'default',
-  },
+  defaultVariants: {},
 });
 
 const lineClampMap: Record<number, string> = {
@@ -177,9 +173,9 @@ const lineClampMap: Record<number, string> = {
  */
 export function getTypographyClassNames(options: TypographyOptions = {}): string {
   const {
-    type = 'body',
-    size = 'm',
-    color = 'default',
+    type,
+    size,
+    color,
     bold = false,
     italic = false,
     underline = false,

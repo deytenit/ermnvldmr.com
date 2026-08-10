@@ -35,6 +35,14 @@ describe('Code Component', () => {
     expect(codeElement).toHaveClass('rounded-sm');
   });
 
+  it('renders inline code with relative sizing classes', () => {
+    render(<Code>const x = 1;</Code>);
+    const codeEl = screen.getByRole('button');
+    expect(codeEl.className).toContain('text-[0.9em]');
+    expect(codeEl.className).toContain('px-[0.3em]');
+    expect(codeEl.className).not.toContain('text-sm');
+  });
+
   it('renders block code correctly', () => {
     render(
       <CodeBlock label="test.ts">

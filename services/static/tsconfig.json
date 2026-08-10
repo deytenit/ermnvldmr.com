@@ -4,6 +4,10 @@
     "baseUrl": "./src",
     "paths": {
       "#*": ["./*"],
+      "@ermnvldmr/cli": ["../../../packages/cli/src"],
+      "@ermnvldmr/cli/*": ["../../../packages/cli/src/*"],
+      "@ermnvldmr/kits": ["../../../packages/kits/src"],
+      "@ermnvldmr/kits/*": ["../../../packages/kits/src/*"],
       "@ermnvldmr/ssg": ["../../../packages/ssg/src"],
       "@ermnvldmr/ssg/*": ["../../../packages/ssg/src/*"],
       "@ermnvldmr/stl": ["../../../packages/stl/src"],
@@ -11,6 +15,6 @@
       "@ermnvldmr/ui/*": ["../../../packages/ui/src/*"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", ".config/**/*"],
   "exclude": ["dist", "node_modules", "**/*.config.*"]
 }

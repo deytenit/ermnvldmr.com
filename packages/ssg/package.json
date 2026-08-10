@@ -27,8 +27,11 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@rsbuild/plugin-mdx": "^1.1.1",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "remark-frontmatter": "^5.0.0",
+    "remark-mdx-frontmatter": "^5.2.0"
   },
   "devDependencies": {
     "@ermnvldmr/eslint-config": "workspace:*",

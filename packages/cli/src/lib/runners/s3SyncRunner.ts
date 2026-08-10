@@ -150,7 +150,8 @@ export async function runS3Sync(
   const getS3Url = (finalName: string): string => {
     const normalizedKey = normalizeKey(cmd.targetPrefix, finalName);
     if (endpoint) {
-      return `https://${bucket}/${normalizedKey}`;
+      const cleanEndpoint = endpoint.replace(/\/+$/, '');
+      return `${cleanEndpoint}/${bucket}/${normalizedKey}`;
     }
     return `https://${bucket}.s3.${region}.amazonaws.com/${normalizedKey}`;
   };

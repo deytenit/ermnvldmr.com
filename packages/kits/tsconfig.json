@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "types": ["vitest/globals", "@testing-library/jest-dom", "node"],
+    "paths": {
+      "@ermnvldmr/stl": ["../stl/src"],
+      "@ermnvldmr/stl/*": ["../stl/src/*"],
+      "@ermnvldmr/ui": ["../ui/src"],
+      "@ermnvldmr/ui/*": ["../ui/src/*"]
+    }
+  },
+  "include": ["src/**/*"]
+}

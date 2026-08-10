@@ -1,0 +1,75 @@
+{
+  "name": "@ermnvldmr/kits",
+  "version": "1.0.0",
+  "description": "Composed UI pattern assemblies and kit components",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/kits/src/index.d.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "rsbuild build --watch",
+    "build": "rsbuild build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "storybook": "storybook dev -p 6008 -c .config/storybook",
+    "build-storybook": "storybook build -c .config/storybook",
+    "test:storybook": "test-storybook --config-dir .config/storybook",
+    "test:storybook:ci": "concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"http-server storybook-static --port 6008 --silent\" \"wait-on tcp:127.0.0.1:6008 && test-storybook --coverage --config-dir .config/storybook --url http://127.0.0.1:6008\"",
+    "lint": "eslint src --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist coverage storybook-static"
+  },
+  "dependencies": {
+    "@ermnvldmr/i18n": "workspace:*",
+    "@ermnvldmr/stl": "workspace:*",
+    "@ermnvldmr/ui": "workspace:*",
+    "class-variance-authority": "^0.7.1"
+  },
+  "devDependencies": {
+    "@ermnvldmr/eslint-config": "workspace:*",
+    "@ermnvldmr/rsbuild-config": "workspace:*",
+    "@ermnvldmr/storybook-config": "workspace:*",
+    "@rsbuild/core": "^1.2.11",
+    "@rsbuild/plugin-babel": "^1.1.0",
+    "@storybook/addon-a11y": "^8.6.15",
+    "@storybook/addon-coverage": "^3.0.0",
+    "@storybook/addon-essentials": "^8.6.15",
+    "@storybook/addon-interactions": "^8.6.15",
+    "@storybook/addon-themes": "^8.6.15",
+    "@storybook/react": "^8.6.15",
+    "@storybook/test": "^8.6.15",
+    "@storybook/test-runner": "^0.19.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.1",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^22.20.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitest/coverage-v8": "^4.0.18",
+    "babel-plugin-istanbul": "^7.0.1",
+    "concurrently": "^9.1.2",
+    "http-server": "^14.1.1",
+    "jsdom": "^28.0.0",
+    "playwright": "^1.57.0",
+    "storybook": "^8.6.17",
+    "storybook-react-rsbuild": "^1.0.3",
+    "typescript": "^5.8.3",
+    "vitest": "^4.0.18",
+    "wait-on": "^8.0.3"
+  },
+  "peerDependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  }
+}

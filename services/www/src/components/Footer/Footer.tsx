@@ -1,4 +1,6 @@
-import { Container, HStack, Link, ThemeSwitch, VStack, Text } from '@ermnvldmr/ui';
+import { ThemeSwitch } from '@ermnvldmr/kits';
+import { Container, HStack, Icon, Link, Text, VStack } from '@ermnvldmr/ui';
+import { Monitor, Moon, Sun } from 'lucide-react';
 import React from 'react';
 
 import { LocaleSwitch } from '../LocaleSwitch/LocaleSwitch';
@@ -44,7 +46,11 @@ export const Footer = ({ currentPath }: FooterProps) => {
             </Link>
           </VStack>
           <VStack align="end" gap={4}>
-            <ThemeSwitch />
+            <ThemeSwitch
+              darkIcon={<Icon icon={Moon} />}
+              lightIcon={<Icon icon={Sun} />}
+              systemIcon={<Icon icon={Monitor} />}
+            />
             <LocaleSwitch currentPath={currentPath} />
           </VStack>
         </HStack>
