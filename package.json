@@ -49,7 +49,7 @@
     "test": "pnpm -r test",
     "test:coverage": "pnpm -r test:coverage",
     "clean": "pnpm -r clean && rm -rf node_modules",
-    "build:deps": "pnpm -r --filter='./packages/*-config' build && pnpm --filter='./packages/i18n' build && pnpm --filter='./packages/ui' build && pnpm --filter='./packages/kits' build"
+    "build:deps": "pnpm -r --filter='./packages/*-config' build && pnpm --filter='./packages/stl' build && pnpm --filter='./packages/cli' build && pnpm --filter='./packages/ssg' build && pnpm --filter='./packages/i18n' build && pnpm --filter='./packages/ui' build && pnpm --filter='./packages/kits' build"
   },
   "devDependencies": {
     "globals": "^16.0.0",
