@@ -17,6 +17,8 @@ COPY packages/ssg/package.json ./packages/ssg/
 COPY packages/stl/package.json ./packages/stl/
 COPY packages/storybook-config/package.json ./packages/storybook-config/
 COPY packages/ui/package.json ./packages/ui/
+COPY packages/kits/package.json ./packages/kits/
+COPY packages/cli/package.json ./packages/cli/
 COPY packages/i18n/package.json ./packages/i18n/
 COPY services/www/package.json ./services/www/
 
@@ -27,10 +29,7 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # Build dependencies
-RUN pnpm --filter @ermnvldmr/rsbuild-config build
-RUN pnpm --filter @ermnvldmr/stl build
-RUN pnpm --filter @ermnvldmr/i18n build
-RUN pnpm --filter @ermnvldmr/ui build
+RUN pnpm build:deps
 
 # Build the website (all locales)
 RUN pnpm --filter @ermnvldmr/www build:all
