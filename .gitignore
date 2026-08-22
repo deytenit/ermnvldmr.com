@@ -34,3 +34,9 @@ playwright-report/
 # agents plans and designs
 docs/plans/
 docs/superpowers/
+
+# SOPS and Kubernetes Secrets
+*.dec.yaml
+*.local.yaml
+.sops/keys.txt
+ci/k8s/**/secret.yaml

@@ -1,0 +1,94 @@
+#cloud-config
+preserve_hostname: false
+hostname: k3s-prod-yc
+
+write_files:
+  - path: /etc/rancher/k3s/config.yaml
+    owner: root:root
+    permissions: '0600'
+    content: |
+      disable:
+        - servicelb
+      tls-san:
+        - "51.250.0.1" # Replace with actual static VPS IP upon provisioning
+        - "ermnvldmr.com"
+        - "www.ermnvldmr.com"
+        - "docs.ermnvldmr.com"
+        - "analytics.ermnvldmr.com"
+      write-kubeconfig-mode: "0644"
+
+  - path: /usr/local/bin/bootstrap-cluster.sh
+    owner: root:root
+    permissions: '0755'
+    content: |
+      #!/usr/bin/env bash
+      set -euo pipefail
+
+      echo "=== [Bootstrap] Starting K3s Service ==="
+      systemctl enable --now k3s.service
+
+      echo "=== [Bootstrap] Waiting for K3s API server ready ==="
+      export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+      until kubectl get nodes >/dev/null 2>&1; do
+        echo "Waiting for Kubernetes API..."
+        sleep 3
+      done
+
+      echo "=== [Bootstrap] Cluster node is online ==="
+      kubectl get nodes
+
+      echo "=== [Bootstrap] Creating flux-system namespace ==="
+      kubectl create namespace flux-system --dry-run=client -o yaml | kubectl apply -f -
+
+      echo "=== [Bootstrap] Injecting SOPS age decryption key ==="
+      if [ -f /root/.config/sops/age/keys.txt ]; then
+        kubectl create secret generic sops-age \
+          --namespace=flux-system \
+          --from-file=age.agekey=/root/.config/sops/age/keys.txt \
+          --dry-run=client -o yaml | kubectl apply -f -
+        echo "sops-age secret created."
+      else
+        echo "WARNING: /root/.config/sops/age/keys.txt not found. Inject key manually via kubectl."
+      fi
+
+      echo "=== [Bootstrap] Installing Flux Operator / Custom Resources ==="
+      kubectl apply -k https://github.com/fluxcd/flux2/manifests/install?ref=v2.4.0 || true
+
+      echo "=== [Bootstrap] Applying initial GitOps root sync ==="
+      kubectl apply -f - << 'EOF_GITOPS'
+      apiVersion: source.toolkit.fluxcd.io/v1
+      kind: GitRepository
+      metadata:
+        name: ermnvldmr-repo
+        namespace: flux-system
+      spec:
+        interval: 1m
+        url: https://github.com/deytenit/ermnvldmr.com.git
+        ref:
+          branch: next
+      ---
+      apiVersion: kustomize.toolkit.fluxcd.io/v1
+      kind: Kustomization
+      metadata:
+        name: cluster-sync
+        namespace: flux-system
+      spec:
+        interval: 5m
+        targetNamespace: flux-system
+        sourceRef:
+          kind: GitRepository
+          name: ermnvldmr-repo
+        path: ./ci/k8s/clusters/production
+        prune: true
+        wait: true
+        timeout: 2m
+        decryption:
+          provider: sops
+          secretRef:
+            name: sops-age
+      EOF_GITOPS
+
+      echo "=== [Bootstrap] First-Boot Bootstrap Sequence Complete ==="
+
+runcmd:
+  - /usr/local/bin/bootstrap-cluster.sh
