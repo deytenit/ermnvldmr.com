@@ -22,22 +22,39 @@ variable "vm_name" {
   default = "com-ermnvldmr-debian-12-k3s-amd64.qcow2"
 }
 
+variable "accelerator" {
+  type    = string
+  default = "kvm"
+}
+
+variable "efi_firmware_code" {
+  type    = string
+  default = "/usr/share/OVMF/OVMF_CODE.fd"
+}
+
+variable "efi_firmware_vars" {
+  type    = string
+  default = "/usr/share/OVMF/OVMF_VARS.fd"
+}
+
 source "qemu" "debian_k3s" {
-  iso_url          = var.debian_iso_url
-  iso_checksum     = var.debian_iso_checksum
-  output_directory = "output-qemu"
-  shutdown_command = "echo 'packer' | sudo -S shutdown -P now"
-  disk_size        = "10G"
-  format           = "qcow2"
-  accelerator      = "kvm"
-  http_directory   = "ci/packer/http"
-  ssh_username     = "root"
-  ssh_password     = "packer"
-  ssh_timeout      = "25m"
-  vm_name          = var.vm_name
-  net_device       = "virtio-net"
-  disk_interface   = "virtio"
-  efi_boot         = true
+  iso_url           = var.debian_iso_url
+  iso_checksum      = var.debian_iso_checksum
+  output_directory  = "output-qemu"
+  shutdown_command  = "echo 'packer' | sudo -S shutdown -P now"
+  disk_size         = "10G"
+  format            = "qcow2"
+  accelerator       = var.accelerator
+  http_directory    = "ci/packer/http"
+  ssh_username      = "root"
+  ssh_password      = "packer"
+  ssh_timeout       = "25m"
+  vm_name           = var.vm_name
+  net_device        = "virtio-net"
+  disk_interface    = "virtio"
+  efi_boot          = true
+  efi_firmware_code = var.efi_firmware_code
+  efi_firmware_vars = var.efi_firmware_vars
 
   qemuargs = [
     ["-m", "2048M"],
