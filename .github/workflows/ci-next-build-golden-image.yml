@@ -72,6 +72,8 @@ jobs:
         run: packer init ci/packer/debian-12-k3s.pkr.hcl
 
       - name: Build QEMU Golden Image
+        env:
+          PACKER_LOG: 1
         run: |
           ACCEL="kvm"
           [ ! -e /dev/kvm ] && ACCEL="tcg"

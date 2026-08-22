@@ -52,14 +52,14 @@ source "qemu" "debian_k3s" {
   vm_name           = var.vm_name
   net_device        = "virtio-net"
   disk_interface    = "virtio"
+  headless          = true
   efi_boot          = true
   efi_firmware_code = var.efi_firmware_code
   efi_firmware_vars = var.efi_firmware_vars
 
   qemuargs = [
     ["-m", "2048M"],
-    ["-smp", "2"],
-    ["-serial", "mon:stdio"]
+    ["-smp", "2"]
   ]
 
   boot_wait = "5s"
