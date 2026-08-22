@@ -1,0 +1,10 @@
+#cloud-config
+password: packer
+chpasswd: { expire: false }
+ssh_pwauth: true
+users:
+  - default
+  - name: debian
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: false
