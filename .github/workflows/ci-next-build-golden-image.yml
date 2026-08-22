@@ -50,20 +50,8 @@ jobs:
       - name: Install QEMU and Packer
         run: |
           sudo apt-get update
-          sudo apt-get install -y qemu-system-x86 qemu-utils ovmf xorriso
+          sudo apt-get install -y qemu-system-x86 qemu-utils xorriso
           sudo chmod 666 /dev/kvm 2>/dev/null || true
-          # Normalize OVMF firmware paths for Ubuntu runners
-          sudo mkdir -p /usr/share/OVMF
-          for code in $(sudo find /usr/share -name "*OVMF_CODE*.fd" -o -name "*OVMF*.fd"); do
-            if [ -f "$code" ] && [ ! -f /usr/share/OVMF/OVMF_CODE.fd ]; then
-              sudo cp "$code" /usr/share/OVMF/OVMF_CODE.fd
-            fi
-          done
-          for vars in $(sudo find /usr/share -name "*OVMF_VARS*.fd"); do
-            if [ -f "$vars" ] && [ ! -f /usr/share/OVMF/OVMF_VARS.fd ]; then
-              sudo cp "$vars" /usr/share/OVMF/OVMF_VARS.fd
-            fi
-          done
           curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
           echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
           sudo apt-get update && sudo apt-get install -y packer

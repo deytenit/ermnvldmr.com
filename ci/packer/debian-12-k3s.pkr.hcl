@@ -27,16 +27,6 @@ variable "accelerator" {
   default = "kvm"
 }
 
-variable "efi_firmware_code" {
-  type    = string
-  default = "/usr/share/OVMF/OVMF_CODE.fd"
-}
-
-variable "efi_firmware_vars" {
-  type    = string
-  default = "/usr/share/OVMF/OVMF_VARS.fd"
-}
-
 source "qemu" "debian_k3s" {
   iso_url           = var.debian_cloud_image_url
   iso_checksum      = var.debian_cloud_image_checksum
@@ -55,9 +45,6 @@ source "qemu" "debian_k3s" {
   net_device        = "virtio-net"
   disk_interface    = "virtio"
   headless          = true
-  efi_boot          = true
-  efi_firmware_code = var.efi_firmware_code
-  efi_firmware_vars = var.efi_firmware_vars
 
   qemuargs = [
     ["-m", "2048M"],
