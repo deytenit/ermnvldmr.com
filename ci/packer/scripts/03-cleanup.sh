@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+export DEBIAN_FRONTEND=noninteractive
 
 echo "=== Sanitizing Machine Identity & Temporary Files ==="
 
