@@ -50,7 +50,7 @@ jobs:
       - name: Install QEMU and Packer
         run: |
           sudo apt-get update
-          sudo apt-get install -y qemu-system-x86 qemu-utils ovmf
+          sudo apt-get install -y qemu-system-x86 qemu-utils ovmf xorriso
           sudo chmod 666 /dev/kvm 2>/dev/null || true
           # Normalize OVMF firmware paths for Ubuntu runners
           sudo mkdir -p /usr/share/OVMF
