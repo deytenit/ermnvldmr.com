@@ -18,8 +18,8 @@ spec:
         - docs.ermnvldmr.com
       secretName: docs-ermnvldmr-tls
     - hosts:
-        - analytics.ermnvldmr.com
-      secretName: analytics-ermnvldmr-tls
+        - umami.ermnvldmr.com
+      secretName: umami-ermnvldmr-tls
   rules:
     - host: ermnvldmr.com
       http:
@@ -51,7 +51,7 @@ spec:
                 name: docs-service
                 port:
                   number: 80
-    - host: analytics.ermnvldmr.com
+    - host: umami.ermnvldmr.com
       http:
         paths:
           - path: /

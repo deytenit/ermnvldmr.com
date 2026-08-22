@@ -13,6 +13,9 @@ apt-get install -y --no-install-recommends \
     conntrack \
     ipset \
     iptables \
+    ufw \
+    fail2ban \
+    unattended-upgrades \
     curl \
     ca-certificates \
     gnupg \
