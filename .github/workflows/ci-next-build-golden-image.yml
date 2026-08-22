@@ -57,6 +57,7 @@ jobs:
           
           echo "Running provisioner scripts inside disk image..."
           virt-customize -a base.qcow2 \
+            --network \
             --run ci/packer/scripts/01-base-system.sh \
             --run ci/packer/scripts/02-install-k3s.sh \
             --run ci/packer/scripts/03-cleanup.sh
