@@ -1,6 +1,6 @@
 #cloud-config
 preserve_hostname: false
-hostname: k3s-prod-yc
+hostname: com-ermnvldmr
 ssh_pwauth: false
 
 write_files:

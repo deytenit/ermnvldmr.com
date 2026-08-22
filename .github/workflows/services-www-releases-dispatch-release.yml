@@ -309,21 +309,7 @@ jobs:
         with:
           kustomize-version: "5.3.0"
 
-      - name: Update Kustomize Image Tag
+      - name: Deploy via GitOps
         run: |
           WWW_TAG="sha-$(echo ${{ github.sha }} | cut -c1-7)"
-          cd ci/k8s/apps/www
-          kustomize edit set image ghcr.io/deytenit/ermnvldmr.com/www=ghcr.io/${{ github.repository }}/www:${WWW_TAG}
-
-      - name: Commit and Push Manifest Changes
-        run: |
-          WWW_TAG="sha-$(echo ${{ github.sha }} | cut -c1-7)"
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add ci/k8s/apps/www/kustomization.yaml
-          if git diff --staged --quiet; then
-            echo "No manifest changes to commit."
-          else
-            git commit -m "chore(release): deploy www ${WWW_TAG} [skip ci]"
-            git push origin next
-          fi
+          bash ci/scripts/deploy-gitops.sh www "${WWW_TAG}"
