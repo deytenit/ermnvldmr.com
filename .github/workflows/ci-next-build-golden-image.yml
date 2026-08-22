@@ -43,6 +43,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libguestfs-tools qemu-utils linux-image-generic
           sudo chmod 644 /boot/vmlinuz* 2>/dev/null || true
+          sudo chmod 666 /dev/kvm 2>/dev/null || true
 
       - name: Build Debian K3s Golden Image
         run: |

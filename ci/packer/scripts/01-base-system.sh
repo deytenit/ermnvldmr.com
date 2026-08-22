@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -eu
 export DEBIAN_FRONTEND=noninteractive
 
 echo "=== Configuring Base System for Cloud Image ==="
