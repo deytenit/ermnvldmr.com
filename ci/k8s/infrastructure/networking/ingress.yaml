@@ -1,0 +1,63 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: main-ingress
+  namespace: com-ermnvldmr
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - ermnvldmr.com
+        - www.ermnvldmr.com
+      secretName: ermnvldmr-tls
+    - hosts:
+        - docs.ermnvldmr.com
+      secretName: docs-ermnvldmr-tls
+    - hosts:
+        - umami.ermnvldmr.com
+      secretName: umami-ermnvldmr-tls
+  rules:
+    - host: ermnvldmr.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: www-service
+                port:
+                  number: 80
+    - host: www.ermnvldmr.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: www-service
+                port:
+                  number: 80
+    - host: docs.ermnvldmr.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: docs-service
+                port:
+                  number: 80
+    - host: umami.ermnvldmr.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: umami-service
+                port:
+                  number: 3000

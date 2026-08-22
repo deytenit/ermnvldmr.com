@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "=== Sanitizing Machine Identity & Temporary Files ==="
+
+# Clean APT caches and logs
+apt-get autoremove -y --purge
+apt-get clean
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Reset machine-id for unique DHCP lease acquisition on clone
+truncate -s 0 /etc/machine-id
+rm -f /var/lib/dbus/machine-id
+ln -sf /etc/machine-id /var/lib/dbus/machine-id
+
+# Remove generated SSH host keys (re-created by cloud-init on first boot)
+rm -f /etc/ssh/ssh_host_*
+
+# Clean cloud-init logs and state
+cloud-init clean --logs || true
+rm -rf /var/lib/cloud/instances/*
+
+# Clean bash history
+rm -f /root/.bash_history /home/*/.bash_history
+
+# Sync filesystem
+sync
+
+echo "=== Cleanup Complete ==="

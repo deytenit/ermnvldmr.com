@@ -1,0 +1,93 @@
+name: ci - next/build-golden-image
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-golden-image
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  validate-template:
+    name: Validate - Packer Template
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Packer
+        run: |
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+          sudo apt-get update && sudo apt-get install -y packer
+
+      - name: Initialize Packer plugins
+        run: packer init ci/packer/debian-12-k3s.pkr.hcl
+
+      - name: Validate Packer template
+        run: packer validate ci/packer/debian-12-k3s.pkr.hcl
+
+  build-image:
+    name: Build - QEMU Image
+    needs: validate-template
+    runs-on: ubuntu-latest
+    outputs:
+      image_name: ${{ steps.vars.outputs.image_name }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Calculate Image Name
+        id: vars
+        run: |
+          SHORT_SHA="sha-$(echo ${{ github.sha }} | cut -c1-7)"
+          IMAGE_NAME="com-ermnvldmr-debian-12-k3s-amd64-${SHORT_SHA}.qcow2"
+          echo "image_name=${IMAGE_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Install QEMU and Packer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-system-x86 qemu-utils ovmf
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+          sudo apt-get update && sudo apt-get install -y packer
+
+      - name: Initialize Packer plugins
+        run: packer init ci/packer/debian-12-k3s.pkr.hcl
+
+      - name: Build QEMU Golden Image
+        run: packer build ci/packer/debian-12-k3s.pkr.hcl
+
+      - name: Prepare and Upload Image Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-image
+          path: output-qemu/com-ermnvldmr-debian-12-k3s-amd64.qcow2
+          retention-days: 1
+
+  upload-s3:
+    name: Upload - S3 Storage
+    needs: build-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Image Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: golden-image
+          path: output-qemu
+
+      - name: Upload to Static S3 (/dev/images/)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.COM_ERMNVLDMR_STATIC_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.COM_ERMNVLDMR_STATIC_AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.COM_ERMNVLDMR_STATIC_S3_REGION }}
+          S3_ENDPOINT: ${{ secrets.COM_ERMNVLDMR_STATIC_S3_ENDPOINT_URL }}
+          S3_BUCKET: ${{ secrets.COM_ERMNVLDMR_STATIC_S3_BUCKET }}
+          IMAGE_NAME: ${{ needs.build-image.outputs.image_name }}
+        run: |
+          mv output-qemu/com-ermnvldmr-debian-12-k3s-amd64.qcow2 "output-qemu/${IMAGE_NAME}"
+          aws --endpoint-url="${S3_ENDPOINT}" s3 cp "output-qemu/${IMAGE_NAME}" "s3://${S3_BUCKET}/dev/images/${IMAGE_NAME}"
+          echo "Golden image uploaded to s3://${S3_BUCKET}/dev/images/${IMAGE_NAME}"

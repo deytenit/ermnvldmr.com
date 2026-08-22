@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: umami-config
+  namespace: com-ermnvldmr
+data:
+  DATABASE_TYPE: "postgresql"
+  CLIENT_IP_HEADER: "X-Forwarded-For"
