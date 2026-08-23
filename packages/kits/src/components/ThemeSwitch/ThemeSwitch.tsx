@@ -1,4 +1,4 @@
-import { Button, HStack, Switch, useTheme } from '@ermnvldmr/ui';
+import { Button, HStack, Switch, useLogger, useTheme } from '@ermnvldmr/ui';
 import React from 'react';
 
 /**
@@ -27,8 +27,20 @@ export function ThemeSwitch({
   systemIcon,
 }: ThemeSwitchProps = {}): React.JSX.Element {
   const { preference, setPreference, resolvedTheme } = useTheme();
+  const log = useLogger();
 
   const isDark = resolvedTheme === 'dark';
+
+  const handleToggle = (isSelected: boolean): void => {
+    const nextTheme = isSelected ? 'dark' : 'light';
+    setPreference(nextTheme);
+    log('theme-toggle', { preference: nextTheme });
+  };
+
+  const handleSystem = (): void => {
+    setPreference('system');
+    log('theme-toggle', { preference: 'system' });
+  };
 
   return (
     <HStack align="center" gap={2}>
@@ -36,19 +48,21 @@ export function ThemeSwitch({
         {lightIcon}
         <Switch
           aria-label="Toggle dark mode"
+          data-umami-event="theme-toggle"
           isSelected={isDark}
           variant="outline"
-          onChange={(isSelected) => setPreference(isSelected ? 'dark' : 'light')}
+          onChange={handleToggle}
         />
         {darkIcon}
       </HStack>
       <Button
         aria-label="Follow system theme"
         color={preference === 'system' ? 'primary' : 'neutral'}
+        data-umami-event="theme-system"
         renderStartIcon={systemIcon ? () => systemIcon : undefined}
         size="s"
         variant={preference === 'system' ? 'solid' : 'ghost'}
-        onPress={() => setPreference('system')}
+        onPress={handleSystem}
       />
     </HStack>
   );

@@ -1,4 +1,4 @@
-import { cn } from '@ermnvldmr/stl';
+import { cn, filterDataAttributes } from '@ermnvldmr/stl';
 import { cva } from 'class-variance-authority';
 import React, { useRef } from 'react';
 import { useSwitch, useFocusRing, VisuallyHidden } from 'react-aria';
@@ -6,6 +6,7 @@ import { useToggleState } from 'react-stately';
 
 import { Text } from '../Text/Text';
 
+import type { ClassNameProps, DataAttributes } from '@ermnvldmr/stl';
 import type { AriaSwitchProps } from 'react-aria';
 
 /**
@@ -31,7 +32,7 @@ export type SwitchColor =
 /**
  * Props for the Switch component.
  */
-export interface SwitchProps extends AriaSwitchProps {
+export interface SwitchProps extends AriaSwitchProps, ClassNameProps, DataAttributes {
   /** Optional class name for the outer container */
   className?: string;
   /** Optional label for the switch */
@@ -220,9 +221,11 @@ export function Switch(props: SwitchProps): React.JSX.Element {
   const ref = useRef<HTMLInputElement>(null);
   const { inputProps } = useSwitch(props, state, ref);
   const { isFocusVisible, focusProps } = useFocusRing();
+  const dataAttributes = filterDataAttributes(props);
 
   return (
     <label
+      {...dataAttributes}
       className={cn(
         'group inline-flex items-center cursor-pointer select-none gap-3',
         props.isDisabled && 'opacity-50 cursor-not-allowed',

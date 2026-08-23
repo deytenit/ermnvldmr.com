@@ -1,9 +1,9 @@
-import { cn, castRef, genericMemo } from '@ermnvldmr/stl';
+import { cn, castRef, filterDataAttributes, genericMemo } from '@ermnvldmr/stl';
 import { cva } from 'class-variance-authority';
 import React, { forwardRef, useRef } from 'react';
 import { useButton, useLink, useFocusRing, useHover } from 'react-aria';
 
-import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
+import type { ClassNameProps, DataAttributes, TestIdProps } from '@ermnvldmr/stl';
 import type { AriaButtonProps, AriaLinkOptions } from 'react-aria';
 
 /**
@@ -34,7 +34,7 @@ export type ButtonSize = 's' | 'm' | 'l';
 /**
  * Props shared by both action and link button variants.
  */
-interface BaseButtonProps extends ClassNameProps, TestIdProps {
+interface BaseButtonProps extends ClassNameProps, TestIdProps, DataAttributes {
   /** Content to be rendered inside the button */
   children?: React.ReactNode;
   /** Visual style variant */
@@ -260,12 +260,15 @@ const ButtonComponent = forwardRef<HTMLElement, ButtonProps>(function Button(pro
     </>
   );
 
+  const dataAttributes = filterDataAttributes(props);
+
   if (href) {
     return (
       <a
         {...linkProps}
         {...focusProps}
         {...hoverProps}
+        {...dataAttributes}
         ref={castRef<HTMLAnchorElement>(targetRef)}
         className={sharedClasses}
         data-testid={testId}
@@ -280,6 +283,7 @@ const ButtonComponent = forwardRef<HTMLElement, ButtonProps>(function Button(pro
       {...buttonProps}
       {...focusProps}
       {...hoverProps}
+      {...dataAttributes}
       ref={castRef<HTMLButtonElement>(targetRef)}
       className={sharedClasses}
       data-testid={testId}

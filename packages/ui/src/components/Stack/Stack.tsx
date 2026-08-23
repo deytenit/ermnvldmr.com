@@ -1,9 +1,9 @@
-import { cn, castRef, genericMemo } from '@ermnvldmr/stl';
+import { cn, castRef, filterDataAttributes, genericMemo } from '@ermnvldmr/stl';
 import { cva } from 'class-variance-authority';
 import React, { forwardRef } from 'react';
 
 import type { SpacingScale } from '../../lib/scale';
-import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
+import type { ClassNameProps, DataAttributes, TestIdProps } from '@ermnvldmr/stl';
 
 /**
  * Flexbox direction values.
@@ -28,7 +28,7 @@ type FlexWrap = 'nowrap' | 'wrap' | 'wrap-reverse';
 /**
  * Props for the flexible Stack layout component.
  */
-export interface StackProps extends ClassNameProps, TestIdProps {
+export interface StackProps extends ClassNameProps, TestIdProps, DataAttributes {
   /** Content to be arranged in the stack */
   children: React.ReactNode;
   /** Flexbox direction (row, column, or their reverse variants) */
@@ -165,7 +165,10 @@ const stackVariants = cva('flex', {
  * ```
  */
 const StackComponent = forwardRef<HTMLElement, StackProps>(function Stack(
-  {
+  props,
+  ref
+) {
+  const {
     children,
     direction = 'row',
     justify = 'start',
@@ -176,11 +179,13 @@ const StackComponent = forwardRef<HTMLElement, StackProps>(function Stack(
     as: Component = 'div',
     className,
     'data-testid': testId,
-  },
-  ref
-) {
+  } = props;
+
+  const dataAttributes = filterDataAttributes(props);
+
   return (
     <Component
+      {...dataAttributes}
       ref={castRef<HTMLElement>(ref)}
       className={cn(
         stackVariants({ direction, justify, align, wrap, gap, scrollable }),

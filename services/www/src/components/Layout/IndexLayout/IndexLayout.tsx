@@ -1,4 +1,6 @@
 import { PageRoot } from '@ermnvldmr/kits';
+import { trackEvent } from '@ermnvldmr/ssg';
+import { LogProvider } from '@ermnvldmr/ui';
 import React from 'react';
 
 /**
@@ -27,9 +29,11 @@ export interface IndexLayoutProps {
  */
 export function IndexLayout({ children, footer }: IndexLayoutProps): React.JSX.Element {
   return (
-    <PageRoot>
-      <div className="min-h-[calc(100vh-4px)] flex flex-col pb-24 max-sm:pb-12">{children}</div>
-      {footer}
-    </PageRoot>
+    <LogProvider logger={trackEvent}>
+      <PageRoot>
+        <div className="min-h-[calc(100vh-4px)] flex flex-col pb-24 max-sm:pb-12">{children}</div>
+        {footer}
+      </PageRoot>
+    </LogProvider>
   );
 }

@@ -45,6 +45,14 @@ params:
     email: personal@ermnvldmr.com
   description: 'Documentation for ermnvldmr.com services and infrastructure'
 
+  # Analytics configuration
+  analytics:
+    umami:
+      serverURL: 'https://umami.ermnvldmr.com'
+      websiteID: 'fbdadf3f-3484-4186-a2c2-cedcf76cf44f'
+      domains: 'docs.ermnvldmr.com'
+      doNotTrack: 'true'
+
   # Search configuration
   search:
     enable: true
