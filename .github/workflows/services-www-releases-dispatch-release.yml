@@ -2,6 +2,12 @@ name: services/www - releases/dispatch-release
 
 on:
   workflow_dispatch:
+    inputs:
+      skip_ci:
+        description: 'Skip CI checks (fast build, push & GitOps deploy)'
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
@@ -10,6 +16,7 @@ permissions:
 jobs:
   setup-stage:
     name: Setup - Stage
+    if: ${{ !inputs.skip_ci }}
     runs-on: ubuntu-latest
     outputs:
       cache-hit: ${{ steps.cache-pnpm-store.outputs.cache-hit }}
@@ -41,6 +48,7 @@ jobs:
   build-configs:
     name: Build - Configs
     needs: setup-stage
+    if: ${{ !inputs.skip_ci }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -73,6 +81,7 @@ jobs:
   lint-www:
     name: Lint - WWW
     needs: build-configs
+    if: ${{ !inputs.skip_ci }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -97,6 +106,7 @@ jobs:
   typecheck-www:
     name: Typecheck - WWW
     needs: build-configs
+    if: ${{ !inputs.skip_ci }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -121,6 +131,7 @@ jobs:
   build-storybook:
     name: Build - Storybook
     needs: build-configs
+    if: ${{ !inputs.skip_ci }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -151,6 +162,7 @@ jobs:
   test-www:
     name: Test - Unit
     needs: build-configs
+    if: ${{ !inputs.skip_ci }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -175,6 +187,7 @@ jobs:
   test-storybook:
     name: Test - Storybook
     needs: build-storybook
+    if: ${{ !inputs.skip_ci }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -206,6 +219,7 @@ jobs:
   build-www:
     name: Build - WWW Service
     needs: build-configs
+    if: ${{ !inputs.skip_ci }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -230,6 +244,7 @@ jobs:
   release-tag-docker:
     name: Release - Tag & Docker
     needs: [lint-www, typecheck-www, test-www, test-storybook, build-www]
+    if: ${{ always() && (inputs.skip_ci || (!contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled'))) }}
     runs-on: ubuntu-latest
     environment: services-www-releases-publish
     permissions:
