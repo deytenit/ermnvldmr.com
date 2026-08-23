@@ -351,13 +351,13 @@ jobs:
           echo "Expected version: $TARGET_VERSION"
           echo "========================================================"
 
-          MAX_ATTEMPTS=30
+          MAX_ATTEMPTS=45
           ATTEMPT=1
 
           while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
             echo "Attempt $ATTEMPT/$MAX_ATTEMPTS: Polling $ENDPOINT..."
 
-            RESPONSE=$(curl -sf --max-time 10 "$ENDPOINT" 2>/dev/null || true)
+            RESPONSE=$(curl -sfL --max-time 10 -H "User-Agent: GitHub-Actions-Rollout-Verifier" "$ENDPOINT" 2>/dev/null || true)
 
             if [ -n "$RESPONSE" ]; then
               LIVE_COMMIT=$(echo "$RESPONSE" | jq -r '.commit // empty')
@@ -378,5 +378,5 @@ jobs:
             sleep 10
           done
 
-          echo "❌ Deployment verification timed out after 5 minutes."
+          echo "❌ Deployment verification timed out after 7.5 minutes."
           exit 1
