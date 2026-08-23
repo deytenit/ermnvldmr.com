@@ -19,7 +19,7 @@ fi
 
 echo "Updating Kustomize image tag for '$SERVICE' to '$TAG'..."
 cd "$APP_DIR"
-kustomize edit set image "ghcr.io/deytenit/ermnvldmr.com/${SERVICE}=ghcr.io/deytenit/ermnvldmr.com/${SERVICE}:${TAG}"
+kustomize edit set image "ghcr.io/deytenit/ermnvldmr.com/${SERVICE}:${TAG}"
 
 cd "$ROOT_DIR"
 git config user.name "adam-at-deytenit"
