@@ -94,6 +94,15 @@ write_files:
       #!/usr/bin/env bash
       set -euo pipefail
 
+      echo "=== [Bootstrap] Ensuring Reliable DNS Resolution ==="
+      if ! grep -q "nameserver" /etc/resolv.conf 2>/dev/null; then
+        cat << 'EOF_DNS' > /etc/resolv.conf
+nameserver 1.1.1.1
+nameserver 8.8.8.8
+nameserver 77.88.8.8
+EOF_DNS
+      fi
+
       echo "=== [Bootstrap] Applying Sysctl Hardening ==="
       sysctl --system
 
