@@ -1,9 +1,43 @@
 #cloud-config
+# ==============================================================================
+# Cloud-Init User-Data Template for K3s Single-Node Cluster (com-ermnvldmr)
+# 
+# Usage:
+#   1. Copy this template to user-data.yaml:
+#        cp ci/cloud-init/user-data.template.yaml ci/cloud-init/user-data.yaml
+#   2. Replace the stubs below (SSH authorized key & Age private key).
+#   3. Pass user-data.yaml during VM creation in Yandex Cloud / Cloud Provider.
+#      Note: user-data.yaml is ignored by git to protect private keys.
+# ==============================================================================
+
 preserve_hostname: false
 hostname: com-ermnvldmr
 ssh_pwauth: false
 
+# ------------------------------------------------------------------------------
+# 1. User & SSH Key Configuration (Replace stub with your public SSH key)
+# ------------------------------------------------------------------------------
+users:
+  - name: debian
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPLACEHOLDERFORYOURPUBLICSSHKEY user@hostname"
+
 write_files:
+  # ----------------------------------------------------------------------------
+  # 2. SOPS / Age Decryption Key (Replace stub with your private AGE key)
+  # ----------------------------------------------------------------------------
+  - path: /root/.config/sops/age/keys.txt
+    owner: root:root
+    permissions: '0600'
+    content: |
+      # public key: age1jpa7hqyzzdfq7lvnw3l8qy6648mtjgpcqnljl5jz92dcqjrnsqfsn7m0fl
+      AGE-SECRET-KEY-1PLACEHOLDERFORYOURPRIVATEAGEKEY
+
+  # ----------------------------------------------------------------------------
+  # 3. Security Hardening Configuration
+  # ----------------------------------------------------------------------------
   - path: /etc/ssh/sshd_config.d/99-security-hardening.conf
     owner: root:root
     permissions: '0600'
@@ -50,6 +84,9 @@ write_files:
         - servicelb
       write-kubeconfig-mode: "0644"
 
+  # ----------------------------------------------------------------------------
+  # 4. Bootstrap Cluster Script
+  # ----------------------------------------------------------------------------
   - path: /usr/local/bin/bootstrap-cluster.sh
     owner: root:root
     permissions: '0755'

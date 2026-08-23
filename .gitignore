@@ -42,3 +42,4 @@ docs/superpowers/
 *.key
 .sops/keys.txt
 ci/k8s/**/secret.yaml
+ci/cloud-init/user-data.yaml
