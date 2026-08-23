@@ -16,6 +16,7 @@ apt-get install -y --no-install-recommends \
     unattended-upgrades \
     curl \
     ca-certificates \
+    git \
     tar \
     gzip
 
@@ -53,9 +54,21 @@ EOF
 # Configure cloud-init to support all standard cloud datasources (OpenStack, Ec2, NoCloud, ConfigDrive)
 cat << 'EOF' > /etc/cloud/cloud.cfg.d/99-cloud-init.cfg
 datasource_list: [ NoCloud, ConfigDrive, OpenStack, Ec2, None ]
+disable_vm_template: false
 EOF
 
-# Ensure DHCP on eth0
+# Ensure automatic DHCP via systemd-networkd and ifupdown
+mkdir -p /etc/systemd/network
+cat << 'EOF' > /etc/systemd/network/10-eth.network
+[Match]
+Name=eth* en*
+
+[Network]
+DHCP=yes
+EOF
+systemctl enable systemd-networkd systemd-resolved || true
+
+# Ensure DHCP on eth0 for legacy ifupdown
 mkdir -p /etc/network/interfaces.d
 cat << 'EOF' > /etc/network/interfaces.d/eth0
 auto eth0
