@@ -17,6 +17,7 @@ apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     git \
+    isc-dhcp-client \
     tar \
     gzip
 
@@ -51,11 +52,20 @@ cat << 'EOF' > /etc/systemd/system/ssh.service.d/10-generate-host-keys.conf
 ExecStartPre=-/usr/bin/ssh-keygen -A
 EOF
 
+# Configure ds-identify to always enable cloud-init unconditionally
+mkdir -p /etc/cloud
+cat << 'EOF' > /etc/cloud/ds-identify.cfg
+policy: enabled
+EOF
+
 # Configure cloud-init to support all standard cloud datasources (OpenStack, Ec2, NoCloud, ConfigDrive)
 cat << 'EOF' > /etc/cloud/cloud.cfg.d/99-cloud-init.cfg
 datasource_list: [ NoCloud, ConfigDrive, OpenStack, Ec2, None ]
 disable_vm_template: false
 EOF
+
+# Explicitly enable cloud-init systemd services
+systemctl enable cloud-init-local.service cloud-init.service cloud-config.service cloud-final.service || true
 
 # Ensure automatic DHCP via systemd-networkd and ifupdown
 mkdir -p /etc/systemd/network
