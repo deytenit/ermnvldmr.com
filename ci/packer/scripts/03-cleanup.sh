@@ -17,9 +17,13 @@ ln -sf /etc/machine-id /var/lib/dbus/machine-id
 # Ensure SSH host keys are generated and valid
 ssh-keygen -A
 
-# Clean cloud-init logs, state, and reset temporary build DNS
-rm -f /etc/resolv.conf /etc/cloud/cloud-init.disabled /run/systemd/generator*/cloud-init.disabled
-touch /etc/resolv.conf
+# Reset DNS with reliable fallback resolvers
+rm -f /etc/cloud/cloud-init.disabled /run/systemd/generator*/cloud-init.disabled
+cat << 'EOF' > /etc/resolv.conf
+nameserver 1.1.1.1
+nameserver 8.8.8.8
+nameserver 77.88.8.8
+EOF
 cloud-init clean --logs --seed || true
 rm -rf /var/lib/cloud/*
 
