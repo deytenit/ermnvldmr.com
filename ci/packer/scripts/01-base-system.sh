@@ -34,7 +34,13 @@ sed -i 's/^#GRUB_TERMINAL=.*/GRUB_TERMINAL="console serial"/' /etc/default/grub
 echo 'GRUB_SERIAL_COMMAND="serial --speed=115200 --unit=0 --word=8 --parity=no --stop=1"' >> /etc/default/grub
 update-grub
 
-# Enable serial console getty
+# Enable serial console getty with root auto-login for emergency console recovery
+mkdir -p /etc/systemd/system/serial-getty@ttyS0.service.d
+cat << 'EOF' > /etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --noclear --keep-baud 115200,38400,9600 %I $TERM
+EOF
 systemctl enable serial-getty@ttyS0.service || true
 
 # Ensure SSH server auto-generates host keys if missing before starting
@@ -44,12 +50,9 @@ cat << 'EOF' > /etc/systemd/system/ssh.service.d/10-generate-host-keys.conf
 ExecStartPre=-/usr/bin/ssh-keygen -A
 EOF
 
-# Configure cloud-init to use NoCloud and ConfigDrive datasources
+# Configure cloud-init to support all standard cloud datasources (OpenStack, Ec2, NoCloud, ConfigDrive)
 cat << 'EOF' > /etc/cloud/cloud.cfg.d/99-cloud-init.cfg
-datasource_list: [ NoCloud, ConfigDrive, None ]
-datasource:
-  NoCloud:
-    fs_label: cidata
+datasource_list: [ NoCloud, ConfigDrive, OpenStack, Ec2, None ]
 EOF
 
 # Ensure DHCP on eth0
