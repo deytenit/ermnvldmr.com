@@ -97,8 +97,9 @@ write_files:
       echo "=== [Bootstrap] Applying Sysctl Hardening ==="
       sysctl --system
 
-      echo "=== [Bootstrap] Reloading Hardened SSH Configuration ==="
-      systemctl reload sshd || systemctl restart ssh || true
+      echo "=== [Bootstrap] Ensuring SSH Host Keys & Starting SSH ==="
+      ssh-keygen -A
+      systemctl restart ssh || systemctl restart sshd || true
 
       echo "=== [Bootstrap] Configuring UFW Firewall ==="
       ufw default deny incoming

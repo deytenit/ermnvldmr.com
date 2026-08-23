@@ -14,8 +14,8 @@ truncate -s 0 /etc/machine-id
 rm -f /var/lib/dbus/machine-id
 ln -sf /etc/machine-id /var/lib/dbus/machine-id
 
-# Remove generated SSH host keys (re-created by cloud-init on first boot)
-rm -f /etc/ssh/ssh_host_*
+# Ensure SSH host keys are generated and valid
+ssh-keygen -A
 
 # Clean cloud-init logs, state, and reset temporary build DNS
 rm -f /etc/resolv.conf
