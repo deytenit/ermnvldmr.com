@@ -7,14 +7,14 @@ packer {
   }
 }
 
-variable "debian_iso_url" {
+variable "debian_cloud_image_url" {
   type    = string
-  default = "https://cdimage.debian.org/cdimage/archive/12.8.0/amd64/iso-cd/debian-12.8.0-amd64-netinst.iso"
+  default = "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-nocloud-amd64.qcow2"
 }
 
-variable "debian_iso_checksum" {
+variable "debian_cloud_image_checksum" {
   type    = string
-  default = "file:https://cdimage.debian.org/cdimage/archive/12.8.0/amd64/iso-cd/SHA512SUMS"
+  default = "file:https://cloud.debian.org/images/cloud/bookworm/latest/SHA512SUMS"
 }
 
 variable "vm_name" {
@@ -22,35 +22,33 @@ variable "vm_name" {
   default = "com-ermnvldmr-debian-12-k3s-amd64.qcow2"
 }
 
+variable "accelerator" {
+  type    = string
+  default = "kvm"
+}
+
 source "qemu" "debian_k3s" {
-  iso_url          = var.debian_iso_url
-  iso_checksum     = var.debian_iso_checksum
-  output_directory = "output-qemu"
-  shutdown_command = "echo 'packer' | sudo -S shutdown -P now"
-  disk_size        = "10G"
-  format           = "qcow2"
-  accelerator      = "kvm"
-  http_directory   = "ci/packer/http"
-  ssh_username     = "root"
-  ssh_password     = "packer"
-  ssh_timeout      = "25m"
-  vm_name          = var.vm_name
-  net_device       = "virtio-net"
-  disk_interface   = "virtio"
-  efi_boot         = true
+  iso_url           = var.debian_cloud_image_url
+  iso_checksum      = var.debian_cloud_image_checksum
+  disk_image        = true
+  disk_size         = "10G"
+  format            = "qcow2"
+  output_directory  = "output-qemu"
+  shutdown_command  = "echo 'packer' | sudo -S shutdown -P now"
+  accelerator       = var.accelerator
+  cd_files          = ["ci/packer/cidata/user-data", "ci/packer/cidata/meta-data"]
+  cd_label          = "cidata"
+  ssh_username      = "debian"
+  ssh_password      = "packer"
+  ssh_timeout       = "5m"
+  vm_name           = var.vm_name
+  net_device        = "virtio-net"
+  disk_interface    = "virtio"
+  headless          = true
 
   qemuargs = [
     ["-m", "2048M"],
-    ["-smp", "2"],
-    ["-serial", "mon:stdio"]
-  ]
-
-  boot_wait = "5s"
-  boot_command = [
-    "<wait><wait><wait>c<wait>",
-    "linux /install.amd/vmlinuz auto=true priority=critical preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg --- quiet<enter>",
-    "initrd /install.amd/initrd.gz<enter>",
-    "boot<enter>"
+    ["-smp", "2"]
   ]
 }
 
@@ -58,6 +56,7 @@ build {
   sources = ["source.qemu.debian_k3s"]
 
   provisioner "shell" {
+    execute_command = "echo 'packer' | sudo -S sh -c '{{ .Vars }} {{ .Path }}'"
     scripts = [
       "ci/packer/scripts/01-base-system.sh",
       "ci/packer/scripts/02-install-k3s.sh",

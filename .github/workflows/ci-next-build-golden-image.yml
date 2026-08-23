@@ -11,28 +11,19 @@ permissions:
   contents: read
 
 jobs:
-  validate-template:
-    name: Validate - Packer Template
+  validate-scripts:
+    name: Validate - Provisioner Scripts
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Packer
-        run: |
-          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-          sudo apt-get update && sudo apt-get install -y packer
-
-      - name: Initialize Packer plugins
-        run: packer init ci/packer/debian-12-k3s.pkr.hcl
-
-      - name: Validate Packer template
-        run: packer validate ci/packer/debian-12-k3s.pkr.hcl
+      - name: Validate Shell Script Syntax
+        run: bash -n ci/packer/scripts/*.sh
 
   build-image:
-    name: Build - QEMU Image
-    needs: validate-template
+    name: Build - Golden Image
+    needs: validate-scripts
     runs-on: ubuntu-latest
     outputs:
       image_name: ${{ steps.vars.outputs.image_name }}
@@ -43,23 +34,66 @@ jobs:
       - name: Calculate Image Name
         id: vars
         run: |
+          TIMESTAMP="$(date -u +'%Y-%m-%d-%H-%M-%S')"
           SHORT_SHA="sha-$(echo ${{ github.sha }} | cut -c1-7)"
-          IMAGE_NAME="com-ermnvldmr-debian-12-k3s-amd64-${SHORT_SHA}.qcow2"
+          IMAGE_NAME="com-ermnvldmr-debian-12-k3s-amd64-${TIMESTAMP}-${SHORT_SHA}.qcow2"
           echo "image_name=${IMAGE_NAME}" >> "$GITHUB_OUTPUT"
 
-      - name: Install QEMU and Packer
+      - name: Install Build Tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y qemu-system-x86 qemu-utils ovmf
-          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-          sudo apt-get update && sudo apt-get install -y packer
+          sudo apt-get install -y qemu-utils
 
-      - name: Initialize Packer plugins
-        run: packer init ci/packer/debian-12-k3s.pkr.hcl
-
-      - name: Build QEMU Golden Image
-        run: packer build ci/packer/debian-12-k3s.pkr.hcl
+      - name: Build Debian K3s Golden Image
+        run: |
+          mkdir -p output-qemu
+          echo "Downloading official Debian 12 cloud image..."
+          curl -fsSL -o base.qcow2 https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
+          
+          echo "Expanding disk image to 10G..."
+          qemu-img resize base.qcow2 10G
+          
+          echo "Connecting disk image via NBD..."
+          sudo modprobe nbd max_part=8
+          sudo qemu-nbd --connect=/dev/nbd0 base.qcow2
+          sleep 1
+          sudo partx -u /dev/nbd0 || true
+          
+          echo "Mounting disk filesystem..."
+          sudo mkdir -p /mnt/target
+          sudo mount /dev/nbd0p1 /mnt/target
+          
+          echo "Mounting host virtual filesystems and configuring DNS..."
+          sudo rm -f /mnt/target/etc/resolv.conf
+          echo "nameserver 1.1.1.1" | sudo tee /mnt/target/etc/resolv.conf
+          echo "nameserver 8.8.8.8" | sudo tee -a /mnt/target/etc/resolv.conf
+          sudo mount --bind /dev /mnt/target/dev
+          sudo mount --bind /dev/pts /mnt/target/dev/pts
+          sudo mount --bind /proc /mnt/target/proc
+          sudo mount --bind /sys /mnt/target/sys
+          
+          echo "Copying provisioner scripts..."
+          sudo mkdir -p /mnt/target/tmp/scripts
+          sudo cp ci/packer/scripts/*.sh /mnt/target/tmp/scripts/
+          sudo chmod +x /mnt/target/tmp/scripts/*.sh
+          
+          echo "Running provisioner scripts in chroot..."
+          sudo chroot /mnt/target /bin/bash /tmp/scripts/01-base-system.sh
+          sudo chroot /mnt/target /bin/bash /tmp/scripts/02-install-k3s.sh
+          sudo chroot /mnt/target /bin/bash /tmp/scripts/03-cleanup.sh
+          sudo rm -rf /mnt/target/tmp/scripts
+          
+          echo "Unmounting filesystems..."
+          sudo umount /mnt/target/sys
+          sudo umount /mnt/target/proc
+          sudo umount /mnt/target/dev/pts
+          sudo umount /mnt/target/dev
+          sudo umount /mnt/target
+          sudo qemu-nbd --disconnect /dev/nbd0
+          
+          echo "Compressing and optimizing qcow2 with 2M cluster size..."
+          qemu-img convert -f qcow2 -O qcow2 -o cluster_size=2M -c base.qcow2 output-qemu/com-ermnvldmr-debian-12-k3s-amd64.qcow2
+          echo "Golden image built successfully."
 
       - name: Prepare and Upload Image Artifact
         uses: actions/upload-artifact@v4
@@ -81,13 +115,19 @@ jobs:
 
       - name: Upload to Static S3 (/dev/images/)
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.COM_ERMNVLDMR_STATIC_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.COM_ERMNVLDMR_STATIC_AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.COM_ERMNVLDMR_STATIC_S3_REGION }}
-          S3_ENDPOINT: ${{ secrets.COM_ERMNVLDMR_STATIC_S3_ENDPOINT_URL }}
-          S3_BUCKET: ${{ secrets.COM_ERMNVLDMR_STATIC_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.STATIC_AWS_ACCESS_KEY_ID || secrets.COM_ERMNVLDMR_STATIC_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.STATIC_AWS_SECRET_ACCESS_KEY || secrets.COM_ERMNVLDMR_STATIC_AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.STATIC_AWS_REGION || secrets.COM_ERMNVLDMR_STATIC_S3_REGION || 'ru-central1' }}
+          S3_ENDPOINT: ${{ secrets.STATIC_S3_ENDPOINT_URL || secrets.COM_ERMNVLDMR_STATIC_S3_ENDPOINT_URL }}
+          S3_BUCKET: ${{ secrets.STATIC_S3_BUCKET || secrets.COM_ERMNVLDMR_STATIC_S3_BUCKET }}
           IMAGE_NAME: ${{ needs.build-image.outputs.image_name }}
         run: |
           mv output-qemu/com-ermnvldmr-debian-12-k3s-amd64.qcow2 "output-qemu/${IMAGE_NAME}"
-          aws --endpoint-url="${S3_ENDPOINT}" s3 cp "output-qemu/${IMAGE_NAME}" "s3://${S3_BUCKET}/dev/images/${IMAGE_NAME}"
-          echo "Golden image uploaded to s3://${S3_BUCKET}/dev/images/${IMAGE_NAME}"
+          if [ -n "${S3_BUCKET}" ] && [ -n "${AWS_ACCESS_KEY_ID}" ]; then
+            ENDPOINT_FLAG=""
+            [ -n "${S3_ENDPOINT}" ] && ENDPOINT_FLAG="--endpoint-url=${S3_ENDPOINT}"
+            aws ${ENDPOINT_FLAG} s3 cp "output-qemu/${IMAGE_NAME}" "s3://${S3_BUCKET}/dev/images/${IMAGE_NAME}"
+            echo "Golden image uploaded to s3://${S3_BUCKET}/dev/images/${IMAGE_NAME}"
+          else
+            echo "S3 storage secrets not provided; skipping remote S3 upload. Image artifact is preserved in GitHub Actions run artifacts."
+          fi

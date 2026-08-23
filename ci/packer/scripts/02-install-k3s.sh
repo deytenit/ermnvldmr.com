@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -eu
+export DEBIAN_FRONTEND=noninteractive
 
 echo "=== Installing K3s Binary (First-Boot Isolation) ==="
 

@@ -1,9 +1,43 @@
 #cloud-config
+# ==============================================================================
+# Cloud-Init User-Data Template for K3s Single-Node Cluster (com-ermnvldmr)
+# 
+# Usage:
+#   1. Copy this template to user-data.yaml:
+#        cp ci/cloud-init/user-data.template.yaml ci/cloud-init/user-data.yaml
+#   2. Replace the stubs below (SSH authorized key & Age private key).
+#   3. Pass user-data.yaml during VM creation in Yandex Cloud / Cloud Provider.
+#      Note: user-data.yaml is ignored by git to protect private keys.
+# ==============================================================================
+
 preserve_hostname: false
 hostname: com-ermnvldmr
 ssh_pwauth: false
 
+# ------------------------------------------------------------------------------
+# 1. User & SSH Key Configuration (Replace stub with your public SSH key)
+# ------------------------------------------------------------------------------
+users:
+  - name: debian
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPLACEHOLDERFORYOURPUBLICSSHKEY user@hostname"
+
 write_files:
+  # ----------------------------------------------------------------------------
+  # 2. SOPS / Age Decryption Key (Replace stub with your private AGE key)
+  # ----------------------------------------------------------------------------
+  - path: /root/.config/sops/age/keys.txt
+    owner: root:root
+    permissions: '0600'
+    content: |
+      # public key: age1jpa7hqyzzdfq7lvnw3l8qy6648mtjgpcqnljl5jz92dcqjrnsqfsn7m0fl
+      AGE-SECRET-KEY-1PLACEHOLDERFORYOURPRIVATEAGEKEY
+
+  # ----------------------------------------------------------------------------
+  # 3. Security Hardening Configuration
+  # ----------------------------------------------------------------------------
   - path: /etc/ssh/sshd_config.d/99-security-hardening.conf
     owner: root:root
     permissions: '0600'
@@ -48,14 +82,11 @@ write_files:
     content: |
       disable:
         - servicelb
-      tls-san:
-        - "51.250.0.1" # Replace with actual static VPS IP upon provisioning
-        - "ermnvldmr.com"
-        - "www.ermnvldmr.com"
-        - "docs.ermnvldmr.com"
-        - "umami.ermnvldmr.com"
       write-kubeconfig-mode: "0644"
 
+  # ----------------------------------------------------------------------------
+  # 4. Bootstrap Cluster Script
+  # ----------------------------------------------------------------------------
   - path: /usr/local/bin/bootstrap-cluster.sh
     owner: root:root
     permissions: '0755'
@@ -85,6 +116,21 @@ write_files:
 
       echo "=== [Bootstrap] Enabling Fail2ban ==="
       systemctl enable --now fail2ban || true
+
+      echo "=== [Bootstrap] Checking for Secondary Persistent Data Disk ==="
+      if [ -b /dev/vdb ]; then
+        echo "Secondary disk /dev/vdb detected."
+        if ! blkid /dev/vdb >/dev/null 2>&1; then
+          echo "Formatting /dev/vdb with ext4 filesystem..."
+          mkfs.ext4 -F -L k3s-storage /dev/vdb
+        fi
+        mkdir -p /var/lib/rancher/k3s/storage
+        if ! grep -qs '/var/lib/rancher/k3s/storage' /proc/mounts; then
+          mount /dev/vdb /var/lib/rancher/k3s/storage
+          echo "LABEL=k3s-storage /var/lib/rancher/k3s/storage ext4 defaults,noatime 0 2" >> /etc/fstab
+          echo "Mounted /dev/vdb to /var/lib/rancher/k3s/storage."
+        fi
+      fi
 
       echo "=== [Bootstrap] Starting K3s Service ==="
       systemctl enable --now k3s.service

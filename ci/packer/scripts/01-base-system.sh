@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -eu
+export DEBIAN_FRONTEND=noninteractive
 
 echo "=== Configuring Base System for Cloud Image ==="
 
 # Install essential kernel modules and utilities
 apt-get update
 apt-get install -y --no-install-recommends \
-    cloud-init \
-    qemu-guest-agent \
-    linux-image-amd64 \
     socat \
     conntrack \
     ipset \
@@ -18,7 +16,6 @@ apt-get install -y --no-install-recommends \
     unattended-upgrades \
     curl \
     ca-certificates \
-    gnupg \
     tar \
     gzip
 
@@ -49,6 +46,7 @@ datasource:
 EOF
 
 # Ensure DHCP on eth0
+mkdir -p /etc/network/interfaces.d
 cat << 'EOF' > /etc/network/interfaces.d/eth0
 auto eth0
 iface eth0 inet dhcp
