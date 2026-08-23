@@ -1,10 +1,10 @@
-import { castRef, cn, genericMemo } from '@ermnvldmr/stl';
+import { castRef, cn, filterDataAttributes, genericMemo } from '@ermnvldmr/stl';
 import { cva } from 'class-variance-authority';
 import React, { forwardRef } from 'react';
 import { usePress } from 'react-aria';
 
 import type { SpacingScale } from '../../lib/scale';
-import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
+import type { ClassNameProps, DataAttributes, TestIdProps } from '@ermnvldmr/stl';
 import type { PressEvents } from 'react-aria';
 
 /**
@@ -32,7 +32,7 @@ export type ContainerRounded = 'none' | 'sm' | 'md' | 'lg' | 'full';
 /**
  * Props for the Container component.
  */
-export interface ContainerProps extends ClassNameProps, TestIdProps {
+export interface ContainerProps extends ClassNameProps, TestIdProps, DataAttributes {
   /** Content to be rendered inside the container */
   children: React.ReactNode;
   /** Background color variant */
@@ -153,7 +153,10 @@ const containerVariants = cva('overflow-hidden', {
  * borders, and width constraints while maintaining theme consistency.
  */
 const ContainerComponent = forwardRef<HTMLElement, ContainerProps>(function Container(
-  {
+  props,
+  ref
+) {
+  const {
     children,
     bg = 'base',
     padding = 0,
@@ -166,9 +169,8 @@ const ContainerComponent = forwardRef<HTMLElement, ContainerProps>(function Cont
     as: Component = 'div',
     className,
     'data-testid': testId,
-  },
-  ref
-) {
+  } = props;
+
   if (process.env.NODE_ENV !== 'production' && onPress && href) {
     console.warn('[@ermnvldmr/ui] Container cannot have both `onPress` and `href` props.');
   }
@@ -183,10 +185,12 @@ const ContainerComponent = forwardRef<HTMLElement, ContainerProps>(function Cont
 
   const interactionProps = isPressable ? pressProps : {};
   const FinalComponent = isLink ? 'a' : Component;
+  const dataAttributes = filterDataAttributes(props);
 
   return (
     <FinalComponent
       {...interactionProps}
+      {...dataAttributes}
       ref={castRef<HTMLElement>(ref)}
       className={cn(
         containerVariants({

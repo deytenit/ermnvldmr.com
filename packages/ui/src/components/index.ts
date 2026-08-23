@@ -10,6 +10,7 @@ export * from './Icon/index';
 export * from './Image/Image';
 export * from './Link/Link';
 export * from './List/List';
+export * from './LogProvider/index';
 export * from './Paragraph/Paragraph';
 export * from './Separator/Separator';
 export * from './Stack/Stack';

@@ -1,18 +1,18 @@
 import { localePath } from '@ermnvldmr/i18n';
-import { castRef, cn } from '@ermnvldmr/stl';
+import { castRef, cn, filterDataAttributes } from '@ermnvldmr/stl';
 import React, { memo, useRef } from 'react';
 import { useLink } from 'react-aria';
 
 import { Text } from '../Text/Text';
 
 import type { TextColor, TextSize, TextType } from '../Text/Text';
-import type { ClassNameProps } from '@ermnvldmr/stl';
+import type { ClassNameProps, DataAttributes } from '@ermnvldmr/stl';
 import type { AriaLinkOptions } from 'react-aria';
 
 /**
  * Props for the Link component.
  */
-export interface LinkProps extends AriaLinkOptions, ClassNameProps {
+export interface LinkProps extends AriaLinkOptions, ClassNameProps, DataAttributes {
   /** The destination URL. Renders as an <a> tag if provided. */
   href?: string;
   /** Link content */
@@ -50,6 +50,8 @@ export const Link = memo(function Link(props: LinkProps) {
     className
   );
 
+  const dataAttributes = filterDataAttributes(props);
+
   if (href) {
     const resolvedHref = localePath(href);
     const isAutoExternal = isExternal ?? href.startsWith('http');
@@ -59,6 +61,7 @@ export const Link = memo(function Link(props: LinkProps) {
       <Text
         {...linkProps}
         {...externalProps}
+        {...dataAttributes}
         ref={ref}
         as="a"
         className={sharedClasses}
@@ -76,6 +79,7 @@ export const Link = memo(function Link(props: LinkProps) {
   return (
     <Text
       {...linkProps}
+      {...dataAttributes}
       ref={castRef<HTMLSpanElement>(ref)}
       as="span"
       className={sharedClasses}
