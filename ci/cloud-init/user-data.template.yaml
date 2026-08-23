@@ -161,7 +161,18 @@ write_files:
       fi
 
       echo "=== [Bootstrap] Installing Flux Operator / Custom Resources ==="
-      kubectl apply -k https://github.com/fluxcd/flux2/manifests/install?ref=v2.4.0 || true
+      kubectl apply -f https://github.com/fluxcd/flux2/releases/download/v2.4.0/install.yaml
+
+      echo "=== [Bootstrap] Setting up Kubectl access for non-root users ==="
+      for home_dir in /home/*; do
+        if [ -d "$home_dir" ]; then
+          user_name=$(basename "$home_dir")
+          mkdir -p "$home_dir/.kube"
+          cp /etc/rancher/k3s/k3s.yaml "$home_dir/.kube/config"
+          chown -R "$user_name:$user_name" "$home_dir/.kube"
+          chmod 600 "$home_dir/.kube/config"
+        fi
+      done
 
       echo "=== [Bootstrap] Applying initial GitOps root sync ==="
       kubectl apply -f - << 'EOF_GITOPS'
