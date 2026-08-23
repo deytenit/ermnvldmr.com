@@ -46,6 +46,7 @@ datasource:
 EOF
 
 # Ensure DHCP on eth0
+mkdir -p /etc/network/interfaces.d
 cat << 'EOF' > /etc/network/interfaces.d/eth0
 auto eth0
 iface eth0 inet dhcp
