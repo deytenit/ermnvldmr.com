@@ -48,12 +48,6 @@ write_files:
     content: |
       disable:
         - servicelb
-      tls-san:
-        - "51.250.0.1" # Replace with actual static VPS IP upon provisioning
-        - "ermnvldmr.com"
-        - "www.ermnvldmr.com"
-        - "docs.ermnvldmr.com"
-        - "umami.ermnvldmr.com"
       write-kubeconfig-mode: "0644"
 
   - path: /usr/local/bin/bootstrap-cluster.sh
