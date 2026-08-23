@@ -37,6 +37,13 @@ update-grub
 # Enable serial console getty
 systemctl enable serial-getty@ttyS0.service || true
 
+# Ensure SSH server auto-generates host keys if missing before starting
+mkdir -p /etc/systemd/system/ssh.service.d
+cat << 'EOF' > /etc/systemd/system/ssh.service.d/10-generate-host-keys.conf
+[Service]
+ExecStartPre=-/usr/bin/ssh-keygen -A
+EOF
+
 # Configure cloud-init to use NoCloud and ConfigDrive datasources
 cat << 'EOF' > /etc/cloud/cloud.cfg.d/99-cloud-init.cfg
 datasource_list: [ NoCloud, ConfigDrive, None ]
