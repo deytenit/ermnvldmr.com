@@ -1,6 +1,11 @@
 import { createReadStream, existsSync } from 'node:fs';
 import { extname, join, sep } from 'node:path';
-import { defineSSGServiceConfig, discoverEntries, mergeConfig } from '@ermnvldmr/ssg/dev';
+import {
+  defineSSGServiceConfig,
+  discoverEntries,
+  mergeConfig,
+  umamiAnalytics,
+} from '@ermnvldmr/ssg/dev';
 import { THEME_INIT_SCRIPT, THEME_INIT_STYLES } from '@ermnvldmr/ui/dev';
 import { localeRsbuildConfig } from '@ermnvldmr/i18n/dev';
 import { RsdoctorRspackPlugin } from '@rsdoctor/rspack-plugin';
@@ -26,11 +31,20 @@ const MIME: Record<string, string> = {
   '.txt': 'text/plain',
 };
 
+const UMAMI_WWW_WEBSITE_ID = '4fca5ac2-4fe4-4626-b708-933c37bfe918';
 const locale = process.env.LOCALE ?? 'en';
 const fontBase = `/${locale}/static/font`;
 
 export default defineSSGServiceConfig(
   mergeConfig(localeRsbuildConfig(), {
+    analytics: [
+      umamiAnalytics({
+        serverUrl: 'https://umami.ermnvldmr.com',
+        websiteId: UMAMI_WWW_WEBSITE_ID,
+        domains: 'ermnvldmr.com,www.ermnvldmr.com',
+        doNotTrack: true,
+      }),
+    ],
     dev: {
       // Serve public/static/* at /static/* directly, bypassing server.base.
       // Without this, server.base (e.g. /en) would push the public dir to
