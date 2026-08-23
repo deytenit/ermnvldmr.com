@@ -52,17 +52,21 @@ jobs:
           echo "Downloading official Debian 12 cloud image..."
           curl -fsSL -o base.qcow2 https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
           
+          echo "Downloading K3s binary and installer..."
+          curl -fsSL -o k3s-install.sh https://get.k3s.io
+          curl -fsSL -o k3s https://github.com/k3s-io/k3s/releases/download/v1.31.2%2Bk3s1/k3s
+          chmod +x k3s-install.sh k3s
+          
           echo "Expanding disk image to 10G..."
           qemu-img resize base.qcow2 10G
           
-          echo "nameserver 169.254.2.3" > resolv.conf
-          echo "nameserver 10.0.2.3" >> resolv.conf
-          echo "nameserver 8.8.8.8" >> resolv.conf
-          
-          echo "Running provisioner scripts inside disk image..."
+          echo "Customizing image with packages and provisioner scripts..."
           virt-customize -a base.qcow2 \
             --network \
-            --copy-in resolv.conf:/etc/ \
+            --install socat,conntrack,ipset,iptables,ufw,fail2ban,unattended-upgrades \
+            --copy-in k3s:/usr/local/bin/ \
+            --chmod 0755:/usr/local/bin/k3s \
+            --copy-in k3s-install.sh:/tmp/ \
             --run ci/packer/scripts/01-base-system.sh \
             --run ci/packer/scripts/02-install-k3s.sh \
             --run ci/packer/scripts/03-cleanup.sh

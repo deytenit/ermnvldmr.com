@@ -4,21 +4,6 @@ export DEBIAN_FRONTEND=noninteractive
 
 echo "=== Configuring Base System for Cloud Image ==="
 
-# Install essential kernel modules and utilities
-apt-get update
-apt-get install -y --no-install-recommends \
-    socat \
-    conntrack \
-    ipset \
-    iptables \
-    ufw \
-    fail2ban \
-    unattended-upgrades \
-    curl \
-    ca-certificates \
-    tar \
-    gzip
-
 # Ensure virtio kernel modules are loaded on boot
 cat << 'EOF' > /etc/modules-load.d/virtio.conf
 virtio
