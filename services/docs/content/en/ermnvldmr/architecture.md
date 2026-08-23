@@ -18,12 +18,12 @@ flowchart TD
         GHCR["GitHub Container Registry (GHCR)"]
     end
 
-    subgraph S3 ["Yandex Object Storage (S3)"]
+    subgraph S3 ["S3-Compatible Object Storage"]
         GoldenImage["Packer Golden Image (.qcow2)"]
         Backups["Daily PostgreSQL Backups"]
     end
 
-    subgraph YandexCloud ["Yandex Cloud Infrastructure"]
+    subgraph Cloud ["Cloud Infrastructure / Compute Platform"]
         subgraph VM ["Compute Virtual Machine"]
             subgraph OS ["Debian 12 Bookworm"]
                 CloudInit["Cloud-Init First-Boot"]
@@ -78,7 +78,7 @@ The lifecycle of the platform operates in three distinct phases:
    * Configures `ds-identify` with `policy: enabled` so cloud-init is guaranteed to run.
    * Pre-installs K3s binary (`INSTALL_K3S_SKIP_ENABLE=true`, `INSTALL_K3S_SKIP_START=true`).
    * Strips machine identity (`/etc/machine-id`, DBus ID, SSH host keys, network MAC caches) for clean first-boot isolation.
-4. **S3 Upload & Quota Management**: Converts image to compressed `qcow2` format, prunes older images in `dev/images/` to prevent bucket exhaustion, and uploads the verified golden image to Yandex Object Storage (S3).
+4. **S3 Upload & Quota Management**: Converts image to compressed `qcow2` format, prunes older images in `dev/images/` to prevent bucket exhaustion, and uploads the verified golden image to S3-compatible object storage.
 
 ---
 

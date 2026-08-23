@@ -18,12 +18,12 @@ flowchart TD
         GHCR["GitHub Container Registry (GHCR)"]
     end
 
-    subgraph S3 ["Yandex Object Storage (S3)"]
+    subgraph S3 ["Объектное S3-хранилище"]
         GoldenImage["Packer Golden Image (.qcow2)"]
         Backups["Ежедневные бэкапы PostgreSQL"]
     end
 
-    subgraph YandexCloud ["Облако Yandex Cloud"]
+    subgraph Cloud ["Облачная инфраструктура / Платформа Compute"]
         subgraph VM ["Виртуальная машина Compute"]
             subgraph OS ["Debian 12 Bookworm"]
                 CloudInit["Cloud-Init First-Boot"]
@@ -76,7 +76,7 @@ flowchart TD
    * Настройка `/etc/cloud/ds-identify.cfg` с `policy: enabled` для гарантированного старта cloud-init.
    * Предустановка бинарного файла K3s (`INSTALL_K3S_SKIP_ENABLE=true`, `INSTALL_K3S_SKIP_START=true`) в `/usr/local/bin/k3s`.
    * Сброс идентичности хоста (`/etc/machine-id`, DBus ID, ключи SSH, сетевые кэши).
-4. **Сжатие и загрузка в S3**: Образ конвертируется в `qcow2`, старые образы в `dev/images/` автоматически удаляются для соблюдения квот хранилища, и готовый образ загружается в S3.
+4. **Сжатие и загрузка в S3**: Образ конвертируется в `qcow2`, старые образы в `dev/images/` автоматически удаляются для соблюдения квот хранилища, и готовый образ загружается в объектное S3-хранилище.
 
 ---
 

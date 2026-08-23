@@ -13,7 +13,7 @@ type: docs
 Подключение к виртуальной машине осуществляется под учетной записью `adam`:
 
 ```bash
-ssh -i ~/.ssh/adam_ermnvldmr_com_ed25519 adam@158.160.205.138
+ssh -i ~/.ssh/id_ed25519 adam@<SERVER_IP>
 ```
 
 Пользователь `adam` имеет права `sudo` без пароля и преднастроенный доступ к `kubectl` через `~/.kube/config`.
@@ -55,7 +55,7 @@ kubectl annotate --overwrite kustomization -n flux-system cluster-sync reconcile
 creation_rules:
   - path_regex: 'ci/k8s/.*secret.*\.yaml$'
     encrypted_regex: '^(data|stringData)$'
-    age: 'age1jpa7hqyzzdfq7lvnw3l8qy6648mtjgpcqnljl5jz92dcqjrnsqfsn7m0fl'
+    age: 'age1<YOUR_PUBLIC_AGE_KEY>'
 ```
 
 > **Важно**: Параметр `encrypted_regex` оставляет `apiVersion`, `kind` и `metadata.name` открытыми, что предотвращает ошибки синтаксического разбора в Kustomize и Flux.

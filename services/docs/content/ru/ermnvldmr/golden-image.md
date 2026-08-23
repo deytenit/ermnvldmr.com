@@ -32,7 +32,7 @@ type: docs
    * Сборка в headless QEMU (`packer build`).
    * Сжатие артефакта в формат `qcow2`.
 3. **Загрузка в S3 и контроль квот**:
-   * Настройка AWS S3 CLI для работы с Yandex Cloud Object Storage.
+   * Настройка AWS S3 CLI для работы с S3-совместимым объектным хранилищем.
    * **Автоматическая очистка**: Удаление устаревших образов в префиксе `dev/images/com-ermnvldmr-debian-12-k3s-amd64-*.qcow2` для предотвращения переполнения квоты бакета.
    * **Загрузка**: Сохранение нового образа:
      ```text
@@ -55,7 +55,7 @@ com-ermnvldmr-debian-12-k3s-amd64-<short_sha>.qcow2
 
 ## 4. Развертывание через Cloud-Init
 
-Для запуска виртуальной машины в Yandex Cloud из готового образа:
+Для запуска виртуальной машины в облачной инфраструктуре из готового образа:
 1. Передайте заполненный шаблон [`user-data.template.yaml`](file:///home/deytenit/Source/repos/deytenit/ermnvldmr.com/ci/cloud-init/user-data.template.yaml) в метаданные инстанса в поле `user-data`.
 2. Cloud-init автоматически выполнит `/usr/local/bin/bootstrap-cluster.sh` при первом старте.
 3. Инстанс настроит сеть, смонтирует постоянный SSD, запустит K3s, установит Flux и поднимет все сервисы примерно за 90 секунд.

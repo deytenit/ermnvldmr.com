@@ -13,7 +13,7 @@ Practical runbook and operational guidelines for managing, debugging, and mainta
 Connect to the virtual machine using the administrative `adam` account:
 
 ```bash
-ssh -i ~/.ssh/adam_ermnvldmr_com_ed25519 adam@158.160.205.138
+ssh -i ~/.ssh/id_ed25519 adam@<SERVER_IP>
 ```
 
 The `adam` user has passwordless `sudo` privileges and automatically configured `kubectl` credentials in `~/.kube/config`.
@@ -55,7 +55,7 @@ All sensitive files (`*.sops.yaml`) are committed directly to Git using SOPS wit
 creation_rules:
   - path_regex: 'ci/k8s/.*secret.*\.yaml$'
     encrypted_regex: '^(data|stringData)$'
-    age: 'age1jpa7hqyzzdfq7lvnw3l8qy6648mtjgpcqnljl5jz92dcqjrnsqfsn7m0fl'
+    age: 'age1<YOUR_PUBLIC_AGE_KEY>'
 ```
 
 > **Important**: The `encrypted_regex` rule preserves `apiVersion`, `kind`, and `metadata.name` in plaintext so Kustomize and Flux can inspect and route resources without pre-parsing errors.

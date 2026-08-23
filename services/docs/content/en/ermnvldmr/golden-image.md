@@ -32,7 +32,7 @@ The image build is executed via `.github/workflows/ci-next-build-golden-image.ym
    * Runs headless QEMU virtual machine build (`packer build`).
    * Compresses the output artifact to `qcow2`.
 3. **S3 Storage Upload & Quota Management**:
-   * Configures AWS S3 CLI with Yandex Cloud Object Storage credentials.
+   * Configures AWS S3 CLI with S3-compatible Object Storage credentials.
    * **Automatic Quota Pruning**: Removes older images matching `dev/images/com-ermnvldmr-debian-12-k3s-amd64-*.qcow2` before uploading to prevent exceeding bucket limits.
    * **Uploads**: The newly baked image is pushed to:
      ```text
@@ -55,7 +55,7 @@ Example: `com-ermnvldmr-debian-12-k3s-amd64-f4ba6d1.qcow2`
 
 ## 4. First-Boot Cloud-Init Integration
 
-When launching a compute instance from the uploaded golden image in Yandex Cloud:
+When launching a compute instance from the uploaded golden image in your cloud infrastructure:
 1. Pass the instantiated [`user-data.template.yaml`](file:///home/deytenit/Source/repos/deytenit/ermnvldmr.com/ci/cloud-init/user-data.template.yaml) in the instance metadata under `user-data`.
 2. Cloud-init executes `/usr/local/bin/bootstrap-cluster.sh` autonomously on first boot.
 3. The instance initializes the network, formats persistent SSDs, starts K3s, installs Flux, and syncs production workloads within ~90 seconds.
