@@ -2,8 +2,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: com-ermnvldmr
 resources:
-  - deployment.yaml
-  - service.yaml
+- deployment.yaml
+- service.yaml
 images:
-  - name: ghcr.io/deytenit/ermnvldmr.com/docs
-    newTag: sha-91f5245
+- name: ghcr.io/deytenit/ermnvldmr.com/docs
+  newName: ghcr.io/deytenit/ermnvldmr.com/docs
+  newTag: sha-7181cdd
