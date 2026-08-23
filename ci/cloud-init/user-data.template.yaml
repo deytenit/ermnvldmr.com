@@ -18,7 +18,7 @@ ssh_pwauth: false
 # 1. User & SSH Key Configuration (Replace stub with your public SSH key)
 # ------------------------------------------------------------------------------
 users:
-  - name: debian
+  - name: adam
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     ssh_authorized_keys:
@@ -80,8 +80,6 @@ write_files:
     owner: root:root
     permissions: '0600'
     content: |
-      disable:
-        - servicelb
       write-kubeconfig-mode: "0644"
 
   # ----------------------------------------------------------------------------
@@ -185,36 +183,36 @@ EOF_DNS
 
       echo "=== [Bootstrap] Applying initial GitOps root sync ==="
       kubectl apply -f - << 'EOF_GITOPS'
-      apiVersion: source.toolkit.fluxcd.io/v1
-      kind: GitRepository
-      metadata:
-        name: ermnvldmr-repo
-        namespace: flux-system
-      spec:
-        interval: 1m
-        url: https://github.com/deytenit/ermnvldmr.com.git
-        ref:
-          branch: next
-      ---
-      apiVersion: kustomize.toolkit.fluxcd.io/v1
-      kind: Kustomization
-      metadata:
-        name: cluster-sync
-        namespace: flux-system
-      spec:
-        interval: 5m
-        sourceRef:
-          kind: GitRepository
-          name: ermnvldmr-repo
-        path: ./ci/k8s/clusters/production
-        prune: true
-        wait: true
-        timeout: 2m
-        decryption:
-          provider: sops
-          secretRef:
-            name: sops-age
-      EOF_GITOPS
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: ermnvldmr-repo
+  namespace: flux-system
+spec:
+  interval: 1m
+  url: https://github.com/deytenit/ermnvldmr.com.git
+  ref:
+    branch: next
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: cluster-sync
+  namespace: flux-system
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: ermnvldmr-repo
+  path: ./ci/k8s/clusters/production
+  prune: true
+  wait: true
+  timeout: 2m
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
+EOF_GITOPS
 
       echo "=== [Bootstrap] First-Boot Bootstrap Sequence Complete ==="
 
