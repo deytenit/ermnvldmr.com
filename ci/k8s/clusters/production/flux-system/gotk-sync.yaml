@@ -16,7 +16,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
-  targetNamespace: flux-system
+  targetNamespace: com-ermnvldmr
   sourceRef:
     kind: GitRepository
     name: ermnvldmr-repo
