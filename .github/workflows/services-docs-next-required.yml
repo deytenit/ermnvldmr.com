@@ -81,6 +81,10 @@ jobs:
             type=raw,value=latest
             type=sha,format=short
 
+      - name: Compute short SHA
+        id: vars
+        run: echo "short_sha=sha-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -90,8 +94,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            COMMIT_SHA=sha-$(echo ${{ github.sha }} | cut -c1-7)
-            VERSION=sha-$(echo ${{ github.sha }} | cut -c1-7)
+            COMMIT_SHA=${{ steps.vars.outputs.short_sha }}
+            VERSION=${{ steps.vars.outputs.short_sha }}
 
   deploy:
     name: Deploy - Kubernetes (GitOps)

@@ -265,9 +265,11 @@ jobs:
           # Extract MAJOR.MINOR for tagging
           MAJOR_MINOR=$(echo "${{ github.ref_name }}" | cut -d/ -f3 | sed 's/^v//')
           MAJOR=$(echo "$MAJOR_MINOR" | cut -d. -f1)
+          SHORT_SHA="sha-$(echo ${{ github.sha }} | cut -c1-7)"
           echo "version=$RELEASE_VERSION" >> $GITHUB_OUTPUT
           echo "major_minor=$MAJOR_MINOR" >> $GITHUB_OUTPUT
           echo "major=$MAJOR" >> $GITHUB_OUTPUT
+          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
 
       - name: Create and Push Tag
         run: |
@@ -303,7 +305,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            COMMIT_SHA=sha-$(echo ${{ github.sha }} | cut -c1-7)
+            COMMIT_SHA=${{ steps.version.outputs.short_sha }}
             VERSION=v${{ steps.version.outputs.version }}
 
   deploy:
