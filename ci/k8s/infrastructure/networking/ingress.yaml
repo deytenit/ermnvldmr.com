@@ -10,7 +10,6 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - ermnvldmr.com
         - www.ermnvldmr.com
       secretName: ermnvldmr-tls
     - hosts:
@@ -20,16 +19,6 @@ spec:
         - umami.ermnvldmr.com
       secretName: umami-ermnvldmr-tls
   rules:
-    - host: ermnvldmr.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: www-service
-                port:
-                  number: 80
     - host: www.ermnvldmr.com
       http:
         paths:
