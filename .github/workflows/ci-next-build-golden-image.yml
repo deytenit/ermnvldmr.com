@@ -125,6 +125,8 @@ jobs:
           if [ -n "${S3_BUCKET}" ] && [ -n "${AWS_ACCESS_KEY_ID}" ]; then
             ENDPOINT_FLAG=""
             [ -n "${S3_ENDPOINT}" ] && ENDPOINT_FLAG="--endpoint-url=${S3_ENDPOINT}"
+            echo "Cleaning up older images in dev/images/ to free bucket storage..."
+            aws ${ENDPOINT_FLAG} s3 rm "s3://${S3_BUCKET}/dev/images/" --recursive || true
             aws ${ENDPOINT_FLAG} s3 cp "output-qemu/${IMAGE_NAME}" "s3://${S3_BUCKET}/dev/images/${IMAGE_NAME}"
             echo "Golden image uploaded to s3://${S3_BUCKET}/dev/images/${IMAGE_NAME}"
           else
