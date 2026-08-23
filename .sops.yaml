@@ -1,3 +1,3 @@
 creation_rules:
   - path_regex: ci/k8s/.*secret.*\.yaml$
-    age: "age1d87e07up0n2wtl49s6f3l2m2a4vd6m8h8h9k9h9k0q9v6w4v8f0smw7x3d" # Replace with actual age public recipient key
+    age: "age1jpa7hqyzzdfq7lvnw3l8qy6648mtjgpcqnljl5jz92dcqjrnsqfsn7m0fl"

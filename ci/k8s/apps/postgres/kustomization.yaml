@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: com-ermnvldmr
 resources:
   - configmap.yaml
-  - secret.template.yaml
+  - secret.sops.yaml
   - pvc.yaml
   - statefulset.yaml
   - service.yaml

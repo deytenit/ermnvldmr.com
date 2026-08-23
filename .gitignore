@@ -37,6 +37,8 @@ docs/superpowers/
 
 # SOPS and Kubernetes Secrets
 *.dec.yaml
+*.plain.yaml
 *.local.yaml
+*.key
 .sops/keys.txt
 ci/k8s/**/secret.yaml
