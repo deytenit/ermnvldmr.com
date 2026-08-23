@@ -30,3 +30,4 @@ The platform is designed around strict infrastructure-as-code principles, immuta
 * **Declarative GitOps Engine**: Flux v2 continuously reconciles Kubernetes cluster state against the `next` branch in GitHub.
 * **End-to-End Encryption**: SOPS + Age encrypts all sensitive secrets in Git; Let's Encrypt and Cloudflare Full (Strict) secure all public traffic.
 * **Automated Production Rollout Verification**: Release pipelines query public `/version.json` probes to verify that rolling updates actively serve user traffic before finishing.
+
