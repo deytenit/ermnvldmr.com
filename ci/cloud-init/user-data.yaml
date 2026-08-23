@@ -86,6 +86,21 @@ write_files:
       echo "=== [Bootstrap] Enabling Fail2ban ==="
       systemctl enable --now fail2ban || true
 
+      echo "=== [Bootstrap] Checking for Secondary Persistent Data Disk ==="
+      if [ -b /dev/vdb ]; then
+        echo "Secondary disk /dev/vdb detected."
+        if ! blkid /dev/vdb >/dev/null 2>&1; then
+          echo "Formatting /dev/vdb with ext4 filesystem..."
+          mkfs.ext4 -F -L k3s-storage /dev/vdb
+        fi
+        mkdir -p /var/lib/rancher/k3s/storage
+        if ! grep -qs '/var/lib/rancher/k3s/storage' /proc/mounts; then
+          mount /dev/vdb /var/lib/rancher/k3s/storage
+          echo "LABEL=k3s-storage /var/lib/rancher/k3s/storage ext4 defaults,noatime 0 2" >> /etc/fstab
+          echo "Mounted /dev/vdb to /var/lib/rancher/k3s/storage."
+        fi
+      fi
+
       echo "=== [Bootstrap] Starting K3s Service ==="
       systemctl enable --now k3s.service
 
