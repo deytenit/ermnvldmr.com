@@ -114,13 +114,19 @@ jobs:
 
       - name: Upload to Static S3 (/dev/images/)
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.COM_ERMNVLDMR_STATIC_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.COM_ERMNVLDMR_STATIC_AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.COM_ERMNVLDMR_STATIC_S3_REGION }}
-          S3_ENDPOINT: ${{ secrets.COM_ERMNVLDMR_STATIC_S3_ENDPOINT_URL }}
-          S3_BUCKET: ${{ secrets.COM_ERMNVLDMR_STATIC_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.STATIC_AWS_ACCESS_KEY_ID || secrets.COM_ERMNVLDMR_STATIC_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.STATIC_AWS_SECRET_ACCESS_KEY || secrets.COM_ERMNVLDMR_STATIC_AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.STATIC_AWS_REGION || secrets.COM_ERMNVLDMR_STATIC_S3_REGION || 'ru-central1' }}
+          S3_ENDPOINT: ${{ secrets.STATIC_S3_ENDPOINT_URL || secrets.COM_ERMNVLDMR_STATIC_S3_ENDPOINT_URL }}
+          S3_BUCKET: ${{ secrets.STATIC_S3_BUCKET || secrets.COM_ERMNVLDMR_STATIC_S3_BUCKET }}
           IMAGE_NAME: ${{ needs.build-image.outputs.image_name }}
         run: |
           mv output-qemu/com-ermnvldmr-debian-12-k3s-amd64.qcow2 "output-qemu/${IMAGE_NAME}"
-          aws --endpoint-url="${S3_ENDPOINT}" s3 cp "output-qemu/${IMAGE_NAME}" "s3://${S3_BUCKET}/dev/images/${IMAGE_NAME}"
-          echo "Golden image uploaded to s3://${S3_BUCKET}/dev/images/${IMAGE_NAME}"
+          if [ -n "${S3_BUCKET}" ] && [ -n "${AWS_ACCESS_KEY_ID}" ]; then
+            ENDPOINT_FLAG=""
+            [ -n "${S3_ENDPOINT}" ] && ENDPOINT_FLAG="--endpoint-url=${S3_ENDPOINT}"
+            aws ${ENDPOINT_FLAG} s3 cp "output-qemu/${IMAGE_NAME}" "s3://${S3_BUCKET}/dev/images/${IMAGE_NAME}"
+            echo "Golden image uploaded to s3://${S3_BUCKET}/dev/images/${IMAGE_NAME}"
+          else
+            echo "S3 storage secrets not provided; skipping remote S3 upload. Image artifact is preserved in GitHub Actions run artifacts."
+          fi
