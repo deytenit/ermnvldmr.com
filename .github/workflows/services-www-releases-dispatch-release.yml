@@ -287,6 +287,9 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            COMMIT_SHA=sha-$(echo ${{ github.sha }} | cut -c1-7)
+            VERSION=v${{ steps.version.outputs.version }}
 
   deploy:
     name: Deploy - Kubernetes (GitOps)
@@ -313,3 +316,50 @@ jobs:
         run: |
           WWW_TAG="sha-$(echo ${{ github.sha }} | cut -c1-7)"
           bash ci/scripts/deploy-gitops.sh www "${WWW_TAG}"
+
+  verify-rollout:
+    name: Verify - Production Rollout
+    needs: [release-tag-docker, deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Await production rollout
+        run: |
+          TARGET_COMMIT="sha-$(echo ${{ github.sha }} | cut -c1-7)"
+          TARGET_VERSION="v${{ needs.release-tag-docker.outputs.version }}"
+          ENDPOINT="https://www.ermnvldmr.com/version.json"
+
+          echo "========================================================"
+          echo "Verifying production deployment on $ENDPOINT"
+          echo "Expected commit:  $TARGET_COMMIT"
+          echo "Expected version: $TARGET_VERSION"
+          echo "========================================================"
+
+          MAX_ATTEMPTS=30
+          ATTEMPT=1
+
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            echo "Attempt $ATTEMPT/$MAX_ATTEMPTS: Polling $ENDPOINT..."
+
+            RESPONSE=$(curl -sf --max-time 10 "$ENDPOINT" 2>/dev/null || true)
+
+            if [ -n "$RESPONSE" ]; then
+              LIVE_COMMIT=$(echo "$RESPONSE" | jq -r '.commit // empty')
+              LIVE_VERSION=$(echo "$RESPONSE" | jq -r '.version // empty')
+
+              echo "  Live commit:  ${LIVE_COMMIT:-<none>}"
+              echo "  Live version: ${LIVE_VERSION:-<none>}"
+
+              if [ "$LIVE_COMMIT" = "$TARGET_COMMIT" ] || [ "$LIVE_VERSION" = "$TARGET_VERSION" ]; then
+                echo "✅ Success! Production has successfully rolled out $TARGET_VERSION ($TARGET_COMMIT)."
+                exit 0
+              fi
+            else
+              echo "  Endpoint did not return valid JSON or timed out."
+            fi
+
+            ATTEMPT=$((ATTEMPT + 1))
+            sleep 10
+          done
+
+          echo "❌ Deployment verification timed out after 5 minutes."
+          exit 1

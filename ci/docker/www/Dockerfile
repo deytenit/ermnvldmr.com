@@ -37,8 +37,15 @@ RUN pnpm --filter @ermnvldmr/www build:all
 # Stage 2: Runtime
 FROM nginx:alpine
 
+ARG COMMIT_SHA="unknown"
+ARG VERSION="latest"
+
 COPY --from=builder /app/services/www/dist /usr/share/nginx/html
 COPY ci/config/nginx/default.conf /etc/nginx/conf.d/default.conf
+
+# Generate version metadata for automated rollout verification
+RUN printf '{\n  "service": "www",\n  "version": "%s",\n  "commit": "%s",\n  "builtAt": "%s"\n}\n' \
+    "${VERSION}" "${COMMIT_SHA}" "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" > /usr/share/nginx/html/version.json
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
