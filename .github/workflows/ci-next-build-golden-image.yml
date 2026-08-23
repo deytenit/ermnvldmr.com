@@ -34,8 +34,9 @@ jobs:
       - name: Calculate Image Name
         id: vars
         run: |
+          TIMESTAMP="$(date -u +'%Y%m%d%H%M%S')"
           SHORT_SHA="sha-$(echo ${{ github.sha }} | cut -c1-7)"
-          IMAGE_NAME="com-ermnvldmr-debian-12-k3s-amd64-${SHORT_SHA}.qcow2"
+          IMAGE_NAME="com-ermnvldmr-debian-12-k3s-amd64-${TIMESTAMP}-${SHORT_SHA}.qcow2"
           echo "image_name=${IMAGE_NAME}" >> "$GITHUB_OUTPUT"
 
       - name: Install Build Tools
