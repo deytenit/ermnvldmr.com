@@ -18,10 +18,10 @@ ln -sf /etc/machine-id /var/lib/dbus/machine-id
 ssh-keygen -A
 
 # Clean cloud-init logs, state, and reset temporary build DNS
-rm -f /etc/resolv.conf
+rm -f /etc/resolv.conf /etc/cloud/cloud-init.disabled /run/systemd/generator*/cloud-init.disabled
 touch /etc/resolv.conf
-cloud-init clean --logs || true
-rm -rf /var/lib/cloud/instances/*
+cloud-init clean --logs --seed || true
+rm -rf /var/lib/cloud/*
 
 # Clean bash history
 rm -f /root/.bash_history /home/*/.bash_history
