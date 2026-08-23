@@ -17,7 +17,8 @@ ln -sf /etc/machine-id /var/lib/dbus/machine-id
 # Remove generated SSH host keys (re-created by cloud-init on first boot)
 rm -f /etc/ssh/ssh_host_*
 
-# Clean cloud-init logs and state
+# Clean cloud-init logs, state, and temporary build DNS
+rm -f /etc/resolv.conf
 cloud-init clean --logs || true
 rm -rf /var/lib/cloud/instances/*
 

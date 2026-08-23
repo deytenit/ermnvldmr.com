@@ -4,12 +4,13 @@ export DEBIAN_FRONTEND=noninteractive
 
 echo "=== Configuring Base System for Cloud Image ==="
 
+# Ensure DNS resolution during build
+echo "nameserver 1.1.1.1" > /etc/resolv.conf
+echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+
 # Install essential kernel modules and utilities
 apt-get update
 apt-get install -y --no-install-recommends \
-    cloud-init \
-    qemu-guest-agent \
-    linux-image-amd64 \
     socat \
     conntrack \
     ipset \
@@ -19,7 +20,6 @@ apt-get install -y --no-install-recommends \
     unattended-upgrades \
     curl \
     ca-certificates \
-    gnupg \
     tar \
     gzip
 
