@@ -62,8 +62,10 @@ jobs:
           sudo mkdir -p /mnt/target
           sudo mount /dev/nbd0p1 /mnt/target
           
-          echo "Mounting host virtual filesystems and DNS..."
-          sudo cp /etc/resolv.conf /mnt/target/etc/resolv.conf
+          echo "Mounting host virtual filesystems and configuring DNS..."
+          sudo rm -f /mnt/target/etc/resolv.conf
+          echo "nameserver 1.1.1.1" | sudo tee /mnt/target/etc/resolv.conf
+          echo "nameserver 8.8.8.8" | sudo tee -a /mnt/target/etc/resolv.conf
           sudo mount --bind /dev /mnt/target/dev
           sudo mount --bind /dev/pts /mnt/target/dev/pts
           sudo mount --bind /proc /mnt/target/proc
