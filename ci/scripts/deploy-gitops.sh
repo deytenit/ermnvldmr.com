@@ -22,8 +22,8 @@ cd "$APP_DIR"
 kustomize edit set image "ghcr.io/deytenit/ermnvldmr.com/${SERVICE}=ghcr.io/deytenit/ermnvldmr.com/${SERVICE}:${TAG}"
 
 cd "$ROOT_DIR"
-git config user.name "github-actions[bot]"
-git config user.email "github-actions[bot]@users.noreply.github.com"
+git config user.name "adam-at-deytenit"
+git config user.email "221188529+adam-at-deytenit@users.noreply.github.com"
 git add "ci/k8s/apps/${SERVICE}/kustomization.yaml"
 
 if git diff --staged --quiet; then
