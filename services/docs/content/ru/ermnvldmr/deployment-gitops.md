@@ -39,10 +39,10 @@ ci/k8s/
    * **Workflow**: `.github/workflows/services-docs-next-required.yml`.
    * **Действие**: Сборка Docker-образа, обновление `ci/k8s/apps/docs/kustomization.yaml`, коммит в `next` и запуск задачи `verify-rollout`.
 
-2. **`services/www` (Семантический релиз через Dispatch)**:
-   * **Триггер**: Запуск вручную через `.github/workflows/services-www-releases-dispatch-release.yml`.
-   * **Стандартный режим**: Полный цикл тестов (Vitest, Storybook Playwright, Lint, Typecheck, Build) ➔ Git-тег релиза ➔ Пуш в GHCR ➔ Обновление тега в GitOps ➔ Проверка через `verify-rollout`.
-   * **Быстрый режим (`skip_ci: true`)**: Пропуск тестов для экстренных деплоев и откатов с мгновенной сборкой образа, пушем в GitOps и верификацией.
+2. **`services/www` (Trunk-Based CD с релизным гейтом CalVer)**:
+   * **Триггер**: Push в ветку `next` с изменениями в `services/www/**` или зависимых пакетах (`packages/ui/**`, `packages/stl/**`, `packages/i18n/**`), либо ручной `workflow_dispatch`.
+   * **Workflow**: `.github/workflows/services-www-next-required.yml`.
+   * **Пайплайн**: Полный цикл тестов и проверок (Vitest, Storybook Playwright, Lint, Typecheck, Build) ➔ Сборка Docker-образа с тегом `sha-<commit>` ➔ Гейт подтверждения (`services-www-releases-publish`) выставляет тег CalVer `YYYY.MM.MICRO` в Git и GHCR ➔ Гейт подтверждения (`services-www-releases-deploy`) обновляет GitOps ➔ Проверка раскатки через `verify-rollout`.
 
 ---
 

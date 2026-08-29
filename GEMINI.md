@@ -123,7 +123,7 @@ ermnvldmr.com/
 - **DO NOT** use self-referential package imports within workspace packages; use relative paths.
 - **DO NOT** suppress linter or compiler errors with `@ts-ignore`, `@ts-nocheck`, or inline eslint disables without explicit user approval.
 - **DO NOT** commit unencrypted `.env` files or secret keys (`.env.keys`).
-- **DO NOT** run `git commit` or execute automated git commits under any circumstances.
+- **DO NOT** run destructive Git operations (such as force pushing to `main`/`next` or dropping uncommitted user work) without authorization.
 
 ## 5. Critical Workflows & Safety Directives
 
@@ -143,5 +143,4 @@ The agent MUST NOT modify the following files or directories unless explicitly r
 - `.env.keys` (untracked decryption keys).
 - `pnpm-lock.yaml` (dependencies must be managed exclusively through `pnpm` CLI commands).
 - `LICENSE` file.
-- `ci/` deployment configurations, Dockerfiles, and GitHub Actions workflows.
 - `services/docs/content/` and `services/www/content/` creative and literary works.

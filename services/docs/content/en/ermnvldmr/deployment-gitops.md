@@ -39,10 +39,10 @@ ci/k8s/
    * **Workflow**: `.github/workflows/services-docs-next-required.yml`.
    * **Action**: Builds Docker image, updates `ci/k8s/apps/docs/kustomization.yaml`, commits to `next`, and runs automated `verify-rollout`.
 
-2. **`services/www` (Semantic Release Dispatch)**:
-   * **Trigger**: Dispatched via `.github/workflows/services-www-releases-dispatch-release.yml`.
-   * **Standard Mode**: Runs full verification suite (Vitest, Storybook Playwright, Lint, Typecheck, Build) ➔ Tags git release ➔ Pushes image to GHCR ➔ Updates GitOps tag ➔ Runs `verify-rollout`.
-   * **Fast-Track Mode (`skip_ci: true`)**: Bypasses test suites for emergency deploys and rollbacks, immediately building the image, updating GitOps, and verifying the production rollout.
+2. **`services/www` (Trunk-Based CD with CalVer Release Gate)**:
+   * **Trigger**: Push to `next` modifying `services/www/**` or workspace dependencies (`packages/ui/**`, `packages/stl/**`, `packages/i18n/**`), or manual `workflow_dispatch`.
+   * **Workflow**: `.github/workflows/services-www-next-required.yml`.
+   * **Pipeline**: Full validation suite (Vitest, Storybook Playwright, Lint, Typecheck, Build) ➔ Builds Docker image with `sha-<commit>` tag ➔ Approval gate (`services-www-releases-publish`) tags CalVer `YYYY.MM.MICRO` in Git & GHCR ➔ Approval gate (`services-www-releases-deploy`) updates GitOps tag ➔ Runs `verify-rollout`.
 
 ---
 
