@@ -20,9 +20,12 @@ jobs:
   agent-dispatch:
     name: Agent / Dispatch
     if: >
-      contains(github.event.comment.body, '/plan') ||
-      contains(github.event.comment.body, '/implement') ||
-      contains(github.event.comment.body, '/fix')
+      (github.event.comment.author_association == 'OWNER' ||
+       github.event.comment.author_association == 'MEMBER' ||
+       github.event.comment.author_association == 'COLLABORATOR') &&
+      (contains(github.event.comment.body, '/plan') ||
+       contains(github.event.comment.body, '/implement') ||
+       contains(github.event.comment.body, '/fix'))
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -174,6 +177,13 @@ jobs:
         run: |
           IS_PR="${{ github.event.issue.pull_request != null }}"
           if [ "$IS_PR" = "true" ]; then
+            # Verify PR is not from an untrusted cross-repository fork
+            IS_CROSS_REPO=$(gh pr view "$ISSUE_OR_PR_NUMBER" --json isCrossRepository -q .isCrossRepository)
+            if [ "$IS_CROSS_REPO" = "true" ]; then
+              echo "::error::Cross-repository fork PRs cannot be automatically processed in privileged context."
+              exit 1
+            fi
+
             gh pr checkout "$ISSUE_OR_PR_NUMBER"
             BRANCH_NAME=$(git branch --show-current)
             PR_DIFF=$(gh pr diff "$ISSUE_OR_PR_NUMBER" || true)
