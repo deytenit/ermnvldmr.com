@@ -83,17 +83,23 @@ jobs:
 
       - name: Setup Antigravity CLI & Credentials
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AGY_AUTH_TOKEN: ${{ secrets.AGY_AUTH_TOKEN }}
         run: |
-          # 1. Install Antigravity CLI (agy) if not present
+          # 1. Download official Antigravity CLI binary from google-antigravity/antigravity-cli
+          mkdir -p "$HOME/.local/bin"
           if ! command -v agy &> /dev/null; then
-            echo "Installing Antigravity CLI (agy)..."
-            curl -fsSL https://antigravity.google/install.sh | bash || true
-            mkdir -p "$HOME/.local/bin"
-            echo "$HOME/.local/bin" >> $GITHUB_PATH
-            echo "$HOME/.gemini/antigravity-cli/bin" >> $GITHUB_PATH
-            export PATH="$HOME/.local/bin:$HOME/.gemini/antigravity-cli/bin:$PATH"
+            echo "Fetching Antigravity CLI from google-antigravity/antigravity-cli..."
+            gh release download --repo google-antigravity/antigravity-cli -p "agy_cli_linux_x64.tar.gz" -O - | tar -xz -C "$HOME/.local/bin"
+            if [ -f "$HOME/.local/bin/antigravity" ] && [ ! -f "$HOME/.local/bin/agy" ]; then
+              mv "$HOME/.local/bin/antigravity" "$HOME/.local/bin/agy"
+            fi
+            ln -sf "$HOME/.local/bin/agy" "$HOME/.local/bin/antigravity"
+            chmod +x "$HOME/.local/bin/agy" "$HOME/.local/bin/antigravity"
           fi
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          echo "$HOME/.gemini/antigravity-cli/bin" >> $GITHUB_PATH
+          export PATH="$HOME/.local/bin:$HOME/.gemini/antigravity-cli/bin:$PATH"
 
           # 2. Inject OAuth Token
           mkdir -p ~/.gemini/antigravity-cli
@@ -110,8 +116,8 @@ jobs:
 
       - name: Configure Git Bot Identity
         run: |
-          git config --global user.name "AI Assistant Bot"
-          git config --global user.email "bot@users.noreply.github.com"
+          git config --global user.name "Adam Jensen [bot]"
+          git config --global user.email "adam@ermnvldmr.com"
 
       # --- COMMAND: /plan ---
       - name: Handle /plan (Issue Planning)
