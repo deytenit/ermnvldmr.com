@@ -65,8 +65,10 @@ jobs:
           node-version: 20
           cache: 'pnpm'
 
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Install Dependencies & Build Workspace Packages
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build:deps
 
       - name: Restore Agent Conversation Context
         uses: actions/cache@v4
@@ -83,6 +85,17 @@ jobs:
         env:
           AGY_AUTH_TOKEN: ${{ secrets.AGY_AUTH_TOKEN }}
         run: |
+          # 1. Install Antigravity CLI (agy) if not present
+          if ! command -v agy &> /dev/null; then
+            echo "Installing Antigravity CLI (agy)..."
+            curl -fsSL https://antigravity.google/install.sh | bash || true
+            mkdir -p "$HOME/.local/bin"
+            echo "$HOME/.local/bin" >> $GITHUB_PATH
+            echo "$HOME/.gemini/antigravity-cli/bin" >> $GITHUB_PATH
+            export PATH="$HOME/.local/bin:$HOME/.gemini/antigravity-cli/bin:$PATH"
+          fi
+
+          # 2. Inject OAuth Token
           mkdir -p ~/.gemini/antigravity-cli
           if [ -n "$AGY_AUTH_TOKEN" ]; then
             if echo "$AGY_AUTH_TOKEN" | base64 --decode >/dev/null 2>&1; then
