@@ -1,0 +1,251 @@
+name: gemini - manual
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+concurrency:
+  group: agent-issue-${{ github.event.issue.number || github.event.pull_request.number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  agent-dispatch:
+    name: Agent / Dispatch
+    if: >
+      contains(github.event.comment.body, '/plan') ||
+      contains(github.event.comment.body, '/implement') ||
+      contains(github.event.comment.body, '/fix')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Verify Collaborator Authorization
+        id: auth-check
+        run: |
+          AUTHOR_ASSOC="${{ github.event.comment.author_association }}"
+          echo "Author association: $AUTHOR_ASSOC"
+          if [[ "$AUTHOR_ASSOC" != "OWNER" && "$AUTHOR_ASSOC" != "MEMBER" && "$AUTHOR_ASSOC" != "COLLABORATOR" ]]; then
+            echo "::error::Unauthorized trigger by user with association '$AUTHOR_ASSOC'."
+            exit 1
+          fi
+
+      - name: Acknowledge Command (Add Eyes Reaction)
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITOPS_TOKEN || secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ github.event.comment.id }}
+        run: |
+          gh api "repos/${{ github.repository }}/issues/comments/${COMMENT_ID}/reactions" -f content=eyes || true
+
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITOPS_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+
+      - name: Setup Node.js with pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Restore Agent Conversation Context
+        uses: actions/cache@v4
+        id: agent-context-cache
+        with:
+          path: |
+            ~/.gemini/antigravity-cli/conversations
+            ~/.gemini/antigravity-cli/brain
+          key: agent-context-issue-${{ github.event.issue.number }}-${{ github.run_id }}
+          restore-keys: |
+            agent-context-issue-${{ github.event.issue.number }}-
+
+      - name: Setup Antigravity CLI & Credentials
+        env:
+          AGY_AUTH_TOKEN: ${{ secrets.AGY_AUTH_TOKEN }}
+        run: |
+          mkdir -p ~/.gemini/antigravity-cli
+          if [ -n "$AGY_AUTH_TOKEN" ]; then
+            if echo "$AGY_AUTH_TOKEN" | base64 --decode >/dev/null 2>&1; then
+              echo "$AGY_AUTH_TOKEN" | base64 --decode > ~/.gemini/antigravity-cli/antigravity-oauth-token
+            else
+              echo "$AGY_AUTH_TOKEN" > ~/.gemini/antigravity-cli/antigravity-oauth-token
+            fi
+            chmod 600 ~/.gemini/antigravity-cli/antigravity-oauth-token
+          else
+            echo "::warning::AGY_AUTH_TOKEN secret is not set."
+          fi
+
+      - name: Configure Git Bot Identity
+        run: |
+          git config --global user.name "AI Assistant Bot"
+          git config --global user.email "bot@users.noreply.github.com"
+
+      # --- COMMAND: /plan ---
+      - name: Handle /plan (Issue Planning)
+        if: contains(github.event.comment.body, '/plan') && github.event.issue.pull_request == null
+        env:
+          GH_TOKEN: ${{ secrets.GITOPS_TOKEN || secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          echo "Generating plan for Issue #${ISSUE_NUMBER}..."
+          ISSUE_DATA=$(gh issue view "$ISSUE_NUMBER" --comments --json title,body,comments)
+
+          CONTINUE_FLAG=""
+          if [ -d "$HOME/.gemini/antigravity-cli/conversations" ] && [ "$(ls -A $HOME/.gemini/antigravity-cli/conversations 2>/dev/null)" ]; then
+            CONTINUE_FLAG="--continue"
+          fi
+
+          PROMPT="You are operating via GitHub Actions on Issue #${ISSUE_NUMBER}.\n\nIssue Context:\n${ISSUE_DATA}\n\nLatest instruction:\n${COMMENT_BODY}\n\nPlease generate/update a detailed technical implementation plan adhering to project GEMINI.md guidelines."
+          
+          PLAN_OUTPUT=$(agy $CONTINUE_FLAG --mode plan -p "$PROMPT" || echo "Agent encountered an error generating the plan.")
+
+          DISCLOSURE="\n\n---\n*Disclosure: I'm an AI assistant helping deytenit; I'm not deytenit.*"
+          gh issue comment "$ISSUE_NUMBER" --body "${PLAN_OUTPUT}${DISCLOSURE}"
+
+      # --- COMMAND: /implement ---
+      - name: Handle /implement (Issue Implementation & PR)
+        if: contains(github.event.comment.body, '/implement') && github.event.issue.pull_request == null
+        env:
+          GH_TOKEN: ${{ secrets.GITOPS_TOKEN || secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          BRANCH_NAME="agent/issue-${ISSUE_NUMBER}"
+          git checkout -b "$BRANCH_NAME"
+
+          ISSUE_DATA=$(gh issue view "$ISSUE_NUMBER" --comments --json title,body,comments)
+
+          CONTINUE_FLAG=""
+          if [ -d "$HOME/.gemini/antigravity-cli/conversations" ] && [ "$(ls -A $HOME/.gemini/antigravity-cli/conversations 2>/dev/null)" ]; then
+            CONTINUE_FLAG="--continue"
+          fi
+
+          PROMPT="You are operating via GitHub Actions to implement Issue #${ISSUE_NUMBER}.\n\nContext:\n${ISSUE_DATA}\n\nLatest instruction:\n${COMMENT_BODY}\n\nImplement the changes cleanly in the repository according to GEMINI.md rules."
+          agy $CONTINUE_FLAG --dangerously-skip-permissions -p "$PROMPT"
+
+          echo "Running repository verification gates..."
+          pnpm typecheck
+          pnpm lint
+          pnpm test
+
+          ISSUE_TITLE=$(gh issue view "$ISSUE_NUMBER" --json title -q .title)
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes produced by agent."
+            gh issue comment "$ISSUE_NUMBER" --body "No changes were produced for implementation.\n\n---\n*Disclosure: I'm an AI assistant helping deytenit; I'm not deytenit.*"
+            exit 0
+          fi
+
+          git commit -m "feat: implement issue #${ISSUE_NUMBER} (${ISSUE_TITLE})"
+          git push -u origin "$BRANCH_NAME" --force
+
+          PR_BODY="Resolves #${ISSUE_NUMBER}\n\nAutomated implementation generated via \`/implement\`.\n\n---\n*Disclosure: I'm an AI assistant helping deytenit; I'm not deytenit.*"
+          gh pr create \
+            --title "feat: ${ISSUE_TITLE}" \
+            --body "$PR_BODY" \
+            --base next \
+            --head "$BRANCH_NAME"
+
+      # --- COMMAND: /fix ---
+      - name: Handle /fix (PR Review Adjustments & CI Failure Debugging)
+        if: contains(github.event.comment.body, '/fix')
+        env:
+          GH_TOKEN: ${{ secrets.GITOPS_TOKEN || secrets.GITHUB_TOKEN }}
+          ISSUE_OR_PR_NUMBER: ${{ github.event.issue.number }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          IS_PR="${{ github.event.issue.pull_request != null }}"
+          if [ "$IS_PR" = "true" ]; then
+            gh pr checkout "$ISSUE_OR_PR_NUMBER"
+            BRANCH_NAME=$(git branch --show-current)
+            PR_DIFF=$(gh pr diff "$ISSUE_OR_PR_NUMBER" || true)
+
+            FAILED_RUN_ID=$(gh run list --branch "$BRANCH_NAME" --status failure --limit 1 --json databaseId -q '.[0].databaseId' || true)
+            CI_LOGS=""
+            if [ -n "$FAILED_RUN_ID" ] && [ "$FAILED_RUN_ID" != "null" ]; then
+              echo "Found failed CI run: #$FAILED_RUN_ID. Fetching failure logs..."
+              CI_LOGS=$(gh run view "$FAILED_RUN_ID" --log-failed | tail -n 200 || true)
+            fi
+
+            CONTINUE_FLAG=""
+            if [ -d "$HOME/.gemini/antigravity-cli/conversations" ] && [ "$(ls -A $HOME/.gemini/antigravity-cli/conversations 2>/dev/null)" ]; then
+              CONTINUE_FLAG="--continue"
+            fi
+
+            PROMPT="You are operating via GitHub Actions to fix/adjust PR #${ISSUE_OR_PR_NUMBER} on branch ${BRANCH_NAME}.\n\nFeedback / Comment:\n${COMMENT_BODY}\n\nPR Diff:\n${PR_DIFF}\n\nFailed CI Logs (if any):\n${CI_LOGS}\n\nApply the necessary fixes, making sure all lint, typecheck, and test checks pass."
+            agy $CONTINUE_FLAG --dangerously-skip-permissions -p "$PROMPT"
+
+            echo "Running repository verification gates..."
+            pnpm typecheck
+            pnpm lint
+            pnpm test
+
+            git add -A
+            if git diff --staged --quiet; then
+              echo "No additional changes were needed."
+              gh pr comment "$ISSUE_OR_PR_NUMBER" --body "Analyzed the request; no additional changes were needed.\n\n---\n*Disclosure: I'm an AI assistant helping deytenit; I'm not deytenit.*"
+              exit 0
+            fi
+
+            git commit -m "fix: apply review adjustments and CI fixes"
+            git push origin "$BRANCH_NAME"
+
+            gh pr comment "$ISSUE_OR_PR_NUMBER" --body "Applied adjustments and verified build/test suite.\n\n---\n*Disclosure: I'm an AI assistant helping deytenit; I'm not deytenit.*"
+          else
+            echo "Handling /fix on Issue #${ISSUE_OR_PR_NUMBER}..."
+            BRANCH_NAME="agent/fix-issue-${ISSUE_OR_PR_NUMBER}"
+            git checkout -b "$BRANCH_NAME"
+
+            ISSUE_DATA=$(gh issue view "$ISSUE_OR_PR_NUMBER" --comments --json title,body,comments)
+            PROMPT="Fix issue #${ISSUE_OR_PR_NUMBER}.\n\nContext:\n${ISSUE_DATA}\n\nInstruction:\n${COMMENT_BODY}"
+            agy --dangerously-skip-permissions -p "$PROMPT"
+
+            pnpm typecheck
+            pnpm lint
+            pnpm test
+
+            git add -A
+            git commit -m "fix: resolve issue #${ISSUE_OR_PR_NUMBER}"
+            git push -u origin "$BRANCH_NAME" --force
+
+            gh pr create \
+              --title "fix: resolve issue #${ISSUE_OR_PR_NUMBER}" \
+              --body "Resolves #${ISSUE_OR_PR_NUMBER}\n\nFix applied via \`/fix\`.\n\n---\n*Disclosure: I'm an AI assistant helping deytenit; I'm not deytenit.*" \
+              --base next \
+              --head "$BRANCH_NAME"
+          fi
+
+      - name: Complete Command (Add Rocket Reaction)
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITOPS_TOKEN || secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ github.event.comment.id }}
+        run: |
+          gh api "repos/${{ github.repository }}/issues/comments/${COMMENT_ID}/reactions" -f content=rocket || true
+
+      - name: Report Failure on Comment
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITOPS_TOKEN || secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh issue comment "$ISSUE_NUMBER" --body "⚠️ Workflow failed during execution. View run logs: [Action Run #${{ github.run_id }}](${RUN_URL})\n\n---\n*Disclosure: I'm an AI assistant helping deytenit; I'm not deytenit.*" || true
