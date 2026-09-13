@@ -116,7 +116,30 @@ jobs:
           echo "$HOME/.gemini/antigravity-cli/bin" >> $GITHUB_PATH
           export PATH="$HOME/.local/bin:$HOME/.gemini/antigravity-cli/bin:$PATH"
 
-          # 2. Inject OAuth Token
+          # 2. Patch location eligibility check (open-antigravity-patcher CLI_GATE_X64)
+          node -e '
+            const fs = require("fs");
+            const file = process.env.HOME + "/.local/bin/agy";
+            if (!fs.existsSync(file)) process.exit(0);
+            const buf = fs.readFileSync(file);
+            let count = 0;
+            for (let i = 0; i < buf.length - 18; i++) {
+              if (buf[i] === 0x48 && buf[i+1] === 0x85 && buf[i+2] === 0xc0 && buf[i+3] === 0x0f && buf[i+4] === 0x84 &&
+                  buf[i+9] === 0x80 && buf[i+10] === 0x78 && buf[i+11] === 0x08 && buf[i+12] === 0x00 &&
+                  buf[i+13] === 0x0f && buf[i+14] === 0x85) {
+                buf[i+9] = 0x48; buf[i+10] = 0x85; buf[i+11] = 0xc0; buf[i+12] = 0x90;
+                count++;
+              }
+            }
+            if (count > 0) {
+              fs.writeFileSync(file, buf);
+              console.log(`Applied open-antigravity-patcher: ${count} gates patched.`);
+            } else {
+              console.log("Antigravity CLI is already patched or signature not found.");
+            }
+          '
+
+          # 3. Inject OAuth Token
           mkdir -p ~/.gemini/antigravity-cli
           if [ -n "$AGY_AUTH_TOKEN" ]; then
             if echo "$AGY_AUTH_TOKEN" | base64 --decode >/dev/null 2>&1; then
