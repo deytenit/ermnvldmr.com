@@ -14,7 +14,7 @@ permissions:
   contents: write
   issues: write
   pull-requests: write
-  actions: read
+  actions: write
 
 jobs:
   agent-dispatch:
@@ -174,9 +174,9 @@ jobs:
             CONTINUE_FLAG="--continue"
           fi
 
-          PROMPT="You are operating via GitHub Actions on Issue #${ISSUE_NUMBER}.\n\nIssue Context:\n${ISSUE_DATA}\n\nLatest instruction:\n${COMMENT_BODY}\n\nPlease generate/update a detailed technical implementation plan adhering to project GEMINI.md guidelines."
+          PROMPT="You are operating via GitHub Actions in non-interactive headless mode on Issue #${ISSUE_NUMBER}.\n\nIssue Context:\n${ISSUE_DATA}\n\nLatest instruction:\n${COMMENT_BODY}\n\nPlease generate/update a detailed technical implementation plan adhering to project GEMINI.md guidelines."
 
-          PLAN_OUTPUT=$(agy $CONTINUE_FLAG --mode plan -p "$PROMPT" || echo "Agent encountered an error generating the plan.")
+          PLAN_OUTPUT=$(agy $CONTINUE_FLAG --mode plan --print-timeout 20m -p "$PROMPT" || echo "Agent encountered an error generating the plan.")
 
           DISCLOSURE="\n\n---\n*Disclosure: I'm an AI assistant helping deytenit; I'm not deytenit.*"
           gh issue comment "$ISSUE_NUMBER" --body "${PLAN_OUTPUT}${DISCLOSURE}"
@@ -199,8 +199,8 @@ jobs:
             CONTINUE_FLAG="--continue"
           fi
 
-          PROMPT="You are operating via GitHub Actions to implement Issue #${ISSUE_NUMBER}.\n\nContext:\n${ISSUE_DATA}\n\nLatest instruction:\n${COMMENT_BODY}\n\nImplement the changes cleanly in the repository according to GEMINI.md rules."
-          agy $CONTINUE_FLAG --dangerously-skip-permissions -p "$PROMPT"
+          PROMPT="You are operating via GitHub Actions in non-interactive headless mode to implement Issue #${ISSUE_NUMBER}.\n\nContext:\n${ISSUE_DATA}\n\nLatest instruction:\n${COMMENT_BODY}\n\nTask: Inspect relevant files, implement the necessary code changes directly in the workspace adhering to GEMINI.md rules, and verify them. Do not exit or stop before applying edits to the source code."
+          agy $CONTINUE_FLAG --dangerously-skip-permissions --print-timeout 25m -p "$PROMPT"
 
           echo "Running repository verification gates..."
           pnpm typecheck
@@ -258,8 +258,8 @@ jobs:
               CONTINUE_FLAG="--continue"
             fi
 
-            PROMPT="You are operating via GitHub Actions to fix/adjust PR #${ISSUE_OR_PR_NUMBER} on branch ${BRANCH_NAME}.\n\nFeedback / Comment:\n${COMMENT_BODY}\n\nPR Diff:\n${PR_DIFF}\n\nFailed CI Logs (if any):\n${CI_LOGS}\n\nApply the necessary fixes, making sure all lint, typecheck, and test checks pass."
-            agy $CONTINUE_FLAG --dangerously-skip-permissions -p "$PROMPT"
+            PROMPT="You are operating via GitHub Actions in non-interactive headless mode to fix/adjust PR #${ISSUE_OR_PR_NUMBER} on branch ${BRANCH_NAME}.\n\nFeedback / Comment:\n${COMMENT_BODY}\n\nPR Diff:\n${PR_DIFF}\n\nFailed CI Logs (if any):\n${CI_LOGS}\n\nTask: Apply the necessary fixes directly to the files, ensuring all lint, typecheck, and test checks pass. Do not exit without applying the changes."
+            agy $CONTINUE_FLAG --dangerously-skip-permissions --print-timeout 25m -p "$PROMPT"
 
             echo "Running repository verification gates..."
             pnpm typecheck
@@ -283,8 +283,8 @@ jobs:
             git checkout -b "$BRANCH_NAME"
 
             ISSUE_DATA=$(gh issue view "$ISSUE_OR_PR_NUMBER" --comments --json title,body,comments)
-            PROMPT="Fix issue #${ISSUE_OR_PR_NUMBER}.\n\nContext:\n${ISSUE_DATA}\n\nInstruction:\n${COMMENT_BODY}"
-            agy --dangerously-skip-permissions -p "$PROMPT"
+            PROMPT="You are operating via GitHub Actions in non-interactive headless mode to fix issue #${ISSUE_OR_PR_NUMBER}.\n\nContext:\n${ISSUE_DATA}\n\nInstruction:\n${COMMENT_BODY}\n\nTask: Apply the necessary fixes directly to the files adhering to GEMINI.md rules."
+            agy --dangerously-skip-permissions --print-timeout 25m -p "$PROMPT"
 
             pnpm typecheck
             pnpm lint
