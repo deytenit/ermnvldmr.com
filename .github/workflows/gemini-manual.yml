@@ -26,7 +26,19 @@ jobs:
       (contains(github.event.comment.body, '/plan') ||
        contains(github.event.comment.body, '/implement') ||
        contains(github.event.comment.body, '/fix'))
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, eliza]
+    container:
+      image: node:20-bookworm
+      options: --add-host host.docker.internal:host-gateway
+    env:
+      HTTP_PROXY: http://host.docker.internal:1080
+      HTTPS_PROXY: http://host.docker.internal:1080
+      http_proxy: http://host.docker.internal:1080
+      https_proxy: http://host.docker.internal:1080
+      ALL_PROXY: http://host.docker.internal:1080
+      all_proxy: http://host.docker.internal:1080
+      NO_PROXY: localhost,127.0.0.1
+      no_proxy: localhost,127.0.0.1
     timeout-minutes: 30
 
     steps:
@@ -38,6 +50,13 @@ jobs:
           if [[ "$AUTHOR_ASSOC" != "OWNER" && "$AUTHOR_ASSOC" != "MEMBER" && "$AUTHOR_ASSOC" != "COLLABORATOR" ]]; then
             echo "::error::Unauthorized trigger by user with association '$AUTHOR_ASSOC'."
             exit 1
+          fi
+
+      - name: Ensure GitHub CLI is Installed
+        run: |
+          if ! command -v gh &> /dev/null; then
+            echo "Installing GitHub CLI..."
+            curl -fsSL https://github.com/cli/cli/releases/download/v2.67.0/gh_2.67.0_linux_amd64.tar.gz | tar -xz -C /usr/local --strip-components=1
           fi
 
       - name: Acknowledge Command (Add Eyes Reaction)
@@ -83,7 +102,7 @@ jobs:
 
       - name: Setup Antigravity CLI & Credentials
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITOPS_TOKEN || secrets.GITHUB_TOKEN }}
           AGY_AUTH_TOKEN: ${{ secrets.AGY_AUTH_TOKEN }}
         run: |
           # 1. Download official Antigravity CLI binary from google-antigravity/antigravity-cli
@@ -118,6 +137,7 @@ jobs:
         run: |
           git config --global user.name "Adam Jensen [bot]"
           git config --global user.email "adam@ermnvldmr.com"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       # --- COMMAND: /plan ---
       - name: Handle /plan (Issue Planning)
@@ -136,7 +156,7 @@ jobs:
           fi
 
           PROMPT="You are operating via GitHub Actions on Issue #${ISSUE_NUMBER}.\n\nIssue Context:\n${ISSUE_DATA}\n\nLatest instruction:\n${COMMENT_BODY}\n\nPlease generate/update a detailed technical implementation plan adhering to project GEMINI.md guidelines."
-          
+
           PLAN_OUTPUT=$(agy $CONTINUE_FLAG --mode plan -p "$PROMPT" || echo "Agent encountered an error generating the plan.")
 
           DISCLOSURE="\n\n---\n*Disclosure: I'm an AI assistant helping deytenit; I'm not deytenit.*"
