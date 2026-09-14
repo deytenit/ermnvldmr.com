@@ -83,14 +83,14 @@ export function PageHead({
   const rootClasses = cn(pageHeadRootVariants({ strategy }), className);
 
   const expandedContent = (
-    <PageContainer paddingY="medium">
-      <VStack align="stretch" gap={6}>
-        <HStack align="center" justify="between">
-          <HStack align="center" gap={4}>
-            {addonLeft && <div>{addonLeft}</div>}
+    <PageContainer paddingY="none">
+      <VStack align="stretch" className="pb-8 sm:pb-12" gap={6}>
+        <HStack align="center" className="py-2.5" gap={4} justify="between" wrap="wrap">
+          <HStack align="center" className="flex-1" gap={4}>
+            {addonLeft && <div className="flex-shrink-0 whitespace-nowrap">{addonLeft}</div>}
             {breadcrumbs && <div className="hidden sm:block">{breadcrumbs}</div>}
           </HStack>
-          {addonRight && <div>{addonRight}</div>}
+          {addonRight && <div className="flex-shrink-0">{addonRight}</div>}
         </HStack>
         <VStack gap={4}>
           <Header level={1}>{heading}</Header>
