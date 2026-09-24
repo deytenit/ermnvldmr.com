@@ -176,7 +176,7 @@ jobs:
 
           PROMPT="You are operating via GitHub Actions in non-interactive headless mode on Issue #${ISSUE_NUMBER}.\n\nIssue Context:\n${ISSUE_DATA}\n\nLatest instruction:\n${COMMENT_BODY}\n\nPlease generate/update a detailed technical implementation plan adhering to project GEMINI.md guidelines."
 
-          PLAN_OUTPUT=$(agy $CONTINUE_FLAG --mode plan --print-timeout 20m -p "$PROMPT" || echo "Agent encountered an error generating the plan.")
+          PLAN_OUTPUT=$(agy $CONTINUE_FLAG --mode plan --dangerously-skip-permissions --print-timeout 20m -p "$PROMPT" || echo "Agent encountered an error generating the plan.")
 
           DISCLOSURE="\n\n---\n*Disclosure: I'm an AI assistant helping deytenit; I'm not deytenit.*"
           gh issue comment "$ISSUE_NUMBER" --body "${PLAN_OUTPUT}${DISCLOSURE}"
