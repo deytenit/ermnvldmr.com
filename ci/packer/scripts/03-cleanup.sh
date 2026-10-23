@@ -4,6 +4,21 @@ export DEBIAN_FRONTEND=noninteractive
 
 echo "=== Sanitizing Machine Identity & Temporary Files ==="
 
+# Lock temporary packer build user
+passwd -l debian || true
+
+# Apply SSH security hardening before final image capture
+mkdir -p /etc/ssh/sshd_config.d
+cat << 'EOF' > /etc/ssh/sshd_config.d/99-security-hardening.conf
+PasswordAuthentication no
+PermitRootLogin prohibit-password
+KbdInteractiveAuthentication no
+X11Forwarding no
+MaxAuthTries 3
+ClientAliveInterval 300
+ClientAliveCountMax 2
+EOF
+
 # Clean APT caches and logs
 apt-get autoremove -y --purge
 apt-get clean

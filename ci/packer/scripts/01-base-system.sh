@@ -85,4 +85,45 @@ auto eth0
 iface eth0 inet dhcp
 EOF
 
+# Apply kernel hardening sysctl parameters
+cat << 'EOF' > /etc/sysctl.d/99-k3s-hardening.conf
+# Network SYN Flood Protection
+net.ipv4.tcp_syncookies = 1
+# Disable ICMP redirects
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0
+net.ipv4.conf.all.send_redirects = 0
+net.ipv4.conf.default.send_redirects = 0
+# Disable Source Routing
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv4.conf.default.accept_source_route = 0
+# Anti-spoofing (Reverse Path Filtering)
+net.ipv4.conf.all.rp_filter = 1
+net.ipv4.conf.default.rp_filter = 1
+# Required for K8s pod networking
+net.ipv4.ip_forward = 1
+# System Hardening
+kernel.kptr_restrict = 2
+fs.protected_hardlinks = 1
+fs.protected_symlinks = 1
+fs.inotify.max_user_watches = 524288
+fs.inotify.max_user_instances = 512
+EOF
+sysctl --system || true
+
+# Configure baseline UFW firewall & fail2ban
+ufw default deny incoming
+ufw default allow outgoing
+ufw default allow routed
+ufw allow 22/tcp comment 'SSH'
+ufw allow 80/tcp comment 'HTTP Traefik'
+ufw allow 443/tcp comment 'HTTPS Traefik'
+ufw allow 6443/tcp comment 'K3s API'
+ufw allow in on cni0 || true
+ufw allow in on flannel.1 || true
+ufw allow from 10.42.0.0/16 comment 'K3s Pod CIDR'
+ufw allow from 10.43.0.0/16 comment 'K3s Service CIDR'
+ufw --force enable
+systemctl enable fail2ban || true
+
 echo "=== Base System Configuration Complete ==="
