@@ -12,6 +12,8 @@ export interface AnalyticsHtmlTag {
   head?: boolean;
   /** Whether the tag should be appended at the end. */
   append?: boolean;
+  /** Whether to prepend publicPath / assetPrefix to the tag URL. Defaults to true in Rsbuild. */
+  publicPath?: boolean | string;
 }
 
 /**

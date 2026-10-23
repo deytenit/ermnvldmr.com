@@ -6,3 +6,4 @@ metadata:
 data:
   DATABASE_TYPE: "postgresql"
   CLIENT_IP_HEADER: "X-Forwarded-For"
+  TRACKER_SCRIPT_NAME: "beacon.js"

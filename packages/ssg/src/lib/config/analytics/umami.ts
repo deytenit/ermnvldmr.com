@@ -92,6 +92,7 @@ export function umamiAnalytics(options: UmamiAnalyticsOptions): AnalyticsProvide
           tag: 'script',
           attrs,
           head: true,
+          publicPath: false,
         },
       ];
     },

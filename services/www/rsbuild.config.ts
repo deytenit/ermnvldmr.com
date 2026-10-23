@@ -39,7 +39,9 @@ export default defineSSGServiceConfig(
   mergeConfig(localeRsbuildConfig(), {
     analytics: [
       umamiAnalytics({
-        serverUrl: 'https://umami.ermnvldmr.com',
+        serverUrl: '/beacon',
+        scriptName: 'beacon.js',
+        hostUrl: '/beacon',
         websiteId: UMAMI_WWW_WEBSITE_ID,
         domains: 'ermnvldmr.com,www.ermnvldmr.com',
         doNotTrack: true,
