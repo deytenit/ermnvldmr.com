@@ -1,23 +1,23 @@
 ---
 title: Руководства
-description: Практические руководства по сборке репозиториев узлов, действий и композиций.
+description: Практические руководства по сборке репозиториев узлов, разработке действий и настройке композиций.
 weight: 20
 ---
 
-Практические руководства для повседневной работы с apex. Каждое руководство решает одну повторяющуюся задачу: сборка репозитория [узла](/apex/glossary#node), разработка [действий](/apex/glossary#action) для [движка](/apex/glossary#engine), определение [композиций](/apex/glossary#compositions) сервисов и эксплуатация лежащего в основе хоста.
+Практические руководства для&nbsp;повседневной работы с&nbsp;apex. Каждое руководство решает одну прикладную задачу: сборку репозитория [узла](/apex/glossary#node), разработку [действий](/apex/glossary#action) для&nbsp;[движка](/apex/glossary#engine), определение [композиций](/apex/glossary#compositions) сервисов и&nbsp;эксплуатацию базового хоста.
 
 ## Доступные руководства {#available-guides}
 
 {{< cards >}}
-  {{< card link="/apex/guides/node-repository" title="Репозиторий узла" subtitle="Соберите репозиторий узла, который объявляет идентичность узла, его конфигурации и композиции." >}}
-  {{< card link="/apex/guides/action-development" title="Разработка действий" subtitle="Пишите действия, которые движок диспетчеризует на узле." >}}
-  {{< card link="/apex/guides/service-composition" title="Композиция сервисов" subtitle="Определяйте композиции проектов и разворачивайте их вместе с базовой композицией." >}}
-  {{< card link="/apex/guides/host-operations" title="Операции с хостом" subtitle="Выполняйте рутинные операции над работающим хостом через движок." >}}
+  {{< card link="/apex/guides/node-repository" title="Репозиторий узла" subtitle="Соберите репозиторий с&nbsp;декларацией идентичности узла, его конфигураций и&nbsp;композиций." >}}
+  {{< card link="/apex/guides/action-development" title="Разработка действий" subtitle="Создавайте действия, которые движок запускает на&nbsp;узле." >}}
+  {{< card link="/apex/guides/service-composition" title="Композиция сервисов" subtitle="Определяйте композиции проектов и&nbsp;разворачивайте их вместе с&nbsp;базовой композицией." >}}
+  {{< card link="/apex/guides/host-operations" title="Операции с хостом" subtitle="Выполняйте регулярные операции на&nbsp;работающем хосте через движок." >}}
 {{< /cards >}}
 
 ---
 
-**См. также:**
+**См.&nbsp;также:**
 
 - [Docs: Getting started](/apex/getting-started)
 - [Docs: Concepts](/apex/concepts)

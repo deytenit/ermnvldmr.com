@@ -602,6 +602,9 @@ importers:
 
   services/docs:
     devDependencies:
+      '@ermnvldmr/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
       '@ermnvldmr/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config

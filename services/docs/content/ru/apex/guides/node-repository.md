@@ -4,11 +4,11 @@ description: Соберите четыре опоры, зафиксируйте 
 weight: 21
 ---
 
-**Контекст:** каждый [узел](/apex/glossary#node) получает ровно один репозиторий. Выбирайте любое имя репозитория — [идентичность](/apex/glossary#node-identity) объявляется явно в `node.env`, поэтому имя репозитория — это соглашение, а не функциональный ввод. Это руководство собирает такой репозиторий с нуля.
+**Контекст:** у&nbsp;каждого [узла](/apex/glossary#node)&nbsp;— ровно один репозиторий. Название репозитория может быть любым: [идентичность](/apex/glossary#node-identity) задаётся явно в&nbsp;файле `node.env`, поэтому имя репозитория служит лишь удобным обозначением. В&nbsp;этом руководстве мы пошагово соберём такой репозиторий с&nbsp;нуля.
 
 {{% steps %}}
 
-### Инициализируйте репозиторий и зафиксируйте commons
+### Инициализируйте репозиторий и&nbsp;зафиксируйте commons
 
 ```bash
 git init <node-repo> && cd <node-repo>
@@ -18,7 +18,7 @@ git add .gitmodules commons
 mkdir -p proprietaries/actions proprietaries/lib configs compositions/apex .github/workflows
 ```
 
-Gitlink фиксирует точную версию движка, которую запускает узел. Обновление в дальнейшем означает checkout более нового тега внутри `commons/` и коммит перемещённого указателя.
+Ссылка gitlink фиксирует точную версию движка, на&nbsp;которой работает узел. Чтобы обновить движок в&nbsp;будущем, достаточно переключиться на&nbsp;новый тег внутри каталога `commons/` и&nbsp;закоммитить смещение указателя.
 
 ### Объявите идентичность
 
@@ -30,9 +30,14 @@ APEX_GIT_AUTHOR_NAME=apex [bot]
 APEX_GIT_AUTHOR_EMAIL=apex@localhost
 ```
 
-`node.env` объявляет идентичность узла явно — не предполагается никакой формы домена. `APEX_NODE_FQDN` — это реальный FQDN, используемый для маршрутизации traefik по `Host()` (fallback: имя хоста ОС, с предупреждением). `APEX_NODE_HOST` — это публичное имя хоста, используемое для `--host` резервного копирования и метки `instance` наблюдаемости/уведомлений (по умолчанию: `APEX_NODE_FQDN`); короткое `name` узла — это его первая метка. `APEX_SUBNET` — это /24 узла для сети `direct` и является **обязательным** — отсутствующее значение приводит к выходу с кодом `66` (см. [Concept: Fleet addressing scheme](/apex/concepts/addressing)). `APEX_GIT_AUTHOR_NAME`/`APEX_GIT_AUTHOR_EMAIL` — это идентичность бота capture-up (общие значения по умолчанию, если не заданы).
+Файл `node.env` явно задаёт параметры идентификации узла (доменная зона не&nbsp;подразумевается заранее):
 
-### Напишите базовую обёртку и её env-файлы
+- `APEX_NODE_FQDN`&nbsp;— FQDN хоста для&nbsp;маршрутизации Traefik по&nbsp;правилу `Host()` (если не&nbsp;указан, движок выведет предупреждение и&nbsp;возьмёт имя хоста из&nbsp;ОС).
+- `APEX_NODE_HOST`&nbsp;— публичный адрес хоста для&nbsp;параметра `--host` резервного копирования и&nbsp;метки `instance` в&nbsp;системе мониторинга и&nbsp;уведомлениях (по&nbsp;умолчанию совпадает с&nbsp;`APEX_NODE_FQDN`). Первая часть FQDN до&nbsp;точки используется как короткое имя (`name`) узла.
+- `APEX_SUBNET`&nbsp;— выделенная подсеть /24 для&nbsp;внутренней сети `direct`. Параметр **обязателен**: без&nbsp;него запуск завершится с&nbsp;кодом&nbsp;66 (см. [Concept: Fleet addressing scheme](/apex/concepts/addressing)).
+- `APEX_GIT_AUTHOR_NAME` и&nbsp;`APEX_GIT_AUTHOR_EMAIL`&nbsp;— имя и&nbsp;почта сервисного бота capture-up (если не&nbsp;заданы, применяются значения по&nbsp;умолчанию).
+
+### Напишите базовую обёртку и&nbsp;файлы переменных окружения
 
 ```yaml {filename="compositions/apex/docker-compose.yml"}
 name: apex
@@ -55,9 +60,11 @@ APEX_OBS_BASIC_AUTH_USER=<node-user>
 # APEX_RESTIC_AWS_ENDPOINT=                # напр., URL S3-совместимого эндпоинта
 ```
 
-`apex.env` содержит только коммитируемые несекретные скаляры. `COMPOSE_PROFILES` выбирает, какие опциональные базовые сервисы запускает этот узел — `adguard`, `xray`, `alloy` (агент push-наблюдаемости) и `manual` (одноразовые резервные копии) — и может быть пустым. Задокументируйте некоммитируемые секретные ключи в `compositions/apex/SECRETS.md`, чтобы оператор на свежем хосте знал, что заполнить в `.env` (`APEX_RESTIC_PASSWORD`, ключи доступа S3, `APEX_TRAEFIK_CF_DNS_API_TOKEN`, `APEX_TRAEFIK_ACME_EMAIL` и `APEX_OBS_BASIC_AUTH_PASS`, когда наблюдаемость включена).
+Файл `apex.env` хранит только публичные параметры конфигурации, которые безопасно коммитить в&nbsp;репозиторий. Переменная `COMPOSE_PROFILES` определяет набор опциональных базовых сервисов: `adguard`, `xray`, `alloy` (агент сбора метрик и&nbsp;логов) и&nbsp;`manual` (разовые запуски бэкапа); список может быть пустым.
 
-### Игнорируйте то, чему никогда не место в git
+Все секреты, которые нельзя хранить в&nbsp;Git, задокументируйте в&nbsp;`compositions/apex/SECRETS.md`. Это поможет при&nbsp;развёртывании нового узла заполнить локальный файл `.env`: пароль `APEX_RESTIC_PASSWORD`, ключи доступа к&nbsp;S3, токен `APEX_TRAEFIK_CF_DNS_API_TOKEN`, почту `APEX_TRAEFIK_ACME_EMAIL`, а&nbsp;также `APEX_OBS_BASIC_AUTH_PASS` (если включён мониторинг).
+
+### Настройте правила игнорирования для&nbsp;Git
 
 ```gitignore {filename=".gitignore"}
 **/@tier1
@@ -71,34 +78,34 @@ __pycache__/
 
 ### Добавьте bootstrap-скрипт
 
-`init.sh` подготавливает свежий клон на хосте: `git submodule update --init --recursive`, `git config core.hooksPath commons/githooks`, `git config --global --add safe.directory <repo>` и добавляет `<repo>/commons` в начало `PATH` в login-shell, чтобы `apex` разрешался. Пометьте его исполняемым.
+Скрипт `init.sh` подготавливает свежий клон репозитория на&nbsp;хосте: выполняет `git submodule update --init --recursive`, настраивает хуки `git config core.hooksPath commons/githooks`, добавляет репозиторий в&nbsp;доверенные (`git config --global --add safe.directory <repo>`) и&nbsp;прописывает `<repo>/commons` в&nbsp;переменную `PATH` командной оболочки, чтобы утилита `apex` была доступна глобально. Не&nbsp;забудьте выставить флаг исполняемого файла: `chmod +x init.sh`.
 
 ### Заведите реестр адресации
 
-Создайте `compositions/ADDRESSING.md` с подсетью узла (`APEX_SUBNET`) и зарезервированными диапазонами (`.10`–`.19` — core, `.20`+ — сервисы). Каждый [якорный IP](/apex/glossary#anchor-ip), выделяемый позднее, записывается здесь.
+Создайте файл `compositions/ADDRESSING.md` с&nbsp;подсетью узла (`APEX_SUBNET`) и&nbsp;схемой распределения адресов: диапазоны `.10`–`.19` зарезервированы за&nbsp;базовыми сервисами (core), а&nbsp;`.20` и&nbsp;выше выделяются под&nbsp;проекты. Все назначаемые в&nbsp;будущем [якорные IP](/apex/glossary#anchor-ip) фиксируются в&nbsp;этом документе.
 
 ### Подключите CI capture-up
 
-Добавьте плановый workflow, который сливает `sync/<node>` в `main`, когда ветка существует, коммитя под идентичностью бота. Выполняйте checkout **без** сабмодулей — слияние лишь перемещает указатель commons, а submodule-URL по SSH не извлекается с CI-токеном по умолчанию. См. [Concept: Framework architecture](/apex/concepts/architecture) для полного цикла [capture-up](/apex/glossary#capture-up).
+Настройте периодический CI-workflow, который автоматически вливает ветку `sync/<node>` в&nbsp;`main` (если ветка существует) с&nbsp;авторством бота. Шаг checkout должен выполняться **без** загрузки подмодулей: слияние только сдвигает указатель `commons`, а&nbsp;SSH-ссылка на&nbsp;подмодуль недоступна по&nbsp;стандартному CI-токену. Полный цикл описан в&nbsp;разделе [Concept: Framework architecture](/apex/concepts/architecture) ([capture-up](/apex/glossary#capture-up)).
 
-### Проверьте
+### Проверьте работу
 
 ```bash
 ./commons/apex --help
 ```
 
-В списке должно отображаться каждое действие из commons (плюс ваши proprietaries, после их добавления). Вне хоста — до заполнения `node.env` — ожидайте безобидное предупреждение о том, что `APEX_NODE_FQDN` не задан (движок откатывается к имени хоста ОС); `APEX_SUBNET` при этом всё равно должен быть задан, иначе движок завершится с кодом `66`. Закоммитьте собранный репозиторий в `main`.
+В&nbsp;списке должны появиться все базовые действия из&nbsp;commons, а&nbsp;позже&nbsp;— и&nbsp;локальные действия из&nbsp;proprietaries. При&nbsp;запуске вне хоста (до&nbsp;заполнения `node.env`) появится предупреждение о&nbsp;том, что `APEX_NODE_FQDN` не&nbsp;задан: в&nbsp;этом случае движок подставит системное имя хоста. При&nbsp;этом переменная `APEX_SUBNET` обязательно должна быть указана, иначе выполнение завершится с&nbsp;кодом&nbsp;66. Закоммитьте подготовленный репозиторий в&nbsp;ветку `main`.
 
 {{% /steps %}}
 
 ## Заметки
 
-- Опора `proprietaries/` может начинаться пустой (сохраняйте её присутствие с помощью файлов `.gitkeep`); движок корректно обрабатывает отсутствующий оверлей.
-- Переносите источники конфигурации хоста в `configs/` (`ufw/`, `cron/crontab`, `systemd/`, `crowdsec/`) по мере того как узел принимает каждый шаг `configure/*` — действия потребляют `configs/` дословно через слой шаблонов.
+- Каталог `proprietaries/` изначально может быть пустым (сохраните структуру с&nbsp;помощью файлов `.gitkeep`): движок корректно работает без&nbsp;пользовательских переопределений.
+- Переносите конфигурационные файлы хоста в&nbsp;`configs/` (`ufw/`, `cron/crontab`, `systemd/`, `crowdsec/`) по&nbsp;мере подключения шагов `configure/*`. Действия считывают шаблоны из&nbsp;`configs/` напрямую.
 
 ---
 
-**См. также:**
+**См.&nbsp;также:**
 
 - [Getting started with an apex node](/apex/getting-started)
 - [Concept: Framework architecture](/apex/concepts/architecture)
