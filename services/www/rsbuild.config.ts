@@ -6,7 +6,9 @@ import {
   mergeConfig,
   umamiAnalytics,
 } from '@ermnvldmr/ssg/dev';
+import { localDevServer } from '@ermnvldmr/rsbuild-config/dev';
 import { THEME_INIT_SCRIPT, THEME_INIT_STYLES } from '@ermnvldmr/ui/dev';
+import { TRUSTED_TYPES_INIT_SCRIPT } from '@ermnvldmr/stl';
 import { localeRsbuildConfig } from '@ermnvldmr/i18n/dev';
 import { RsdoctorRspackPlugin } from '@rsdoctor/rspack-plugin';
 import { pluginMdx } from '@rsbuild/plugin-mdx';
@@ -37,6 +39,7 @@ const fontBase = `/${locale}/static/font`;
 
 export default defineSSGServiceConfig(
   mergeConfig(localeRsbuildConfig(), {
+    server: localDevServer({ port: 3000 }),
     analytics: [
       umamiAnalytics({
         serverUrl: '/beacon',
@@ -98,6 +101,7 @@ export default defineSSGServiceConfig(
     },
     html: {
       tags: [
+        { tag: 'script', children: TRUSTED_TYPES_INIT_SCRIPT, head: true },
         { tag: 'script', children: THEME_INIT_SCRIPT, head: true },
         { tag: 'style', children: THEME_INIT_STYLES, head: true },
         {

@@ -1,9 +1,11 @@
+import { localDevServer } from '@ermnvldmr/rsbuild-config/dev';
 import { defineSSGServiceConfig, discoverEntries, umamiAnalytics } from '@ermnvldmr/ssg/dev';
 import { THEME_INIT_SCRIPT, THEME_INIT_STYLES } from '@ermnvldmr/ui/dev';
 
 const UMAMI_STATIC_WEBSITE_ID = '0831532a-2cec-4955-8f5b-452d8bba96d8';
 
 export default defineSSGServiceConfig({
+  server: localDevServer({ port: 3001 }),
   analytics: [
     umamiAnalytics({
       serverUrl: 'https://umami.ermnvldmr.com',

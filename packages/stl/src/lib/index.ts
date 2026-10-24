@@ -3,3 +3,4 @@ export * from './functions/index.js';
 export * from './object/index.js';
 export * from './window/localStorage.js';
 export * from './react/index.js';
+export * from './security.js';
