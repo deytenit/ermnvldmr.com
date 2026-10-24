@@ -134,10 +134,11 @@ export function ssgPlugin(): RsbuildPlugin {
         const Critters = _require('critters') as new (opts?: {
           path?: string;
           publicPath?: string;
-          preload?: string;
+          preload?: 'body' | 'media' | 'swap' | 'js' | 'js-lazy' | boolean;
           inlineFonts?: boolean;
           pruneSource?: boolean;
           reduceInlineStyles?: boolean;
+          allowRules?: (string | RegExp)[];
         }) => { process(html: string): Promise<string> };
 
         const configuredAssetPrefix =
@@ -147,10 +148,11 @@ export function ssgPlugin(): RsbuildPlugin {
         const critters = new Critters({
           path: webDistPath,
           publicPath: configuredAssetPrefix,
-          preload: 'media',
+          preload: false,
           inlineFonts: false,
           pruneSource: false,
           reduceInlineStyles: false,
+          allowRules: [/\.dark/],
         });
 
         for (const entryName of entryNames) {

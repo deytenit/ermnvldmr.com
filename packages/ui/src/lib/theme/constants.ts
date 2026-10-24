@@ -10,7 +10,7 @@ export const THEME_INIT_SCRIPT = `(function(){try{var k='ermnvldmr/ui/lib/theme'
  * These align with the main palette in styles.css.
  */
 export const THEME_INIT_STYLES = `
-  :root { background-color: #fafafa; color: #262626; }
-  .dark { background-color: #141414; color: #f6f6f6; }
+  :root { --rb-background: #fafafa; --rb-base: #f6f6f6; --rb-text: #262626; background-color: #fafafa; color: #262626; }
+  .dark { --rb-background: #141414; --rb-base: #262626; --rb-text: #f6f6f6; background-color: #141414; color: #f6f6f6; }
   body { margin: 0; transition: background-color 0.2s ease; }
 `;
