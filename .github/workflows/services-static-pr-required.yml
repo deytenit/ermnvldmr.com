@@ -9,6 +9,7 @@ on:
       - 'packages/stl/**'
       - 'packages/i18n/**'
       - '.github/workflows/services-static-pr-required.yml'
+      - 'ci/scripts/**'
       - 'pnpm-lock.yaml'
 
 concurrency:
