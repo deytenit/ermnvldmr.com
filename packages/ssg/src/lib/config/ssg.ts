@@ -147,7 +147,7 @@ export function ssgPlugin(): RsbuildPlugin {
         const critters = new Critters({
           path: webDistPath,
           publicPath: configuredAssetPrefix,
-          preload: 'swap',
+          preload: 'media',
           inlineFonts: false,
           pruneSource: false,
           reduceInlineStyles: false,

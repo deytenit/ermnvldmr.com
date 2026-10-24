@@ -1,5 +1,4 @@
 import React from 'react';
-import { createRoot, hydrateRoot } from 'react-dom/client';
 
 /**
  * Options for page creation.
@@ -15,9 +14,8 @@ export interface PageOptions {
  * Mounts or hydrates a React component into the `#root` element.
  *
  * Skips DOM mounting during the SSG server-side render pass
- * (`typeof window === 'undefined'`). On the client, hydrates if the
- * root already has children (SSG output), otherwise performs a fresh
- * `createRoot` render.
+ * (`typeof window === 'undefined'`). On the client, hydrates asynchronously
+ * during idle time to unblock First Contentful Paint.
  *
  * @param Component - The React component to render.
  * @param options - Optional page metadata (title, description).
@@ -45,17 +43,31 @@ export function createPage(Component: React.ComponentType, options: PageOptions 
     metaDescription.setAttribute('content', options.description);
   }
 
-  if (rootElement) {
-    const node = (
-      <React.StrictMode>
-        <Component />
-      </React.StrictMode>
-    );
+  if (!rootElement) return;
 
-    if (rootElement.hasChildNodes()) {
-      hydrateRoot(rootElement, node);
-    } else {
-      createRoot(rootElement).render(node);
-    }
+  const mountOrHydrate = () => {
+    void import('react-dom/client')
+      .then(({ createRoot, hydrateRoot }) => {
+        const node = (
+          <React.StrictMode>
+            <Component />
+          </React.StrictMode>
+        );
+
+        if (rootElement.hasChildNodes()) {
+          hydrateRoot(rootElement, node);
+        } else {
+          createRoot(rootElement).render(node);
+        }
+      })
+      .catch((err: unknown) => {
+        console.error('[createPage] Client hydration failed:', err);
+      });
+  };
+
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(mountOrHydrate);
+  } else {
+    setTimeout(mountOrHydrate, 1);
   }
 }
