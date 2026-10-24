@@ -25,6 +25,9 @@ playwright-report/
 .env
 .env.keys
 
+# local development certificates
+.certs/
+
 # macOS-specific files
 .DS_Store
 

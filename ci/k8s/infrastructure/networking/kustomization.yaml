@@ -4,3 +4,7 @@ resources:
   - ingress.yaml
   - middleware-strip-beacon.yaml
   - ingress-beacon.yaml
+  - middleware-sec-headers-common.yaml
+  - middleware-sec-headers-www.yaml
+  - middleware-sec-headers-docs.yaml
+  - middleware-sec-headers-umami.yaml

@@ -2,7 +2,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-STATIC_DIR="$SCRIPT_DIR/../../services/www/public/static"
+STATIC_DIR="${1:-$SCRIPT_DIR/../../services/www/public/static}"
 
 if [ ! -d "$STATIC_DIR" ]; then
     echo "Directory $STATIC_DIR does not exist. Skipping."

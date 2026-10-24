@@ -1,0 +1,18 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: sec-headers-common
+  namespace: com-ermnvldmr
+spec:
+  headers:
+    stsSeconds: 63072000
+    stsIncludeSubdomains: true
+    stsPreload: true
+    forceSTSHeader: true
+    customFrameOptionsValue: "DENY"
+    contentTypeNosniff: true
+    browserXssFilter: false
+    referrerPolicy: "strict-origin-when-cross-origin"
+    customResponseHeaders:
+      Cross-Origin-Opener-Policy: "same-origin"
+      Permissions-Policy: "camera=(), microphone=(), geolocation=(), browsing-topics=()"
