@@ -1,5 +1,5 @@
-import { cn, genericMemo, useIntersectionObserver, castMutableRef } from '@ermnvldmr/stl';
-import React, { forwardRef, useState, useEffect, useRef } from 'react';
+import { cn, genericMemo, castMutableRef } from '@ermnvldmr/stl';
+import React, { forwardRef, useEffect, useRef } from 'react';
 
 import {
   getTypographyClassNames,
@@ -85,7 +85,6 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
   },
   ref
 ) {
-  const [isVisible, setIsVisible] = useState(delay === undefined);
   const internalRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -97,22 +96,13 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
     }
   }, [ref]);
 
-  const isIntersecting = useIntersectionObserver(internalRef, {
-    threshold: 0.1,
-    once: true,
-  });
-
-  useEffect(() => {
-    if (delay !== undefined && isIntersecting) {
-      if (delay > 0) {
-        const timer = setTimeout(() => setIsVisible(true), delay);
-        return () => clearTimeout(timer);
-      } else {
-        setIsVisible(true);
-      }
-    }
-    return undefined;
-  }, [delay, isIntersecting]);
+  const delayStyle: React.CSSProperties | undefined =
+    delay !== undefined
+      ? {
+          animationDelay: `${delay}ms`,
+          animationFillMode: 'both',
+        }
+      : undefined;
 
   return (
     <Component
@@ -132,13 +122,14 @@ const TextComponent = forwardRef<HTMLElement, TextProps>(function Text(
           overflow,
           maxLines,
         }),
-        delay !== undefined &&
-          (isVisible
-            ? 'animate-in fade-in slide-in-from-bottom-2 duration-1000 ease-out'
-            : 'opacity-0'),
+        delay !== undefined && 'animate-in fade-in slide-in-from-bottom-2 duration-1000 ease-out',
         className
       )}
       data-testid={testId}
+      style={{
+        ...delayStyle,
+        ...props.style,
+      }}
       type={htmlType ?? (Component === 'button' ? 'button' : undefined)}
     >
       {children}

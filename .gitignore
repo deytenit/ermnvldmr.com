@@ -25,6 +25,9 @@ playwright-report/
 .env
 .env.keys
 
+# local development certificates
+.certs/
+
 # macOS-specific files
 .DS_Store
 
@@ -43,3 +46,9 @@ docs/superpowers/
 .sops/keys.txt
 ci/k8s/**/secret.yaml
 ci/cloud-init/user-data.yaml
+
+# Packer & QEMU Build Artifacts
+output-qemu/
+*.qcow2
+*.iso
+

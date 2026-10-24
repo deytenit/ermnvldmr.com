@@ -3,13 +3,17 @@
   "version": "1.0.0",
   "description": "docs.root.ermnvldmr.com documentation site",
   "scripts": {
-    "dev": "hugo server --buildDrafts --buildExpired",
+    "cli": "ermnvldmr-cli",
+    "sync:static": "pnpm cli sync:static",
+    "predev": "node ../../ci/scripts/ensure-dev-certs.mjs",
+    "dev": "hugo server --buildDrafts --buildExpired --baseURL https://localhost.ermnvldmr.com:1313/ --tlsCertFile ../../.certs/localhost.ermnvldmr.com.pem --tlsKeyFile ../../.certs/localhost.ermnvldmr.com-key.pem",
     "build": "hugo --gc --minify",
     "clean": "rm -rf public resources",
     "lint": "echo 'No linting for Hugo site'",
     "typecheck": "echo 'No typecheck for Hugo site'"
   },
   "devDependencies": {
+    "@ermnvldmr/cli": "workspace:*",
     "@ermnvldmr/eslint-config": "workspace:*"
   },
   "engines": {

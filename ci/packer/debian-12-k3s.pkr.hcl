@@ -9,7 +9,7 @@ packer {
 
 variable "debian_cloud_image_url" {
   type    = string
-  default = "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-nocloud-amd64.qcow2"
+  default = "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2"
 }
 
 variable "debian_cloud_image_checksum" {
@@ -42,6 +42,8 @@ source "qemu" "debian_k3s" {
   ssh_password      = "packer"
   ssh_timeout       = "5m"
   vm_name           = var.vm_name
+  cpus              = 2
+  memory            = 2048
   net_device        = "virtio-net"
   disk_interface    = "virtio"
   headless          = true

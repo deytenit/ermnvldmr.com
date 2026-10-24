@@ -74,7 +74,7 @@ function HomePage(): React.JSX.Element {
             )}
           </Paragraph>
         </VStack>
-        <Link delay={1000} href="mailto:personal@ermnvldmr.com" size="l" type="title">
+        <Link isObfuscated delay={1000} href="mailto:personal@ermnvldmr.com" size="l" type="title">
           personal@ermnvldmr.com
         </Link>
       </VStack>

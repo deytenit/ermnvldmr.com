@@ -82,16 +82,22 @@ export function PageHead({
 
   const rootClasses = cn(pageHeadRootVariants({ strategy }), className);
 
+  const hasTopBar = Boolean(addonLeft ?? breadcrumbs ?? addonRight);
+
   const expandedContent = (
-    <PageContainer paddingY="none">
-      <VStack align="stretch" className="pb-8 sm:pb-12" gap={6}>
-        <HStack align="center" className="py-2.5" gap={4} justify="between" wrap="wrap">
-          <HStack align="center" className="flex-1" gap={4}>
-            {addonLeft && <div className="flex-shrink-0 whitespace-nowrap">{addonLeft}</div>}
-            {breadcrumbs && <div className="hidden sm:block">{breadcrumbs}</div>}
+    <div>
+      {hasTopBar && (
+        <PageContainer paddingY="none">
+          <HStack align="center" className="min-h-[60px] py-2.5" gap={4} justify="between" wrap="wrap">
+            <HStack align="center" className="flex-1" gap={4}>
+              {addonLeft && <div className="flex-shrink-0 whitespace-nowrap">{addonLeft}</div>}
+              {breadcrumbs && <div className="hidden sm:block">{breadcrumbs}</div>}
+            </HStack>
+            {addonRight && <div className="flex-shrink-0">{addonRight}</div>}
           </HStack>
-          {addonRight && <div className="flex-shrink-0">{addonRight}</div>}
-        </HStack>
+        </PageContainer>
+      )}
+      <PageContainer className={cn(hasTopBar ? 'pt-4 pb-8 sm:pt-6 sm:pb-12' : 'py-8 sm:py-12')}>
         <VStack gap={4}>
           <Header level={1}>{heading}</Header>
           {typeof caption === 'string' ? (
@@ -102,16 +108,21 @@ export function PageHead({
             caption
           )}
         </VStack>
-      </VStack>
-    </PageContainer>
+      </PageContainer>
+    </div>
   );
 
   const collapsedContent = (
     <PageContainer paddingY="none">
-      <HStack align="center" className="py-2.5" gap={4} justify="between" wrap="wrap">
+      <HStack align="center" className="min-h-[60px] py-2.5" gap={4} justify="between" wrap="wrap">
         <HStack align="center" className="flex-1" gap={4}>
           {addonLeft && <div className="flex-shrink-0 whitespace-nowrap">{addonLeft}</div>}
-          <Header className="min-w-0" level={4} overflow="ellipsis">
+          {breadcrumbs && <div className="hidden sm:block">{breadcrumbs}</div>}
+          <Header
+            className={cn('min-w-0', breadcrumbs && 'sm:hidden')}
+            level={4}
+            overflow="ellipsis"
+          >
             {heading}
           </Header>
         </HStack>

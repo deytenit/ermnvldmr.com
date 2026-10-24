@@ -17,6 +17,8 @@ spec:
     metadata:
       labels:
         app: umami
+      annotations:
+        config/tracker-script-name: "beacon.js"
     spec:
       containers:
         - name: umami

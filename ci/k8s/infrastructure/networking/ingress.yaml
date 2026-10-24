@@ -1,23 +1,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: main-ingress
+  name: www-ingress
   namespace: com-ermnvldmr
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.middlewares: com-ermnvldmr-sec-headers-common@kubernetescrd,com-ermnvldmr-sec-headers-www@kubernetescrd
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
         - www.ermnvldmr.com
       secretName: ermnvldmr-tls
-    - hosts:
-        - docs.ermnvldmr.com
-      secretName: docs-ermnvldmr-tls
-    - hosts:
-        - umami.ermnvldmr.com
-      secretName: umami-ermnvldmr-tls
   rules:
     - host: www.ermnvldmr.com
       http:
@@ -29,6 +24,23 @@ spec:
                 name: www-service
                 port:
                   number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: docs-ingress
+  namespace: com-ermnvldmr
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.middlewares: com-ermnvldmr-sec-headers-common@kubernetescrd,com-ermnvldmr-sec-headers-docs@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - docs.ermnvldmr.com
+      secretName: docs-ermnvldmr-tls
+  rules:
     - host: docs.ermnvldmr.com
       http:
         paths:
@@ -39,6 +51,23 @@ spec:
                 name: docs-service
                 port:
                   number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: umami-ingress
+  namespace: com-ermnvldmr
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.middlewares: com-ermnvldmr-sec-headers-common@kubernetescrd,com-ermnvldmr-sec-headers-umami@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - umami.ermnvldmr.com
+      secretName: umami-ermnvldmr-tls
+  rules:
     - host: umami.ermnvldmr.com
       http:
         paths:
