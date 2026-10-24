@@ -149,6 +149,13 @@ export async function runS3Sync(
    */
   const getS3Url = (finalName: string): string => {
     const normalizedKey = normalizeKey(cmd.targetPrefix, finalName);
+    if (cmd.publicUrl) {
+      const cleanPublicUrl = cmd.publicUrl.replace(/\/+$/, '');
+      return `${cleanPublicUrl}/${normalizedKey}`;
+    }
+    if (bucket.includes('.')) {
+      return `https://${bucket}/${normalizedKey}`;
+    }
     if (endpoint) {
       const cleanEndpoint = endpoint.replace(/\/+$/, '');
       return `${cleanEndpoint}/${bucket}/${normalizedKey}`;
@@ -156,11 +163,16 @@ export async function runS3Sync(
     return `https://${bucket}.s3.${region}.amazonaws.com/${normalizedKey}`;
   };
 
-  // Find workspace source files matching `src/**/*.{ts,tsx,css,md,mdx}`
-  const sourceFiles = await fg('src/**/*.{ts,tsx,css,md,mdx}', {
+  // Find workspace source files matching configured pattern or default `src/**/*.{ts,tsx,css,md,mdx}`
+  const filePattern = cmd.sourceFilesPattern ?? 'src/**/*.{ts,tsx,css,md,mdx}';
+  const sourceFiles = await fg(filePattern, {
     cwd: process.cwd(),
     absolute: true,
   });
+
+  const urlPrefixes = cmd.urlPrefixes ?? ['/static/'];
+  const hasMatchingPrefix = (text: string): boolean =>
+    urlPrefixes.some((prefix) => text.includes(prefix));
 
   // Sort assets by length descending to handle overlapping name replacement correctly
   const sortedAssets = [...processedFiles].sort(
@@ -170,28 +182,38 @@ export async function runS3Sync(
   // Replace static asset references in workspace source files
   for (const sourceFile of sourceFiles) {
     let content = await fs.promises.readFile(sourceFile, 'utf-8');
-    if (!content.includes('/static/')) {
+    if (!hasMatchingPrefix(content)) {
       continue;
     }
-    let modified = false;
+    const originalContent = content;
 
     for (const asset of sortedAssets) {
-      let searchName = asset.originalName;
-      if (searchName.startsWith('static/')) {
-        searchName = searchName.substring('static/'.length);
-      } else if (searchName.startsWith('/static/')) {
-        searchName = searchName.substring('/static/'.length);
-      }
-      const searchStr = `/static/${searchName}`;
-      const assetUrl = getS3Url(asset.finalName);
+      const namesToSearch =
+        asset.finalName !== asset.originalName
+          ? [asset.originalName, asset.finalName]
+          : [asset.originalName];
 
-      if (content.includes(searchStr)) {
-        content = content.split(searchStr).join(assetUrl);
-        modified = true;
+      for (const prefix of urlPrefixes) {
+        const cleanPrefix = prefix.replace(/^\/+|\/+$/g, '');
+
+        for (const name of namesToSearch) {
+          let searchName = name;
+          if (searchName.startsWith(`${cleanPrefix}/`)) {
+            searchName = searchName.substring(`${cleanPrefix}/`.length);
+          } else if (searchName.startsWith(`/${cleanPrefix}/`)) {
+            searchName = searchName.substring(`/${cleanPrefix}/`.length);
+          }
+          const searchStr = `/${cleanPrefix}/${searchName}`;
+          const assetUrl = getS3Url(asset.finalName);
+          const escaped = searchStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const regex = new RegExp('(?<!https?:\\/\\/[^\\s"\'`()]*)' + escaped, 'g');
+
+          content = content.replace(regex, assetUrl);
+        }
       }
     }
 
-    if (modified) {
+    if (content !== originalContent) {
       await fs.promises.writeFile(sourceFile, content, 'utf-8');
     }
   }

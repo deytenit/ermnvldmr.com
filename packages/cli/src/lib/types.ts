@@ -106,6 +106,10 @@ export interface S3SyncCommandConfig extends BaseCommandConfig {
   type: 's3-sync';
   /** The source directory containing files to sync */
   sourceDir?: string;
+  /** Glob pattern(s) matching source files where asset references should be replaced */
+  sourceFilesPattern?: string | string[];
+  /** URL prefixes to detect and replace with S3 URLs, defaults to ['/static/'] */
+  urlPrefixes?: string[];
   /** The prefix (directory) under which to upload the files in the S3 bucket */
   targetPrefix: string;
   /** Optional S3 bucket name */
@@ -114,6 +118,8 @@ export interface S3SyncCommandConfig extends BaseCommandConfig {
   region?: string;
   /** Optional custom endpoint URL (e.g., for MinIO or Yandex Cloud) */
   endpoint?: string;
+  /** Optional public base URL for assets (e.g., 'https://static.ermnvldmr.com') */
+  publicUrl?: string;
   /** Optional AWS Access Key ID */
   accessKeyId?: string;
   /** Optional AWS Secret Access Key */

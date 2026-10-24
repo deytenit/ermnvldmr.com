@@ -297,4 +297,83 @@ describe('runS3Sync', () => {
     const commandInstance = mockSend.mock.calls[0][0];
     expect(commandInstance.input.Key).toBe('test/logo.webp');
   });
+
+  it('should support custom sourceFilesPattern and urlPrefixes for docs', async () => {
+    const staticDir = path.join(tempDir, 'static');
+    fs.mkdirSync(staticDir, { recursive: true });
+
+    fs.writeFileSync(path.join(staticDir, 'banner.png'), 'png-content');
+    fs.writeFileSync(path.join(staticDir, 'banner.webp'), 'webp-content');
+
+    const contentDir = path.join(tempDir, 'content');
+    fs.mkdirSync(contentDir, { recursive: true });
+    const docPath = path.join(contentDir, 'index.md');
+    fs.writeFileSync(docPath, '![Banner](/images/banner.png)');
+
+    const cmd: S3SyncCommandConfig = {
+      name: 'sync',
+      description: 'desc',
+      targetPrefix: 'docs',
+      sourceDir: './static',
+      sourceFilesPattern: 'content/**/*.md',
+      urlPrefixes: ['/images/'],
+      type: 's3-sync',
+    };
+
+    await runS3Sync(cmd, {});
+
+    const content = fs.readFileSync(docPath, 'utf-8');
+    expect(content).toContain('https://s3.example.com/my-bucket/docs/banner.webp');
+    expect(content).not.toContain('/images/banner.png');
+  });
+
+  it('should use custom domain directly if bucket contains a dot', async () => {
+    const staticDir = path.join(tempDir, 'static');
+    fs.mkdirSync(staticDir, { recursive: true });
+    fs.writeFileSync(path.join(staticDir, 'img.webp'), 'webp-content');
+
+    const srcDir = path.join(tempDir, 'src');
+    fs.mkdirSync(srcDir, { recursive: true });
+    const srcPath = path.join(srcDir, 'index.ts');
+    fs.writeFileSync(srcPath, 'const img = "/static/img.webp";');
+
+    const cmd: S3SyncCommandConfig = {
+      name: 'sync',
+      description: 'desc',
+      bucket: 'static.ermnvldmr.com',
+      targetPrefix: 'docs',
+      sourceDir: './static',
+      type: 's3-sync',
+    };
+
+    await runS3Sync(cmd, {});
+
+    const content = fs.readFileSync(srcPath, 'utf-8');
+    expect(content).toContain('https://static.ermnvldmr.com/docs/img.webp');
+  });
+
+  it('should use explicit publicUrl if provided', async () => {
+    const staticDir = path.join(tempDir, 'static');
+    fs.mkdirSync(staticDir, { recursive: true });
+    fs.writeFileSync(path.join(staticDir, 'img.webp'), 'webp-content');
+
+    const srcDir = path.join(tempDir, 'src');
+    fs.mkdirSync(srcDir, { recursive: true });
+    const srcPath = path.join(srcDir, 'index.ts');
+    fs.writeFileSync(srcPath, 'const img = "/static/img.webp";');
+
+    const cmd: S3SyncCommandConfig = {
+      name: 'sync',
+      description: 'desc',
+      targetPrefix: 'www',
+      sourceDir: './static',
+      publicUrl: 'https://cdn.example.com',
+      type: 's3-sync',
+    };
+
+    await runS3Sync(cmd, {});
+
+    const content = fs.readFileSync(srcPath, 'utf-8');
+    expect(content).toContain('https://cdn.example.com/www/img.webp');
+  });
 });
