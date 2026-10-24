@@ -29,14 +29,13 @@ fi
 
 # Configure AWS region
 export AWS_DEFAULT_REGION="$AWS_REGION"
-ENDPOINT_URL="$S3_ENDPOINT_URL"
+ENDPOINT_URL="${S3_ENDPOINT_URL%/}"
 
 # Upload all static files
 echo "Uploading static files..."
 aws s3 cp "$DIST_DIR/" "s3://$S3_BUCKET/" \
   --recursive \
   --endpoint-url="$ENDPOINT_URL" \
-  --cache-control "max-age=300" \
-  --metadata-directive REPLACE
+  --cache-control "max-age=300"
 
 echo "Static files deployed successfully!"
