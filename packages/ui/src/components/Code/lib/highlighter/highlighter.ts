@@ -1,5 +1,3 @@
-import { createHighlighter } from 'shiki';
-
 import type { Highlighter } from 'shiki';
 
 /**
@@ -77,14 +75,16 @@ class CodeHighlighter {
       return this.initializingPromise;
     }
 
-    this.initializingPromise = createHighlighter({
-      themes: ['github-dark', 'github-light'],
-      langs: SUPPORTED_LANGUAGES,
-    }).then((highlighter) => {
+    this.initializingPromise = (async () => {
+      const { createHighlighter } = await import('shiki');
+      const highlighter = await createHighlighter({
+        themes: ['github-dark', 'github-light'],
+        langs: SUPPORTED_LANGUAGES,
+      });
       this.highlighter = highlighter;
       this.initializingPromise = null;
       return highlighter;
-    });
+    })();
 
     return this.initializingPromise;
   }

@@ -2,7 +2,7 @@ import React from 'react';
 import { vi } from 'vitest';
 
 import { Link } from './Link';
-import { render, screen } from '../../lib/testing';
+import { render, screen, fireEvent } from '../../lib/testing';
 
 describe('components/Link', () => {
   beforeEach(() => {
@@ -66,6 +66,22 @@ describe('components/Link', () => {
       </Link>
     );
     const link = screen.getByRole('link');
-    expect(link).toHaveClass('opacity-0');
+    expect(link).toHaveStyle({ animationDelay: '500ms', animationFillMode: 'both' });
+    expect(link).toHaveClass('animate-in');
+  });
+
+  it('obfuscates mailto link until user interaction', () => {
+    render(
+      <Link isObfuscated href="mailto:personal@ermnvldmr.com">
+        personal@ermnvldmr.com
+      </Link>
+    );
+    const link = screen.getByRole('link', { name: 'personal@ermnvldmr.com' });
+    expect(link).toHaveAttribute('href', '#');
+    expect(link).toHaveAttribute('data-user', 'personal');
+    expect(link).toHaveAttribute('data-domain', 'ermnvldmr.com');
+
+    fireEvent.pointerEnter(link);
+    expect(link).toHaveAttribute('href', 'mailto:personal@ermnvldmr.com');
   });
 });
