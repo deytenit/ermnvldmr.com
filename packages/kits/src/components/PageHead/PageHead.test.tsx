@@ -12,19 +12,19 @@ describe('PageHead', () => {
     expect(screen.getByText('Test Caption')).toBeInTheDocument();
   });
 
-  it('renders breadcrumbs, addonLeft, and addonRight', () => {
+  it('renders breadcrumbs and addons in both expanded and collapsed views', () => {
     render(
       <PageHead
-        addonLeft={<span>Left Addon</span>}
-        addonRight={<span>Right Addon</span>}
+        addonLeft={<span>Logo Left</span>}
+        addonRight={<span>Nav Menu</span>}
         breadcrumbs={<span>Breadcrumbs Trail</span>}
-        heading="Test Heading"
+        heading="Wanted"
       />
     );
 
-    expect(screen.getByText('Breadcrumbs Trail')).toBeInTheDocument();
-    expect(screen.getAllByText('Left Addon').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Right Addon').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Breadcrumbs Trail').length).toBe(2);
+    expect(screen.getAllByText('Nav Menu').length).toBe(2);
+    expect(screen.getAllByText('Logo Left').length).toBe(2);
   });
 
   it('renders correctly with always-collapsed-fixed strategy', () => {
