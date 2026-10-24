@@ -66,7 +66,10 @@ describe('server dev configuration', () => {
       writeFileSync(mockHostsPath, '127.0.0.1 localhost\n# 127.0.0.1 localhost.ermnvldmr.com\n');
       expect(hasHostsEntry('localhost.ermnvldmr.com', mockHostsPath)).toBe(false);
 
-      writeFileSync(mockHostsPath, '127.0.0.1 localhost\n127.0.0.1 localhost.ermnvldmr.com other.domain\n');
+      writeFileSync(
+        mockHostsPath,
+        '127.0.0.1 localhost\n127.0.0.1 localhost.ermnvldmr.com other.domain\n'
+      );
       expect(hasHostsEntry('localhost.ermnvldmr.com', mockHostsPath)).toBe(true);
     } finally {
       if (existsSync(mockHostsPath)) unlinkSync(mockHostsPath);
@@ -86,5 +89,10 @@ describe('server dev configuration', () => {
     } finally {
       if (existsSync(mockHostsPath)) unlinkSync(mockHostsPath);
     }
+  });
+
+  it('rejects invalid domain or ip in ensureHostsEntry', () => {
+    expect(ensureHostsEntry('invalid domain with spaces', '127.0.0.1')).toBe(false);
+    expect(ensureHostsEntry('localhost.ermnvldmr.com', 'invalid-ip-format')).toBe(false);
   });
 });

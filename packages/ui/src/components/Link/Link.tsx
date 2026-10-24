@@ -64,15 +64,13 @@ export const Link = memo(function Link(props: LinkProps) {
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLElement>) => {
-      if (isMailto && href) {
-        activate();
-        if (!isActivated) {
-          window.location.href = href;
-          e.preventDefault();
-        }
+      activate();
+      if (!isActivated && href) {
+        window.location.href = href;
+        e.preventDefault();
       }
     },
-    [activate, href, isActivated, isMailto]
+    [activate, href, isActivated]
   );
 
   // We use a specific ref type that useLink expects.
@@ -93,11 +91,7 @@ export const Link = memo(function Link(props: LinkProps) {
     const isAutoExternal = isExternal ?? href.startsWith('http');
     const externalProps = isAutoExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {};
 
-    const resolvedHref = isMailto
-      ? isActivated
-        ? href
-        : '#'
-      : localePath(href);
+    const resolvedHref = isMailto ? (isActivated ? href : '#') : localePath(href);
 
     const isChildrenEmail = typeof children === 'string' && children === rawEmail;
     const displayedContent =

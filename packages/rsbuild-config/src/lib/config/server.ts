@@ -1,5 +1,13 @@
-import { execSync } from 'node:child_process';
-import { appendFileSync, chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import {
+  appendFileSync,
+  chmodSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
@@ -40,7 +48,10 @@ export interface DevCertificates {
  * @param hostsPath - Path to hosts file, defaults to '/etc/hosts'
  * @returns Whether the domain is mapped in the hosts file
  */
-export function hasHostsEntry(domain: string = 'localhost.ermnvldmr.com', hostsPath: string = '/etc/hosts'): boolean {
+export function hasHostsEntry(
+  domain: string = 'localhost.ermnvldmr.com',
+  hostsPath: string = '/etc/hosts'
+): boolean {
   if (!existsSync(hostsPath)) return false;
   try {
     const content = readFileSync(hostsPath, 'utf8');
@@ -49,7 +60,8 @@ export function hasHostsEntry(domain: string = 'localhost.ermnvldmr.com', hostsP
       const uncommented = line.split('#')[0]?.trim() ?? '';
       if (!uncommented) continue;
       const tokens = uncommented.split(/\s+/);
-      if (tokens.length >= 2 && tokens.slice(1).includes(domain)) {
+      const hostnames = tokens.slice(1);
+      if (tokens.length >= 2 && hostnames.some((host) => host === domain)) {
         return true;
       }
     }
@@ -58,6 +70,9 @@ export function hasHostsEntry(domain: string = 'localhost.ermnvldmr.com', hostsP
     return false;
   }
 }
+
+const DOMAIN_PATTERN = /^[a-zA-Z0-9.-]+$/;
+const IP_PATTERN = /^[\da-fA-F.:]+$/;
 
 /**
  * Ensures a mapping for the domain exists in the hosts file.
@@ -75,6 +90,10 @@ export function ensureHostsEntry(
   ip: string = '127.0.0.1',
   hostsPath: string = '/etc/hosts'
 ): boolean {
+  if (!DOMAIN_PATTERN.test(domain) || !IP_PATTERN.test(ip)) {
+    return false;
+  }
+
   if (hasHostsEntry(domain, hostsPath)) {
     return true;
   }
@@ -93,8 +112,9 @@ export function ensureHostsEntry(
   if (isInteractive) {
     try {
       console.log(`[hosts] Adding "${entry}" to ${hostsPath} (requires sudo)...`);
-      execSync(`sudo sh -c 'printf "\\n${entry}\\n" >> "${hostsPath}"'`, {
-        stdio: 'inherit',
+      execFileSync('sudo', ['tee', '-a', hostsPath], {
+        input: `\n${entry}\n`,
+        stdio: ['pipe', 'ignore', 'inherit'],
       });
       console.log(`[hosts] Successfully added "${entry}" to ${hostsPath}`);
       return true;
@@ -135,7 +155,9 @@ export function findWorkspaceRoot(startDir: string = process.cwd()): string {
  * @param workspaceRoot - Absolute path to workspace root
  * @returns Paths to the certificate and private key files
  */
-export function ensureDevCertificates(workspaceRoot: string = findWorkspaceRoot()): DevCertificates {
+export function ensureDevCertificates(
+  workspaceRoot: string = findWorkspaceRoot()
+): DevCertificates {
   const certsDir = join(workspaceRoot, '.certs');
   const certPath = join(certsDir, 'localhost.ermnvldmr.com.pem');
   const keyPath = join(certsDir, 'localhost.ermnvldmr.com-key.pem');
@@ -154,15 +176,26 @@ export function ensureDevCertificates(workspaceRoot: string = findWorkspaceRoot(
 
   let hasMkcertCli = false;
   try {
-    execSync('mkcert -help', { stdio: 'ignore' });
+    execFileSync('mkcert', ['-help'], { stdio: 'ignore' });
     hasMkcertCli = true;
   } catch {
     hasMkcertCli = false;
   }
 
   if (hasMkcertCli) {
-    execSync(
-      `mkcert -cert-file "${certPath}" -key-file "${keyPath}" localhost.ermnvldmr.com "*.localhost.ermnvldmr.com" localhost 127.0.0.1 ::1`,
+    execFileSync(
+      'mkcert',
+      [
+        '-cert-file',
+        certPath,
+        '-key-file',
+        keyPath,
+        'localhost.ermnvldmr.com',
+        '*.localhost.ermnvldmr.com',
+        'localhost',
+        '127.0.0.1',
+        '::1',
+      ],
       { stdio: 'inherit' }
     );
     chmodSync(keyPath, 0o600);
@@ -179,27 +212,74 @@ export function ensureDevCertificates(workspaceRoot: string = findWorkspaceRoot(
         tempExt,
         'subjectAltName=DNS:localhost.ermnvldmr.com,DNS:*.localhost.ermnvldmr.com,DNS:localhost,IP:127.0.0.1,IP:::1\n'
       );
-      execSync(
-        `openssl req -new -nodes -newkey rsa:2048 -keyout "${keyPath}" -out "${tempCsr}" -subj "/CN=localhost.ermnvldmr.com" -batch`,
+      execFileSync(
+        'openssl',
+        [
+          'req',
+          '-new',
+          '-nodes',
+          '-newkey',
+          'rsa:2048',
+          '-keyout',
+          keyPath,
+          '-out',
+          tempCsr,
+          '-subj',
+          '/CN=localhost.ermnvldmr.com',
+          '-batch',
+        ],
         { stdio: 'pipe' }
       );
-      execSync(
-        `openssl x509 -req -in "${tempCsr}" -CA "${hugoCaCert}" -CAkey "${hugoCaKey}" -CAcreateserial -out "${certPath}" -days 825 -extfile "${tempExt}"`,
+      execFileSync(
+        'openssl',
+        [
+          'x509',
+          '-req',
+          '-in',
+          tempCsr,
+          '-CA',
+          hugoCaCert,
+          '-CAkey',
+          hugoCaKey,
+          '-CAcreateserial',
+          '-out',
+          certPath,
+          '-days',
+          '825',
+          '-extfile',
+          tempExt,
+        ],
         { stdio: 'pipe' }
       );
       chmodSync(keyPath, 0o600);
       chmodSync(certPath, 0o644);
     } finally {
-      if (existsSync(tempCsr)) execSync(`rm -f "${tempCsr}"`);
-      if (existsSync(tempExt)) execSync(`rm -f "${tempExt}"`);
+      rmSync(tempCsr, { force: true });
+      rmSync(tempExt, { force: true });
     }
     return { certPath, keyPath };
   }
 
   const caDir = join(home, '.local/share/mkcert');
   mkdirSync(caDir, { recursive: true });
-  execSync(
-    `openssl req -x509 -nodes -newkey rsa:3072 -keyout "${hugoCaKey}" -out "${hugoCaCert}" -days 3650 -subj "/CN=mkcert development CA/O=mkcert development CA" -batch`,
+  execFileSync(
+    'openssl',
+    [
+      'req',
+      '-x509',
+      '-nodes',
+      '-newkey',
+      'rsa:3072',
+      '-keyout',
+      hugoCaKey,
+      '-out',
+      hugoCaCert,
+      '-days',
+      '3650',
+      '-subj',
+      '/CN=mkcert development CA/O=mkcert development CA',
+      '-batch',
+    ],
     { stdio: 'pipe' }
   );
 
@@ -212,19 +292,50 @@ export function ensureDevCertificates(workspaceRoot: string = findWorkspaceRoot(
       tempExt,
       'subjectAltName=DNS:localhost.ermnvldmr.com,DNS:*.localhost.ermnvldmr.com,DNS:localhost,IP:127.0.0.1,IP:::1\n'
     );
-    execSync(
-      `openssl req -new -nodes -newkey rsa:2048 -keyout "${keyPath}" -out "${tempCsr}" -subj "/CN=localhost.ermnvldmr.com" -batch`,
+    execFileSync(
+      'openssl',
+      [
+        'req',
+        '-new',
+        '-nodes',
+        '-newkey',
+        'rsa:2048',
+        '-keyout',
+        keyPath,
+        '-out',
+        tempCsr,
+        '-subj',
+        '/CN=localhost.ermnvldmr.com',
+        '-batch',
+      ],
       { stdio: 'pipe' }
     );
-    execSync(
-      `openssl x509 -req -in "${tempCsr}" -CA "${hugoCaCert}" -CAkey "${hugoCaKey}" -CAcreateserial -out "${certPath}" -days 825 -extfile "${tempExt}"`,
+    execFileSync(
+      'openssl',
+      [
+        'x509',
+        '-req',
+        '-in',
+        tempCsr,
+        '-CA',
+        hugoCaCert,
+        '-CAkey',
+        hugoCaKey,
+        '-CAcreateserial',
+        '-out',
+        certPath,
+        '-days',
+        '825',
+        '-extfile',
+        tempExt,
+      ],
       { stdio: 'pipe' }
     );
     chmodSync(keyPath, 0o600);
     chmodSync(certPath, 0o644);
   } finally {
-    if (existsSync(tempCsr)) execSync(`rm -f "${tempCsr}"`);
-    if (existsSync(tempExt)) execSync(`rm -f "${tempExt}"`);
+    rmSync(tempCsr, { force: true });
+    rmSync(tempExt, { force: true });
   }
 
   return { certPath, keyPath };
