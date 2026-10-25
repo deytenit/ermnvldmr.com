@@ -76,7 +76,7 @@ export function PageHead({
 
   useEffect(() => {
     if (isCollapsible) {
-      setIsCollapsed(scrollY > 200);
+      setIsCollapsed(scrollY > 150);
     }
   }, [scrollY, isCollapsible]);
 
@@ -91,13 +91,13 @@ export function PageHead({
           <HStack align="center" className="min-h-[60px] py-2.5" gap={4} justify="between" wrap="wrap">
             <HStack align="center" className="flex-1" gap={4}>
               {addonLeft && <div className="flex-shrink-0 whitespace-nowrap">{addonLeft}</div>}
-              {breadcrumbs && <div className="hidden sm:block">{breadcrumbs}</div>}
+              {breadcrumbs && <div className="hidden sm:block text-label-l [&_ol]:text-label-l">{breadcrumbs}</div>}
             </HStack>
             {addonRight && <div className="flex-shrink-0">{addonRight}</div>}
           </HStack>
         </PageContainer>
       )}
-      <PageContainer className={cn(hasTopBar ? 'pt-4 pb-8 sm:pt-6 sm:pb-12' : 'py-8 sm:py-12')}>
+      <PageContainer className={cn(hasTopBar ? 'pt-2.5 pb-8 sm:pt-3.5 sm:pb-12' : 'pt-5 pb-8 sm:pt-9 sm:pb-12')}>
         <VStack gap={4}>
           <Header level={1}>{heading}</Header>
           {typeof caption === 'string' ? (
@@ -117,7 +117,7 @@ export function PageHead({
       <HStack align="center" className="min-h-[60px] py-2.5" gap={4} justify="between" wrap="wrap">
         <HStack align="center" className="flex-1" gap={4}>
           {addonLeft && <div className="flex-shrink-0 whitespace-nowrap">{addonLeft}</div>}
-          {breadcrumbs && <div className="hidden sm:block">{breadcrumbs}</div>}
+          {breadcrumbs && <div className="hidden sm:block text-label-l [&_ol]:text-label-l">{breadcrumbs}</div>}
           <Header
             className={cn('min-w-0', breadcrumbs && 'sm:hidden')}
             level={4}

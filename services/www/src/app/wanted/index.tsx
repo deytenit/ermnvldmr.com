@@ -19,7 +19,7 @@ import { DefaultLayout } from '../../components/Layout/DefaultLayout';
  */
 function WantedPage(): React.JSX.Element {
   const breadcrumbs = (
-    <Breadcrumbs>
+    <Breadcrumbs size="l">
       <Breadcrumbs.Item href={localePath('/')}>{t('Home')}</Breadcrumbs.Item>
       <Breadcrumbs.Separator />
       <Breadcrumbs.Item isCurrent>{t('Wanted')}</Breadcrumbs.Item>
