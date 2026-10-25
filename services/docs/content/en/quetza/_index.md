@@ -6,11 +6,11 @@ cascade:
   type: docs
 ---
 
-**Quetza** is a modular Discord bot framework built with TypeScript and Discord.js. It transforms feature development from core modification into independent module addition.
+**Quetza** is a modular Discord bot framework built with TypeScript and Discord.js. It transforms feature development from core modification into independent module addition.
 
 ## Project Vision
 
-The framework addresses the fundamental challenge of extensible bot design: providing a scalable architecture where functionality can be added without increasing system complexity or coupling.
+The framework addresses the fundamental challenge of extensible bot design: providing a scalable architecture where functionality can be added without increasing system complexity or coupling.
 
 ## Documentation Sections
 
@@ -25,6 +25,6 @@ The framework addresses the fundamental challenge of extensible bot design: prov
 ## Key Features
 
 - **Modular Architecture:** Features are plugins, not core modifications.
-- **TypeScript First:** Built for type safety and developer experience.
+- **TypeScript First:** Built for type safety and developer experience.
 - **Zero-Config Discovery:** Filesystem-based module registration.
-- **State Management:** Built-in patterns for guild-scoped services.
+- **State Management:** Built-in patterns for guild-scoped services.

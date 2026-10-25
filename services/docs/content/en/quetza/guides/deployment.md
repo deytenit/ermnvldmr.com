@@ -3,31 +3,31 @@ title: Deployment & Operations
 weight: 2
 ---
 
-**Goal:** Configure, deploy, and monitor a Quetza bot instance.
+**Goal:** Configure, deploy, and monitor a Quetza bot instance.
 
 ## 1. Environment Preparation
 
-Quetza relies on environment variables for configuration. **Never** commit these to version control.
+Quetza relies on environment variables for configuration. **Never** commit these to version control.
 
 | Variable        | Description                                   | Required |
 | :-------------- | :-------------------------------------------- | :------- |
-| `DISCORD_TOKEN` | Bot token from Discord Developer Portal       | **Yes**  |
-| `CLIENT_ID`     | Application ID for slash command registration | **Yes**  |
-| `LLAMA_API_KEY` | Required if using the AI module               | No       |
+| `DISCORD_TOKEN` | Bot token from Discord Developer Portal       | **Yes**  |
+| `CLIENT_ID`     | Application ID for slash command registration | **Yes**  |
+| `LLAMA_API_KEY` | Required if using the AI module               | No |
 
 ## 2. Deployment Strategies
 
 {{< tabs >}}
 {{< tab name="Docker (Recommended)" >}}
-**Docker** ensures a consistent runtime environment.
+**Docker** ensures a consistent runtime environment.
 
-1.  **Build** the image:
+1.  **Build** the image:
 
     ```bash
     docker build -t quetza-bot .
     ```
 
-2.  **Run** the container:
+2.  **Run** the container:
     `bash
 docker run -d \
   --env-file .env \
@@ -36,7 +36,7 @@ docker run -d \
 `
     {{< /tab >}}
     {{< tab name="Source" >}}
-    **Source** deployment is useful for development.
+    **Source** deployment is useful for development.
 
 3.  **Install** dependencies:
 
@@ -44,13 +44,13 @@ docker run -d \
     pnpm install
     ```
 
-4.  **Build** the project:
+4.  **Build** the project:
 
     ```bash
     pnpm build
     ```
 
-5.  **Start** the bot:
+5.  **Start** the bot:
     `bash
 pnpm start
 `
@@ -59,15 +59,15 @@ pnpm start
 
 ## 3. Operational Monitoring
 
-Once running, use these mechanisms to check health:
+Once running, use these mechanisms to check health:
 
-- **Logs:** Check standard output (Docker logs) for initialization errors.
-- **`/ping` Command:** Verifies network latency and API responsiveness.
-- **`/modules` Command:** Lists all loaded modules to confirm feature availability.
+- **Logs:** Check standard output (Docker logs) for initialization errors.
+- **`/ping` Command:** Verifies network latency and API responsiveness.
+- **`/modules` Command:** Lists all loaded modules to confirm feature availability.
 
 > [!WARNING]
 > **Scaling Constraint:**
-> Quetza follows a single-instance-per-token model. Do not run multiple instances with the same token, as this will cause WebSocket conflicts.
+> Quetza follows a single-instance-per-token model. Do not run multiple instances with the same token, as this will cause WebSocket conflicts.
 
 ---
 

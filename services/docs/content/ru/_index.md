@@ -8,15 +8,15 @@ layout: hextra-home
 
 <div class="hx:mb-6">
 {{< hextra/hero-headline >}}
-Документация решений<br class="hx:sm:block hx:hidden" />без&nbsp;решений как&nbsp;таковых
+Документация решений<br class="hx:sm:block hx:hidden" />без решений как таковых
 {{< /hextra/hero-headline >}}
 </div>
 
 <div class="hx:mb-6">
 {{< hextra/hero-subtitle >}}
-У&nbsp;меня нет ни&nbsp;времени, ни&nbsp;желания вручную выписывать каждую строчку этого недоромана. Однако фиксировать контекст и&nbsp;принятые решения нужно, иначе число сущностей, понимающих происходящее, упадёт до&nbsp;нуля. Считайте это структурированной нейробазой для&nbsp;агентов и&nbsp;редких живых гостей.
+У меня нет ни времени, ни желания вручную выписывать каждую строчку этого недоромана. Однако фиксировать контекст и принятые решения нужно, иначе число сущностей, понимающих происходящее, упадёт до нуля. Считайте это структурированной нейробазой для агентов и редких живых гостей.
 <br /><br />
-А&nbsp;если вдруг захотите что-то исправить (зачем?)&nbsp;— любой вклад здесь пойдёт на&nbsp;пользу.
+А если вдруг захотите что-то исправить (зачем?) — любой вклад здесь пойдёт на пользу.
 {{< /hextra/hero-subtitle >}}
 </div>
 
@@ -46,7 +46,7 @@ layout: hextra-home
 <div class="hx:overflow-hidden hx:border hx:border-gray-200 hx:dark:border-neutral-800 hx:shadow-lg hx:bg-gray-50 hx:dark:bg-neutral-900/50" style="border-radius: 1.5rem; height: 100%; display: flex; flex-direction: column;">
 <img src="https://static.ermnvldmr.com/docs/images/home/dead-internet-debugging.webp" alt="Dead Internet Debugging" class="hx:w-full" style="flex: 1 1 auto; width: 100%; height: 100%; min-height: 340px; object-fit: cover; object-position: top; border-radius: 1.5rem 1.5rem 0 0;" />
 <div class="hx:p-3 hx:text-xs hx:text-gray-500 hx:dark:text-gray-400 hx:text-center hx:border-t hx:border-gray-200 hx:dark:border-neutral-800" style="flex-shrink: 0;">
-Изображение улучшено с&nbsp;помощью Gemini&nbsp;4&nbsp;Argon&nbsp;· <a href="https://www.reddit.com/r/ProgrammerHumor/s/UVVd1CnFxH" target="_blank" rel="noreferrer" class="hx:underline hx:hover:text-primary-600">Оригинал на&nbsp;Reddit</a>
+Изображение улучшено с помощью Gemini 4 Argon · <a href="https://www.reddit.com/r/ProgrammerHumor/s/UVVd1CnFxH" target="_blank" rel="noreferrer" class="hx:underline hx:hover:text-primary-600">Оригинал на Reddit</a>
 </div>
 </div>
 </div>

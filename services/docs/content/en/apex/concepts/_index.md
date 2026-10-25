@@ -1,10 +1,10 @@
 ---
 title: Concepts
-description: "Architecture, identity, actions, execution context, compositions, storage, addressing, and security."
+description: "Architecture, identity, actions, execution context, compositions, storage, addressing, and security."
 weight: 10
 ---
 
-Theoretical foundations of the apex fleet-operations framework: how a [node](/apex/glossary#node) declares its [identity](/apex/concepts/node-identity), how [actions](/apex/glossary#action) execute, and how a node organizes its services, storage, and addressing.
+Theoretical foundations of the apex fleet-operations framework: how a [node](/apex/glossary#node) declares its [identity](/apex/concepts/node-identity), how [actions](/apex/glossary#action) execute, and how a node organizes its services, storage, and addressing.
 
 {{% cards %}}
 {{< card link="architecture" title="Architecture" icon="share" subtitle="The engine, commons, and configs layers and how they fit together." >}}
@@ -21,5 +21,5 @@ Theoretical foundations of the apex fleet-operations framework: how a [node](/ap
 
 **See also:**
 
-- [Guides: Operating an apex fleet](/apex/guides)
-- [Reference: Commands and interfaces](/apex/reference)
+- [Guides: Operating an apex fleet](/apex/guides)
+- [Reference: Commands and interfaces](/apex/reference)

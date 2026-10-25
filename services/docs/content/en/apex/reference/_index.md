@@ -1,10 +1,10 @@
 ---
 title: Reference
-description: CLI, actions, environment variables, and the engine API.
+description: CLI, actions, environment variables, and the engine API.
 weight: 30
 ---
 
-Technical reference for the apex fleet-operations framework surface: the command-line interface, the built-in [actions](/apex/glossary#action), the environment contract they consume, and the Python [engine](/apex/glossary#engine) API.
+Technical reference for the apex fleet-operations framework surface: the command-line interface, the built-in [actions](/apex/glossary#action), the environment contract they consume, and the Python [engine](/apex/glossary#engine) API.
 
 {{% cards %}}
 {{< card link="cli" title="CLI reference" icon="terminal" subtitle="Command-line invocation, subcommands, and exit codes." >}}

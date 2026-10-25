@@ -8,15 +8,15 @@ layout: hextra-home
 
 <div class="hx:mb-6">
 {{< hextra/hero-headline >}}
-Documenting Decisions<br class="hx:sm:block hx:hidden" />Without the&nbsp;Actual Decisions
+Documenting Decisions<br class="hx:sm:block hx:hidden" />Without the Actual Decisions
 {{< /hextra/hero-headline >}}
 </div>
 
 <div class="hx:mb-6">
 {{< hextra/hero-subtitle >}}
-I&nbsp;have neither the&nbsp;time nor the&nbsp;desire to&nbsp;manually craft every line of&nbsp;this half-baked novel. Yet&nbsp;capturing context and&nbsp;architectural decisions is&nbsp;essential, otherwise the&nbsp;number of&nbsp;entities comprehending what goes on&nbsp;here drops to&nbsp;zero. Consider this a&nbsp;structured neural knowledge dump for&nbsp;AI&nbsp;agents and&nbsp;rare human visitors.
+I have neither the time nor the desire to manually craft every line of this half-baked novel. Yet capturing context and architectural decisions is essential, otherwise the number of entities comprehending what goes on here drops to zero. Consider this a structured neural knowledge dump for AI agents and rare human visitors.
 <br /><br />
-If&nbsp;you ever feel like fixing anything (why though?)&nbsp;— any contribution here is&nbsp;guaranteed to&nbsp;be an&nbsp;improvement.
+If you ever feel like fixing anything (why though?) — any contribution here is guaranteed to be an improvement.
 {{< /hextra/hero-subtitle >}}
 </div>
 
@@ -46,7 +46,7 @@ If&nbsp;you ever feel like fixing anything (why though?)&nbsp;— any contributi
 <div class="hx:overflow-hidden hx:border hx:border-gray-200 hx:dark:border-neutral-800 hx:shadow-lg hx:bg-gray-50 hx:dark:bg-neutral-900/50" style="border-radius: 1.5rem; height: 100%; display: flex; flex-direction: column;">
 <img src="https://static.ermnvldmr.com/docs/images/home/dead-internet-debugging.webp" alt="Dead Internet Debugging" class="hx:w-full" style="flex: 1 1 auto; width: 100%; height: 100%; min-height: 340px; object-fit: cover; object-position: top; border-radius: 1.5rem 1.5rem 0 0;" />
 <div class="hx:p-3 hx:text-xs hx:text-gray-500 hx:dark:text-gray-400 hx:text-center hx:border-t hx:border-gray-200 hx:dark:border-neutral-800" style="flex-shrink: 0;">
-Image enhanced with Gemini&nbsp;4&nbsp;Argon&nbsp;· <a href="https://www.reddit.com/r/ProgrammerHumor/s/UVVd1CnFxH" target="_blank" rel="noreferrer" class="hx:underline hx:hover:text-primary-600">Original on&nbsp;Reddit</a>
+Image enhanced with Gemini 4 Argon · <a href="https://www.reddit.com/r/ProgrammerHumor/s/UVVd1CnFxH" target="_blank" rel="noreferrer" class="hx:underline hx:hover:text-primary-600">Original on Reddit</a>
 </div>
 </div>
 </div>
