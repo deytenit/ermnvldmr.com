@@ -21,7 +21,7 @@ const DATE_LOCALE_MAP: Record<string, string> = { en: 'en-US', ru: 'ru-RU' };
  */
 function ArticlesList(): React.JSX.Element {
   const breadcrumbs = (
-    <Breadcrumbs>
+    <Breadcrumbs size="l">
       <Breadcrumbs.Item href={localePath('/')}>{t('Home')}</Breadcrumbs.Item>
       <Breadcrumbs.Separator />
       <Breadcrumbs.Item isCurrent>{t('Articles')}</Breadcrumbs.Item>

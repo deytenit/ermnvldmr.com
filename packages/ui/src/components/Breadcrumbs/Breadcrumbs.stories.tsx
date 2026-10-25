@@ -76,3 +76,15 @@ export const WithBullets: Story = {
     </Breadcrumbs>
   ),
 };
+
+export const Large: Story = {
+  render: () => (
+    <Breadcrumbs size="l">
+      <Breadcrumbs.Item href="/">Home</Breadcrumbs.Item>
+      <Breadcrumbs.Separator variant="slash" />
+      <Breadcrumbs.Item href="/articles">Articles</Breadcrumbs.Item>
+      <Breadcrumbs.Separator variant="slash" />
+      <Breadcrumbs.Item isCurrent>Deep Learning</Breadcrumbs.Item>
+    </Breadcrumbs>
+  ),
+};

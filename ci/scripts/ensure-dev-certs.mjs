@@ -11,6 +11,7 @@ import {
 import { homedir, tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 
 /**
  * Checks whether a hostname entry exists in the specified hosts file.
@@ -114,6 +115,56 @@ export function findWorkspaceRoot(startDir = dirname(fileURLToPath(import.meta.u
 }
 
 /**
+ * Resolves the development Root CA private key from the environment or .env.dev.
+ *
+ * @param {string} workspaceRoot - Absolute path to workspace root
+ * @returns {string | undefined} The PEM private key string, or undefined if unavailable
+ */
+export function loadDevRootCaKey(workspaceRoot = findWorkspaceRoot()) {
+  if (process.env.COM_ERMNVLDMR_DEV_ROOT_CA_KEY) {
+    const raw = process.env.COM_ERMNVLDMR_DEV_ROOT_CA_KEY;
+    return raw.includes('\\n') ? raw.replace(/\\n/g, '\n') : raw;
+  }
+
+  const envDevPath = join(workspaceRoot, '.env.dev');
+  const envKeysPath = join(workspaceRoot, '.env.keys');
+
+  if (!existsSync(envDevPath)) {
+    return undefined;
+  }
+
+  const candidatePackages = [
+    join(workspaceRoot, 'packages/cli/package.json'),
+    join(workspaceRoot, 'package.json'),
+  ];
+
+  for (const pkgPath of candidatePackages) {
+    if (!existsSync(pkgPath)) continue;
+    try {
+      const req = createRequire(pkgPath);
+      const dotenvx = req('@dotenvx/dotenvx');
+      if (dotenvx && typeof dotenvx.config === 'function') {
+        dotenvx.config({ path: envDevPath, envKeysFile: envKeysPath });
+        const key = process.env.COM_ERMNVLDMR_DEV_ROOT_CA_KEY;
+        if (key) {
+          return key.includes('\\n') ? key.replace(/\\n/g, '\n') : key;
+        }
+      }
+    } catch {
+      // Continue to next candidate package
+    }
+  }
+
+  return undefined;
+}
+
+/**
+ * Remote public URL for the Ermnvldmr development root CA certificate.
+ */
+export const REMOTE_ROOT_CA_URL =
+  'https://static.ermnvldmr.com/ssl/certs/ErmnvldmrDevelopmentRootCA.pem';
+
+/**
  * Ensures valid development certificates exist for localhost.ermnvldmr.com.
  *
  * @param {string} workspaceRoot - Absolute path to workspace root
@@ -123,128 +174,101 @@ export function ensureDevCertificates(workspaceRoot = findWorkspaceRoot()) {
   const certsDir = join(workspaceRoot, '.certs');
   const certPath = join(certsDir, 'localhost.ermnvldmr.com.pem');
   const keyPath = join(certsDir, 'localhost.ermnvldmr.com-key.pem');
+  const caCertPath = join(certsDir, 'ErmnvldmrDevelopmentRootCA.pem');
+  const caKeyPath = join(certsDir, 'ErmnvldmrDevelopmentRootCA-key.pem');
 
   ensureHostsEntry('localhost.ermnvldmr.com', '127.0.0.1');
 
-  if (existsSync(certPath) && existsSync(keyPath)) {
-    return { certPath, keyPath };
-  }
+  const home = homedir();
+  const globalCaDir = join(home, '.local/share/mkcert');
+  const globalCaCert = join(globalCaDir, 'ErmnvldmrDevelopmentRootCA.pem');
+  const globalCaKey = join(globalCaDir, 'ErmnvldmrDevelopmentRootCA-key.pem');
 
   mkdirSync(certsDir, { recursive: true, mode: 0o700 });
 
-  const home = homedir();
-  const hugoCaCert = join(home, '.local/share/mkcert/rootCA.pem');
-  const hugoCaKey = join(home, '.local/share/mkcert/rootCA-key.pem');
-
-  let hasMkcertCli = false;
-  try {
-    execFileSync('mkcert', ['-help'], { stdio: 'ignore' });
-    hasMkcertCli = true;
-  } catch {
-    hasMkcertCli = false;
-  }
-
-  if (hasMkcertCli) {
-    execFileSync(
-      'mkcert',
-      [
-        '-cert-file',
-        certPath,
-        '-key-file',
-        keyPath,
-        'localhost.ermnvldmr.com',
-        '*.localhost.ermnvldmr.com',
-        'localhost',
-        '127.0.0.1',
-        '::1',
-      ],
-      { stdio: 'inherit' }
-    );
-    chmodSync(keyPath, 0o600);
-    return { certPath, keyPath };
-  }
-
-  if (existsSync(hugoCaCert) && existsSync(hugoCaKey)) {
-    const tempDir = tmpdir();
-    const tempCsr = join(tempDir, `ermnvldmr-dev-${Date.now()}.csr`);
-    const tempExt = join(tempDir, `ermnvldmr-dev-${Date.now()}.cnf`);
-
-    try {
-      writeFileSync(
-        tempExt,
-        'subjectAltName=DNS:localhost.ermnvldmr.com,DNS:*.localhost.ermnvldmr.com,DNS:localhost,IP:127.0.0.1,IP:::1\n'
-      );
-      execFileSync(
-        'openssl',
-        [
-          'req',
-          '-new',
-          '-nodes',
-          '-newkey',
-          'rsa:2048',
-          '-keyout',
-          keyPath,
-          '-out',
-          tempCsr,
-          '-subj',
-          '/CN=localhost.ermnvldmr.com',
-          '-batch',
-        ],
-        { stdio: 'pipe' }
-      );
-      execFileSync(
-        'openssl',
-        [
-          'x509',
-          '-req',
-          '-in',
-          tempCsr,
-          '-CA',
-          hugoCaCert,
-          '-CAkey',
-          hugoCaKey,
-          '-CAcreateserial',
-          '-out',
-          certPath,
-          '-days',
-          '825',
-          '-extfile',
-          tempExt,
-        ],
-        { stdio: 'pipe' }
-      );
-      chmodSync(keyPath, 0o600);
-      chmodSync(certPath, 0o644);
-    } finally {
-      rmSync(tempCsr, { force: true });
-      rmSync(tempExt, { force: true });
+  // 1. Sync CA cert from global cache if available, or download from remote static URL
+  if (!existsSync(caCertPath)) {
+    if (existsSync(globalCaCert)) {
+      writeFileSync(caCertPath, readFileSync(globalCaCert));
+      chmodSync(caCertPath, 0o644);
+    } else {
+      try {
+        execFileSync('curl', ['-sSfL', REMOTE_ROOT_CA_URL, '-o', caCertPath], {
+          stdio: 'ignore',
+        });
+        chmodSync(caCertPath, 0o644);
+        try {
+          mkdirSync(globalCaDir, { recursive: true });
+          writeFileSync(globalCaCert, readFileSync(caCertPath));
+          chmodSync(globalCaCert, 0o644);
+        } catch {
+          // Best-effort global cache
+        }
+      } catch {
+        // Failed to download, will fall back to generation if key also needed
+      }
     }
-    return { certPath, keyPath };
   }
 
-  const caDir = join(home, '.local/share/mkcert');
-  mkdirSync(caDir, { recursive: true });
-  execFileSync(
-    'openssl',
-    [
-      'req',
-      '-x509',
-      '-nodes',
-      '-newkey',
-      'rsa:3072',
-      '-keyout',
-      hugoCaKey,
-      '-out',
-      hugoCaCert,
-      '-days',
-      '3650',
-      '-subj',
-      '/CN=mkcert development CA/O=mkcert development CA',
-      '-batch',
-    ],
-    { stdio: 'pipe' }
-  );
+  // 2. Sync CA key from global cache if available, or decrypt from .env.dev
+  if (!existsSync(caKeyPath)) {
+    if (existsSync(globalCaKey)) {
+      writeFileSync(caKeyPath, readFileSync(globalCaKey));
+      chmodSync(caKeyPath, 0o600);
+    } else {
+      const decryptedKey = loadDevRootCaKey(workspaceRoot);
+      if (decryptedKey) {
+        writeFileSync(caKeyPath, decryptedKey);
+        chmodSync(caKeyPath, 0o600);
+        try {
+          mkdirSync(globalCaDir, { recursive: true });
+          writeFileSync(globalCaKey, decryptedKey);
+          chmodSync(globalCaKey, 0o600);
+        } catch {
+          // Best-effort global cache
+        }
+      }
+    }
+  }
 
+  // If server cert and CA cert already exist, return them
+  if (existsSync(certPath) && existsSync(keyPath) && existsSync(caCertPath)) {
+    return { certPath, keyPath, caCertPath };
+  }
+
+  // Ensure ErmnvldmrDevelopmentRootCA exists
+  if (!existsSync(caCertPath) || !existsSync(caKeyPath)) {
+    mkdirSync(globalCaDir, { recursive: true });
+    execFileSync(
+      'openssl',
+      [
+        'req',
+        '-x509',
+        '-nodes',
+        '-newkey',
+        'rsa:3072',
+        '-keyout',
+        caKeyPath,
+        '-out',
+        caCertPath,
+        '-days',
+        '3650',
+        '-subj',
+        '/CN=Ermnvldmr Development Root CA/O=ermnvldmr.com',
+        '-batch',
+      ],
+      { stdio: 'pipe' }
+    );
+    chmodSync(caKeyPath, 0o600);
+    chmodSync(caCertPath, 0o644);
+
+    writeFileSync(globalCaCert, readFileSync(caCertPath));
+    writeFileSync(globalCaKey, readFileSync(caKeyPath));
+    chmodSync(globalCaKey, 0o600);
+    chmodSync(globalCaCert, 0o644);
+  }
+
+  // Generate server certificate signed by ErmnvldmrDevelopmentRootCA
   const tempDir = tmpdir();
   const tempCsr = join(tempDir, `ermnvldmr-dev-${Date.now()}.csr`);
   const tempExt = join(tempDir, `ermnvldmr-dev-${Date.now()}.cnf`);
@@ -280,9 +304,9 @@ export function ensureDevCertificates(workspaceRoot = findWorkspaceRoot()) {
         '-in',
         tempCsr,
         '-CA',
-        hugoCaCert,
+        caCertPath,
         '-CAkey',
-        hugoCaKey,
+        caKeyPath,
         '-CAcreateserial',
         '-out',
         certPath,
@@ -300,7 +324,7 @@ export function ensureDevCertificates(workspaceRoot = findWorkspaceRoot()) {
     rmSync(tempExt, { force: true });
   }
 
-  return { certPath, keyPath };
+  return { certPath, keyPath, caCertPath };
 }
 
 // Run if called directly

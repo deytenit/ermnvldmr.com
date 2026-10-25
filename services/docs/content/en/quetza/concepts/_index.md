@@ -3,7 +3,7 @@ title: Concepts
 weight: 4
 ---
 
-**Quetza** concepts explain the _Why_ and _How_ behind the framework's design. These documents cover the underlying philosophy and architectural decisions.
+**Quetza** concepts explain the _Why_ and _How_ behind the framework's design. These documents cover the underlying philosophy and architectural decisions.
 
 ## Key Topics
 

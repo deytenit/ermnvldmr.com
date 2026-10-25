@@ -1,10 +1,10 @@
 ---
 title: Guides
-description: Task-oriented guides for building node repositories, actions, and compositions.
+description: Task-oriented guides for building node repositories, actions, and compositions.
 weight: 20
 ---
 
-Task-oriented guides for day-to-day work with apex. Each guide solves one recurring problem: assembling a [node](/apex/glossary#node) repository, developing [actions](/apex/glossary#action) for the [engine](/apex/glossary#engine), defining service [compositions](/apex/glossary#compositions), and operating the underlying host.
+Task-oriented guides for day-to-day work with apex. Each guide solves one recurring problem: assembling a [node](/apex/glossary#node) repository, developing [actions](/apex/glossary#action) for the [engine](/apex/glossary#engine), defining service [compositions](/apex/glossary#compositions), and operating the underlying host.
 
 ## Available guides {#available-guides}
 

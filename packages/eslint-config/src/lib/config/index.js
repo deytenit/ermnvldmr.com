@@ -6,6 +6,7 @@ import { jsdocConfig } from './jsdoc.js';
 import { testingConfig } from './testing.js';
 import { toolingConfig } from './tooling.js';
 import { defineMonorepoRestrictedImports } from './monorepo.js';
+import { i18nConfig } from './i18n.js';
 
 /**
  * Common ignores for the entire monorepo.
@@ -38,6 +39,9 @@ export function defineBaseConfig(rootDir) {
     ...jsdocConfig,
     ...testingConfig,
     ...toolingConfig,
+    ...i18nConfig,
     ...defineMonorepoRestrictedImports(rootDir),
   ];
 }
+
+export { i18nConfig };

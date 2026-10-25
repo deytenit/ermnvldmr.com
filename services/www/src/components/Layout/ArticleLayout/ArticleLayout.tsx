@@ -74,7 +74,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({
   );
 
   const breadcrumbs = (
-    <Breadcrumbs>
+    <Breadcrumbs size="l">
       <Breadcrumbs.Item href={localePath('/')}>{t('Home')}</Breadcrumbs.Item>
       <Breadcrumbs.Separator />
       <Breadcrumbs.Item href={localePath('/articles')}>{t('Articles')}</Breadcrumbs.Item>

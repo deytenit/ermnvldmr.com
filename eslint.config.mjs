@@ -14,7 +14,10 @@ export default [
   // Additional ignores for monorepo
   {
     ignores: [
-      'services/docs/**/*', // Hugo content, no linting needed
+      'services/docs/public/**',
+      'services/docs/resources/**',
+      'services/docs/assets/**',
+      'services/docs/archetypes/**',
       '**/node_modules/**',
       '**/dist/**',
       '**/build/**',

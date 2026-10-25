@@ -9,7 +9,7 @@
     "dev": "hugo server --buildDrafts --buildExpired --baseURL https://localhost.ermnvldmr.com:1313/ --tlsCertFile ../../.certs/localhost.ermnvldmr.com.pem --tlsKeyFile ../../.certs/localhost.ermnvldmr.com-key.pem",
     "build": "hugo --gc --minify",
     "clean": "rm -rf public resources",
-    "lint": "echo 'No linting for Hugo site'",
+    "lint": "eslint content --max-warnings 0",
     "typecheck": "echo 'No typecheck for Hugo site'"
   },
   "devDependencies": {
