@@ -34,8 +34,6 @@ const MIME: Record<string, string> = {
 };
 
 const UMAMI_WWW_WEBSITE_ID = '4fca5ac2-4fe4-4626-b708-933c37bfe918';
-const locale = process.env.LOCALE ?? 'en';
-const fontBase = `/${locale}/static/font`;
 
 export default defineSSGServiceConfig(
   mergeConfig(localeRsbuildConfig(), {
@@ -99,44 +97,17 @@ export default defineSSGServiceConfig(
       entry: discoverEntries(import.meta.dirname, './src/app/**/*.tsx'),
       preEntry: ['./src/static/global.css'],
     },
+    performance: {
+      preload: {
+        type: 'all-assets',
+        include: [/(lato-400|lato-700|eb-garamond-var)\..*\.woff2$/],
+      },
+    },
     html: {
       tags: [
         { tag: 'script', children: TRUSTED_TYPES_INIT_SCRIPT, head: true },
         { tag: 'script', children: THEME_INIT_SCRIPT, head: true },
         { tag: 'style', children: THEME_INIT_STYLES, head: true },
-        {
-          tag: 'link',
-          attrs: {
-            rel: 'preload',
-            as: 'font',
-            type: 'font/woff2',
-            href: `${fontBase}/lato-400.woff2`,
-            crossorigin: true,
-          },
-          publicPath: false,
-        },
-        {
-          tag: 'link',
-          attrs: {
-            rel: 'preload',
-            as: 'font',
-            type: 'font/woff2',
-            href: `${fontBase}/lato-700.woff2`,
-            crossorigin: true,
-          },
-          publicPath: false,
-        },
-        {
-          tag: 'link',
-          attrs: {
-            rel: 'preload',
-            as: 'font',
-            type: 'font/woff2',
-            href: `${fontBase}/eb-garamond-var.woff2`,
-            crossorigin: true,
-          },
-          publicPath: false,
-        },
       ],
     },
   })

@@ -26,9 +26,6 @@ export function defineServiceConfig(config: RsbuildConfig = {}): RsbuildConfig {
       distPath: {
         font: 'static/font',
       },
-      filename: {
-        font: '[name][ext]',
-      },
     },
     html: {
       template: './src/static/index.html',
