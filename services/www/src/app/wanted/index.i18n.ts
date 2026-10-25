@@ -12,7 +12,7 @@ export const { t } = createKeyset({
   'A quiet log of things I am planning to pick up eventually. It serves mostly as a personal reference, but also as a zero-pressure guide for friends.':
     {
       en: 'A quiet log of things I am planning to pick up eventually. It serves mostly as a personal reference, but also as a zero-pressure guide for friends.',
-      ru: 'Список вещей, которые я планирую со временем приобрести. В основном это личная заметка, но также и ненавязчивый вишлист.',
+      ru: 'Список вещей, которые я планирую со временем приобрести. В основном это личная заметка, но также и ненавязчивый вишлист для друзей.',
     },
   'How this works': {
     en: 'How this works',
@@ -26,7 +26,7 @@ export const { t } = createKeyset({
   'When it comes to the items themselves, authenticity and quality matter a lot to me. I would always prefer to have nothing at all rather than a replica or a knock-off.':
     {
       en: 'When it comes to the items themselves, authenticity and quality matter a lot to me. I would always prefer to have nothing at all rather than a replica or a knock-off.',
-      ru: 'Когда дело доходит до самих вещей, подлинность и качество значат для меня очень много. Я всегда предпочту не иметь ничего, чем реплику или подделку.',
+      ru: 'Когда дело доходит до самих вещей, подлинность и качество значат для меня очень многое. Лучше совсем ничего, чем реплика или подделка.',
     },
   'And of course, if you are ever unsure about a specific edition or detail, we can always just talk about it.':
     {
@@ -40,7 +40,7 @@ export const { t } = createKeyset({
   'The specifics of the edition and its authenticity are quite important here. It is usually best to know the exact details to get it right.':
     {
       en: 'The specifics of the edition and its authenticity are quite important here. It is usually best to know the exact details to get it right.',
-      ru: 'Специфика издания и его подлинность здесь довольно важны. Обычно лучше знать точные детали, чтобы не ошибиться.',
+      ru: 'Конкретное издание и его подлинность здесь особенно важны. Лучше знать точные детали, чтобы не ошибиться.',
     },
   'Looking for': {
     en: 'Looking for',
@@ -60,15 +60,15 @@ export const { t } = createKeyset({
   },
   'Genshin Impact Pop! Aether (#160)': {
     en: 'Genshin Impact Pop! Aether (#160)',
-    ru: 'Genshin Impact Pop! Aether (#160)',
+    ru: 'Genshin Impact Pop! Aether (№ 160)',
   },
   'Taito - Lycoris Recoil Desktop Cute Figure - Takina Inoue (Roomwear Ver.)': {
     en: 'Taito - Lycoris Recoil Desktop Cute Figure - Takina Inoue (Roomwear Ver.)',
-    ru: 'Taito - Lycoris Recoil Desktop Cute Figure - Takina Inoue (Roomwear Ver.)',
+    ru: 'Taito — Lycoris Recoil Desktop Cute Figure — Takina Inoue (Roomwear Ver.)',
   },
   'Taito - Lycoris Recoil Aqua Desktop Cute Figure - Chisato Nishikigi (Roomwear Ver.)': {
     en: 'Taito - Lycoris Recoil Aqua Desktop Cute Figure - Chisato Nishikigi (Roomwear Ver.)',
-    ru: 'Taito - Lycoris Recoil Aqua Desktop Cute Figure - Chisato Nishikigi (Roomwear Ver.)',
+    ru: 'Taito — Lycoris Recoil Aqua Desktop Cute Figure — Chisato Nishikigi (Roomwear Ver.)',
   },
   'LEGO Sets': {
     en: 'LEGO Sets',
@@ -77,19 +77,19 @@ export const { t } = createKeyset({
   'I appreciate sets that focus on engineering and make for good display pieces, like Architecture, Technic, or the Botanical collection. I generally lean away from traditional play-sets.':
     {
       en: 'I appreciate sets that focus on engineering and make for good display pieces, like Architecture, Technic, or the Botanical collection. I generally lean away from traditional play-sets.',
-      ru: 'Я ценю наборы, ориентированные на инженерию, которые хорошо смотрятся на полке — например, Architecture, Technic или Botanical. Обычно я избегаю традиционных игровых наборов (friends, city, и другие подобные).',
+      ru: 'Мне нравятся инженерные наборы, которые хорошо смотрятся на полке — например, Architecture, Technic или Botanical. Обычные игровые наборы (вроде Friends или City) я стараюсь обходить стороной.',
     },
   'Architectural landmarks or skylines': {
     en: 'Architectural landmarks or skylines',
-    ru: 'Архитектурные наборы',
+    ru: 'Архитектура и городские панорамы',
   },
   'NASA and space exploration sets (like the #92176 Ideas NASA Apollo Saturn V)': {
     en: 'NASA and space exploration sets (like the #92176 Ideas NASA Apollo Saturn V)',
-    ru: 'Наборы NASA и иные аэрокосмические (например, #92176 Ideas NASA Apollo Saturn V)',
+    ru: 'Наборы NASA и другие космические серии (например, № 92176 Ideas NASA Apollo Saturn V)',
   },
   'High-fidelity Technic vehicles': {
     en: 'High-fidelity Technic vehicles',
-    ru: 'Technic и другие высокотехнические наборы',
+    ru: 'Техника Technic и другие детализированные модели',
   },
   'Already Owned': {
     en: 'Already Owned',
@@ -113,12 +113,12 @@ export const { t } = createKeyset({
   },
   'Die-cast Models': {
     en: 'Die-cast Models',
-    ru: 'Дайкаст модели',
+    ru: 'Дайкаст-модели',
   },
   'I enjoy high-quality pre-assembled die-cast models. I am not much into plastic kits that require glue or paint to assemble.':
     {
       en: 'I enjoy high-quality pre-assembled die-cast models. I am not much into plastic kits that require glue or paint to assemble.',
-      ru: 'Мне нравятся качественные предварительно собранные дайкаст модели. Я не особо увлекаюсь пластиковыми наборами, которые нужно собирать с помощью клея и красок.',
+      ru: 'Мне нравятся качественные готовые дайкаст-модели. Пластиковые наборы, требующие сборки с клеем и краской, меня привлекают меньше.',
     },
   'Spacecraft scale replicas (SpaceX, NASA)': {
     en: 'Spacecraft scale replicas (SpaceX, NASA)',
@@ -126,7 +126,7 @@ export const { t } = createKeyset({
   },
   'Motorsport cars (Modern F1, GT3, Endurance Legends)': {
     en: 'Motorsport cars (Modern F1, GT3, Endurance Legends)',
-    ru: 'Автоспорт (современные болиды Формулы-1, GT3, легенды эндуранс)',
+    ru: 'Автоспорт (современные болиды Формулы-1, GT3, легенды гонок на выносливость)',
   },
   'Aviation models (SR-71 Blackbird, Concorde)': {
     en: 'Aviation models (SR-71 Blackbird, Concorde)',
@@ -134,7 +134,7 @@ export const { t } = createKeyset({
   },
   'Bburago – McLaren F1 MCL39 2025 #4 Norris': {
     en: 'Bburago – McLaren F1 MCL39 2025 #4 Norris',
-    ru: 'Bburago – McLaren F1 MCL39 2025 #4 Norris',
+    ru: 'Bburago — McLaren F1 MCL39 2025 № 4 Norris',
   },
   'Coffee gear': {
     en: 'Coffee gear',
@@ -143,7 +143,7 @@ export const { t } = createKeyset({
   'My current espresso setup uses a 51mm portafilter, so any accessories for it need to match that size perfectly.':
     {
       en: 'My current espresso setup uses a 51mm portafilter, so any accessories for it need to match that size perfectly.',
-      ru: 'Мой текущий сетап для эспрессо использует 51-миллиметровый портафильтр, поэтому любые аксессуары для него должны идеально подходить по размеру.',
+      ru: 'В моём сетапе для эспрессо используется 51-миллиметровый портафильтр, поэтому любые аксессуары к нему должны точно подходить по размеру.',
     },
   AeroPress: {
     en: 'AeroPress',
@@ -159,11 +159,11 @@ export const { t } = createKeyset({
   },
   'Freshly roasted specialty coffee beans': {
     en: 'Freshly roasted specialty coffee beans',
-    ru: 'Свежеобжаренные спешелти зерна',
+    ru: 'Свежеобжаренное спешелти-зерно',
   },
   "De'longhi Dedica Arte EC885": {
     en: "De'longhi Dedica Arte EC885",
-    ru: "Кофемашина De'longhi Dedica Arte ec885",
+    ru: "Кофемашина De'longhi Dedica Arte EC885",
   },
   'Kingrinder K6': {
     en: 'Kingrinder K6',
@@ -171,7 +171,7 @@ export const { t } = createKeyset({
   },
   'Timemore Black Mirror Basic 2': {
     en: 'Timemore Black Mirror Basic 2',
-    ru: 'Весы Timemore Black Mirror Basic 2 (хорошие весы обязательно нужны для кофеделания)',
+    ru: 'Весы Timemore Black Mirror Basic 2 (хорошие весы необходимы для приготовления кофе)',
   },
   'Hario V60': {
     en: 'Hario V60',
@@ -215,7 +215,7 @@ export const { t } = createKeyset({
   },
   'Cast Iron Cube 10x10x10cm (just for the tactile density)': {
     en: 'Cast Iron Cube 10x10x10cm (just for the tactile density)',
-    ru: 'Чугунный куб 10x10x10 см (по приколу)',
+    ru: 'Чугунный куб 10×10×10 см (ради тактильной плотности)',
   },
   'Good kitchen utensils (knives, pans, and other cooking gear)': {
     en: 'Good kitchen utensils (knives, pans, and other cooking gear)',
