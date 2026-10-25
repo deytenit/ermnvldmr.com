@@ -8,6 +8,7 @@ import {
   ensureHostsEntry,
   findWorkspaceRoot,
   hasHostsEntry,
+  loadDevRootCaKey,
   localDevServer,
 } from './server.js';
 
@@ -21,7 +22,43 @@ describe('server dev configuration', () => {
     const certs = ensureDevCertificates();
     expect(existsSync(certs.certPath)).toBe(true);
     expect(existsSync(certs.keyPath)).toBe(true);
+    expect(certs.caCertPath).toBeDefined();
+    if (certs.caCertPath) {
+      expect(existsSync(certs.caCertPath)).toBe(true);
+      expect(certs.caCertPath).toContain('ErmnvldmrDevelopmentRootCA.pem');
+    }
     expect(certs.certPath).toContain('.certs/localhost.ermnvldmr.com.pem');
+  });
+
+  it('loads dev root CA key from environment variable when present', () => {
+    const prevKey = process.env.COM_ERMNVLDMR_DEV_ROOT_CA_KEY;
+    try {
+      process.env.COM_ERMNVLDMR_DEV_ROOT_CA_KEY = 'mock-key-value\\nwith-newline';
+      const key = loadDevRootCaKey();
+      expect(key).toBe('mock-key-value\nwith-newline');
+    } finally {
+      if (prevKey !== undefined) {
+        process.env.COM_ERMNVLDMR_DEV_ROOT_CA_KEY = prevKey;
+      } else {
+        delete process.env.COM_ERMNVLDMR_DEV_ROOT_CA_KEY;
+      }
+    }
+  });
+
+  it('loads dev root CA key from .env.dev when available', () => {
+    const prevKey = process.env.COM_ERMNVLDMR_DEV_ROOT_CA_KEY;
+    delete process.env.COM_ERMNVLDMR_DEV_ROOT_CA_KEY;
+    try {
+      const key = loadDevRootCaKey();
+      expect(key).toBeDefined();
+      if (key) {
+        expect(key).toContain('BEGIN PRIVATE KEY');
+      }
+    } finally {
+      if (prevKey !== undefined) {
+        process.env.COM_ERMNVLDMR_DEV_ROOT_CA_KEY = prevKey;
+      }
+    }
   });
 
   it('returns production configuration without https when NODE_ENV is production', () => {
