@@ -16,15 +16,44 @@ import type { ClassNameProps, TestIdProps } from '@ermnvldmr/stl';
 export interface BreadcrumbsProps extends HStackProps {
   /** Breadcrumb items and separators */
   children: React.ReactNode;
+  /**
+   * Typography size variant for the breadcrumbs trail.
+   * @default 'm'
+   */
+  size?: 's' | 'm' | 'l';
 }
+
+const breadcrumbsVariants = cva('font-sans font-medium', {
+  variants: {
+    size: {
+      s: 'text-label-s',
+      m: 'text-label-m',
+      l: 'text-label-l',
+    },
+  },
+  defaultVariants: {
+    size: 'm',
+  },
+});
 
 /**
  * Root component for hierarchical navigation.
  */
-const BreadcrumbsRoot = memo(function Breadcrumbs({ children, className, ...props }: BreadcrumbsProps) {
+const BreadcrumbsRoot = memo(function Breadcrumbs({
+  children,
+  className,
+  size = 'm',
+  ...props
+}: BreadcrumbsProps) {
   return (
-    <nav aria-label="Breadcrumb" className={className}>
-      <HStack align="center" as="ol" className="text-label-m font-sans font-medium" gap={2} {...props}>
+    <nav aria-label="Breadcrumb">
+      <HStack
+        align="center"
+        as="ol"
+        className={cn(breadcrumbsVariants({ size }), className)}
+        gap={2}
+        {...props}
+      >
         {children}
       </HStack>
     </nav>
@@ -126,7 +155,7 @@ const BreadcrumbsSeparator = memo(function BreadcrumbsSeparator({
   const content = {
     slash: '/',
     bull: '•',
-    arrow: <ChevronRight className="size-4" />,
+    arrow: <ChevronRight className="size-[1em]" />,
   };
 
   return (

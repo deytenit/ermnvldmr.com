@@ -36,6 +36,16 @@ describe('components/Breadcrumbs', () => {
     expect(ol.className).toContain('text-label-m');
   });
 
+  it('supports custom size variant', () => {
+    render(
+      <Breadcrumbs size="l">
+        <Breadcrumbs.Item href="/test">Home</Breadcrumbs.Item>
+      </Breadcrumbs>
+    );
+    const ol = screen.getByRole('list');
+    expect(ol.className).toContain('text-label-l');
+  });
+
   it('supports isCurrent state', () => {
     render(
       <Breadcrumbs>
