@@ -30,7 +30,7 @@ apex compose down          # reverse order
 apex compose restart
 apex compose --dry-run up  # print the commands only
 apex compose -p apex restart traefik
-apex compose -p sso up -d
+apex compose -p app up -d
 ```
 
 Put wrapper options (`-p` and `--dry-run`) before the action. Extra arguments pass
@@ -39,10 +39,9 @@ through to Docker Compose for the selected project. Each project's `.env` and
 available as `apex compose restart apex traefik` or `apex compose up -d apex`;
 prefer `-p` when arguments could also name a composition.
 
-APEX does not unlink Xray sockets during Compose operations. Keep node-owned
-cleanup in Xray's startup entrypoint; unrelated service restarts and unchanged
-`up` operations can leave Xray running. When a mount or other container definition
-changes, use targeted `up -d` to recreate it: `restart` retains the old definition.
+Replace `app` with a composition defined in your repository. When a mount or
+other container definition changes, use targeted `up -d` to recreate it:
+`restart` retains the existing definition.
 
 ### Direct core Compose commands
 
@@ -77,7 +76,7 @@ Runs [resticontainer](https://github.com/deytenit/resticontainer) one-shot under
 apex sync/repository <telegram-bot-url>
 ```
 
-Commits the live checkout to `sync/<node>`, rebases onto `origin/main`, and force-pushes with lease; CI folds the branch back into `main`. The action refuses to run — with a paged error — when the commons submodule is dirty or the `compositions/` tree is missing, and aborts cleanly on a rebase conflict (manual intervention required). See [Concept: Framework architecture](/apex/concepts/architecture#capture-up) for the model.
+Commits the live checkout to `sync/<node>`, rebases onto `origin/main`, and force-pushes with lease. The action refuses to run — with a paged error — when the commons submodule is dirty or the `compositions/` tree is missing, and aborts cleanly on a rebase conflict (manual intervention required). See [Concept: Framework architecture](/apex/concepts/architecture#capture-up) for the model.
 
 ## Update awareness {#updates}
 

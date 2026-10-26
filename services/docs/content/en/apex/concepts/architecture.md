@@ -53,15 +53,13 @@ Listing (`apex --help`) never imports action modules; summaries and disabled ma
 
 ## The capture-up model {#capture-up}
 
-Node repositories are ledgers, not just sources: the host itself records what it runs.
+`apex sync/repository` records the working tree and commons pin in a
+`sync/<node>` branch, rebases onto `origin/main`, and pushes with
+`--force-with-lease`. It refuses to run when commons has uncommitted changes
+or the `compositions/` directory is missing. A rebase conflict aborts the sync.
 
-1. A scheduled `sync/repository` run on the host commits the working tree to a `sync/<node>` branch (including the commons submodule pointer), rebases it onto `origin/main`, and pushes with `--force-with-lease`.
-2. A scheduled CI job in the node repository merges `sync/<node>` back into `main` under a bot identity.
-
-This [capture-up](/apex/glossary#capture-up) loop means drift on a host becomes a commit — visible, diffable, and revertable — instead of silent divergence. The sync aborts rather than committing when the commons submodule is dirty or the `compositions/` tree is missing, so a broken checkout never becomes the recorded state.
-
-> [!NOTE]
-> The CI merge job checks out the repository *without* submodules: the commons submodule uses an SSH URL that the default CI token cannot fetch, and the merge only moves the gitlink pointer anyway.
+Review and integration of that branch are repository policies. APEX does not
+supply a CI merge workflow or require a particular repository hosting setup.
 
 ## Design constraints {#constraints}
 

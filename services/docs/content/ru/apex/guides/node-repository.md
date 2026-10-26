@@ -25,7 +25,7 @@ mkdir -p proprietaries/actions proprietaries/lib configs compositions/apex .gith
 ```ini {filename="node.env"}
 APEX_NODE_FQDN=node1.example.com
 APEX_NODE_HOST=node1.example.com
-APEX_SUBNET=198.18.16.0/24
+APEX_SUBNET=198.18.0.0/24
 APEX_GIT_AUTHOR_NAME=apex [bot]
 APEX_GIT_AUTHOR_EMAIL=apex@localhost
 ```
@@ -46,7 +46,7 @@ include:
 ```
 
 ```ini {filename="compositions/apex/apex.env"}
-APEX_TRAEFIK_DIRECT_IP=198.18.16.10
+APEX_TRAEFIK_DIRECT_IP=198.18.0.10
 APEX_RESTIC_REPOSITORY=s3:<endpoint>/<bucket>/<node>
 COMPOSE_PROFILES=adguard,xray,alloy
 # цели push-наблюдаемости (только когда включён профиль alloy)
@@ -84,9 +84,12 @@ __pycache__/
 
 Создайте файл `compositions/ADDRESSING.md` с подсетью узла (`APEX_SUBNET`) и схемой распределения адресов: диапазоны `.10`–`.19` зарезервированы за базовыми сервисами (core), а `.20` и выше выделяются под проекты. Все назначаемые в будущем [якорные IP](/apex/glossary#anchor-ip) фиксируются в этом документе.
 
-### Подключите CI capture-up
+### Определите правила проверки синхронизации
 
-Настройте периодический CI-workflow, который автоматически вливает ветку `sync/<node>` в `main` (если ветка существует) с авторством бота. Шаг checkout должен выполняться **без** загрузки подмодулей: слияние только сдвигает указатель `commons`, а SSH-ссылка на подмодуль недоступна по стандартному CI-токену. Полный цикл описан в разделе [Concept: Framework architecture](/apex/concepts/architecture) ([capture-up](/apex/glossary#capture-up)).
+Решите, как проверять и вливать ветку `sync/<node>`, которую создаёт
+`apex sync/repository`. Для автоматического слияния настройте разрешения
+репозитория и доступ к субмодулям под выбранный сценарий.
+См. [модель capture-up](/apex/concepts/architecture#capture-up).
 
 ### Проверьте работу
 

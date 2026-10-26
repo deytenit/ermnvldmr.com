@@ -120,7 +120,7 @@ Two passes: (1) [anchor-IP](/apex/glossary#anchor-ip) validation over `compositi
 
 Without a target, visits core first and other compositions alphabetically, reversed for `down`. `-p` selects one composition or `all`; `up` defaults to detached mode. `.env` then `apex.env` are passed per project, with generated identity/path values in the process environment. Remaining arguments pass through to Docker Compose. Wrapper options precede the action; `--dry-run` prints commands without executing them.
 
-Compatibility forms include `apex compose restart apex traefik` and `apex compose up -d apex`. Use explicit `-p` to distinguish a composition from a service or option value. No Compose action removes Xray socket paths; cleanup belongs to the node's Xray startup lifecycle.
+Compatibility forms include `apex compose restart apex traefik` and `apex compose up -d apex`. Use explicit `-p` to distinguish a composition from a service or option value.
 
 ## env {#env}
 

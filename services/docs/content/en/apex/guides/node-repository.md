@@ -25,7 +25,7 @@ The gitlink pins the exact engine version the node runs. Upgrading later mean
 ```ini {filename="node.env"}
 APEX_NODE_FQDN=node1.example.com
 APEX_NODE_HOST=node1.example.com
-APEX_SUBNET=198.18.16.0/24
+APEX_SUBNET=198.18.0.0/24
 APEX_GIT_AUTHOR_NAME=apex [bot]
 APEX_GIT_AUTHOR_EMAIL=apex@localhost
 ```
@@ -41,7 +41,7 @@ include:
 ```
 
 ```ini {filename="compositions/apex/apex.env"}
-APEX_TRAEFIK_DIRECT_IP=198.18.16.10
+APEX_TRAEFIK_DIRECT_IP=198.18.0.10
 APEX_RESTIC_REPOSITORY=s3:<endpoint>/<bucket>/<node>
 COMPOSE_PROFILES=adguard,xray,alloy
 # observability push targets (only when the alloy profile is enabled)
@@ -77,9 +77,12 @@ __pycache__/
 
 Create `compositions/ADDRESSING.md` with the node's subnet (`APEX_SUBNET`) and the reserved ranges (`.10`–`.19` core, `.20`+ services). Every [anchor IP](/apex/glossary#anchor-ip) allocated later is recorded here.
 
-### Wire capture-up CI
+### Choose a sync review policy
 
-Add a scheduled workflow that merges `sync/<node>` into `main` when the branch exists, committing under a bot identity. Check out **without** submodules — the merge only moves the commons pointer, and an SSH submodule URL is not fetchable with the default CI token. See [Concept: Framework architecture](/apex/concepts/architecture) for the full [capture-up](/apex/glossary#capture-up) loop.
+Decide how to review and integrate the `sync/<node>` branch produced by
+`apex sync/repository`. If you automate integration, configure repository
+permissions and submodule access for that workflow. See the
+[capture-up model](/apex/concepts/architecture#capture-up).
 
 ### Validate
 
