@@ -28,7 +28,7 @@ services:
       - ./@tier2/<anchor>/data:/data
     networks:
       direct:
-        ipv4_address: 198.18.16.20
+        ipv4_address: 198.18.0.20
       enclave: {}
     labels:
       - "traefik.enable=true"

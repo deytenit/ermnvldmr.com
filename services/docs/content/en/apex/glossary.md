@@ -16,7 +16,7 @@ Terminology used within the apex fleet operations framework.
 
 ## Capture-up {#capture-up}
 
-**Capture-up** - The flow that records a host's live state back into its repository: a scheduled commit to the `sync/<node>` branch, rebased onto `main` and folded back by CI. Drift becomes a diff instead of divergence.
+**Capture-up** — Recording a host's working state in a `sync/<node>` branch through `apex sync/repository`. The repository's own policy determines review and integration.
 
 ## Commons {#commons}
 

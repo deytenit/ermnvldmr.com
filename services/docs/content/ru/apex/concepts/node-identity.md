@@ -21,7 +21,7 @@ weight: 12
 ```ini {filename="node.env"}
 APEX_NODE_FQDN=node1.example.com
 APEX_NODE_HOST=node1.example.com
-APEX_SUBNET=198.18.16.0/24
+APEX_SUBNET=198.18.0.0/24
 ```
 
 ### Имя хоста ОС

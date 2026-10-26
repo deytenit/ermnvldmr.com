@@ -34,7 +34,11 @@ The [core composition](/apex/glossary#core-composition) encodes container-level
 
 ## Observability {#observability}
 
-Observability is an **outbound push**, not an exposed route. The optional `alloy` core service (Grafana Alloy, one agent per node) collects host metrics (a `node_exporter`-equivalent), container metrics (cadvisor), the systemd journal, and docker container logs, and pushes them to a **central** Prometheus and Loki that live on a designated node — the metrics via `prometheus.remote_write` to `APEX_PROM_PUSH_URL`, the logs via `loki.write` to `APEX_LOKI_PUSH_URL`. Both targets are authenticated with HTTP basic auth using `APEX_OBS_BASIC_AUTH_USER` / `APEX_OBS_BASIC_AUTH_PASS`. Because the push is outbound, Alloy attaches to the `direct` network (which has egress) rather than the `internal` `enclave`; there is no node-local log store and no `/loki` route to protect.
+The optional `alloy` service sends host and container metrics to
+`APEX_PROM_PUSH_URL` and logs to `APEX_LOKI_PUSH_URL`. Configure compatible
+endpoints and HTTP basic-auth credentials through `APEX_OBS_BASIC_AUTH_USER`
+and `APEX_OBS_BASIC_AUTH_PASS`. The service requires outbound connectivity to
+those endpoints; their hosting and access policy are deployment choices.
 
 ## Secrets boundary {#secrets}
 
