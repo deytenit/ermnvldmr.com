@@ -44,7 +44,7 @@ Opt-in services, gated by compose profiles a node enables in `COMPOSE_PROFILE
 |---|---|---|
 | `xray` | xray | Host-network proxy edge for the enclave. |
 | `adguard` | adguard | DNS filtering, sharing traefik's network namespace; routed at `/adguard` on the node FQDN. |
-| `alloy` | alloy | Per-node observability agent (Grafana Alloy). Collects host + container metrics and journal + container logs and **pushes** them outbound to a central Prometheus and Loki (see [Concept: Security model](/apex/concepts/security-model#observability)). Its container `hostname` is set to `APEX_NODE_HOST`, and that value stamps the `node` and `instance` labels on every metric and log stream. |
+| `alloy` | alloy | Optional Grafana Alloy agent. Sends host/container metrics and journal/container logs to configured compatible endpoints. See [observability configuration](/apex/concepts/security-model#observability). |
 | `manual` | resticontainer | One-shot label-driven backup runner (`ghcr.io/deytenit/resticontainer`) — never starts with `up`; invoked by the `backup/run` action, which discovers per-service backup intent from `restic.*` compose labels. |
 
 ## Networks {#networks}

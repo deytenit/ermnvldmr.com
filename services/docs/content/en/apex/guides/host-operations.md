@@ -12,7 +12,8 @@ weight: 24
 
 | Step | Effect |
 |---|---|
-| `configure/base` | Ensures a Debian base: package index update, essential packages (`curl`, `wget`, `git`, `rsyslog`), rsyslog running, `ufw` installed, and the `ufw-docker` helper at `~/.local/bin/ufw-docker`. |
+| `configure/base` | Installs missing Debian packages after checking that APT's simulation contains no upgrades or removals, ensures rsyslog is running, and verifies the pinned `/usr/local/bin/ufw-docker` before privileged execution. Avoid concurrent package operations. |
+| `configure/timezone` | Applies `configs/timezone` when present and refreshes active cron after a timezone change. Supports `--dry-run`. |
 | `configure/ufw` | Applies host rules, injects the managed kernel-rule blocks, applies container rules via `ufw-docker`. Supports `--dry-run`. |
 | `configure/crowdsec` | Installs CrowdSec if absent, deploys `configs/crowdsec/` to `/etc/crowdsec/`, installs collections, and the firewall bouncer when configured. Supports `--dry-run`. |
 | `configure/cron` | Renders `configs/cron/crontab` through the template layer and installs it — with preview, empty-render refusal (exit `65`), and rollback on a failed install. Supports `--dry-run`. |
@@ -27,10 +28,39 @@ After `configure/ufw`, restart `ufw` deliberately (`sudo systemctl restart ufw`)
 apex compose up            # core first, then services alphabetically
 apex compose down          # reverse order
 apex compose restart
-apex compose up --dry-run  # print the commands only
+apex compose --dry-run up  # print the commands only
+apex compose -p apex restart traefik
+apex compose -p app up -d
 ```
 
-Extra arguments pass through to `docker compose` per project. Each project's `.env` and `apex.env` are supplied automatically when present.
+Put wrapper options (`-p` and `--dry-run`) before the action. Extra arguments pass
+through to Docker Compose for the selected project. Each project's `.env` and
+`apex.env` are supplied automatically when present. Positional targeting remains
+available as `apex compose restart apex traefik` or `apex compose up -d apex`;
+prefer `-p` when arguments could also name a composition.
+
+Replace `app` with a composition defined in your repository. When a mount or
+other container definition changes, use targeted `up -d` to recreate it:
+`restart` retains the existing definition.
+
+### Direct core Compose commands
+
+```bash
+apex env --sync
+cd compositions/apex
+docker compose config --quiet
+docker compose restart traefik
+```
+
+Sync preserves existing secret and UID/GID text in `.env` and its tier-storage
+symlink. A managed block loads committed `apex.env` settings, including profiles,
+then synthesized node/path values. Writes use mode `0600`. Resync after changing
+those settings or paths; do not hand-edit the managed block. Docker's shell
+environment still overrides file values.
+
+`eval "$(apex env)"`, `apex env --dotenv`, and `apex env --write generated.env`
+export or save generated APEX values only. They do not load composition secrets
+or replace the full `--sync` bridge. Output modes are mutually exclusive.
 
 ## Backups {#backups}
 
@@ -46,7 +76,7 @@ Runs [resticontainer](https://github.com/deytenit/resticontainer) one-shot under
 apex sync/repository <telegram-bot-url>
 ```
 
-Commits the live checkout to `sync/<node>`, rebases onto `origin/main`, and force-pushes with lease; CI folds the branch back into `main`. The action refuses to run — with a paged error — when the commons submodule is dirty or the `compositions/` tree is missing, and aborts cleanly on a rebase conflict (manual intervention required). See [Concept: Framework architecture](/apex/concepts/architecture#capture-up) for the model.
+Commits the live checkout to `sync/<node>`, rebases onto `origin/main`, and force-pushes with lease. The action refuses to run — with a paged error — when the commons submodule is dirty or the `compositions/` tree is missing, and aborts cleanly on a rebase conflict (manual intervention required). See [Concept: Framework architecture](/apex/concepts/architecture#capture-up) for the model.
 
 ## Update awareness {#updates}
 
