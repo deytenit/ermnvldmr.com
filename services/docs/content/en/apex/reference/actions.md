@@ -4,7 +4,7 @@ description: "Every commons action: arguments and behavior."
 weight: 32
 ---
 
-The sixteen [commons](/apex/glossary#commons) actions, by group. Arguments are shown as the parser accepts them; optional arguments are bracketed. Exit codes follow the [engine convention](/apex/reference/cli#exit-codes).
+The [commons](/apex/glossary#commons) actions, by group. Arguments are shown as the parser accepts them; optional arguments are bracketed. Exit codes follow the [engine convention](/apex/reference/cli#exit-codes).
 
 ## configure {#configure}
 
@@ -12,13 +12,19 @@ The sixteen [commons](/apex/glossary#commons) actions, by group. Arguments are
 
 `apex configure [--dry-run]`
 
-Runs the whole suite in fixed order — `base`, `ufw`, `crowdsec`, `cron`, `systemd`, `routing` — and stops at the first failing step, propagating its exit code. `--dry-run` is forwarded to the steps that support it.
+Runs the suite in order: `base`, `timezone`, `ufw`, `crowdsec`, `cron`, `systemd`, `routing`, then additional node actions. A failing step contributes a nonzero exit status; later steps may still run. `--dry-run` is forwarded only to steps that support it, so it is not a guarantee that the entire umbrella command is read-only.
 
 ### configure/base
 
 `apex configure/base`
 
-Debian-only guard (exit `1` elsewhere). Updates the package index, installs the essential packages (`curl`, `wget`, `git`, `rsyslog`), ensures rsyslog is running, installs `ufw` when absent, and downloads the `ufw-docker` helper to `~/.local/bin/ufw-docker` (skipped when already present).
+Debian-only guard (exit `1` elsewhere). Checks installed package state for `curl`, `wget`, `git`, `rsyslog`, and `ufw`; installs missing packages and ensures rsyslog is running. Refuses an APT simulation containing upgrades or removals and uses `--no-upgrade --no-remove`. Avoid concurrent package operations: simulation and installation are separate transactions. Verifies the immutable revision and SHA-256 of `/usr/local/bin/ufw-docker` before running it as root. Unsafe paths and unverified downloads are rejected; an executable file alone is not trusted.
+
+### configure/timezone
+
+`apex configure/timezone [--dry-run]`
+
+Applies the IANA zone named in `configs/timezone` and refreshes active cron after a change. An absent declaration preserves the current timezone; an invalid zone fails before changing it.
 
 ### configure/ufw
 
@@ -110,9 +116,19 @@ Two passes: (1) [anchor-IP](/apex/glossary#anchor-ip) validation over `compositi
 
 ### compose
 
-`apex compose <action> [--dry-run] [extra...]`
+`apex compose [-p <composition>] [--dry-run] <action> [extra...]`
 
-Orchestrates `docker compose <action>` across the node: the core project first, then services alphabetically (reversed for `down`). `up` implies `-d`; `.env`/`apex.env` are passed per project when present; extra arguments pass through; `--dry-run` (accepted in any position) prints commands instead of executing.
+Without a target, visits core first and other compositions alphabetically, reversed for `down`. `-p` selects one composition or `all`; `up` defaults to detached mode. `.env` then `apex.env` are passed per project, with generated identity/path values in the process environment. Remaining arguments pass through to Docker Compose. Wrapper options precede the action; `--dry-run` prints commands without executing them.
+
+Compatibility forms include `apex compose restart apex traefik` and `apex compose up -d apex`. Use explicit `-p` to distinguish a composition from a service or option value. No Compose action removes Xray socket paths; cleanup belongs to the node's Xray startup lifecycle.
+
+## env {#env}
+
+`apex env [--export | --dotenv | --write <path> | --sync]`
+
+Default output is shell-quoted APEX exports for `eval "$(apex env)"`. `--dotenv` emits dotenv syntax; `--write` writes generated values to a separate file, including a relative filename. These modes do not read composition credentials or merge `apex.env`.
+
+`--sync` preserves existing `compositions/apex/.env` text and updates only its managed block: committed `apex.env` settings first, generated identity/path values last. This includes non-APEX settings such as `COMPOSE_PROFILES` and `TZ`, allowing bare Docker Compose commands in the core directory. Existing tier symlinks remain intact, and synchronized files use mode `0600`. Resync after changing source settings or tier paths. Malformed managed markers fail without rewriting uncertain content. Shell environment values still have Docker Compose precedence.
 
 ---
 
