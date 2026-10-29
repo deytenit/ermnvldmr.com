@@ -53,6 +53,7 @@ export async function runS3Sync(
   const bucket = cmd.bucket ?? process.env.S3_BUCKET;
   const region = cmd.region ?? process.env.AWS_REGION ?? process.env.S3_REGION;
   const endpoint = cmd.endpoint ?? process.env.S3_ENDPOINT_URL ?? process.env.S3_ENDPOINT;
+  const publicUrl = cmd.publicUrl ?? process.env.COM_ERMNVLDMR_STATIC_PUBLIC_URL ?? process.env.S3_PUBLIC_URL;
   const accessKey = cmd.accessKeyId ?? process.env.AWS_ACCESS_KEY_ID ?? process.env.S3_ACCESS_KEY_ID;
   const secretKey = cmd.secretAccessKey ?? process.env.AWS_SECRET_ACCESS_KEY ?? process.env.S3_SECRET_ACCESS_KEY;
 
@@ -149,8 +150,8 @@ export async function runS3Sync(
    */
   const getS3Url = (finalName: string): string => {
     const normalizedKey = normalizeKey(cmd.targetPrefix, finalName);
-    if (cmd.publicUrl) {
-      const cleanPublicUrl = cmd.publicUrl.replace(/\/+$/, '');
+    if (publicUrl) {
+      const cleanPublicUrl = publicUrl.replace(/\/+$/, '');
       return `${cleanPublicUrl}/${normalizedKey}`;
     }
     if (bucket.includes('.')) {
