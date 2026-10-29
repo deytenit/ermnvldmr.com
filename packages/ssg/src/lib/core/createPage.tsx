@@ -11,11 +11,55 @@ export interface PageOptions {
 }
 
 /**
+ * Internal interface representing a component with attached page options.
+ */
+interface HasPageOptions {
+  /** The attached page options. */
+  __pageOptions?: PageOptions;
+}
+
+/**
+ * Type predicate checking if a value is an object or function with attached page options.
+ *
+ * @param value - The value to inspect.
+ * @returns True if value has __pageOptions.
+ * @example
+ * ```ts
+ * if (hasPageOptions(Component)) {
+ *   console.log(Component.__pageOptions);
+ * }
+ * ```
+ */
+function hasPageOptions(value: unknown): value is HasPageOptions {
+  return (
+    (typeof value === 'function' || (typeof value === 'object' && value !== null)) &&
+    '__pageOptions' in value
+  );
+}
+
+/**
+ * Retrieves the page metadata options attached to a component via createPage.
+ *
+ * @param component - The component to inspect.
+ * @returns The associated PageOptions, or undefined if none are set.
+ * @example
+ * ```ts
+ * const options = getPageOptions(MyPageComponent);
+ * ```
+ */
+export function getPageOptions(component: unknown): PageOptions | undefined {
+  if (hasPageOptions(component)) {
+    return component.__pageOptions;
+  }
+  return undefined;
+}
+
+/**
  * Mounts or hydrates a React component into the `#root` element.
  *
- * Skips DOM mounting during the SSG server-side render pass
- * (`typeof window === 'undefined'`). On the client, hydrates asynchronously
- * during idle time to unblock First Contentful Paint.
+ * Attaches metadata options for SSG extraction. Skips DOM mounting during the SSG
+ * server-side render pass (`typeof window === 'undefined'`). On the client, hydrates
+ * asynchronously during idle time to unblock First Contentful Paint.
  *
  * @param Component - The React component to render.
  * @param options - Optional page metadata (title, description).
@@ -26,10 +70,12 @@ export interface PageOptions {
  * ```
  */
 export function createPage(Component: React.ComponentType, options: PageOptions = {}): void {
+  Object.assign(Component, { __pageOptions: options });
+
   if (typeof window === 'undefined') return; // SSG build context: skip DOM mounting
   const rootElement = document.getElementById('root');
 
-  if (options.title) {
+  if (options.title && document.title !== options.title) {
     document.title = options.title;
   }
 
@@ -40,7 +86,9 @@ export function createPage(Component: React.ComponentType, options: PageOptions 
       metaDescription.setAttribute('name', 'description');
       document.head.appendChild(metaDescription);
     }
-    metaDescription.setAttribute('content', options.description);
+    if (metaDescription.getAttribute('content') !== options.description) {
+      metaDescription.setAttribute('content', options.description);
+    }
   }
 
   if (!rootElement) return;

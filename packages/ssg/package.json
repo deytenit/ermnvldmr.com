@@ -24,6 +24,7 @@
     "build": "tsc",
     "lint": "eslint src --max-warnings 0",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "clean": "rm -rf dist"
   },
   "dependencies": {
@@ -39,6 +40,8 @@
     "@rsbuild/core": "^1.7.3",
     "@rsbuild/plugin-react": "^1.1.1",
     "@rsbuild/plugin-type-check": "^1.1.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.1",
     "@types/node": "*",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
@@ -46,7 +49,8 @@
     "fast-glob": "^3.3.3",
     "jsdom": "^28.0.0",
     "rsbuild-plugin-dts": "^0.19.5",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "vitest": "^4.1.11"
   },
   "peerDependencies": {
     "react": "^19.1.0",
