@@ -7,6 +7,7 @@ export default defineCli({
       description: 'Sync static assets to S3',
       targetPrefix: 'www',
       bucket: env('COM_ERMNVLDMR_STATIC_S3_BUCKET'),
+      publicUrl: env('COM_ERMNVLDMR_STATIC_PUBLIC_URL', 'https://static.ermnvldmr.com'),
       region: env('COM_ERMNVLDMR_STATIC_S3_REGION'),
       endpoint: env('COM_ERMNVLDMR_STATIC_S3_ENDPOINT_URL'),
       accessKeyId: env('COM_ERMNVLDMR_STATIC_AWS_ACCESS_KEY_ID'),
