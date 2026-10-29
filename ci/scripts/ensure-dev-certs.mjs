@@ -162,7 +162,7 @@ export function loadDevRootCaKey(workspaceRoot = findWorkspaceRoot()) {
  * Remote public URL for the Ermnvldmr development root CA certificate.
  */
 export const REMOTE_ROOT_CA_URL =
-  'https://static.ermnvldmr.com/ssl/certs/ErmnvldmrDevelopmentRootCA.pem';
+  'https://static.ermnvldmr.com/dev/ssl/certs/ErmnvldmrDevelopmentRootCA.pem';
 
 /**
  * Ensures valid development certificates exist for localhost.ermnvldmr.com.

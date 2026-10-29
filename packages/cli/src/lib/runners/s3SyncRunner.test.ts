@@ -376,4 +376,33 @@ describe('runS3Sync', () => {
     const content = fs.readFileSync(srcPath, 'utf-8');
     expect(content).toContain('https://cdn.example.com/www/img.webp');
   });
+
+  it('should fallback to COM_ERMNVLDMR_STATIC_PUBLIC_URL when publicUrl is not explicitly configured', async () => {
+    process.env.COM_ERMNVLDMR_STATIC_PUBLIC_URL = 'https://static.ermnvldmr.com';
+
+    const staticDir = path.join(tempDir, 'static');
+    fs.mkdirSync(staticDir, { recursive: true });
+    fs.writeFileSync(path.join(staticDir, 'asset.png'), 'png-content');
+
+    const srcDir = path.join(tempDir, 'src');
+    fs.mkdirSync(srcDir, { recursive: true });
+    const srcPath = path.join(srcDir, 'index.ts');
+    fs.writeFileSync(srcPath, 'const img = "/static/asset.png";');
+
+    const cmd: S3SyncCommandConfig = {
+      name: 'sync',
+      description: 'desc',
+      bucket: 'com-ermnvldmr-static',
+      targetPrefix: 'www',
+      sourceDir: './static',
+      type: 's3-sync',
+    };
+
+    await runS3Sync(cmd, {});
+
+    const content = fs.readFileSync(srcPath, 'utf-8');
+    expect(content).toContain('https://static.ermnvldmr.com/www/asset.png');
+
+    delete process.env.COM_ERMNVLDMR_STATIC_PUBLIC_URL;
+  });
 });

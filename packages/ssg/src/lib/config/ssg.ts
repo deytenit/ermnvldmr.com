@@ -5,7 +5,28 @@ import path from 'node:path';
 
 import React from 'react';
 
+import { getPageOptions } from '../core/createPage.js';
+
 import type { RsbuildPlugin } from '@rsbuild/core';
+
+/**
+ * Escapes HTML special characters for safe injection into markup.
+ *
+ * @param str - The raw string to escape.
+ * @returns The escaped HTML string.
+ * @example
+ * ```ts
+ * escapeHtml('<script>alert("xss")</script>');
+ * ```
+ */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 
 const SSR_RUNNER_SCRIPT = `
 import { createRsbuild } from '@rsbuild/core';
@@ -13,6 +34,7 @@ import { createRsbuild } from '@rsbuild/core';
 async function main() {
   const entries = JSON.parse(process.argv[1]);
   const ssrDistPath = process.argv[2];
+  const locale = process.argv[3] || process.env.LOCALE || 'en';
 
   const plugins = [];
   try {
@@ -31,10 +53,35 @@ async function main() {
     // MDX plugins not installed or needed in this service
   }
 
+  if (locale !== 'en') {
+    plugins.push({
+      name: 'ermnvldmr:ssr-locale-mdx-replacement',
+      setup(api) {
+        api.modifyRspackConfig((config, { rspack }) => {
+          config.plugins = [
+            ...(config.plugins ?? []),
+            new rspack.NormalModuleReplacementPlugin(
+              /\\.en\\.mdx$/,
+              (resource) => {
+                resource.request = resource.request.replace(/\\.en\\.mdx$/, '.' + locale + '.mdx');
+              }
+            ),
+          ];
+          return config;
+        });
+      },
+    });
+  }
+
   const ssrBuild = await createRsbuild({
     rsbuildConfig: {
       plugins,
-      source: { entry: entries },
+      source: {
+        entry: entries,
+        define: {
+          'process.env.LOCALE': JSON.stringify(locale),
+        },
+      },
       output: {
         target: 'node',
         distPath: { root: ssrDistPath, js: '.' },
@@ -119,11 +166,16 @@ export function ssgPlugin(): RsbuildPlugin {
           );
         const ssrDistPath = path.join(path.dirname(webDistPath), 'dist-ssr');
 
+        const locale = process.env.LOCALE ?? 'en';
+
         console.log('[ssg-plugin] Building SSR bundles...');
         execFileSync(
           process.execPath,
-          ['--input-type=module', '-e', SSR_RUNNER_SCRIPT, JSON.stringify(entries), ssrDistPath],
-          { stdio: 'inherit' }
+          ['--input-type=module', '-e', SSR_RUNNER_SCRIPT, JSON.stringify(entries), ssrDistPath, locale],
+          {
+            stdio: 'inherit',
+            env: { ...process.env, LOCALE: locale },
+          }
         );
         console.log('[ssg-plugin] SSR bundles ready.');
 
@@ -175,8 +227,10 @@ export function ssgPlugin(): RsbuildPlugin {
             React.createElement(React.StrictMode, null, React.createElement(Component))
           );
 
+          const pageOptions = getPageOptions(Component);
+
           const source = await fs.readFile(webHtmlPath, 'utf8');
-          const injected = source.replace(
+          let injected = source.replace(
             /<div id="root"[^>]*>\s*<\/div>/,
             `<div id="root">${renderedHtml}</div>`
           );
@@ -187,9 +241,29 @@ export function ssgPlugin(): RsbuildPlugin {
             );
           }
 
+          if (pageOptions?.title) {
+            injected = injected.replace(
+              /<title>[^<]*<\/title>/i,
+              `<title>${escapeHtml(pageOptions.title)}</title>`
+            );
+          }
+
+          if (pageOptions?.description) {
+            if (/<meta\s+[^>]*name=["']description["'][^>]*>/i.test(injected)) {
+              injected = injected.replace(
+                /<meta\s+[^>]*name=["']description["'][^>]*>/i,
+                `<meta name="description" content="${escapeHtml(pageOptions.description)}">`
+              );
+            } else {
+              injected = injected.replace(
+                /<\/head>/i,
+                `  <meta name="description" content="${escapeHtml(pageOptions.description)}">\n</head>`
+              );
+            }
+          }
+
           const processed = await critters.process(injected);
 
-          const locale = process.env.LOCALE ?? 'en';
           const localized = processed.replace(
             /<html([^>]*)\slang="[^"]*"/,
             `<html$1 lang="${locale}"`
