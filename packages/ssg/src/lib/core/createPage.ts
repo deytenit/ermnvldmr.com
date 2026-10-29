@@ -96,10 +96,10 @@ export function createPage(Component: React.ComponentType, options: PageOptions 
   const mountOrHydrate = () => {
     void import('react-dom/client')
       .then(({ createRoot, hydrateRoot }) => {
-        const node = (
-          <React.StrictMode>
-            <Component />
-          </React.StrictMode>
+        const node = React.createElement(
+          React.StrictMode,
+          null,
+          React.createElement(Component)
         );
 
         if (rootElement.hasChildNodes()) {
