@@ -6,7 +6,7 @@ export default defineCli({
       name: 'sync:static',
       description: 'Sync static assets to S3',
       targetPrefix: 'docs',
-      sourceDir: './static',
+      sourceDir: './public/static',
       sourceFilesPattern: 'content/**/*.{md,html}',
       urlPrefixes: ['/static/', '/images/'],
       bucket: env('COM_ERMNVLDMR_STATIC_S3_BUCKET'),
@@ -16,7 +16,7 @@ export default defineCli({
       accessKeyId: env('COM_ERMNVLDMR_STATIC_AWS_ACCESS_KEY_ID'),
       secretAccessKey: env('COM_ERMNVLDMR_STATIC_AWS_SECRET_ACCESS_KEY'),
       hooks: {
-        beforeSync: 'bash ../../ci/scripts/optimize-images.sh ./static',
+        beforeSync: 'bash ../../ci/scripts/optimize-images.sh ./public/static',
       },
     }),
   ],

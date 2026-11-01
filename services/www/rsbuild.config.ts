@@ -44,7 +44,7 @@ export default defineSSGServiceConfig(
         scriptName: 'trace.js',
         hostUrl: '/trace',
         websiteId: UMAMI_WWW_WEBSITE_ID,
-        domains: 'ermnvldmr.com,www.ermnvldmr.com',
+        domains: 'www.ermnvldmr.com',
         doNotTrack: true,
       }),
     ],
