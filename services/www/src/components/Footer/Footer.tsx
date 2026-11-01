@@ -71,7 +71,7 @@ export const Footer = ({ currentPath }: FooterProps) => {
     <VStack as="footer" className="w-full" gap={0}>
       <RainbowSeparator />
       <Container bg="transparent" className="w-full max-sm:p-8" padding={12}>
-        <VStack className="w-full" gap={4}>
+        <VStack className="w-full" gap={1}>
           <HStack
             align="center"
             className="w-full max-sm:flex-col max-sm:items-start max-sm:gap-4"
