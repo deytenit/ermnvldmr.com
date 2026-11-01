@@ -107,7 +107,7 @@ export const Footer = ({ currentPath }: FooterProps) => {
               />
             </HStack>
           </VStack>
-          <VStack align="end" gap={4}>
+          <VStack align="end" gap={1}>
             <ThemeSwitch
               darkIcon={<Icon icon={Moon} />}
               lightIcon={<Icon icon={Sun} />}
