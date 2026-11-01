@@ -84,16 +84,11 @@ export const Footer = ({ currentPath }: FooterProps) => {
               </Link>
             </Text>
             <HStack align="center" className="flex-wrap" gap={2}>
-              <Text
-                className="text-neutral-400 dark:text-neutral-500"
-                size="s"
-                type="label"
-              >
+              <Text color="muted" size="s" type="label">
                 {tRaw('To make this site better, I collect anonymous analytics · {privacyLink}', {
                   privacyLink: (
                     <Link
                       key="privacy-link"
-                      className="text-neutral-400 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-400"
                       href="https://static.ermnvldmr.com/www/privacy-policy.txt"
                       size="s"
                       type="label"
