@@ -6,4 +6,4 @@ resources:
 - service.yaml
 images:
 - name: ghcr.io/deytenit/ermnvldmr.com/www
-  newTag: sha-9200529
+  newTag: sha-84772ff
