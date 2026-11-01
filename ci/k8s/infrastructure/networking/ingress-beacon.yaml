@@ -20,6 +20,20 @@ spec:
     - host: www.ermnvldmr.com
       http:
         paths:
+          - path: /trace
+            pathType: Prefix
+            backend:
+              service:
+                name: umami-service
+                port:
+                  number: 3000
+          - path: /pulse
+            pathType: Prefix
+            backend:
+              service:
+                name: umami-service
+                port:
+                  number: 3000
           - path: /beacon
             pathType: Prefix
             backend:
@@ -30,6 +44,20 @@ spec:
     - host: docs.ermnvldmr.com
       http:
         paths:
+          - path: /trace
+            pathType: Prefix
+            backend:
+              service:
+                name: umami-service
+                port:
+                  number: 3000
+          - path: /pulse
+            pathType: Prefix
+            backend:
+              service:
+                name: umami-service
+                port:
+                  number: 3000
           - path: /beacon
             pathType: Prefix
             backend:

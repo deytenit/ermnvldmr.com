@@ -6,4 +6,6 @@ metadata:
 spec:
   stripPrefix:
     prefixes:
+      - /trace
+      - /pulse
       - /beacon
