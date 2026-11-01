@@ -33,18 +33,18 @@ const MIME: Record<string, string> = {
   '.txt': 'text/plain',
 };
 
-const UMAMI_WWW_WEBSITE_ID = '4fca5ac2-4fe4-4626-b708-933c37bfe918';
+const UMAMI_WWW_WEBSITE_ID = '41c7699a-0675-4f49-bcd0-3df47a66b6b1';
 
 export default defineSSGServiceConfig(
   mergeConfig(localeRsbuildConfig(), {
     server: localDevServer({ port: 3000 }),
     analytics: [
       umamiAnalytics({
-        serverUrl: '/beacon',
-        scriptName: 'beacon.js',
-        hostUrl: '/beacon',
+        serverUrl: '/trace',
+        scriptName: 'trace.js',
+        hostUrl: '/trace',
         websiteId: UMAMI_WWW_WEBSITE_ID,
-        domains: 'ermnvldmr.com,www.ermnvldmr.com',
+        domains: 'www.ermnvldmr.com',
         doNotTrack: true,
       }),
     ],
