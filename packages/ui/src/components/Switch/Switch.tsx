@@ -15,6 +15,11 @@ import type { AriaSwitchProps } from 'react-aria';
 export type SwitchVariant = 'solid' | 'outline' | 'ghost';
 
 /**
+ * Switch size variants.
+ */
+export type SwitchSize = 's' | 'm' | 'l';
+
+/**
  * Switch color themes.
  */
 export type SwitchColor =
@@ -39,18 +44,25 @@ export interface SwitchProps extends AriaSwitchProps, ClassNameProps, DataAttrib
   children?: React.ReactNode;
   /** Visual style variant */
   variant?: SwitchVariant;
+  /** Switch size */
+  size?: SwitchSize;
   /** Color theme */
   color?: SwitchColor;
 }
 
 const trackVariants = cva(
-  'relative w-11 h-6 transition-all duration-200 ease-in-out rounded-full outline-none flex items-center',
+  'relative transition-all duration-200 ease-in-out rounded-full outline-none flex items-center',
   {
     variants: {
       variant: {
         solid: 'data-[selected=false]:bg-muted',
         outline: 'border-2 data-[selected=false]:bg-transparent data-[selected=false]:border-muted',
         ghost: 'data-[selected=false]:bg-transparent data-[selected=false]:border-transparent',
+      },
+      size: {
+        s: 'w-7 h-4',
+        m: 'w-11 h-6',
+        l: 'w-14 h-8',
       },
       color: {
         primary: '',
@@ -118,19 +130,25 @@ const trackVariants = cva(
     ],
     defaultVariants: {
       variant: 'solid',
+      size: 'm',
       color: 'primary',
     },
   }
 );
 
 const thumbVariants = cva(
-  'w-4 h-4 transition-all duration-200 ease-in-out transform rounded-full shadow-sm data-[selected=false]:bg-[var(--rb-text)] data-[selected=false]:translate-x-0',
+  'transition-all duration-200 ease-in-out transform rounded-full shadow-sm data-[selected=false]:bg-[var(--rb-text)] data-[selected=false]:translate-x-0',
   {
     variants: {
       variant: {
-        solid: 'ml-1 data-[selected=true]:translate-x-5',
-        outline: 'ml-0.5 data-[selected=true]:translate-x-4.5',
-        ghost: 'ml-1 data-[selected=true]:translate-x-5',
+        solid: '',
+        outline: '',
+        ghost: '',
+      },
+      size: {
+        s: 'w-2.5 h-2.5',
+        m: 'w-4 h-4',
+        l: 'w-6 h-6',
       },
       color: {
         primary: '',
@@ -146,6 +164,17 @@ const thumbVariants = cva(
       },
     },
     compoundVariants: [
+      // size + variant offsets
+      { size: 's', variant: 'solid', className: 'ml-0.5 data-[selected=true]:translate-x-3.5' },
+      { size: 's', variant: 'outline', className: 'ml-0.5 data-[selected=true]:translate-x-2.5' },
+      { size: 's', variant: 'ghost', className: 'ml-0.5 data-[selected=true]:translate-x-3.5' },
+      { size: 'm', variant: 'solid', className: 'ml-1 data-[selected=true]:translate-x-5' },
+      { size: 'm', variant: 'outline', className: 'ml-0.5 data-[selected=true]:translate-x-4.5' },
+      { size: 'm', variant: 'ghost', className: 'ml-1 data-[selected=true]:translate-x-5' },
+      { size: 'l', variant: 'solid', className: 'ml-1 data-[selected=true]:translate-x-6' },
+      { size: 'l', variant: 'outline', className: 'ml-0.5 data-[selected=true]:translate-x-5.5' },
+      { size: 'l', variant: 'ghost', className: 'ml-1 data-[selected=true]:translate-x-6' },
+
       // primary
       { variant: 'solid', color: 'primary', className: 'data-[selected=true]:bg-primary-text' },
       { variant: 'outline', color: 'primary', className: 'data-[selected=true]:bg-primary-text' },
@@ -198,6 +227,7 @@ const thumbVariants = cva(
     ],
     defaultVariants: {
       variant: 'solid',
+      size: 'm',
       color: 'primary',
     },
   }
@@ -216,7 +246,7 @@ const thumbVariants = cva(
  * ```
  */
 export function Switch(props: SwitchProps): React.JSX.Element {
-  const { children, className, variant = 'solid', color = 'primary' } = props;
+  const { children, className, variant = 'solid', size = 'm', color = 'primary' } = props;
   const state = useToggleState(props);
   const ref = useRef<HTMLInputElement>(null);
   const { inputProps } = useSwitch(props, state, ref);
@@ -238,14 +268,14 @@ export function Switch(props: SwitchProps): React.JSX.Element {
       <div
         aria-hidden="true"
         className={cn(
-          trackVariants({ variant, color }),
+          trackVariants({ variant, size, color }),
           isFocusVisible && 'ring-2 ring-offset-2 ring-[var(--rb-ring)]',
           props.isDisabled && 'grayscale-[0.5]'
         )}
         data-selected={state.isSelected}
       >
         <div
-          className={thumbVariants({ variant, color })}
+          className={thumbVariants({ variant, size, color })}
           data-selected={state.isSelected}
         />
       </div>
@@ -253,7 +283,7 @@ export function Switch(props: SwitchProps): React.JSX.Element {
         <Text
           bold={state.isSelected}
           color={state.isSelected ? 'default' : 'muted'}
-          size="s"
+          size={size}
           type="label"
         >
           {children}

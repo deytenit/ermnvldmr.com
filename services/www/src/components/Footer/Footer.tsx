@@ -100,14 +100,14 @@ export const Footer = ({ currentPath }: FooterProps) => {
               </Text>
               <Switch
                 aria-label={t('Toggle anonymous telemetry')}
-                className="-my-1 origin-left scale-75"
                 isSelected={isTelemetryEnabled}
+                size="s"
                 variant="outline"
                 onChange={handleTelemetryToggle}
               />
             </HStack>
           </VStack>
-          <VStack align="end" gap={1}>
+          <VStack align="end" gap={4}>
             <ThemeSwitch
               darkIcon={<Icon icon={Moon} />}
               lightIcon={<Icon icon={Sun} />}

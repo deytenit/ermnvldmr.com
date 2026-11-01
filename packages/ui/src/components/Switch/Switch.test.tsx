@@ -66,5 +66,18 @@ describe('components/Switch', () => {
     expect(track).toHaveClass('data-[selected=true]:bg-primary');
     expect(thumb).toHaveClass('data-[selected=true]:bg-primary-text');
   });
+
+  it('applies size variant classes to track and thumb', () => {
+    const { container, rerender } = render(<Switch size="s">Small</Switch>);
+    const track = container.querySelector('[aria-hidden="true"]');
+    const thumb = track?.firstElementChild;
+
+    expect(track).toHaveClass('w-7', 'h-4');
+    expect(thumb).toHaveClass('w-2.5', 'h-2.5');
+
+    rerender(<Switch size="l">Large</Switch>);
+    expect(track).toHaveClass('w-14', 'h-8');
+    expect(thumb).toHaveClass('w-6', 'h-6');
+  });
 });
 
