@@ -7,8 +7,8 @@ export const { t, tRaw } = createKeyset({
     en: 'Toggle anonymous telemetry',
     ru: 'Переключить анонимную телеметрию',
   },
-  'Anonymous telemetry by {umamiLink} · {privacyLink}': {
-    en: 'Anonymous telemetry by\u00A0{umamiLink} · {privacyLink}',
-    ru: 'Анонимная телеметрия {umamiLink} · {privacyLink}',
+  'To make this site better, I collect anonymous analytics · {privacyLink}': {
+    en: 'To\u00A0make this site better, I\u00A0collect anonymous analytics · {privacyLink}',
+    ru: 'Из\u00A0желания сделать этот сайт лучше\u00A0— я\u00A0собираю анонимную аналитику · {privacyLink}',
   },
 });

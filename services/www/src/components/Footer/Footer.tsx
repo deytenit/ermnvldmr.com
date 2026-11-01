@@ -84,15 +84,20 @@ export const Footer = ({ currentPath }: FooterProps) => {
               </Link>
             </Text>
             <HStack align="center" className="flex-wrap" gap={2}>
-              <Text color="muted" size="s">
-                {tRaw('Anonymous telemetry by {umamiLink} · {privacyLink}', {
-                  umamiLink: (
-                    <Link href="https://umami.is" size="s">
-                      Umami
-                    </Link>
-                  ),
+              <Text
+                className="text-neutral-400 dark:text-neutral-500"
+                size="s"
+                type="label"
+              >
+                {tRaw('To make this site better, I collect anonymous analytics · {privacyLink}', {
                   privacyLink: (
-                    <Link href="https://static.ermnvldmr.com/www/privacy-policy.txt" size="s">
+                    <Link
+                      key="privacy-link"
+                      className="text-neutral-400 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-400"
+                      href="https://static.ermnvldmr.com/www/privacy-policy.txt"
+                      size="s"
+                      type="label"
+                    >
                       {t('Privacy Policy')}
                     </Link>
                   ),
@@ -100,6 +105,7 @@ export const Footer = ({ currentPath }: FooterProps) => {
               </Text>
               <Switch
                 aria-label={t('Toggle anonymous telemetry')}
+                className="origin-left scale-75"
                 isSelected={isTelemetryEnabled}
                 variant="outline"
                 onChange={handleTelemetryToggle}
