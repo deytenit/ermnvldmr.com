@@ -4,6 +4,7 @@ dist/
 
 # service static assets (local only, synced with S3)
 **/public/static/
+services/docs/static/
 
 # dependencies
 node_modules/
