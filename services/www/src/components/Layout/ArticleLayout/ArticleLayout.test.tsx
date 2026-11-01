@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom';
 
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { describe, expect, it } from 'vitest';
 
@@ -12,7 +13,10 @@ describe('ArticleLayout', () => {
     createdDate: new Date('2026-01-01T00:00:00Z'),
   };
 
-  it('renders title, created date, and content', () => {
+  it('renders title, created date, and content', async () => {
+    const user = userEvent.setup();
+    window.localStorage.removeItem('umami.disabled');
+
     render(
       <ArticleLayout {...defaultProps}>
         Article content body
@@ -26,6 +30,17 @@ describe('ArticleLayout', () => {
       'href',
       'https://static.ermnvldmr.com/www/privacy-policy.txt'
     );
+
+    const telemetrySwitch = screen.getByRole('switch', { name: 'Toggle anonymous telemetry' });
+    expect(telemetrySwitch).toBeChecked();
+
+    await user.click(telemetrySwitch);
+    expect(telemetrySwitch).not.toBeChecked();
+    expect(window.localStorage.getItem('umami.disabled')).toBe('1');
+
+    await user.click(telemetrySwitch);
+    expect(telemetrySwitch).toBeChecked();
+    expect(window.localStorage.getItem('umami.disabled')).toBeNull();
   });
 
   it('renders updated date when updatedDate prop is provided', () => {

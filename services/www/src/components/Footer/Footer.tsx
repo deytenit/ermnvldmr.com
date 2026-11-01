@@ -1,11 +1,13 @@
 import { ThemeSwitch } from '@ermnvldmr/kits';
-import { Container, HStack, Icon, Link, Text, VStack } from '@ermnvldmr/ui';
+import { Container, HStack, Icon, Link, Switch, Text, VStack } from '@ermnvldmr/ui';
 import { Monitor, Moon, Sun } from 'lucide-react';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { LocaleSwitch } from '../LocaleSwitch/LocaleSwitch';
 import { RainbowSeparator } from '../RainbowSeparator';
 import { t, tRaw } from './Footer.i18n';
+
+const UMAMI_DISABLED_KEY = 'umami.disabled';
 
 /**
  * Props for the Footer component.
@@ -27,6 +29,43 @@ export interface FooterProps {
  */
 export const Footer = ({ currentPath }: FooterProps) => {
   const currentYear = new Date().getFullYear();
+  const [isTelemetryEnabled, setIsTelemetryEnabled] = useState(true);
+
+  useEffect(() => {
+    try {
+      setIsTelemetryEnabled(window.localStorage.getItem(UMAMI_DISABLED_KEY) !== '1');
+    } catch {
+      // Ignore storage access errors in restricted environments
+    }
+
+    const handleStorage = (event: StorageEvent): void => {
+      if (event.key === UMAMI_DISABLED_KEY || event.key === null) {
+        try {
+          setIsTelemetryEnabled(window.localStorage.getItem(UMAMI_DISABLED_KEY) !== '1');
+        } catch {
+          // Ignore storage access errors
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, []);
+
+  const handleTelemetryToggle = useCallback((isSelected: boolean): void => {
+    setIsTelemetryEnabled(isSelected);
+    try {
+      if (isSelected) {
+        window.localStorage.removeItem(UMAMI_DISABLED_KEY);
+      } else {
+        window.localStorage.setItem(UMAMI_DISABLED_KEY, '1');
+      }
+    } catch {
+      // Ignore storage access errors in restricted environments
+    }
+  }, []);
 
   return (
     <VStack as="footer" className="w-full" gap={0}>
@@ -44,20 +83,28 @@ export const Footer = ({ currentPath }: FooterProps) => {
                 CC-BY 4.0
               </Link>
             </Text>
-            <Text color="muted" size="s">
-              {tRaw('Anonymous telemetry by {umamiLink} · {privacyLink}', {
-                umamiLink: (
-                  <Link href="https://umami.is" size="s">
-                    Umami
-                  </Link>
-                ),
-                privacyLink: (
-                  <Link href="https://static.ermnvldmr.com/www/privacy-policy.txt" size="s">
-                    {t('Privacy Policy')}
-                  </Link>
-                ),
-              })}
-            </Text>
+            <HStack align="center" className="flex-wrap" gap={2}>
+              <Text color="muted" size="s">
+                {tRaw('Anonymous telemetry by {umamiLink} · {privacyLink}', {
+                  umamiLink: (
+                    <Link href="https://umami.is" size="s">
+                      Umami
+                    </Link>
+                  ),
+                  privacyLink: (
+                    <Link href="https://static.ermnvldmr.com/www/privacy-policy.txt" size="s">
+                      {t('Privacy Policy')}
+                    </Link>
+                  ),
+                })}
+              </Text>
+              <Switch
+                aria-label={t('Toggle anonymous telemetry')}
+                isSelected={isTelemetryEnabled}
+                variant="outline"
+                onChange={handleTelemetryToggle}
+              />
+            </HStack>
           </VStack>
           <VStack align="end" gap={4}>
             <ThemeSwitch
