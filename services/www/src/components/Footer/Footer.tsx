@@ -71,18 +71,29 @@ export const Footer = ({ currentPath }: FooterProps) => {
     <VStack as="footer" className="w-full" gap={0}>
       <RainbowSeparator />
       <Container bg="transparent" className="w-full max-sm:p-8" padding={12}>
-        <HStack
-          align="center"
-          className="w-full max-sm:flex-col max-sm:items-start max-sm:gap-8"
-          justify="between"
-        >
-          <VStack align="start" gap={1}>
+        <VStack className="w-full" gap={4}>
+          <HStack
+            align="center"
+            className="w-full max-sm:flex-col max-sm:items-start max-sm:gap-4"
+            justify="between"
+          >
             <Text color="muted" size="s">
               © {currentYear} {t('Vladimir Eremin')} ·{' '}
               <Link href="https://creativecommons.org/licenses/by/4.0/" size="s">
                 CC-BY 4.0
               </Link>
             </Text>
+            <ThemeSwitch
+              darkIcon={<Icon icon={Moon} />}
+              lightIcon={<Icon icon={Sun} />}
+              systemIcon={<Icon icon={Monitor} />}
+            />
+          </HStack>
+          <HStack
+            align="center"
+            className="w-full max-sm:flex-col max-sm:items-start max-sm:gap-4"
+            justify="between"
+          >
             <HStack align="center" className="flex-wrap" gap={2}>
               <Text color="muted" size="s" type="label">
                 {tRaw('To make this site better, I collect anonymous analytics · {privacyLink}', {
@@ -106,16 +117,9 @@ export const Footer = ({ currentPath }: FooterProps) => {
                 onChange={handleTelemetryToggle}
               />
             </HStack>
-          </VStack>
-          <VStack align="end" gap={4}>
-            <ThemeSwitch
-              darkIcon={<Icon icon={Moon} />}
-              lightIcon={<Icon icon={Sun} />}
-              systemIcon={<Icon icon={Monitor} />}
-            />
             <LocaleSwitch currentPath={currentPath} />
-          </VStack>
-        </HStack>
+          </HStack>
+        </VStack>
       </Container>
     </VStack>
   );
