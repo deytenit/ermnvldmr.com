@@ -20,7 +20,7 @@ spec:
     - host: www.ermnvldmr.com
       http:
         paths:
-          - path: /beacon
+          - path: /trace
             pathType: Prefix
             backend:
               service:
@@ -30,7 +30,7 @@ spec:
     - host: docs.ermnvldmr.com
       http:
         paths:
-          - path: /beacon
+          - path: /trace
             pathType: Prefix
             backend:
               service:

@@ -23,11 +23,12 @@ export const LocaleSwitch: React.FC<LocaleSwitchProps> = ({ currentPath }) => {
 
   return (
     <Link
-      className="text-neutral-400 hover:text-neutral-500 dark:text-neutral-500 dark:hover:text-neutral-400"
+      color="muted"
       data-umami-event="locale-switch"
       data-umami-event-target={OTHER_LOCALE}
       href={href}
       size="s"
+      type="label"
     >
       {OTHER_LOCALE_LABEL}
     </Link>
