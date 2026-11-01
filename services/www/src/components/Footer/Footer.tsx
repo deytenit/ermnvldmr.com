@@ -5,7 +5,7 @@ import React from 'react';
 
 import { LocaleSwitch } from '../LocaleSwitch/LocaleSwitch';
 import { RainbowSeparator } from '../RainbowSeparator';
-import { t } from './Footer.i18n';
+import { t, tRaw } from './Footer.i18n';
 
 /**
  * Props for the Footer component.
@@ -17,7 +17,7 @@ export interface FooterProps {
 
 /**
  * The standard footer for the www service.
- * Displays copyright information, license, and theme switcher.
+ * Displays copyright information, license, privacy policy, and theme switcher.
  *
  * @returns A Footer component.
  * @example
@@ -39,11 +39,25 @@ export const Footer = ({ currentPath }: FooterProps) => {
         >
           <VStack align="start" gap={1}>
             <Text color="muted" size="s">
-              © {currentYear} {t('Vladimir Eremin')}
+              © {currentYear} {t('Vladimir Eremin')} ·{' '}
+              <Link href="https://creativecommons.org/licenses/by/4.0/" size="s">
+                CC-BY 4.0
+              </Link>
             </Text>
-            <Link href="https://creativecommons.org/licenses/by/4.0/" size="s">
-              CC-BY 4.0
-            </Link>
+            <Text color="muted" size="s">
+              {tRaw('Anonymous telemetry by {umamiLink} · {privacyLink}', {
+                umamiLink: (
+                  <Link href="https://umami.is" size="s">
+                    Umami
+                  </Link>
+                ),
+                privacyLink: (
+                  <Link href="https://static.ermnvldmr.com/www/privacy-policy.txt" size="s">
+                    {t('Privacy Policy')}
+                  </Link>
+                ),
+              })}
+            </Text>
           </VStack>
           <VStack align="end" gap={4}>
             <ThemeSwitch

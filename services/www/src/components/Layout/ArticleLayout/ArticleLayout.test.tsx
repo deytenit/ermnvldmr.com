@@ -21,6 +21,11 @@ describe('ArticleLayout', () => {
 
     expect(screen.getByRole('heading', { level: 1, name: 'Test Article Title' })).toBeInTheDocument();
     expect(screen.getByText('Article content body')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Umami' })).toHaveAttribute('href', 'https://umami.is');
+    expect(screen.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute(
+      'href',
+      'https://static.ermnvldmr.com/www/privacy-policy.txt'
+    );
   });
 
   it('renders updated date when updatedDate prop is provided', () => {
