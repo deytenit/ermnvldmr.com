@@ -100,7 +100,7 @@ export const Footer = ({ currentPath }: FooterProps) => {
               </Text>
               <Switch
                 aria-label={t('Toggle anonymous telemetry')}
-                className="origin-left scale-75"
+                className="-my-1 origin-left scale-75"
                 isSelected={isTelemetryEnabled}
                 variant="outline"
                 onChange={handleTelemetryToggle}
