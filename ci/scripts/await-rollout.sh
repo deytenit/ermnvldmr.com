@@ -32,9 +32,10 @@ while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
 
   if [ "$HTTP_CODE" = "200" ]; then
     LIVE_COMMIT=$(jq -r '.commit // empty' "$RESP_FILE" 2>/dev/null || true)
-    echo "  Live commit: ${LIVE_COMMIT:-<none>}"
+    LIVE_VERSION=$(jq -r '.version // empty' "$RESP_FILE" 2>/dev/null || true)
+    echo "  Live commit: ${LIVE_COMMIT:-<none>}, Live version: ${LIVE_VERSION:-<none>}"
 
-    if [ "$LIVE_COMMIT" = "$TARGET_COMMIT" ]; then
+    if [ "$LIVE_COMMIT" = "$TARGET_COMMIT" ] || [ "$LIVE_VERSION" = "$TARGET_COMMIT" ]; then
       echo "✅ Success! Production $SERVICE has successfully rolled out $TARGET_COMMIT."
       rm -f "$RESP_FILE"
       exit 0

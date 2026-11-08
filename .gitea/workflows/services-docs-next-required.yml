@@ -53,6 +53,9 @@ jobs:
     permissions:
       contents: read
       packages: write
+    outputs:
+      short_sha: ${{ steps.vars.outputs.short_sha }}
+      version: ${{ steps.vars.outputs.version }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -65,6 +68,18 @@ jobs:
         REGISTRY: git.ermnvldmr.com
         REGISTRY_USER: ${{ github.repository_owner }}
         REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+    - name: Compute version and metadata
+      id: vars
+      run: |
+        SHORT_SHA="sha-$(echo ${{ github.sha }} | cut -c1-7)"
+        VERSION=$(bash ci/scripts/calver-release.sh docs)
+        echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+    - name: Create and push release tag
+      if: github.event_name == 'push' && github.ref == 'refs/heads/next'
+      run: bash ci/scripts/calver-release.sh tag docs "${{ github.sha }}" "${{ steps.vars.outputs.version }}"
+      env:
+        GIT_WRITE_KEY: ${{ secrets.DOCS_DEPLOY_KEY }}
     - name: Extract Docker metadata
       id: meta
       run: python3 ci/scripts/docker.py metadata
@@ -72,11 +87,9 @@ jobs:
         IMAGES: git.ermnvldmr.com/${{ github.repository }}/docs
         TAG_RULES: |
           type=raw,value=latest
+          type=raw,value=${{ steps.vars.outputs.version }}
           type=sha,format=short
         SOURCE_SHA: ${{ github.sha }}
-    - name: Compute short SHA
-      id: vars
-      run: echo "short_sha=sha-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
     - name: Build and push Docker image
       run: python3 ci/scripts/docker.py build
       env:
@@ -84,7 +97,7 @@ jobs:
         LABELS: ${{ steps.meta.outputs.labels }}
         BUILD_ARGS: |
           COMMIT_SHA=${{ steps.vars.outputs.short_sha }}
-          VERSION=${{ steps.vars.outputs.short_sha }}
+          VERSION=${{ steps.vars.outputs.version }}
         DOCKERFILE: ci/docker/docs/Dockerfile
         PLATFORMS: ''
         PUSH: 'true'
@@ -108,14 +121,16 @@ jobs:
       run: test "$(kustomize version)" = v5.3.0
     - name: Deploy via GitOps
       run: |
-        DOCS_TAG="sha-$(echo ${{ github.sha }} | cut -c1-7)"
+        DOCS_TAG="${{ needs.release-docker.outputs.version }}"
         bash ci/scripts/deploy-gitops.sh docs "${DOCS_TAG}"
       env:
         GIT_WRITE_KEY: ${{ secrets.DOCS_DEPLOY_KEY }}
 
   verify-rollout:
     name: Verify - Production Rollout
-    needs: deploy
+    needs:
+    - release-docker
+    - deploy
     runs-on: apex-debian13
     if: github.event_name == 'push' && github.ref == 'refs/heads/next'
     steps:
@@ -125,5 +140,5 @@ jobs:
         ref: next
     - name: Await production rollout
       run: |
-        DOCS_TAG="sha-$(echo ${{ github.sha }} | cut -c1-7)"
+        DOCS_TAG="${{ needs.release-docker.outputs.version }}"
         bash ci/scripts/await-rollout.sh docs "${DOCS_TAG}"

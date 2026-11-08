@@ -9,7 +9,7 @@ from pathlib import Path
 
 def main():
     ref=sys.argv[1]
-    if ref not in ('HEAD:next','trunk') and not re.fullmatch(r'refs/tags/[A-Za-z0-9][A-Za-z0-9._-]*',ref):
+    if ref not in ('HEAD:next','trunk') and not re.fullmatch(r'refs/tags/[A-Za-z0-9][A-Za-z0-9._-]*(/[A-Za-z0-9][A-Za-z0-9._-]*)*',ref):
         raise ValueError('Unexpected publication ref')
     repository=os.environ['GITHUB_REPOSITORY']
     if not re.fullmatch(r'deytenit/[A-Za-z0-9_.-]+',repository):
