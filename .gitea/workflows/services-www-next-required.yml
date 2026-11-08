@@ -318,24 +318,14 @@ jobs:
       packages: write
     outputs:
       short_sha: ${{ steps.vars.outputs.short_sha }}
-      version: ${{ steps.vars.outputs.version }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Compute version and metadata
+    - name: Calculate Short SHA
       id: vars
       run: |
         SHORT_SHA="sha-$(echo ${{ github.sha }} | cut -c1-7)"
-        VERSION=$(bash ci/scripts/calver-release.sh www)
         echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
-        echo "version=$VERSION" >> $GITHUB_OUTPUT
-    - name: Create and push release tag
-      if: github.event_name == 'push' && github.ref == 'refs/heads/next'
-      run: bash ci/scripts/calver-release.sh tag www "${{ github.sha }}" "${{ steps.vars.outputs.version }}"
-      env:
-        GIT_WRITE_KEY: ${{ secrets.WWW_DEPLOY_KEY }}
     - name: Log in to Gitea Container Registry
       run: python3 ci/scripts/docker.py login
       env:
@@ -348,8 +338,6 @@ jobs:
       env:
         IMAGES: git.ermnvldmr.com/${{ github.repository }}/www
         TAG_RULES: |
-          type=raw,value=latest
-          type=raw,value=${{ steps.vars.outputs.version }}
           type=sha,format=short
         SOURCE_SHA: ${{ github.sha }}
     - name: Build and push Docker image
@@ -359,7 +347,7 @@ jobs:
         LABELS: ${{ steps.meta.outputs.labels }}
         BUILD_ARGS: |
           COMMIT_SHA=${{ steps.vars.outputs.short_sha }}
-          VERSION=${{ steps.vars.outputs.version }}
+          VERSION=${{ steps.vars.outputs.short_sha }}
         DOCKERFILE: ci/docker/www/Dockerfile
         PLATFORMS: ''
         PUSH: 'true'
@@ -367,41 +355,23 @@ jobs:
         SOURCE_SHA: ${{ github.sha }}
         RUN_ID: ${{ github.run_id }}
       id: image
-
-  deploy:
-    name: Deploy - Kubernetes (GitOps)
-    needs: build-docker
-    runs-on: apex-debian13
-    if: github.event_name == 'push' && github.ref == 'refs/heads/next'
-    permissions:
-      contents: write
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        ref: next
-    - name: Setup Kustomize
-      run: test "$(kustomize version)" = v5.3.0
-    - name: Deploy via GitOps
-      run: |
-        WWW_TAG="${{ needs.build-docker.outputs.version }}"
-        bash ci/scripts/deploy-gitops.sh www "${WWW_TAG}"
+    - name: Record tested digest provenance
       env:
-        GIT_WRITE_KEY: ${{ secrets.WWW_DEPLOY_KEY }}
-
-  verify-rollout:
-    name: Verify - Production Rollout
-    needs:
-    - build-docker
-    - deploy
-    runs-on: apex-debian13
-    if: github.event_name == 'push' && github.ref == 'refs/heads/next'
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        ref: next
-    - name: Await production rollout
+        IMAGE_DIGEST: ${{ steps.image.outputs.digest }}
       run: |
-        WWW_TAG="${{ needs.build-docker.outputs.version }}"
-        bash ci/scripts/await-rollout.sh www "${WWW_TAG}"
+        mkdir -p .ci
+        python3 - <<'PROVENANCE'
+        import json, os
+        from pathlib import Path
+        Path('.ci/www-provenance.json').write_text(json.dumps({
+            'sha': os.environ['GITHUB_SHA'],
+            'digest': os.environ['IMAGE_DIGEST'],
+            'run_id': os.environ['GITHUB_RUN_ID'],
+            'repository': os.environ['GITHUB_REPOSITORY']
+        }))
+        PROVENANCE
+    - uses: actions/upload-artifact@v4
+      with:
+        name: www-provenance
+        path: .ci/www-provenance.json
+        retention-days: 30

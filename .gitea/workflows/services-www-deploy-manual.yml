@@ -3,74 +3,86 @@ name: services/www - manual deploy
   workflow_dispatch:
     inputs:
       tested_sha:
-        description: Full tested source commit
-        required: true
+        description: Full tested source commit (leave blank for latest)
+        required: false
         type: string
+        default: ''
       tested_digest:
-        description: OCI sha256 digest from the successful build
-        required: true
+        description: OCI sha256 digest from the successful build (leave blank for latest)
+        required: false
         type: string
+        default: ''
       build_run_id:
-        description: Successful WWW build run ID
-        required: true
+        description: Successful WWW build run ID (leave blank for latest)
+        required: false
         type: string
+        default: ''
       release_tag:
-        description: Previously approved release tag
-        required: true
+        description: Previously approved release tag (leave blank for latest)
+        required: false
         type: string
+        default: ''
       release_run_id:
-        description: Successful manually approved release run ID
-        required: true
+        description: Approved release run ID (leave blank for latest)
+        required: false
         type: string
+        default: ''
 permissions:
-  contents: read
+  contents: write
   actions: read
 jobs:
   deploy:
+    name: Deploy - Kubernetes (GitOps)
     runs-on: apex-debian13
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/next'
-      && github.actor == 'deytenit'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/next' && github.actor == 'deytenit'
+    outputs:
+      short_sha: ${{ steps.provenance.outputs.short_sha }}
+      tested_digest: ${{ steps.provenance.outputs.tested_digest }}
+      release_tag: ${{ steps.provenance.outputs.release_tag }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        ref: next
     - name: Authenticate local registry
       run: python3 ci/scripts/docker.py login
       env:
         REGISTRY: git.ermnvldmr.com
-        REGISTRY_USER: deytenit
-        REGISTRY_TOKEN: ${{ secrets.DEPLOY_REGISTRY_READ_TOKEN }}
-    - name: Verify successful build and immutable digest
+        REGISTRY_USER: ${{ github.repository_owner }}
+        REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+    - name: Verify successful build and approved release
       id: provenance
       run: python3 ci/scripts/provenance.py
       env:
+        IS_DEPLOY: 'true'
         TESTED_SHA: ${{ inputs.tested_sha }}
         TESTED_DIGEST: ${{ inputs.tested_digest }}
         BUILD_RUN_ID: ${{ inputs.build_run_id }}
-        PROVENANCE_TOKEN: ${{ github.token }}
         RELEASE_RUN_ID: ${{ inputs.release_run_id }}
         RELEASE_TAG: ${{ inputs.release_tag }}
-    - name: Verify approved release and deploy digest
-      env:
-        TESTED_SHA: ${{ inputs.tested_sha }}
-        TESTED_DIGEST: ${{ inputs.tested_digest }}
-        BUILD_RUN_ID: ${{ inputs.build_run_id }}
         PROVENANCE_TOKEN: ${{ github.token }}
-        RELEASE_RUN_ID: ${{ inputs.release_run_id }}
-        RELEASE_TAG: ${{ inputs.release_tag }}
-        GIT_WRITE_KEY: ${{ secrets.WWW_DEPLOY_KEY }}
-      run: 'set -euo pipefail
+    - name: Setup Kustomize
+      run: test "$(kustomize version)" = v5.3.0
+    - name: Deploy via GitOps
+      run: |
+        RELEASE_TAG="${{ steps.provenance.outputs.release_tag }}"
+        TESTED_DIGEST="${{ steps.provenance.outputs.tested_digest }}"
+        TESTED_SHA="${{ steps.provenance.outputs.tested_sha }}"
 
-        [[ "$RELEASE_TAG" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]
-
-        test "$(git rev-parse "$RELEASE_TAG^{commit}")" = "$TESTED_SHA"
-
-        test "$(docker buildx imagetools inspect "git.ermnvldmr.com/deytenit/ermnvldmr.com/www:$RELEASE_TAG"
-        --format ''{{.Manifest.Digest}}'')" = "$TESTED_DIGEST"
-
+        echo "Deploying www digest $TESTED_DIGEST ($RELEASE_TAG)..."
         bash ci/scripts/deploy-gitops.sh www "$TESTED_DIGEST"
-
-        '
-    - name: Await production rollout
-      run: bash ci/scripts/await-rollout.sh https://www.ermnvldmr.com/version.json "sha-${TESTED_SHA:0:7}"
       env:
-        TESTED_SHA: ${{ inputs.tested_sha }}
+        GIT_WRITE_KEY: ${{ secrets.WWW_DEPLOY_KEY }}
+
+  verify-rollout:
+    name: Verify - Production Rollout
+    needs: deploy
+    runs-on: apex-debian13
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        ref: next
+    - name: Await production rollout
+      run: |
+        bash ci/scripts/await-rollout.sh www "${{ needs.deploy.outputs.short_sha }}"
