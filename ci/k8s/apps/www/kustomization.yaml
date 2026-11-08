@@ -6,4 +6,5 @@ resources:
 - service.yaml
 images:
 - name: git.ermnvldmr.com/deytenit/ermnvldmr.com/www
-  newTag: sha-fea1928
+  newName: git.ermnvldmr.com/deytenit/ermnvldmr.com/www
+  newTag: sha-4e0bb72
