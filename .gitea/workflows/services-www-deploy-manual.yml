@@ -1,0 +1,76 @@
+name: services/www - manual deploy
+'on':
+  workflow_dispatch:
+    inputs:
+      tested_sha:
+        description: Full tested source commit
+        required: true
+        type: string
+      tested_digest:
+        description: OCI sha256 digest from the successful build
+        required: true
+        type: string
+      build_run_id:
+        description: Successful WWW build run ID
+        required: true
+        type: string
+      release_tag:
+        description: Previously approved release tag
+        required: true
+        type: string
+      release_run_id:
+        description: Successful manually approved release run ID
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+jobs:
+  deploy:
+    runs-on: apex-debian13
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/next'
+      && github.actor == 'deytenit'
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Authenticate local registry
+      run: python3 ci/scripts/docker.py login
+      env:
+        REGISTRY: git.ermnvldmr.com
+        REGISTRY_USER: deytenit
+        REGISTRY_TOKEN: ${{ secrets.DEPLOY_REGISTRY_READ_TOKEN }}
+    - name: Verify successful build and immutable digest
+      id: provenance
+      run: python3 ci/scripts/provenance.py
+      env:
+        TESTED_SHA: ${{ inputs.tested_sha }}
+        TESTED_DIGEST: ${{ inputs.tested_digest }}
+        BUILD_RUN_ID: ${{ inputs.build_run_id }}
+        PROVENANCE_TOKEN: ${{ github.token }}
+        RELEASE_RUN_ID: ${{ inputs.release_run_id }}
+        RELEASE_TAG: ${{ inputs.release_tag }}
+    - name: Verify approved release and deploy digest
+      env:
+        TESTED_SHA: ${{ inputs.tested_sha }}
+        TESTED_DIGEST: ${{ inputs.tested_digest }}
+        BUILD_RUN_ID: ${{ inputs.build_run_id }}
+        PROVENANCE_TOKEN: ${{ github.token }}
+        RELEASE_RUN_ID: ${{ inputs.release_run_id }}
+        RELEASE_TAG: ${{ inputs.release_tag }}
+        GIT_WRITE_KEY: ${{ secrets.WWW_DEPLOY_KEY }}
+      run: 'set -euo pipefail
+
+        [[ "$RELEASE_TAG" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]
+
+        test "$(git rev-parse "$RELEASE_TAG^{commit}")" = "$TESTED_SHA"
+
+        test "$(docker buildx imagetools inspect "git.ermnvldmr.com/deytenit/ermnvldmr.com/www:$RELEASE_TAG"
+        --format ''{{.Manifest.Digest}}'')" = "$TESTED_DIGEST"
+
+        bash ci/scripts/deploy-gitops.sh www "$TESTED_DIGEST"
+
+        '
+    - name: Await production rollout
+      run: bash ci/scripts/await-rollout.sh https://www.ermnvldmr.com/version.json "sha-${TESTED_SHA:0:7}"
+      env:
+        TESTED_SHA: ${{ inputs.tested_sha }}

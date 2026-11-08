@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: www
-          image: ghcr.io/deytenit/ermnvldmr.com/www:sha-6d33b71
+          image: git.ermnvldmr.com/deytenit/ermnvldmr.com/www:sha-6d33b71
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

@@ -1,0 +1,133 @@
+name: packages/ssg - next/required
+'on':
+  push:
+    branches:
+    - next
+    paths:
+    - packages/ssg/**
+    - .gitea/workflows/packages-ssg-next-required.yml
+    - pnpm-lock.yaml
+    - ci/scripts/**
+concurrency:
+  group: ci-ssg-${{ github.ref_name }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: read
+jobs:
+  setup-stage:
+    name: Setup - Stage
+    runs-on: apex-debian13
+    outputs: {}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup environment
+      run: bash ci/scripts/setup-env.sh 9.12.3 20
+    - name: Restore repository dependency cache
+      id: dependency-cache
+      run: python3 ci/scripts/cache.py restore
+      env:
+        CACHE_TOKEN: ${{ github.token }}
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    - name: Pack dependency cache
+      run: python3 ci/scripts/cache.py pack
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{ steps.dependency-cache.outputs.key }}
+        path: .ci/pnpm-store.tar
+        retention-days: 7
+  build-configs:
+    name: Build - Configs
+    needs: setup-stage
+    runs-on: apex-debian13
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup environment
+      run: bash ci/scripts/setup-env.sh 9.12.3 20
+    - name: Restore repository dependency cache
+      id: dependency-cache
+      run: python3 ci/scripts/cache.py restore
+      env:
+        CACHE_TOKEN: ${{ github.token }}
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    - name: Build Rsbuild config
+      run: pnpm --filter @ermnvldmr/rsbuild-config build
+    - name: Upload Config Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: rsbuild-config-dist
+        path: packages/rsbuild-config/dist
+        retention-days: 30
+  lint-ssg:
+    name: Lint - SSG
+    needs: build-configs
+    runs-on: apex-debian13
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup environment
+      run: bash ci/scripts/setup-env.sh 9.12.3 20
+    - name: Restore repository dependency cache
+      id: dependency-cache
+      run: python3 ci/scripts/cache.py restore
+      env:
+        CACHE_TOKEN: ${{ github.token }}
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    - name: Download Config Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: rsbuild-config-dist
+        path: packages/rsbuild-config/dist
+    - name: Lint SSG package
+      run: pnpm --filter @ermnvldmr/ssg lint
+  typecheck-ssg:
+    name: Typecheck - SSG
+    needs: build-configs
+    runs-on: apex-debian13
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup environment
+      run: bash ci/scripts/setup-env.sh 9.12.3 20
+    - name: Restore repository dependency cache
+      id: dependency-cache
+      run: python3 ci/scripts/cache.py restore
+      env:
+        CACHE_TOKEN: ${{ github.token }}
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    - name: Download Config Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: rsbuild-config-dist
+        path: packages/rsbuild-config/dist
+    - name: Typecheck SSG package
+      run: pnpm --filter @ermnvldmr/ssg typecheck
+  build-ssg:
+    name: Build - SSG
+    needs: build-configs
+    runs-on: apex-debian13
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup environment
+      run: bash ci/scripts/setup-env.sh 9.12.3 20
+    - name: Restore repository dependency cache
+      id: dependency-cache
+      run: python3 ci/scripts/cache.py restore
+      env:
+        CACHE_TOKEN: ${{ github.token }}
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    - name: Download Config Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: rsbuild-config-dist
+        path: packages/rsbuild-config/dist
+    - name: Build SSG package
+      run: pnpm --filter @ermnvldmr/ssg build

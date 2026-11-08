@@ -1,0 +1,129 @@
+name: services/docs - next/required
+'on':
+  push:
+    branches:
+    - next
+    paths:
+    - services/docs/**
+    - .gitea/workflows/services-docs-next-required.yml
+    - ci/docker/docs/**
+    - ci/config/nginx/**
+    - ci/scripts/**
+  workflow_dispatch:
+
+concurrency:
+  group: ci-docs-${{ github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  setup-hugo:
+    name: Setup - Hugo
+    runs-on: apex-debian13
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - name: Setup Hugo
+      run: hugo version | grep extended
+
+  build-hugo:
+    name: Build - Hugo Site
+    needs: setup-hugo
+    runs-on: apex-debian13
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - name: Setup Hugo
+      run: hugo version | grep extended
+    - name: Build Hugo site
+      working-directory: services/docs
+      run: hugo --gc --minify
+
+  release-docker:
+    name: Release - Docker Image
+    needs: build-hugo
+    runs-on: apex-debian13
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+    - name: Log in to Gitea Container Registry
+      run: python3 ci/scripts/docker.py login
+      env:
+        REGISTRY: git.ermnvldmr.com
+        REGISTRY_USER: ${{ github.repository_owner }}
+        REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+    - name: Extract Docker metadata
+      id: meta
+      run: python3 ci/scripts/docker.py metadata
+      env:
+        IMAGES: git.ermnvldmr.com/${{ github.repository }}/docs
+        TAG_RULES: |
+          type=raw,value=latest
+          type=sha,format=short
+        SOURCE_SHA: ${{ github.sha }}
+    - name: Compute short SHA
+      id: vars
+      run: echo "short_sha=sha-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+    - name: Build and push Docker image
+      run: python3 ci/scripts/docker.py build
+      env:
+        TAGS: ${{ steps.meta.outputs.tags }}
+        LABELS: ${{ steps.meta.outputs.labels }}
+        BUILD_ARGS: |
+          COMMIT_SHA=${{ steps.vars.outputs.short_sha }}
+          VERSION=${{ steps.vars.outputs.short_sha }}
+        DOCKERFILE: ci/docker/docs/Dockerfile
+        PLATFORMS: ''
+        PUSH: 'true'
+        CONTEXT: .
+        SOURCE_SHA: ${{ github.sha }}
+        RUN_ID: ${{ github.run_id }}
+
+  deploy:
+    name: Deploy - Kubernetes (GitOps)
+    needs: release-docker
+    runs-on: apex-debian13
+    if: github.event_name == 'push' && github.ref == 'refs/heads/next'
+    permissions:
+      contents: write
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        ref: next
+    - name: Setup Kustomize
+      run: test "$(kustomize version)" = v5.3.0
+    - name: Deploy via GitOps
+      run: |
+        DOCS_TAG="sha-$(echo ${{ github.sha }} | cut -c1-7)"
+        bash ci/scripts/deploy-gitops.sh docs "${DOCS_TAG}"
+      env:
+        GIT_WRITE_KEY: ${{ secrets.DOCS_DEPLOY_KEY }}
+
+  verify-rollout:
+    name: Verify - Production Rollout
+    needs: deploy
+    runs-on: apex-debian13
+    if: github.event_name == 'push' && github.ref == 'refs/heads/next'
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        ref: next
+    - name: Await production rollout
+      run: |
+        DOCS_TAG="sha-$(echo ${{ github.sha }} | cut -c1-7)"
+        bash ci/scripts/await-rollout.sh docs "${DOCS_TAG}"

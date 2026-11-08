@@ -1,0 +1,70 @@
+name: ci - next/build-golden-image
+'on':
+  workflow_dispatch: null
+concurrency:
+  group: ci-golden-image
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  validate-scripts:
+    name: Validate - Provisioner Scripts
+    runs-on: apex-debian13
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Validate Shell Script Syntax
+      run: bash -n ci/packer/scripts/*.sh
+  build-image:
+    name: Build - Golden Image
+    needs: validate-scripts
+    runs-on: apex-debian13
+    outputs:
+      image_name: ${{ steps.vars.outputs.image_name }}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Calculate Image Name
+      id: vars
+      run: 'SHORT_SHA="$(echo ${{ github.sha }} | cut -c1-7)"
+
+        IMAGE_NAME="com-ermnvldmr-debian-12-k3s-amd64-${SHORT_SHA}.qcow2"
+
+        echo "image_name=${IMAGE_NAME}" >> "$GITHUB_OUTPUT"
+
+        '
+    - name: Install Build Tools
+      run: 'sudo apt-get update
+
+        sudo apt-get install -y qemu-utils
+
+        '
+    - name: Build Debian K3s Golden Image
+      run: bash ci/scripts/build-golden-image.sh
+    - name: Prepare and Upload Image Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: golden-image
+        path: output-qemu/com-ermnvldmr-debian-12-k3s-amd64.qcow2
+        retention-days: 30
+  upload-s3:
+    name: Upload - S3 Storage
+    needs: build-image
+    runs-on: apex-debian13
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Download Image Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: golden-image
+        path: output-qemu
+    - name: Upload to Static S3 (/dev/images/)
+      run: bash ci/scripts/upload-golden-image.sh "${IMAGE_NAME}"
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.STATIC_AWS_ACCESS_KEY_ID || secrets.COM_ERMNVLDMR_STATIC_AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.STATIC_AWS_SECRET_ACCESS_KEY || secrets.COM_ERMNVLDMR_STATIC_AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ secrets.STATIC_AWS_REGION || secrets.COM_ERMNVLDMR_STATIC_S3_REGION || 'auto' }}
+        S3_ENDPOINT: ${{ secrets.STATIC_S3_ENDPOINT_URL || secrets.COM_ERMNVLDMR_STATIC_S3_ENDPOINT_URL }}
+        S3_BUCKET: ${{ secrets.STATIC_S3_BUCKET || secrets.COM_ERMNVLDMR_STATIC_S3_BUCKET }}
+        IMAGE_NAME: ${{ needs.build-image.outputs.image_name }}

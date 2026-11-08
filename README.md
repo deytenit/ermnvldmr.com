@@ -1,6 +1,5 @@
 # [ermnvldmr.com](https://ermnvldmr.com)
 
-[![codecov](https://codecov.io/gh/deytenit/ermnvldmr.com/graph/badge.svg)](https://app.codecov.io/github/deytenit/ermnvldmr.com)
 
 The monorepo powering the front pages of my own
 
@@ -58,7 +57,7 @@ Want to contribute or understand the codebase.
   - UI Library: `pnpm ui:dev`
 - **Development Guide**: [AGENTS.md](./AGENTS.md)
 - **Component Development**: `pnpm ui:storybook`
-- **Testing**: `pnpm test` or `pnpm test:coverage` (View results on [Codecov](https://app.codecov.io/github/deytenit/ermnvldmr.com))
+- **Testing**: `pnpm test` or `pnpm test:coverage`
 - **Code Quality**: `pnpm lint` and `pnpm typecheck`
 
 ### Designer

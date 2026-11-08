@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: docs
-          image: ghcr.io/deytenit/ermnvldmr.com/docs:sha-91f5245
+          image: git.ermnvldmr.com/deytenit/ermnvldmr.com/docs:sha-91f5245
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

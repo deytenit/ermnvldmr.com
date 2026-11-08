@@ -1,0 +1,88 @@
+name: services/www - manual release
+'on':
+  workflow_dispatch:
+    inputs:
+      tested_sha:
+        description: Full tested source commit
+        required: true
+        type: string
+      tested_digest:
+        description: OCI sha256 digest from the successful build
+        required: true
+        type: string
+      build_run_id:
+        description: Successful WWW build run ID
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+jobs:
+  release:
+    runs-on: apex-debian13
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/next'
+      && github.actor == 'deytenit'
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Authenticate local registry
+      run: python3 ci/scripts/docker.py login
+      env:
+        REGISTRY: git.ermnvldmr.com
+        REGISTRY_USER: deytenit
+        REGISTRY_TOKEN: ${{ secrets.RELEASE_REGISTRY_TOKEN }}
+    - name: Verify successful build and immutable digest
+      id: provenance
+      run: python3 ci/scripts/provenance.py
+      env:
+        TESTED_SHA: ${{ inputs.tested_sha }}
+        TESTED_DIGEST: ${{ inputs.tested_digest }}
+        BUILD_RUN_ID: ${{ inputs.build_run_id }}
+        PROVENANCE_TOKEN: ${{ github.token }}
+    - name: Promote tested digest and create release tag
+      env:
+        TESTED_SHA: ${{ inputs.tested_sha }}
+        TESTED_DIGEST: ${{ inputs.tested_digest }}
+        BUILD_RUN_ID: ${{ inputs.build_run_id }}
+        PROVENANCE_TOKEN: ${{ github.token }}
+        GIT_WRITE_KEY: ${{ secrets.WWW_RELEASE_KEY }}
+      run: 'set -euo pipefail
+
+        VERSION=$(bash ci/scripts/calver-release.sh)
+
+        [[ "$VERSION" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]
+
+        if git show-ref --verify --quiet "refs/tags/$VERSION"; then exit 1; fi
+
+        docker buildx imagetools create --prefer-index=false "git.ermnvldmr.com/deytenit/ermnvldmr.com/www@$TESTED_DIGEST"
+        --tag "git.ermnvldmr.com/deytenit/ermnvldmr.com/www:$VERSION"
+
+        test "$(docker buildx imagetools inspect "git.ermnvldmr.com/deytenit/ermnvldmr.com/www:$VERSION"
+        --format ''{{.Manifest.Digest}}'')" = "$TESTED_DIGEST"
+
+        git tag "$VERSION" "$TESTED_SHA"
+
+        python3 ci/scripts/git_write.py "refs/tags/$VERSION"
+
+        export VERSION
+
+        mkdir -p .ci
+
+        python3 - <<''RELEASE_PROVENANCE''
+
+        import json, os
+
+        from pathlib import Path
+
+        Path(''.ci/www-release.json'').write_text(json.dumps({''sha'': os.environ[''TESTED_SHA''],
+        ''digest'': os.environ[''TESTED_DIGEST''], ''run_id'': os.environ[''BUILD_RUN_ID''],
+        ''repository'': ''deytenit/ermnvldmr.com'', ''release_tag'': os.environ[''VERSION'']}))
+
+        RELEASE_PROVENANCE
+
+        '
+    - uses: actions/upload-artifact@v4
+      with:
+        name: www-release-provenance
+        path: .ci/www-release.json
+        retention-days: 30

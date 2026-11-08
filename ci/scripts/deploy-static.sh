@@ -31,11 +31,21 @@ fi
 export AWS_DEFAULT_REGION="$AWS_REGION"
 ENDPOINT_URL="${S3_ENDPOINT_URL%/}"
 
-# Upload all static files
-echo "Uploading static files..."
-aws s3 cp "$DIST_DIR/" "s3://$S3_BUCKET/" \
-  --recursive \
-  --endpoint-url="$ENDPOINT_URL" \
-  --cache-control "max-age=300"
+# Set S3 max_concurrent_requests to 1 to prevent race conditions on S3-compatible endpoints
+aws configure set default.s3.max_concurrent_requests 1
 
-echo "Static files deployed successfully!"
+# Upload all static files with retry
+echo "Uploading static files..."
+for attempt in 1 2 3; do
+  echo "Attempt $attempt/3: syncing static files..."
+  if aws s3 sync "$DIST_DIR/" "s3://$S3_BUCKET/" \
+    --endpoint-url="$ENDPOINT_URL" \
+    --cache-control "max-age=300"; then
+    echo "Static files deployed successfully!"
+    exit 0
+  fi
+  sleep 2
+done
+
+echo "Error: Failed to upload static files after 3 attempts."
+exit 1

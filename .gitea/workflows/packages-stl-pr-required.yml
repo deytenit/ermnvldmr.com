@@ -1,0 +1,157 @@
+name: packages/stl - pr/required
+'on':
+  pull_request:
+    branches:
+    - next
+    paths:
+    - packages/stl/**
+    - .gitea/workflows/packages-stl-pr-required.yml
+    - pnpm-lock.yaml
+    - ci/scripts/**
+  workflow_dispatch: {}
+concurrency:
+  group: ci-pr-stl-${{ github.head_ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: read
+jobs:
+  setup-stage:
+    name: Setup - Stage
+    runs-on: apex-debian13
+    outputs: {}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup environment
+      run: bash ci/scripts/setup-env.sh 9.12.3 20
+    - name: Restore repository dependency cache
+      id: dependency-cache
+      run: python3 ci/scripts/cache.py restore
+      env:
+        CACHE_TOKEN: ${{ github.token }}
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    - name: Pack dependency cache
+      run: python3 ci/scripts/cache.py pack
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{ steps.dependency-cache.outputs.key }}
+        path: .ci/pnpm-store.tar
+        retention-days: 7
+  build-configs:
+    name: Build - Configs
+    needs: setup-stage
+    runs-on: apex-debian13
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup environment
+      run: bash ci/scripts/setup-env.sh 9.12.3 20
+    - name: Restore repository dependency cache
+      id: dependency-cache
+      run: python3 ci/scripts/cache.py restore
+      env:
+        CACHE_TOKEN: ${{ github.token }}
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    - name: Build Rsbuild config
+      run: pnpm --filter @ermnvldmr/rsbuild-config build
+    - name: Upload Config Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: rsbuild-config-dist-${{ github.run_id }}
+        path: packages/rsbuild-config/dist
+        retention-days: 30
+  lint-stl:
+    name: Lint - STL
+    needs: build-configs
+    runs-on: apex-debian13
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup environment
+      run: bash ci/scripts/setup-env.sh 9.12.3 20
+    - name: Restore repository dependency cache
+      id: dependency-cache
+      run: python3 ci/scripts/cache.py restore
+      env:
+        CACHE_TOKEN: ${{ github.token }}
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    - name: Download Config Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: rsbuild-config-dist-${{ github.run_id }}
+        path: packages/rsbuild-config/dist
+    - name: Lint STL package
+      run: pnpm --filter @ermnvldmr/stl lint
+  typecheck-stl:
+    name: Typecheck - STL
+    needs: build-configs
+    runs-on: apex-debian13
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup environment
+      run: bash ci/scripts/setup-env.sh 9.12.3 20
+    - name: Restore repository dependency cache
+      id: dependency-cache
+      run: python3 ci/scripts/cache.py restore
+      env:
+        CACHE_TOKEN: ${{ github.token }}
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    - name: Download Config Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: rsbuild-config-dist-${{ github.run_id }}
+        path: packages/rsbuild-config/dist
+    - name: Typecheck STL package
+      run: pnpm --filter @ermnvldmr/stl typecheck
+  test-stl:
+    name: Test - STL
+    needs: build-configs
+    runs-on: apex-debian13
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup environment
+      run: bash ci/scripts/setup-env.sh 9.12.3 20
+    - name: Restore repository dependency cache
+      id: dependency-cache
+      run: python3 ci/scripts/cache.py restore
+      env:
+        CACHE_TOKEN: ${{ github.token }}
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    - name: Download Config Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: rsbuild-config-dist-${{ github.run_id }}
+        path: packages/rsbuild-config/dist
+    - name: Test STL package
+      run: pnpm --filter @ermnvldmr/stl test:coverage
+  build-stl:
+    name: Build - STL
+    needs: build-configs
+    runs-on: apex-debian13
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup environment
+      run: bash ci/scripts/setup-env.sh 9.12.3 20
+    - name: Restore repository dependency cache
+      id: dependency-cache
+      run: python3 ci/scripts/cache.py restore
+      env:
+        CACHE_TOKEN: ${{ github.token }}
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    - name: Download Config Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: rsbuild-config-dist-${{ github.run_id }}
+        path: packages/rsbuild-config/dist
+    - name: Build STL package
+      run: pnpm --filter @ermnvldmr/stl build

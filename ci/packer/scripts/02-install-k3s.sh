@@ -9,7 +9,8 @@ export INSTALL_K3S_SKIP_START="true"
 export INSTALL_K3S_VERSION="v1.31.2+k3s1"
 
 # Download official K3s installer and install binary/systemd unit without starting
-curl -sfL https://get.k3s.io | sh -
+install -m 0755 /tmp/scripts/k3s /usr/local/bin/k3s
+INSTALL_K3S_SKIP_DOWNLOAD=true sh /tmp/scripts/k3s-install.sh
 
 # Verify k3s binary is located in /usr/local/bin
 which k3s
@@ -28,6 +29,7 @@ chmod 644 /etc/rancher/k3s/config.yaml
 
 # Pre-stage default GitOps root sync manifest
 mkdir -p /etc/flux
+install -m 0644 /tmp/scripts/flux-install.yaml /etc/flux/install.yaml
 cat << 'EOF' > /etc/flux/cluster-sync.yaml
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -36,7 +38,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1m
-  url: https://github.com/deytenit/ermnvldmr.com.git
+  url: https://git.ermnvldmr.com/deytenit/ermnvldmr.com.git
   ref:
     branch: next
 ---
@@ -119,7 +121,7 @@ else
 fi
 
 echo "=== [Bootstrap] Installing Flux Operator / Custom Resources ==="
-kubectl apply -k "https://github.com/fluxcd/flux2/manifests/install?ref=v2.4.0" || true
+kubectl apply -f /etc/flux/install.yaml
 
 echo "=== [Bootstrap] Applying initial GitOps root sync ==="
 if [ -f /etc/flux/cluster-sync.yaml ]; then

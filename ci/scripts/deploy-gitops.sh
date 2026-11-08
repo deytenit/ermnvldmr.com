@@ -19,17 +19,25 @@ fi
 
 echo "Updating Kustomize image tag for '$SERVICE' to '$TAG'..."
 cd "$APP_DIR"
-kustomize edit set image "ghcr.io/deytenit/ermnvldmr.com/${SERVICE}:${TAG}"
+IMAGE="git.ermnvldmr.com/deytenit/ermnvldmr.com/${SERVICE}"
+if [[ "$TAG" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+    kustomize edit set image "${IMAGE}=${IMAGE}@${TAG}"
+elif [[ "$TAG" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$ ]]; then
+    kustomize edit set image "${IMAGE}=${IMAGE}:${TAG}"
+else
+    echo "Invalid image digest or tag" >&2
+    exit 1
+fi
 
 cd "$ROOT_DIR"
-git config user.name "adam-at-deytenit"
-git config user.email "221188529+adam-at-deytenit@users.noreply.github.com"
+git config user.name "APEX CI"
+git config user.email "adam@ermnvldmr.com"
 git add "ci/k8s/apps/${SERVICE}/kustomization.yaml"
 
 if git diff --staged --quiet; then
     echo "No manifest changes to commit for $SERVICE."
 else
-    git commit -m "chore(release): deploy ${SERVICE} ${TAG} [skip ci]"
-    git push origin next
+    git commit --no-gpg-sign -m "chore(release): deploy ${SERVICE} ${TAG} [skip ci]"
+    python3 "$ROOT_DIR/ci/scripts/git_write.py" HEAD:next
     echo "Successfully deployed $SERVICE ($TAG) via GitOps."
 fi

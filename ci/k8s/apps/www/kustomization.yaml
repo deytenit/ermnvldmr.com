@@ -5,5 +5,5 @@ resources:
 - deployment.yaml
 - service.yaml
 images:
-- name: ghcr.io/deytenit/ermnvldmr.com/www
-  newTag: sha-84772ff
+- name: git.ermnvldmr.com/deytenit/ermnvldmr.com/www
+  newTag: sha-fea1928
