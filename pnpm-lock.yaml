@@ -618,6 +618,61 @@ importers:
         specifier: workspace:*
         version: link:../../packages/eslint-config
 
+  services/exp:
+    dependencies:
+      '@ermnvldmr/kits':
+        specifier: workspace:*
+        version: link:../../packages/kits
+      '@ermnvldmr/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      lucide-react:
+        specifier: ^0.503.0
+        version: 0.503.0(react@19.2.3)
+      react:
+        specifier: ^19.1.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.1.0
+        version: 19.2.3(react@19.2.3)
+      tailwindcss:
+        specifier: ^4.1.4
+        version: 4.1.18
+    devDependencies:
+      '@ermnvldmr/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@ermnvldmr/rsbuild-config':
+        specifier: workspace:*
+        version: link:../../packages/rsbuild-config
+      '@rsbuild/core':
+        specifier: ^1.2.11
+        version: 1.7.3
+      '@tailwindcss/postcss':
+        specifier: ^4.1.18
+        version: 4.1.18
+      '@types/node':
+        specifier: '*'
+        version: 22.20.5
+      '@types/react':
+        specifier: ^19.1.2
+        version: 19.2.9
+      '@types/react-dom':
+        specifier: ^19.1.2
+        version: 19.2.3(@types/react@19.2.9)
+      eslint:
+        specifier: ^9.25.1
+        version: 9.39.2(jiti@2.6.1)
+      postcss:
+        specifier: ^8.5.23
+        version: 8.5.31
+      prettier:
+        specifier: ^3.5.3
+        version: 3.9.10
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
   services/static:
     dependencies:
       '@ermnvldmr/kits':

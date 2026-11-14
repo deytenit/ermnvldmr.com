@@ -1,0 +1,116 @@
+name: services/exp - required
+
+'on':
+  pull_request:
+    branches: [next]
+    paths:
+      - services/exp/**
+      - packages/eslint-config/**
+      - packages/i18n/**
+      - packages/kits/**
+      - packages/rsbuild-config/**
+      - packages/stl/**
+      - packages/ui/**
+      - ci/docker/exp/**
+      - ci/k8s/apps/exp/**
+      - ci/k8s/clusters/production/kustomization.yaml
+      - ci/scripts/**
+      - .gitea/workflows/services-exp-required.yml
+      - .dockerignore
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - tsconfig.json
+  push:
+    branches: [next]
+    paths:
+      - services/exp/**
+      - packages/eslint-config/**
+      - packages/i18n/**
+      - packages/kits/**
+      - packages/rsbuild-config/**
+      - packages/stl/**
+      - packages/ui/**
+      - ci/docker/exp/**
+      - ci/k8s/apps/exp/**
+      - ci/k8s/clusters/production/kustomization.yaml
+      - ci/scripts/**
+      - .gitea/workflows/services-exp-required.yml
+      - .dockerignore
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - tsconfig.json
+
+concurrency:
+  group: ci-exp-${{ github.event_name }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build - Exp
+    runs-on: apex-debian13
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      tag: ${{ steps.release.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate production manifests
+        run: kustomize build ci/k8s/clusters/production > /dev/null
+      - name: Build and lint
+        if: github.event_name == 'pull_request'
+        run: docker buildx build --file ci/docker/exp/Dockerfile .
+      - name: Log in to Gitea Container Registry
+        if: github.event_name == 'push'
+        run: python3 ci/scripts/docker.py login
+        env:
+          REGISTRY: git.ermnvldmr.com
+          REGISTRY_USER: ${{ github.repository_owner }}
+          REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+      - name: Build and publish
+        id: release
+        if: github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          TAG="sha-${SOURCE_SHA:0:7}"
+          export TAGS
+          TAGS=$(printf '%s/exp:%s\n%s/exp:latest' "$REGISTRY_REPO" "$TAG" "$REGISTRY_REPO")
+          export BUILD_ARGS="COMMIT_SHA=$TAG"
+          python3 ci/scripts/docker.py build
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+        env:
+          REGISTRY_REPO: git.ermnvldmr.com/${{ github.repository }}
+          DOCKERFILE: ci/docker/exp/Dockerfile
+          PUSH: 'true'
+          CONTEXT: .
+          SOURCE_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+
+  deploy:
+    name: Deploy - Exp (GitOps)
+    if: github.event_name == 'push'
+    needs: build
+    runs-on: apex-debian13
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: next
+          persist-credentials: false
+      - name: Update Kubernetes image
+        run: bash ci/scripts/deploy-gitops.sh exp "$EXP_TAG"
+        env:
+          EXP_TAG: ${{ needs.build.outputs.tag }}
+          GIT_WRITE_KEY: ${{ secrets.UNIVERSAL_DEPLOY_KEY }}
+      - name: Verify production rollout
+        run: bash ci/scripts/await-rollout.sh exp "$EXP_TAG"
+        env:
+          EXP_TAG: ${{ needs.build.outputs.tag }}

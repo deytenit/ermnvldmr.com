@@ -116,7 +116,7 @@ export interface S3SyncCommandConfig extends BaseCommandConfig {
   bucket?: string;
   /** Optional AWS region */
   region?: string;
-  /** Optional custom endpoint URL (e.g., for MinIO or Yandex Cloud) */
+  /** Optional custom endpoint URL (e.g., for MinIO or another S3-compatible provider) */
   endpoint?: string;
   /** Optional public base URL for assets (e.g., 'https://static.ermnvldmr.com') */
   publicUrl?: string;

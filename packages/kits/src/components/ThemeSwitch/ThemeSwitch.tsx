@@ -1,6 +1,8 @@
 import { Button, HStack, Switch, useLogger, useTheme } from '@ermnvldmr/ui';
 import React from 'react';
 
+import type { SwitchSize } from '@ermnvldmr/ui';
+
 /**
  * Props for the ThemeSwitch component.
  */
@@ -11,6 +13,8 @@ export interface ThemeSwitchProps {
   darkIcon?: React.ReactNode;
   /** Optional icon for system theme */
   systemIcon?: React.ReactNode;
+  /** Size of the light/dark toggle. */
+  size?: SwitchSize;
 }
 
 /**
@@ -25,6 +29,7 @@ export function ThemeSwitch({
   lightIcon,
   darkIcon,
   systemIcon,
+  size,
 }: ThemeSwitchProps = {}): React.JSX.Element {
   const { preference, setPreference, resolvedTheme } = useTheme();
   const log = useLogger();
@@ -50,6 +55,7 @@ export function ThemeSwitch({
           aria-label="Toggle dark mode"
           data-umami-event="theme-toggle"
           isSelected={isDark}
+          size={size}
           variant="outline"
           onChange={handleToggle}
         />

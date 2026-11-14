@@ -1,0 +1,14 @@
+@import '../../../../packages/ui/src/static/styles.css';
+@source '../../../../packages/ui/src/components';
+@source '../../../../packages/ui/src/lib';
+@source '../../../../packages/kits/src';
+
+html {
+  color-scheme: light;
+  background: var(--rb-background);
+  color: var(--rb-text);
+}
+
+html.dark {
+  color-scheme: dark;
+}

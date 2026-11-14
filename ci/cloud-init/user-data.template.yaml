@@ -6,7 +6,7 @@
 #   1. Copy this template to user-data.yaml:
 #        cp ci/cloud-init/user-data.template.yaml ci/cloud-init/user-data.yaml
 #   2. Replace the stubs below (SSH authorized key & Age private key).
-#   3. Pass user-data.yaml during VM creation in Yandex Cloud / Cloud Provider.
+#   3. Pass user-data.yaml when creating the VM with your cloud provider.
 #      Note: user-data.yaml is ignored by git to protect private keys.
 # ==============================================================================
 

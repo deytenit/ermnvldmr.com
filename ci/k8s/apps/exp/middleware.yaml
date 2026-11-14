@@ -1,0 +1,8 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: sec-headers-exp
+  namespace: com-ermnvldmr
+spec:
+  headers:
+    contentSecurityPolicy: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src https: http:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"

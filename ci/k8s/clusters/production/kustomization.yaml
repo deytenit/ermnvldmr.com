@@ -10,3 +10,4 @@ resources:
   - ../../apps/umami
   - ../../apps/www
   - ../../apps/docs
+  - ../../apps/exp

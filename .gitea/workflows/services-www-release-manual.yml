@@ -51,7 +51,7 @@ jobs:
         TESTED_DIGEST: ${{ steps.provenance.outputs.tested_digest }}
         BUILD_RUN_ID: ${{ steps.provenance.outputs.build_run_id }}
         PROVENANCE_TOKEN: ${{ github.token }}
-        GIT_WRITE_KEY: ${{ secrets.WWW_DEPLOY_KEY }}
+        GIT_WRITE_KEY: ${{ secrets.UNIVERSAL_DEPLOY_KEY }}
       run: |
         set -euo pipefail
 

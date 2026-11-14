@@ -72,7 +72,7 @@ jobs:
         echo "Deploying www digest $TESTED_DIGEST ($RELEASE_TAG)..."
         bash ci/scripts/deploy-gitops.sh www "$TESTED_DIGEST"
       env:
-        GIT_WRITE_KEY: ${{ secrets.WWW_DEPLOY_KEY }}
+        GIT_WRITE_KEY: ${{ secrets.UNIVERSAL_DEPLOY_KEY }}
 
   verify-rollout:
     name: Verify - Production Rollout
