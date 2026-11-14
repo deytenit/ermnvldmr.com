@@ -7,4 +7,4 @@ resources:
 images:
 - name: git.ermnvldmr.com/deytenit/ermnvldmr.com/docs
   newName: git.ermnvldmr.com/deytenit/ermnvldmr.com/docs
-  newTag: sha-4e0bb72
+  newTag: 2026.11.2
