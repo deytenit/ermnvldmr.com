@@ -56,7 +56,7 @@ jobs:
         set -euo pipefail
 
         VERSION=$(bash ci/scripts/calver-release.sh www)
-        TAG_NAME="services/www-$VERSION"
+        TAG_NAME="services/www/$VERSION"
 
         echo "Tagging Git commit $TESTED_SHA with $TAG_NAME..."
         bash ci/scripts/calver-release.sh tag www "$TESTED_SHA" "$VERSION"

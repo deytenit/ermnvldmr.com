@@ -70,7 +70,7 @@ jobs:
         TESTED_SHA="${{ steps.provenance.outputs.tested_sha }}"
 
         echo "Deploying www digest $TESTED_DIGEST ($RELEASE_TAG)..."
-        bash ci/scripts/deploy-gitops.sh www "$TESTED_DIGEST"
+        bash ci/scripts/deploy-gitops.sh www "$TESTED_DIGEST" "$RELEASE_TAG"
       env:
         GIT_WRITE_KEY: ${{ secrets.UNIVERSAL_DEPLOY_KEY }}
 

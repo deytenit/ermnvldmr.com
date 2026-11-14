@@ -27,25 +27,29 @@ if [ ! -d "$DIST_DIR" ]; then
     exit 1
 fi
 
-# Configure AWS region
+# Configure AWS region and disable default CRC checksums that break S3-compatible endpoints
 export AWS_DEFAULT_REGION="$AWS_REGION"
+export AWS_REQUEST_CHECKSUM_CALCULATION=when_required
+export AWS_RESPONSE_CHECKSUM_VALIDATION=when_required
 ENDPOINT_URL="${S3_ENDPOINT_URL%/}"
+
+aws --version || true
 
 # Set S3 max_concurrent_requests to 1 to prevent race conditions on S3-compatible endpoints
 aws configure set default.s3.max_concurrent_requests 1
 
 # Upload all static files with retry
 echo "Uploading static files..."
-for attempt in 1 2 3; do
-  echo "Attempt $attempt/3: syncing static files..."
+for attempt in 1 2 3 4 5; do
+  echo "Attempt $attempt/5: syncing static files..."
   if aws s3 sync "$DIST_DIR/" "s3://$S3_BUCKET/" \
     --endpoint-url="$ENDPOINT_URL" \
     --cache-control "max-age=300"; then
     echo "Static files deployed successfully!"
     exit 0
   fi
-  sleep 2
+  sleep $((attempt * 2))
 done
 
-echo "Error: Failed to upload static files after 3 attempts."
+echo "Error: Failed to upload static files after 5 attempts."
 exit 1

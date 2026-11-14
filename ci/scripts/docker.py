@@ -34,19 +34,34 @@ def metadata(images, rules, sha):
     return result
 
 
+def source_url():
+    server = os.environ.get('GITHUB_SERVER_URL', '').rstrip('/')
+    repo = os.environ.get('GITHUB_REPOSITORY', '').strip('/')
+    if server and repo:
+        return f'{server}/{repo}'
+    return ''
+
+
 def main():
     mode = sys.argv[1]
     if mode == 'login':
         subprocess.run(['docker', 'login', os.environ['REGISTRY'], '--username', os.environ['REGISTRY_USER'], '--password-stdin'], input=os.environ['REGISTRY_TOKEN'], text=True, check=True)
     elif mode == 'metadata':
         output('tags', '\n'.join(metadata(os.environ['IMAGES'], os.environ['TAG_RULES'], os.environ['SOURCE_SHA'])))
-        output('labels', 'org.opencontainers.image.revision=' + os.environ['SOURCE_SHA'])
+        labels = ['org.opencontainers.image.revision=' + os.environ['SOURCE_SHA']]
+        repo_url = source_url()
+        if repo_url:
+            labels.append('org.opencontainers.image.source=' + repo_url)
+        output('labels', '\n'.join(labels))
     elif mode == 'build':
         command = ['docker', 'buildx', 'build', '--metadata-file', '/tmp/image-metadata.json']
         for env, flag in [('TAGS', '--tag'), ('LABELS', '--label'), ('BUILD_ARGS', '--build-arg')]:
             for value in lines(os.environ.get(env, '')):
                 command.extend([flag, value])
         command += ['--label', 'org.opencontainers.image.revision=' + os.environ['SOURCE_SHA'], '--label', 'com.ermnvldmr.ci.run=' + os.environ['RUN_ID']]
+        repo_url = source_url()
+        if repo_url:
+            command += ['--label', 'org.opencontainers.image.source=' + repo_url]
         if os.environ.get('PLATFORMS'):
             command += ['--platform', os.environ['PLATFORMS']]
         if os.environ.get('DOCKERFILE'):

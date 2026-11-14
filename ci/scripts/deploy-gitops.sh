@@ -3,9 +3,10 @@ set -euo pipefail
 
 SERVICE=$1
 TAG=$2
+RELEASE_TAG="${3:-services/${SERVICE}/${TAG}}"
 
 if [ -z "$SERVICE" ] || [ -z "$TAG" ]; then
-    echo "Usage: $0 <service: www|docs|umami> <tag>"
+    echo "Usage: $0 <service: www|docs|exp> <tag> [release_tag]"
     exit 1
 fi
 
@@ -37,7 +38,7 @@ git add "ci/k8s/apps/${SERVICE}/kustomization.yaml"
 if git diff --staged --quiet; then
     echo "No manifest changes to commit for $SERVICE."
 else
-    git commit --no-gpg-sign -m "chore(release): deploy ${SERVICE} ${TAG} [skip ci]"
+    git commit --no-gpg-sign -m "chore(release): promote ${RELEASE_TAG} to production stage [skip ci]"
     python3 "$ROOT_DIR/ci/scripts/git_write.py" HEAD:next
     echo "Successfully deployed $SERVICE ($TAG) via GitOps."
 fi

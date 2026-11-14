@@ -122,7 +122,7 @@ jobs:
     - name: Deploy via GitOps
       run: |
         DOCS_TAG="${{ needs.release-docker.outputs.version }}"
-        bash ci/scripts/deploy-gitops.sh docs "${DOCS_TAG}"
+        bash ci/scripts/deploy-gitops.sh docs "${DOCS_TAG}" "services/docs/${DOCS_TAG}"
       env:
         GIT_WRITE_KEY: ${{ secrets.UNIVERSAL_DEPLOY_KEY }}
 
