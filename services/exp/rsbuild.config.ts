@@ -1,12 +1,9 @@
 import { defineServiceConfig, localDevServer } from '@ermnvldmr/rsbuild-config/dev';
 
 export default defineServiceConfig({
-  server:
-    process.env.EXP_DEV_HTTP === '1'
-      ? { host: 'localhost', port: 3002 }
-      : localDevServer({ port: 3002 }),
+  server: localDevServer({ port: 3002 }),
   source: {
-    entry: { 'exp/anchorer': './src/app/exp/anchorer.tsx' },
+    entry: { anchorer: './src/app/anchorer.tsx' },
     preEntry: ['./src/static/global.css'],
     define: {
       // The shared UI reads this at module load. Exp has no locale routing.

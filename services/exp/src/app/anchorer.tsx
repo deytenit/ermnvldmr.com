@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 
-import { Anchorer } from '../../components/Anchorer';
-import { ExpLayout } from '../../components/ExpLayout';
+import { Anchorer } from '../components/Anchorer';
+import { ExpLayout } from '../components/ExpLayout';
 
 const root = document.getElementById('root');
 

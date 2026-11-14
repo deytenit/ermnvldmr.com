@@ -76,7 +76,7 @@ jobs:
         echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
         echo "version=$VERSION" >> $GITHUB_OUTPUT
     - name: Create and push release tag
-      if: github.event_name == 'push' && github.ref == 'refs/heads/next'
+      if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/next'
       run: bash ci/scripts/calver-release.sh tag docs "${{ github.sha }}" "${{ steps.vars.outputs.version }}"
       env:
         GIT_WRITE_KEY: ${{ secrets.UNIVERSAL_DEPLOY_KEY }}
@@ -109,7 +109,7 @@ jobs:
     name: Deploy - Kubernetes (GitOps)
     needs: release-docker
     runs-on: apex-debian13
-    if: github.event_name == 'push' && github.ref == 'refs/heads/next'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/next'
     permissions:
       contents: write
     steps:
@@ -132,7 +132,7 @@ jobs:
     - release-docker
     - deploy
     runs-on: apex-debian13
-    if: github.event_name == 'push' && github.ref == 'refs/heads/next'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/next'
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4

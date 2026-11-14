@@ -9,13 +9,17 @@ export function ExpLayout({ children }: { children: ReactNode }) {
   return (
     <PageRoot className="flex min-h-dvh flex-col">
       <PageContainer as="header" paddingY="small">
-        <HStack align="baseline" gap={6} wrap="wrap">
+        <HStack align="center" gap={6} justify="between" wrap="wrap">
           <Text size="m" type="headline">
             Experiments
           </Text>
-          <Text as="a" href="/exp/anchorer" size="l" type="label" underline>
-            Anchorer
-          </Text>
+          <nav aria-label="Experiments">
+            <HStack align="center" gap={4} wrap="wrap">
+              <Text as="a" href="/anchorer" size="l" type="label" underline>
+                Anchorer
+              </Text>
+            </HStack>
+          </nav>
         </HStack>
       </PageContainer>
       <Separator />

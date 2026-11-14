@@ -97,6 +97,23 @@ describe('server dev configuration', () => {
     }
   });
 
+  it('returns plain http localhost configuration without https when DEV_HTTP is 1', () => {
+    const prevEnv = process.env.NODE_ENV;
+    const prevDevHttp = process.env.DEV_HTTP;
+    try {
+      process.env.NODE_ENV = 'development';
+      process.env.DEV_HTTP = '1';
+      const config = localDevServer({ port: 3002 });
+      expect(config.host).toBe('localhost');
+      expect(config.port).toBe(3002);
+      expect(config.cors).toBe(true);
+      expect(config.https).toBeUndefined();
+    } finally {
+      process.env.NODE_ENV = prevEnv;
+      process.env.DEV_HTTP = prevDevHttp;
+    }
+  });
+
   it('detects entries correctly in hosts file', () => {
     const mockHostsPath = join(tmpdir(), `hosts-test-${Date.now()}`);
     try {

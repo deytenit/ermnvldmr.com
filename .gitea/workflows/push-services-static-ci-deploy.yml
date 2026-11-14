@@ -11,7 +11,7 @@ name: 'push(services/static): CI & Deploy'
     - .gitea/workflows/push-services-static-ci-deploy.yml
     - ci/scripts/**
     - pnpm-lock.yaml
-    - ci/scripts/**
+  workflow_dispatch:
 concurrency:
   group: ci-static-${{ github.ref_name }}
   cancel-in-progress: true
@@ -171,7 +171,7 @@ jobs:
     - typecheck-static
     - build-static
     runs-on: apex-debian13
-    if: github.event_name == 'push' && github.ref == 'refs/heads/next'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/next'
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4

@@ -623,6 +623,9 @@ importers:
       '@ermnvldmr/kits':
         specifier: workspace:*
         version: link:../../packages/kits
+      '@ermnvldmr/stl':
+        specifier: workspace:^
+        version: link:../../packages/stl
       '@ermnvldmr/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -18137,8 +18140,7 @@ snapshots:
 
   prettier@3.5.3: {}
 
-  prettier@3.9.10:
-    optional: true
+  prettier@3.9.10: {}
 
   pretty-format@27.5.1:
     dependencies:

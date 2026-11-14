@@ -397,6 +397,14 @@ export function localDevServer(options: LocalDevServerOptions): ServerConfig {
     };
   }
 
+  if (process.env.DEV_HTTP === '1') {
+    return {
+      host: 'localhost',
+      port: options.port,
+      cors: true,
+    };
+  }
+
   const { certPath, keyPath } = ensureDevCertificates();
   const cert = readFileSync(certPath);
   const key = readFileSync(keyPath);

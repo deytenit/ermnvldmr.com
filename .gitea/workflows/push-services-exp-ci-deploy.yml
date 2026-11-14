@@ -71,7 +71,7 @@ jobs:
 
   deploy:
     name: Deploy - Exp (GitOps)
-    if: github.event_name == 'push' && github.ref == 'refs/heads/next'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/next'
     needs: build
     runs-on: apex-debian13
     permissions:

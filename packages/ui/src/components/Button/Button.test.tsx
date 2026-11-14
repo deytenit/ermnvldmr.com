@@ -87,8 +87,8 @@ describe('components/Button', () => {
     
     rerender(<Button color="secondary" variant="outline">Secondary Outline</Button>);
     expect(screen.getByRole('button')).toHaveClass('bg-transparent');
-    expect(screen.getByRole('button')).toHaveClass('border-secondary');
-    expect(screen.getByRole('button')).toHaveClass('text-secondary');
+    expect(screen.getByRole('button')).toHaveClass('border-secondary-accent');
+    expect(screen.getByRole('button')).toHaveClass('text-secondary-accent');
   });
 });
 

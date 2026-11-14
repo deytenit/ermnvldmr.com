@@ -34,14 +34,14 @@ spec:
               memory: 128Mi
           readinessProbe:
             httpGet:
-              path: /exp/anchorer
+              path: /anchorer
               port: 80
             initialDelaySeconds: 3
             periodSeconds: 5
             timeoutSeconds: 2
           livenessProbe:
             httpGet:
-              path: /exp/anchorer
+              path: /anchorer
               port: 80
             initialDelaySeconds: 5
             periodSeconds: 10
