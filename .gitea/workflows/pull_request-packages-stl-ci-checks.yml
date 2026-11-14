@@ -1,15 +1,16 @@
-name: packages/ssg - next/required
+name: 'pull_request(packages/stl): CI Checks'
 'on':
-  push:
+  pull_request:
     branches:
     - next
     paths:
-    - packages/ssg/**
-    - .gitea/workflows/packages-ssg-next-required.yml
+    - packages/stl/**
+    - .gitea/workflows/pull_request-packages-stl-ci-checks.yml
     - pnpm-lock.yaml
     - ci/scripts/**
+  workflow_dispatch: {}
 concurrency:
-  group: ci-ssg-${{ github.ref_name }}
+  group: ci-pr-stl-${{ github.head_ref }}
   cancel-in-progress: true
 permissions:
   contents: read
@@ -59,11 +60,11 @@ jobs:
     - name: Upload Config Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: rsbuild-config-dist
+        name: rsbuild-config-dist-${{ github.run_id }}
         path: packages/rsbuild-config/dist
         retention-days: 30
-  lint-ssg:
-    name: Lint - SSG
+  lint-stl:
+    name: Lint - STL
     needs: build-configs
     runs-on: apex-debian13
     steps:
@@ -81,12 +82,12 @@ jobs:
     - name: Download Config Artifacts
       uses: actions/download-artifact@v4
       with:
-        name: rsbuild-config-dist
+        name: rsbuild-config-dist-${{ github.run_id }}
         path: packages/rsbuild-config/dist
-    - name: Lint SSG package
-      run: pnpm --filter @ermnvldmr/ssg lint
-  typecheck-ssg:
-    name: Typecheck - SSG
+    - name: Lint STL package
+      run: pnpm --filter @ermnvldmr/stl lint
+  typecheck-stl:
+    name: Typecheck - STL
     needs: build-configs
     runs-on: apex-debian13
     steps:
@@ -104,12 +105,12 @@ jobs:
     - name: Download Config Artifacts
       uses: actions/download-artifact@v4
       with:
-        name: rsbuild-config-dist
+        name: rsbuild-config-dist-${{ github.run_id }}
         path: packages/rsbuild-config/dist
-    - name: Typecheck SSG package
-      run: pnpm --filter @ermnvldmr/ssg typecheck
-  build-ssg:
-    name: Build - SSG
+    - name: Typecheck STL package
+      run: pnpm --filter @ermnvldmr/stl typecheck
+  test-stl:
+    name: Test - STL
     needs: build-configs
     runs-on: apex-debian13
     steps:
@@ -127,7 +128,30 @@ jobs:
     - name: Download Config Artifacts
       uses: actions/download-artifact@v4
       with:
-        name: rsbuild-config-dist
+        name: rsbuild-config-dist-${{ github.run_id }}
         path: packages/rsbuild-config/dist
-    - name: Build SSG package
-      run: pnpm --filter @ermnvldmr/ssg build
+    - name: Test STL package
+      run: pnpm --filter @ermnvldmr/stl test:coverage
+  build-stl:
+    name: Build - STL
+    needs: build-configs
+    runs-on: apex-debian13
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup environment
+      run: bash ci/scripts/setup-env.sh 9.12.3 20
+    - name: Restore repository dependency cache
+      id: dependency-cache
+      run: python3 ci/scripts/cache.py restore
+      env:
+        CACHE_TOKEN: ${{ github.token }}
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    - name: Download Config Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: rsbuild-config-dist-${{ github.run_id }}
+        path: packages/rsbuild-config/dist
+    - name: Build STL package
+      run: pnpm --filter @ermnvldmr/stl build

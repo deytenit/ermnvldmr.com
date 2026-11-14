@@ -1,4 +1,4 @@
-name: services/www - manual deploy
+name: 'workflow_dispatch(services/www): Deploy'
 'on':
   workflow_dispatch:
     inputs:

@@ -1,26 +1,6 @@
-name: services/exp - required
+name: 'push(services/exp): CI & Deploy'
 
 'on':
-  pull_request:
-    branches: [next]
-    paths:
-      - services/exp/**
-      - packages/eslint-config/**
-      - packages/i18n/**
-      - packages/kits/**
-      - packages/rsbuild-config/**
-      - packages/stl/**
-      - packages/ui/**
-      - ci/docker/exp/**
-      - ci/k8s/apps/exp/**
-      - ci/k8s/clusters/production/kustomization.yaml
-      - ci/scripts/**
-      - .gitea/workflows/services-exp-required.yml
-      - .dockerignore
-      - package.json
-      - pnpm-lock.yaml
-      - pnpm-workspace.yaml
-      - tsconfig.json
   push:
     branches: [next]
     paths:
@@ -35,15 +15,16 @@ name: services/exp - required
       - ci/k8s/apps/exp/**
       - ci/k8s/clusters/production/kustomization.yaml
       - ci/scripts/**
-      - .gitea/workflows/services-exp-required.yml
+      - .gitea/workflows/push-services-exp-ci-deploy.yml
       - .dockerignore
       - package.json
       - pnpm-lock.yaml
       - pnpm-workspace.yaml
       - tsconfig.json
+  workflow_dispatch: null
 
 concurrency:
-  group: ci-exp-${{ github.event_name }}-${{ github.ref_name }}
+  group: ci-exp-${{ github.ref_name }}
   cancel-in-progress: true
 
 permissions:
@@ -64,11 +45,7 @@ jobs:
           persist-credentials: false
       - name: Validate production manifests
         run: kustomize build ci/k8s/clusters/production > /dev/null
-      - name: Build and lint
-        if: github.event_name == 'pull_request'
-        run: docker buildx build --file ci/docker/exp/Dockerfile .
       - name: Log in to Gitea Container Registry
-        if: github.event_name == 'push'
         run: python3 ci/scripts/docker.py login
         env:
           REGISTRY: git.ermnvldmr.com
@@ -76,7 +53,6 @@ jobs:
           REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
       - name: Build and publish
         id: release
-        if: github.event_name == 'push'
         run: |
           set -euo pipefail
           TAG="sha-${SOURCE_SHA:0:7}"
@@ -95,7 +71,7 @@ jobs:
 
   deploy:
     name: Deploy - Exp (GitOps)
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/next'
     needs: build
     runs-on: apex-debian13
     permissions:

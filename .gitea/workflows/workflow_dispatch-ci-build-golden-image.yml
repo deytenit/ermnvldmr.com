@@ -1,4 +1,4 @@
-name: ci - next/build-golden-image
+name: 'workflow_dispatch(ci): Build Golden Image'
 'on':
   workflow_dispatch: null
 concurrency:

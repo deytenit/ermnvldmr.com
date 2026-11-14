@@ -27,7 +27,7 @@ def validate_run(run, sha):
         raise ValueError('Build did not succeed for this next commit')
     if run.get('repository', {}).get('full_name') != REPO or (run.get('head_repository') and run['head_repository'].get('full_name') != REPO):
         raise ValueError('Build source repository mismatch')
-    if run.get('path') != 'services-www-next-required.yml@refs/heads/next':
+    if run.get('path') != 'push-services-www-ci-build.yml@refs/heads/next':
         raise ValueError('Wrong build workflow')
     if run.get('event') not in ('push', 'workflow_dispatch'):
         raise ValueError('Untrusted build event')
@@ -93,18 +93,18 @@ def main():
 
     if is_deploy:
         if not release_id:
-            runs_data = api('/actions/workflows/services-www-release-manual.yml/runs?branch=next&limit=10')
+            runs_data = api('/actions/workflows/workflow_dispatch-services-www-release.yml/runs?branch=next&limit=10')
             candidates = [
                 r for r in runs_data.get('workflow_runs', [])
                 if r.get('status') == 'completed' and r.get('conclusion') == 'success'
             ]
             if not candidates:
-                raise ValueError('No successful completed run found for services-www-release-manual.yml on next')
+                raise ValueError('No successful completed run found for workflow_dispatch-services-www-release.yml on next')
             release_id = str(candidates[0]['id'])
 
         release = api('/actions/runs/' + release_id)
         release_actor = release.get('trigger_actor') or release.get('actor') or {}
-        if release.get('conclusion') != 'success' or release.get('status') != 'completed' or release.get('event') != 'workflow_dispatch' or release.get('head_branch') != 'next' or release.get('path') != 'services-www-release-manual.yml@refs/heads/next' or release_actor.get('login') != 'deytenit':
+        if release.get('conclusion') != 'success' or release.get('status') != 'completed' or release.get('event') != 'workflow_dispatch' or release.get('head_branch') != 'next' or release.get('path') != 'workflow_dispatch-services-www-release.yml@refs/heads/next' or release_actor.get('login') != 'deytenit':
             raise ValueError('Successful independently approved release required')
 
         rel_manifest = artifact_manifest(release_id, 'www-release-provenance', 'www-release.json')
@@ -122,13 +122,13 @@ def main():
             raise ValueError(f'Release approval does not match requested artifact: got {rel_manifest}, expected {expected_rel}')
     else:
         if not sha or not digest or not run_id:
-            runs_data = api('/actions/workflows/services-www-next-required.yml/runs?branch=next&limit=10')
+            runs_data = api('/actions/workflows/push-services-www-ci-build.yml/runs?branch=next&limit=10')
             candidates = [
                 r for r in runs_data.get('workflow_runs', [])
                 if r.get('status') == 'completed' and r.get('conclusion') == 'success'
             ]
             if not candidates:
-                raise ValueError('No successful completed run found for services-www-next-required.yml on next')
+                raise ValueError('No successful completed run found for push-services-www-ci-build.yml on next')
             build_run = candidates[0]
             run_id = str(build_run['id'])
             sha = build_run['head_sha']

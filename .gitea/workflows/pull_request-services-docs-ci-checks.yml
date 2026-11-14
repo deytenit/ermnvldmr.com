@@ -1,11 +1,11 @@
-name: services/docs - pr/required
+name: 'pull_request(services/docs): CI Checks'
 'on':
   pull_request:
     branches:
     - next
     paths:
     - services/docs/**
-    - .gitea/workflows/services-docs-pr-required.yml
+    - .gitea/workflows/pull_request-services-docs-ci-checks.yml
     - ci/scripts/**
 concurrency:
   group: ci-pr-docs-${{ github.head_ref }}

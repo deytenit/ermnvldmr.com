@@ -15,8 +15,11 @@ def main():
     if not re.fullmatch(r'deytenit/[A-Za-z0-9_.-]+',repository):
         raise ValueError('Unexpected repository owner')
     with tempfile.TemporaryDirectory(prefix='gitea-write-key-') as directory:
+        raw_key = os.environ['GIT_WRITE_KEY'].replace('\r\n', '\n').rstrip('\n')
+        if not raw_key:
+            raise ValueError('GIT_WRITE_KEY is empty')
         key = Path(directory) / 'key'
-        key.write_text(os.environ['GIT_WRITE_KEY'])
+        key.write_text(raw_key + '\n')
         key.chmod(0o600)
         repo_root = Path(__file__).resolve().parents[2]
         candidates = [

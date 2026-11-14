@@ -1,11 +1,11 @@
-name: services/docs - next/required
+name: 'push(services/docs): CI & Deploy'
 'on':
   push:
     branches:
     - next
     paths:
     - services/docs/**
-    - .gitea/workflows/services-docs-next-required.yml
+    - .gitea/workflows/push-services-docs-ci-deploy.yml
     - ci/docker/docs/**
     - ci/config/nginx/**
     - ci/scripts/**

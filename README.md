@@ -25,6 +25,7 @@ Composite (see [Copyright & License](#copyright--license))
 - **[www](./services/www)**: Main website, built with Rsbuild, React, and MDX.
 - **[static](./services/static)**: Static landing pages, built with Rsbuild and React.
 - **[docs](./services/docs)**: Documentation site, built with Hugo and the Hextra theme.
+- **[exp](./services/exp)**: Experiments playground and Anchorer, built with Rsbuild and React.
 
 #### Packages
 
@@ -53,6 +54,8 @@ Want to contribute or understand the codebase.
 - **Setup**: `pnpm install`
 - **Development**:
   - Website: `pnpm www:dev`
+  - Static Pages: `pnpm static:dev`
+  - Experiments: `pnpm exp:dev`
   - Documentation: `pnpm docs:dev`
   - UI Library: `pnpm ui:dev`
 - **Development Guide**: [AGENTS.md](./AGENTS.md)

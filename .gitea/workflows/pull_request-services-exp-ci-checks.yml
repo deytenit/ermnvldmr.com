@@ -1,0 +1,43 @@
+name: 'pull_request(services/exp): CI Checks'
+
+'on':
+  pull_request:
+    branches: [next]
+    paths:
+      - services/exp/**
+      - packages/eslint-config/**
+      - packages/i18n/**
+      - packages/kits/**
+      - packages/rsbuild-config/**
+      - packages/stl/**
+      - packages/ui/**
+      - ci/docker/exp/**
+      - ci/k8s/apps/exp/**
+      - ci/k8s/clusters/production/kustomization.yaml
+      - ci/scripts/**
+      - .gitea/workflows/pull_request-services-exp-ci-checks.yml
+      - .dockerignore
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - tsconfig.json
+
+concurrency:
+  group: ci-exp-pr-${{ github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build - Exp
+    runs-on: apex-debian13
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate production manifests
+        run: kustomize build ci/k8s/clusters/production > /dev/null
+      - name: Build and lint
+        run: docker buildx build --file ci/docker/exp/Dockerfile .

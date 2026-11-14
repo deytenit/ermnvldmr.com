@@ -1,11 +1,11 @@
-name: packages/stl - next/required
+name: 'push(packages/stl): CI Checks'
 'on':
   push:
     branches:
     - next
     paths:
     - packages/stl/**
-    - .gitea/workflows/packages-stl-next-required.yml
+    - .gitea/workflows/push-packages-stl-ci-checks.yml
     - pnpm-lock.yaml
     - ci/scripts/**
 concurrency:

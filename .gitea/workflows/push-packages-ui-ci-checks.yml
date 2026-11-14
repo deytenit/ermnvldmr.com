@@ -1,18 +1,17 @@
-name: services/www - pr/required
+name: 'push(packages/ui): CI Checks'
 'on':
-  pull_request:
+  push:
     branches:
     - next
     paths:
-    - services/www/**
     - packages/ui/**
     - packages/stl/**
     - packages/i18n/**
-    - .gitea/workflows/services-www-pr-required.yml
+    - .gitea/workflows/push-packages-ui-ci-checks.yml
     - pnpm-lock.yaml
     - ci/scripts/**
 concurrency:
-  group: ci-pr-www-${{ github.head_ref }}
+  group: ci-ui-${{ github.ref_name }}
   cancel-in-progress: true
 permissions:
   contents: read
@@ -61,28 +60,28 @@ jobs:
       run: pnpm --filter @ermnvldmr/rsbuild-config build
     - name: Build Storybook config
       run: pnpm --filter @ermnvldmr/storybook-config build
+    - name: Build i18n
+      run: pnpm --filter @ermnvldmr/i18n build
     - name: Upload Rsbuild Config
       uses: actions/upload-artifact@v4
       with:
-        name: rsbuild-config-dist-${{ github.run_id }}
+        name: rsbuild-config-dist
         path: packages/rsbuild-config/dist
         retention-days: 30
     - name: Upload Storybook Config
       uses: actions/upload-artifact@v4
       with:
-        name: storybook-config-dist-${{ github.run_id }}
+        name: storybook-config-dist
         path: packages/storybook-config/dist
         retention-days: 30
-    - name: Build i18n package
-      run: pnpm --filter @ermnvldmr/i18n build
     - name: Upload i18n dist
       uses: actions/upload-artifact@v4
       with:
-        name: i18n-dist-${{ github.run_id }}
+        name: i18n-dist
         path: packages/i18n/dist
         retention-days: 30
-  lint-www:
-    name: Lint - WWW
+  lint-ui:
+    name: Lint - UI
     needs: build-configs
     runs-on: apex-debian13
     steps:
@@ -100,22 +99,22 @@ jobs:
     - name: Download Rsbuild Config
       uses: actions/download-artifact@v4
       with:
-        name: rsbuild-config-dist-${{ github.run_id }}
+        name: rsbuild-config-dist
         path: packages/rsbuild-config/dist
-    - name: Download i18n dist
-      uses: actions/download-artifact@v4
-      with:
-        name: i18n-dist-${{ github.run_id }}
-        path: packages/i18n/dist
     - name: Download Storybook Config
       uses: actions/download-artifact@v4
       with:
-        name: storybook-config-dist-${{ github.run_id }}
+        name: storybook-config-dist
         path: packages/storybook-config/dist
-    - name: Lint WWW service
-      run: pnpm --filter @ermnvldmr/www lint
-  typecheck-www:
-    name: Typecheck - WWW
+    - name: Download i18n dist
+      uses: actions/download-artifact@v4
+      with:
+        name: i18n-dist
+        path: packages/i18n/dist
+    - name: Lint UI package
+      run: pnpm --filter @ermnvldmr/ui lint
+  typecheck-ui:
+    name: Typecheck - UI
     needs: build-configs
     runs-on: apex-debian13
     steps:
@@ -133,20 +132,53 @@ jobs:
     - name: Download Rsbuild Config
       uses: actions/download-artifact@v4
       with:
-        name: rsbuild-config-dist-${{ github.run_id }}
+        name: rsbuild-config-dist
         path: packages/rsbuild-config/dist
-    - name: Download i18n dist
-      uses: actions/download-artifact@v4
-      with:
-        name: i18n-dist-${{ github.run_id }}
-        path: packages/i18n/dist
     - name: Download Storybook Config
       uses: actions/download-artifact@v4
       with:
-        name: storybook-config-dist-${{ github.run_id }}
+        name: storybook-config-dist
         path: packages/storybook-config/dist
-    - name: Typecheck WWW service
-      run: pnpm --filter @ermnvldmr/www typecheck
+    - name: Download i18n dist
+      uses: actions/download-artifact@v4
+      with:
+        name: i18n-dist
+        path: packages/i18n/dist
+    - name: Typecheck UI package
+      run: pnpm --filter @ermnvldmr/ui typecheck
+  test-ui:
+    name: Test - Unit
+    needs: build-configs
+    runs-on: apex-debian13
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Setup environment
+      run: bash ci/scripts/setup-env.sh 9.12.3 20
+    - name: Restore repository dependency cache
+      id: dependency-cache
+      run: python3 ci/scripts/cache.py restore
+      env:
+        CACHE_TOKEN: ${{ github.token }}
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    - name: Download Rsbuild Config
+      uses: actions/download-artifact@v4
+      with:
+        name: rsbuild-config-dist
+        path: packages/rsbuild-config/dist
+    - name: Download Storybook Config
+      uses: actions/download-artifact@v4
+      with:
+        name: storybook-config-dist
+        path: packages/storybook-config/dist
+    - name: Download i18n dist
+      uses: actions/download-artifact@v4
+      with:
+        name: i18n-dist
+        path: packages/i18n/dist
+    - name: Test UI package
+      run: pnpm --filter @ermnvldmr/ui test:coverage
   build-storybook:
     name: Build - Storybook
     needs: build-configs
@@ -166,59 +198,20 @@ jobs:
     - name: Download Rsbuild Config
       uses: actions/download-artifact@v4
       with:
-        name: rsbuild-config-dist-${{ github.run_id }}
+        name: rsbuild-config-dist
         path: packages/rsbuild-config/dist
-    - name: Download i18n dist
-      uses: actions/download-artifact@v4
-      with:
-        name: i18n-dist-${{ github.run_id }}
-        path: packages/i18n/dist
     - name: Download Storybook Config
       uses: actions/download-artifact@v4
       with:
-        name: storybook-config-dist-${{ github.run_id }}
+        name: storybook-config-dist
         path: packages/storybook-config/dist
-    - name: Build WWW Storybook
-      run: pnpm --filter @ermnvldmr/www build-storybook
-    - name: Upload Storybook build
-      uses: actions/upload-artifact@v4
-      with:
-        name: www-storybook-static-${{ github.run_id }}
-        path: services/www/storybook-static/
-        retention-days: 30
-  test-www:
-    name: Test - Unit
-    needs: build-configs
-    runs-on: apex-debian13
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    - name: Setup environment
-      run: bash ci/scripts/setup-env.sh 9.12.3 20
-    - name: Restore repository dependency cache
-      id: dependency-cache
-      run: python3 ci/scripts/cache.py restore
-      env:
-        CACHE_TOKEN: ${{ github.token }}
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
-    - name: Download Rsbuild Config
-      uses: actions/download-artifact@v4
-      with:
-        name: rsbuild-config-dist-${{ github.run_id }}
-        path: packages/rsbuild-config/dist
     - name: Download i18n dist
       uses: actions/download-artifact@v4
       with:
-        name: i18n-dist-${{ github.run_id }}
+        name: i18n-dist
         path: packages/i18n/dist
-    - name: Download Storybook Config
-      uses: actions/download-artifact@v4
-      with:
-        name: storybook-config-dist-${{ github.run_id }}
-        path: packages/storybook-config/dist
-    - name: Test WWW service
-      run: pnpm --filter @ermnvldmr/www test:coverage
+    - name: Build UI Storybook
+      run: pnpm --filter @ermnvldmr/ui build-storybook
   test-storybook:
     name: Test - Storybook
     needs: build-storybook
@@ -238,29 +231,33 @@ jobs:
     - name: Download Rsbuild Config
       uses: actions/download-artifact@v4
       with:
-        name: rsbuild-config-dist-${{ github.run_id }}
+        name: rsbuild-config-dist
         path: packages/rsbuild-config/dist
-    - name: Download i18n dist
-      uses: actions/download-artifact@v4
-      with:
-        name: i18n-dist-${{ github.run_id }}
-        path: packages/i18n/dist
     - name: Download Storybook Config
       uses: actions/download-artifact@v4
       with:
-        name: storybook-config-dist-${{ github.run_id }}
+        name: storybook-config-dist
         path: packages/storybook-config/dist
-    - name: Install Playwright browsers
-      run: pnpm --filter @ermnvldmr/www exec playwright install --with-deps chromium
-    - name: Download Storybook build
+    - name: Download i18n dist
       uses: actions/download-artifact@v4
       with:
-        name: www-storybook-static-${{ github.run_id }}
-        path: services/www/storybook-static/
-    - name: Serve Storybook and run tests with coverage
-      run: pnpm --filter @ermnvldmr/www test:storybook:ci
-  build-www:
-    name: Build - WWW Service
+        name: i18n-dist
+        path: packages/i18n/dist
+    - name: Install Playwright browsers
+      run: |
+        flock -w 300 /var/lib/gitea-runner/.playwright.lock bash -c '
+          for attempt in 1 2 3 4 5; do
+            pnpm --filter @ermnvldmr/ui exec playwright install --with-deps chromium && exit 0
+            sleep 5
+          done
+          exit 1
+        '
+    - name: Build UI Storybook
+      run: pnpm --filter @ermnvldmr/ui build-storybook
+    - name: Test Storybook
+      run: pnpm --filter @ermnvldmr/ui test:storybook:ci
+  build-ui:
+    name: Build - UI
     needs: build-configs
     runs-on: apex-debian13
     steps:
@@ -278,25 +275,17 @@ jobs:
     - name: Download Rsbuild Config
       uses: actions/download-artifact@v4
       with:
-        name: rsbuild-config-dist-${{ github.run_id }}
+        name: rsbuild-config-dist
         path: packages/rsbuild-config/dist
-    - name: Download i18n dist
-      uses: actions/download-artifact@v4
-      with:
-        name: i18n-dist-${{ github.run_id }}
-        path: packages/i18n/dist
     - name: Download Storybook Config
       uses: actions/download-artifact@v4
       with:
-        name: storybook-config-dist-${{ github.run_id }}
+        name: storybook-config-dist
         path: packages/storybook-config/dist
-    - name: Build WWW service (all locales)
-      run: pnpm --filter @ermnvldmr/www build:all
-      env:
-        RSDOCTOR: 'true'
-    - name: Upload Rsdoctor report
-      uses: actions/upload-artifact@v4
+    - name: Download i18n dist
+      uses: actions/download-artifact@v4
       with:
-        name: rsdoctor-report-${{ github.run_id }}
-        path: services/www/rsdoctor/
-        retention-days: 30
+        name: i18n-dist
+        path: packages/i18n/dist
+    - name: Build UI package
+      run: pnpm --filter @ermnvldmr/ui build

@@ -1,11 +1,11 @@
-name: packages/ssg - pr/required
+name: 'pull_request(packages/ssg): CI Checks'
 'on':
   pull_request:
     branches:
     - next
     paths:
     - packages/ssg/**
-    - .gitea/workflows/packages-ssg-pr-required.yml
+    - .gitea/workflows/pull_request-packages-ssg-ci-checks.yml
     - pnpm-lock.yaml
     - ci/scripts/**
 concurrency:

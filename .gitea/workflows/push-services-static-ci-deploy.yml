@@ -1,6 +1,6 @@
-name: services/static - pr/required
+name: 'push(services/static): CI & Deploy'
 'on':
-  pull_request:
+  push:
     branches:
     - next
     paths:
@@ -8,12 +8,12 @@ name: services/static - pr/required
     - packages/ui/**
     - packages/stl/**
     - packages/i18n/**
-    - .gitea/workflows/services-static-pr-required.yml
+    - .gitea/workflows/push-services-static-ci-deploy.yml
     - ci/scripts/**
     - pnpm-lock.yaml
     - ci/scripts/**
 concurrency:
-  group: ci-pr-static-${{ github.head_ref }}
+  group: ci-static-${{ github.ref_name }}
   cancel-in-progress: true
 permissions:
   contents: read
@@ -65,13 +65,13 @@ jobs:
     - name: Upload Config Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: rsbuild-config-dist-${{ github.run_id }}
+        name: rsbuild-config-dist
         path: packages/rsbuild-config/dist
         retention-days: 30
     - name: Upload i18n dist
       uses: actions/upload-artifact@v4
       with:
-        name: i18n-dist-${{ github.run_id }}
+        name: i18n-dist
         path: packages/i18n/dist
         retention-days: 30
   lint-static:
@@ -93,12 +93,12 @@ jobs:
     - name: Download Config Artifacts
       uses: actions/download-artifact@v4
       with:
-        name: rsbuild-config-dist-${{ github.run_id }}
+        name: rsbuild-config-dist
         path: packages/rsbuild-config/dist
     - name: Download i18n dist
       uses: actions/download-artifact@v4
       with:
-        name: i18n-dist-${{ github.run_id }}
+        name: i18n-dist
         path: packages/i18n/dist
     - name: Lint static service
       run: pnpm --filter @ermnvldmr/static lint
@@ -121,12 +121,12 @@ jobs:
     - name: Download Config Artifacts
       uses: actions/download-artifact@v4
       with:
-        name: rsbuild-config-dist-${{ github.run_id }}
+        name: rsbuild-config-dist
         path: packages/rsbuild-config/dist
     - name: Download i18n dist
       uses: actions/download-artifact@v4
       with:
-        name: i18n-dist-${{ github.run_id }}
+        name: i18n-dist
         path: packages/i18n/dist
     - name: Typecheck static service
       run: pnpm --filter @ermnvldmr/static typecheck
@@ -149,18 +149,47 @@ jobs:
     - name: Download Config Artifacts
       uses: actions/download-artifact@v4
       with:
-        name: rsbuild-config-dist-${{ github.run_id }}
+        name: rsbuild-config-dist
         path: packages/rsbuild-config/dist
     - name: Download i18n dist
       uses: actions/download-artifact@v4
       with:
-        name: i18n-dist-${{ github.run_id }}
+        name: i18n-dist
         path: packages/i18n/dist
     - name: Build static service
       run: pnpm --filter @ermnvldmr/static build
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: static-dist-${{ github.run_id }}
+        name: static-dist
         path: services/static/dist/
         retention-days: 30
+  deploy-s3:
+    name: Deploy - S3
+    needs:
+    - lint-static
+    - typecheck-static
+    - build-static
+    runs-on: apex-debian13
+    if: github.event_name == 'push' && github.ref == 'refs/heads/next'
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: static-dist
+        path: services/static/dist/
+    - name: Deploy to S3
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.STATIC_AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.STATIC_AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ secrets.STATIC_AWS_REGION }}
+        S3_BUCKET: ${{ secrets.STATIC_S3_BUCKET }}
+        AWS_REGION: ${{ secrets.STATIC_AWS_REGION }}
+        S3_ENDPOINT_URL: ${{ secrets.STATIC_S3_ENDPOINT_URL }}
+      run: 'chmod +x ci/scripts/deploy-static.sh
+
+        ./ci/scripts/deploy-static.sh
+
+        '
