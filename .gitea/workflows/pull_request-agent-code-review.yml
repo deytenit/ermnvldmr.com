@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   code-review:
-    uses: deytenit/agent-code-review/.gitea/workflows/workflow_call-agent-code-review.yml@main
+    uses: actions/agent-code-review/.gitea/workflows/workflow_call-agent-code-review.yml@main
     with:
       model_tag: 'code-reviewer'
     secrets: inherit
