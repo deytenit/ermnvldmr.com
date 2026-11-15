@@ -1,0 +1,15 @@
+name: 'pull_request: Agent Code Review'
+'on':
+  pull_request:
+    branches:
+      - next
+    types: [opened, synchronize, reopened]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  code-review:
+    uses: deytenit/agent-code-review/.gitea/workflows/workflow_call-agent-code-review.yml@main
+    secrets: inherit
