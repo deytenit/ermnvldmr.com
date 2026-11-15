@@ -80,6 +80,24 @@ if [ -b /dev/vdb ]; then
     echo "LABEL=k3s-storage /var/lib/rancher/k3s/storage ext4 defaults,noatime 0 2" >> /etc/fstab
     echo "Mounted /dev/vdb to /var/lib/rancher/k3s/storage."
   fi
+
+  SWAPFILE="/var/lib/rancher/k3s/storage/swapfile"
+  if [ ! -f "$SWAPFILE" ]; then
+    echo "Creating 4GB swapfile on persistent storage..."
+    (fallocate -l 4G "$SWAPFILE" || dd if=/dev/zero of="$SWAPFILE" bs=1M count=4096) || rm -f "$SWAPFILE"
+    if [ -f "$SWAPFILE" ]; then
+      chmod 600 "$SWAPFILE"
+      mkswap "$SWAPFILE" || true
+    fi
+  fi
+  if [ -f "$SWAPFILE" ]; then
+    if ! swapon --show | grep -q "$SWAPFILE"; then
+      swapon "$SWAPFILE" || echo "WARNING: Failed to activate swap: $SWAPFILE"
+    fi
+    if ! grep -qs "$SWAPFILE" /etc/fstab; then
+      echo "$SWAPFILE none swap sw 0 0" >> /etc/fstab
+    fi
+  fi
 fi
 
 echo "=== [Bootstrap] Starting K3s Service ==="
@@ -122,6 +140,9 @@ fi
 
 echo "=== [Bootstrap] Installing Flux Operator / Custom Resources ==="
 kubectl apply -f /etc/flux/install.yaml
+
+echo "=== [Bootstrap] Disabling unused Flux controllers ==="
+kubectl scale deploy -n flux-system helm-controller image-automation-controller image-reflector-controller notification-controller --replicas=0 || true
 
 echo "=== [Bootstrap] Applying initial GitOps root sync ==="
 if [ -f /etc/flux/cluster-sync.yaml ]; then
