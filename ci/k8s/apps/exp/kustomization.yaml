@@ -9,4 +9,4 @@ resources:
 images:
 - name: git.ermnvldmr.com/deytenit/ermnvldmr.com/exp
   newName: git.ermnvldmr.com/deytenit/ermnvldmr.com/exp
-  newTag: sha-bc7798a
+  newTag: sha-b8f42ae
