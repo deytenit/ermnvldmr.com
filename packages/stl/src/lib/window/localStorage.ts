@@ -1,96 +1,119 @@
+import { createStorageSnapshot, parseStoredJson, StorageCapacityError } from '../storage';
+
+import type { PersistentStorage } from '../storage';
+
+const maxLocalStorageBytes = 256 * 1024;
+
 /**
- * Manages type-safe interaction with window.localStorage.
+ * Watches a localStorage key for same-document and cross-document changes.
  *
- * @template T - The type of the value to store (must be JSON serializable).
+ * @example
+ * const unsubscribe = subscribeToLocalStorage('example/theme', render);
  */
-export interface StorageManager<T> {
-  /** Retrieves the current value or the default value if none exists. */
-  get: () => T;
-  /** Updates the stored value and persists it. */
-  set: (value: T | ((prev: T) => T)) => void;
-  /** Removes the item from storage. */
-  remove: () => void;
-  /** The key used in localStorage. */
-  readonly key: string;
+function subscribeToLocalStorage(key: string, listener: () => void): () => void {
+  if (typeof window === 'undefined') return () => undefined;
+  const target = window;
+
+  const handleStorageChange = (event: StorageEvent): void => {
+    if (event.key !== key && event.key !== null) return;
+
+    try {
+      if (event.storageArea && event.storageArea !== target.localStorage) return;
+    } catch {
+      return;
+    }
+    listener();
+  };
+
+  target.addEventListener('storage', handleStorageChange);
+  return () => target.removeEventListener('storage', handleStorageChange);
 }
 
 /**
- * Creates a type-safe manager for a localStorage key.
+ * Creates a JSON-backed manager for a localStorage key.
  *
- * In SSR/SSG context (no window), returns a no-op manager that always
- * returns the default value. In the browser, uses localStorage as usual.
- * Ensure you use a strict namespace for the key to avoid monorepo collisions.
- * Recommended format: `ermnvldmr/{package}/{path}/{module}`
- * Example: `ermnvldmr/ui/lib/theme`
- *
- * @param key - The unique key for storage.
- * @param defaultValue - The fallback value if storage is empty or corrupted.
- * @returns A StorageManager object.
+ * Use a namespaced key such as `ermnvldmr/ui/lib/theme` to avoid collisions.
+ * The manager uses the supplied default in SSR and when the key cannot be read.
  *
  * @example
- * ```typescript
  * const theme = createLocalStorage('ermnvldmr/ui/lib/theme', 'system');
- * console.log(theme.get());
- * ```
  */
-export function createLocalStorage<T>(key: string, defaultValue: T): StorageManager<T> {
-  if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') {
-    return {
-      key,
-      get: () => defaultValue,
-      set: () => {
-        /* no-op in SSR/SSG context */
-      },
-      remove: () => {
-        /* no-op in SSR/SSG context */
-      },
-    };
-  }
-
-  const manager: StorageManager<T> = {
-    key,
-    get: () => {
+export function createLocalStorage<T>(key: string, defaultValue: T): PersistentStorage<T> {
+  const get = createStorageSnapshot(
+    () => {
       try {
-        const item = window.localStorage.getItem(key);
-        if (!item) return defaultValue;
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        return JSON.parse(item) as T;
+        const item = typeof window === 'undefined' ? null : window.localStorage.getItem(key);
+        if (!item) return null;
+        return item;
+      } catch (error) {
+        console.error(
+          `[createLocalStorage] Failed to read key "${key}", falling back to default.`,
+          error
+        );
+        return null;
+      }
+    },
+    (item) => {
+      try {
+        return parseStoredJson<T>(item);
       } catch (error) {
         console.error(
           `[createLocalStorage] Failed to parse key "${key}", falling back to default.`,
           error
         );
-        return defaultValue;
+        return undefined;
       }
     },
-    set: (value) => {
-      try {
-        const nextValue = value instanceof Function ? value(manager.get()) : value;
-        window.localStorage.setItem(key, JSON.stringify(nextValue));
+    defaultValue
+  );
 
-        // Dispatch a custom event to notify other listeners in the same tab
-        window.dispatchEvent(
-          new StorageEvent('storage', {
-            key,
-            newValue: JSON.stringify(nextValue),
-            storageArea: window.localStorage,
-          })
-        );
+  /**
+   * Broadcasts writes using the native storage event shape.
+   *
+   * @example
+   * notify(storage, serializedValue);
+   */
+  function notify(storageArea: Storage, newValue: string | null): void {
+    window.dispatchEvent(new StorageEvent('storage', { key, newValue, storageArea }));
+  }
+
+  return {
+    key,
+    get,
+    getServerSnapshot: () => defaultValue,
+    subscribe: (listener) => subscribeToLocalStorage(key, listener),
+    set: (value) => {
+      if (typeof window === 'undefined') return false;
+
+      try {
+        const nextValue = value instanceof Function ? value(get()) : value;
+        const raw: unknown = JSON.stringify(nextValue);
+        if (typeof raw !== 'string') return false;
+        if (new TextEncoder().encode(raw).byteLength > maxLocalStorageBytes) {
+          throw new StorageCapacityError(maxLocalStorageBytes);
+        }
+        const storage = window.localStorage;
+        storage.setItem(key, raw);
+        notify(storage, raw);
+        return true;
       } catch (error) {
+        if (error instanceof StorageCapacityError) throw error;
         console.error(`[createLocalStorage] Failed to set key "${key}".`, error);
+        return false;
       }
     },
     remove: () => {
-      window.localStorage.removeItem(key);
-      window.dispatchEvent(
-        new StorageEvent('storage', {
-          key,
-          newValue: null,
-          storageArea: window.localStorage,
-        })
-      );
+      if (typeof window === 'undefined') return false;
+
+      try {
+        const storage = window.localStorage;
+        storage.removeItem(key);
+        notify(storage, null);
+        return true;
+      } catch (error) {
+        console.error(`[createLocalStorage] Failed to remove key "${key}".`, error);
+        return false;
+      }
     },
   };
-
-  return manager;
 }

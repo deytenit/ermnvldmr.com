@@ -1,5 +1,5 @@
 import { ThemeSwitch } from '@ermnvldmr/kits';
-import { createLocalStorage, useLocalStorage } from '@ermnvldmr/stl';
+import { createLocalStorage, useStorage } from '@ermnvldmr/stl';
 import { Container, HStack, Icon, Link, Switch, Text, VStack } from '@ermnvldmr/ui';
 import { Monitor, Moon, Sun } from 'lucide-react';
 import React, { useCallback } from 'react';
@@ -30,7 +30,7 @@ export interface FooterProps {
  */
 export const Footer = ({ currentPath }: FooterProps) => {
   const currentYear = new Date().getFullYear();
-  const [umamiDisabled, setUmamiDisabled] = useLocalStorage(umamiDisabledStorage);
+  const [umamiDisabled, setUmamiDisabled] = useStorage(umamiDisabledStorage);
   const isTelemetryEnabled = umamiDisabled !== 1;
 
   const handleTelemetryToggle = useCallback(

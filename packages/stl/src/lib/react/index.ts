@@ -5,7 +5,7 @@ export { filterDataAttributes } from './filterDataAttributes/filterDataAttribute
 export { useResizeObserver } from './useResizeObserver/useResizeObserver';
 export { useIntersectionObserver } from './useIntersectionObserver/useIntersectionObserver';
 export { useScroll } from './useScroll/useScroll';
-export { useLocalStorage } from './useLocalStorage/useLocalStorage';
+export { useStorage } from './useStorage/useStorage';
 export { useSearchParams } from './useSearchParams/useSearchParams';
 
 export type { ReactElementProps } from './types/ReactElementProps';

@@ -18,6 +18,9 @@ export function ExpLayout({ children }: { children: ReactNode }) {
               <Text as="a" href="/anchorer" size="l" type="label" underline>
                 Anchorer
               </Text>
+              <Text as="a" href="/qriosity" size="l" type="label" underline>
+                QRiosity
+              </Text>
             </HStack>
           </nav>
         </HStack>

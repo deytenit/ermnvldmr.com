@@ -87,7 +87,7 @@ const buttonVariants = cva(
       variant: {
         solid: '',
         outline: '',
-        ghost: '',
+        ghost: 'bg-transparent border-transparent',
         link: '',
       },
       color: {
@@ -131,8 +131,8 @@ const buttonVariants = cva(
       { variant: 'solid', color: 'primary-negative', className: 'bg-primary-text text-primary' },
       { variant: 'outline', color: 'primary', className: 'bg-transparent border-2 text-primary-accent border-primary-accent hover:bg-primary-accent/10' },
       { variant: 'outline', color: 'primary-negative', className: 'bg-transparent border-2 text-primary-text border-primary-text hover:bg-primary-text/10' },
-      { variant: 'ghost', color: 'primary', className: 'bg-transparent border-transparent text-primary-accent hover:bg-primary-accent/10' },
-      { variant: 'ghost', color: 'primary-negative', className: 'bg-transparent border-transparent text-primary-text hover:bg-primary-text/10' },
+      { variant: 'ghost', color: 'primary', className: 'text-primary-accent' },
+      { variant: 'ghost', color: 'primary-negative', className: 'text-primary-text' },
       { variant: 'link', color: 'primary', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-primary-accent' },
       { variant: 'link', color: 'primary-negative', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-primary-text' },
 
@@ -141,8 +141,8 @@ const buttonVariants = cva(
       { variant: 'solid', color: 'secondary-negative', className: 'bg-secondary-text text-secondary' },
       { variant: 'outline', color: 'secondary', className: 'bg-transparent border-2 text-secondary-accent border-secondary-accent hover:bg-secondary-accent/10' },
       { variant: 'outline', color: 'secondary-negative', className: 'bg-transparent border-2 text-secondary-text border-secondary-text hover:bg-secondary-text/10' },
-      { variant: 'ghost', color: 'secondary', className: 'bg-transparent border-transparent text-secondary-accent hover:bg-secondary-accent/10' },
-      { variant: 'ghost', color: 'secondary-negative', className: 'bg-transparent border-transparent text-secondary-text hover:bg-secondary-text/10' },
+      { variant: 'ghost', color: 'secondary', className: 'text-secondary-accent' },
+      { variant: 'ghost', color: 'secondary-negative', className: 'text-secondary-text' },
       { variant: 'link', color: 'secondary', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-secondary-accent' },
       { variant: 'link', color: 'secondary-negative', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-secondary-text' },
 
@@ -151,8 +151,8 @@ const buttonVariants = cva(
       { variant: 'solid', color: 'tertiary-negative', className: 'bg-tertiary-text text-tertiary' },
       { variant: 'outline', color: 'tertiary', className: 'bg-transparent border-2 text-tertiary-accent border-tertiary-accent hover:bg-tertiary-accent/10' },
       { variant: 'outline', color: 'tertiary-negative', className: 'bg-transparent border-2 text-tertiary-text border-tertiary-text hover:bg-tertiary-text/10' },
-      { variant: 'ghost', color: 'tertiary', className: 'bg-transparent border-transparent text-tertiary-accent hover:bg-tertiary-accent/10' },
-      { variant: 'ghost', color: 'tertiary-negative', className: 'bg-transparent border-transparent text-tertiary-text hover:bg-tertiary-text/10' },
+      { variant: 'ghost', color: 'tertiary', className: 'text-tertiary-accent' },
+      { variant: 'ghost', color: 'tertiary-negative', className: 'text-tertiary-text' },
       { variant: 'link', color: 'tertiary', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-tertiary-accent' },
       { variant: 'link', color: 'tertiary-negative', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-tertiary-text' },
 
@@ -161,8 +161,8 @@ const buttonVariants = cva(
       { variant: 'solid', color: 'error-negative', className: 'bg-error-text text-error' },
       { variant: 'outline', color: 'error', className: 'bg-transparent border-2 text-error-accent border-error-accent hover:bg-error-accent/10' },
       { variant: 'outline', color: 'error-negative', className: 'bg-transparent border-2 text-error-text border-error-text hover:bg-error-text/10' },
-      { variant: 'ghost', color: 'error', className: 'bg-transparent border-transparent text-error-accent hover:bg-error-accent/10' },
-      { variant: 'ghost', color: 'error-negative', className: 'bg-transparent border-transparent text-error-text hover:bg-error-text/10' },
+      { variant: 'ghost', color: 'error', className: 'text-error-accent' },
+      { variant: 'ghost', color: 'error-negative', className: 'text-error-text' },
       { variant: 'link', color: 'error', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-error-accent' },
       { variant: 'link', color: 'error-negative', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-error-text' },
 
@@ -171,10 +171,11 @@ const buttonVariants = cva(
       { variant: 'solid', color: 'neutral-negative', className: 'bg-[var(--rb-text)] text-muted' },
       { variant: 'outline', color: 'neutral', className: 'bg-transparent border-2 text-muted-accent border-muted-accent hover:bg-muted-accent/10' },
       { variant: 'outline', color: 'neutral-negative', className: 'bg-transparent border-2 text-[var(--rb-text)] border-[var(--rb-text)] hover:bg-[var(--rb-text)]/10' },
-      { variant: 'ghost', color: 'neutral', className: 'bg-transparent border-transparent text-muted-accent hover:bg-muted-accent/10' },
-      { variant: 'ghost', color: 'neutral-negative', className: 'bg-transparent border-transparent text-[var(--rb-text)] hover:bg-[var(--rb-text)]/10' },
+      { variant: 'ghost', color: 'neutral', className: 'text-muted-accent' },
+      { variant: 'ghost', color: 'neutral-negative', className: 'text-[var(--rb-text)]' },
       { variant: 'link', color: 'neutral', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-muted-accent' },
       { variant: 'link', color: 'neutral-negative', className: 'bg-transparent border-transparent underline-offset-4 hover:underline px-0 h-auto text-[var(--rb-text)]' },
+      { variant: 'ghost', className: 'p-0' },
     ],
     defaultVariants: {
       variant: 'solid',
@@ -248,14 +249,20 @@ const ButtonComponent = forwardRef<HTMLElement, ButtonProps>(function Button(pro
   const sharedClasses = cn(
     buttonVariants({ variant, color, size, rounded, fullWidth, isDisabled, isIconOnly }),
     isFocusVisible && 'ring-2 ring-[var(--rb-ring)] ring-offset-2',
-    isHovered && !isDisabled && 'brightness-90 dark:brightness-110',
+    isHovered && !isDisabled && variant !== 'ghost' && 'brightness-90 dark:brightness-110',
     className
   );
 
   const content = (
     <>
       {renderStartIcon?.(iconClasses[size])}
-      {children}
+      {variant === 'ghost' && children ? (
+        <span className={cn(isHovered && !isDisabled && 'brightness-75 dark:brightness-125')}>
+          {children}
+        </span>
+      ) : (
+        children
+      )}
       {renderEndIcon?.(iconClasses[size])}
     </>
   );

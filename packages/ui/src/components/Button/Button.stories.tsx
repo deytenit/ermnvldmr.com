@@ -1,3 +1,4 @@
+import { Plus } from 'lucide-react';
 import React from 'react';
 
 import { Button } from './Button';
@@ -68,7 +69,12 @@ export const Variants: Story = {
       <div className="flex gap-4 items-center">
         <Button variant="solid">Solid</Button>
         <Button variant="outline">Outline</Button>
-        <Button variant="ghost">Ghost</Button>
+        <Button
+          renderStartIcon={(className) => <Plus aria-hidden className={className} />}
+          variant="ghost"
+        >
+          Ghost
+        </Button>
         <Button variant="link">Link Variant</Button>
       </div>
     </div>

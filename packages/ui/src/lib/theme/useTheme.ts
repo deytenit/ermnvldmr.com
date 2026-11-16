@@ -1,4 +1,4 @@
-import { useLocalStorage } from '@ermnvldmr/stl';
+import { useStorage } from '@ermnvldmr/stl';
 import { useEffect, useCallback } from 'react';
 
 import { themeStorage } from './storage';
@@ -30,7 +30,7 @@ export interface UseThemeResult {
  * ```
  */
 export function useTheme(): UseThemeResult {
-  const [preference, setPreference] = useLocalStorage(themeStorage);
+  const [preference, setPreference] = useStorage(themeStorage);
 
   const resolveTheme = useCallback((pref: ThemePreference): 'light' | 'dark' => {
     if (pref !== 'system') return pref;

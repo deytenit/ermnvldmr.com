@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { createLocalStorage } from './localStorage';
+import { StorageCapacityError } from '../storage';
 
 describe('lib/window/localStorage', () => {
   const mockStorage: Record<string, string> = {};
@@ -74,6 +75,17 @@ describe('lib/window/localStorage', () => {
     expect(manager.get()).toBe(1);
     manager.set((prev) => prev + 1);
     expect(manager.get()).toBe(2);
+  });
+
+  it('rejects UTF-8 JSON above its byte limit without changing the saved value', () => {
+    const manager = createLocalStorage(KEY, '');
+    const atLimit = 'é'.repeat((256 * 1024 - 2) / 2);
+    expect(manager.set(atLimit)).toBe(true);
+    setItem.mockClear();
+
+    expect(() => manager.set((value) => value + 'a')).toThrow(StorageCapacityError);
+    expect(setItem).not.toHaveBeenCalled();
+    expect(manager.get()).toBe(atLimit);
   });
 
   it('should remove items', () => {
