@@ -4,7 +4,7 @@ description: Every APEX_* variable, where it is set, and who consumes it.
 weight: 33
 ---
 
-The `APEX_*` namespace is the framework's entire configuration surface. Variables originate in one of four layers; later layers win when the orchestration actions assemble the process environment.
+The `APEX_*` namespace is the framework's entire configuration surface. Variables originate in one of three layers; later layers win when the orchestration actions assemble the process environment.
 
 ## node.env — identity {#node-env}
 
@@ -18,9 +18,11 @@ Committed at the repository root; read by [node identity](/apex/glossary#node
 | `APEX_GIT_AUTHOR_NAME` | Bot identity for capture-up commits | Generic default (`apex [bot]`). |
 | `APEX_GIT_AUTHOR_EMAIL` | Bot identity email for capture-up commits | Generic default (`apex@localhost`). |
 
-## apex.env — committed scalars {#apex-env}
+## .env and .enc.env — composition environment and secrets {#env-secrets}
 
-Committed at `compositions/apex/`; non-secret by definition.
+Configuration scalars and secrets live together in `compositions/<project>/.env` (mode `0600`). In Git, these files are encrypted with SOPS as `compositions/<project>/.enc.env` using per-node `age` keys.
+
+### Configuration scalars
 
 | Variable | Meaning | Notes |
 |---|---|---|
@@ -35,9 +37,9 @@ Committed at `compositions/apex/`; non-secret by definition.
 | `COMPOSE_PROFILES` | Opt-in core profiles (`adguard`, `xray`, `alloy`) | May be empty; `manual` is activated by `backup/run`, not here. |
 | `TZ` | Container timezone | Optional; defaults to `Etc/UTC`. |
 
-## .env — secrets {#secrets}
+### Secrets and project identity
 
-Uncommitted; a symlink into tier-1 storage. Keys are documented per node in `SECRETS.md`.
+Keys are documented per node in `SECRETS.md`.
 
 | Variable | Meaning | Notes |
 |---|---|---|

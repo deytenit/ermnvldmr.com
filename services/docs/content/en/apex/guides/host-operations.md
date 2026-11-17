@@ -34,8 +34,7 @@ apex compose -p app up -d
 ```
 
 Put wrapper options (`-p` and `--dry-run`) before the action. Extra arguments pass
-through to Docker Compose for the selected project. Each project's `.env` and
-`apex.env` are supplied automatically when present. Positional targeting remains
+through to Docker Compose for the selected project. Docker Compose reads `.env` automatically in each directory. The launcher passes `--env-file .env` when present. Positional targeting remains
 available as `apex compose restart apex traefik` or `apex compose up -d apex`;
 prefer `-p` when arguments could also name a composition.
 
@@ -43,7 +42,7 @@ Replace `app` with a composition defined in your repository. When a mount or
 other container definition changes, use targeted `up -d` to recreate it:
 `restart` retains the existing definition.
 
-### Direct core Compose commands
+### Direct Compose commands
 
 ```bash
 apex env --sync
@@ -52,11 +51,9 @@ docker compose config --quiet
 docker compose restart traefik
 ```
 
-Sync preserves existing secret and UID/GID text in `.env` and its tier-storage
-symlink. A managed block loads committed `apex.env` settings, including profiles,
-then synthesized node/path values. Writes use mode `0600`. Resync after changing
-those settings or paths; do not hand-edit the managed block. Docker's shell
-environment still overrides file values.
+Because `.env` contains all parameters and profiles, standard Docker Compose commands work directly in every composition directory.
+
+`apex env --sync` preserves user secrets and UID/GID entries in `compositions/apex/.env`. It updates the managed block with synthesized node and tier path values, writing with mode `0600`. Resync after changing node identity or tier paths; do not hand-edit the managed block. Docker's shell environment still overrides file values.
 
 `eval "$(apex env)"`, `apex env --dotenv`, and `apex env --write generated.env`
 export or save generated APEX values only. They do not load composition secrets

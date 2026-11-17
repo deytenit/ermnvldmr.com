@@ -42,11 +42,12 @@ those endpoints; their hosting and access policy are deployment choices.
 
 ## Secrets boundary {#secrets}
 
-- Secrets live only in per-project `.env` files, which are **symlinks into tier-1 storage** — outside the repository working tree and covered by `.gitignore` (`**/.env`).
-- Each node repository documents its expected keys in `SECRETS.md`; the file documents names, never values.
-- Committed configuration (`apex.env`) is restricted to non-secret scalars.
-- The shared composition marks critical secrets with `?error`, so a missing value fails fast at compose-config time.
-- [Capture-up](/apex/glossary#capture-up) commits are safe by construction: the ignored `.env` links and tier data never enter the git index.
+- Secrets and configuration live together in per-project `.env` files with mode `0600`. They are strictly ignored by `.gitignore` (`**/.env`).
+- In Git, environment files are encrypted with SOPS as `.enc.env` using per-node `age` public keys.
+- Operators deploy `.env` files from a workstation using `scripts/secrets` over an authenticated SSH connection.
+- Each node repository documents its expected keys in `SECRETS.md`; the file documents names, never secret values.
+- The shared composition marks critical secrets with `?error`, so a missing value fails fast during compose config validation.
+- [Capture-up](/apex/glossary#capture-up) commits re-encrypt modified `.env` files back into `.enc.env` using `sops -e` when `.sops.yaml` is present. Unencrypted `.env` files never enter the git index.
 
 ---
 

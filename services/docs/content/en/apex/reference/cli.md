@@ -47,6 +47,15 @@ All engine and action output follows one line shape:
 
 `LEVEL` is `INFO`, `WARN`, `ERROR`, or `SUCCESS`; `ERROR` lines go to stderr, everything else to stdout — cron-friendly for both capture and alerting.
 
+## Workstation tools {#workstation}
+
+The repository provides standalone operator scripts under `commons/scripts/`:
+
+| Script | Purpose |
+|---|---|
+| `scripts/bootstrap` | Configures an initial operator account, keys, and git clone on a fresh node over SSH. |
+| `scripts/secrets` | Decrypts `compositions/*/.enc.env` using local `age` keys and streams `.env` files to the node over SSH stdin. |
+
 ---
 
 **See also:**

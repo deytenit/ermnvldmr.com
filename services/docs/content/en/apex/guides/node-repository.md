@@ -32,7 +32,7 @@ APEX_GIT_AUTHOR_EMAIL=apex@localhost
 
 `node.env` declares the node's identity explicitly — no domain shape is assumed. `APEX_NODE_FQDN` is the real FQDN used for traefik `Host()` routing (fallback: the OS hostname, with a warning). `APEX_NODE_HOST` is the public host name used for the backup `--host` and the observability/notify `instance` label (default: `APEX_NODE_FQDN`); the short node `name` is its first label. `APEX_SUBNET` is the node's /24 for the `direct` network and is **required** — a missing value exits `66` (see [Concept: Fleet addressing scheme](/apex/concepts/addressing)). `APEX_GIT_AUTHOR_NAME`/`APEX_GIT_AUTHOR_EMAIL` are the capture-up bot identity (generic defaults if unset).
 
-### Write the core wrapper and its env files
+### Write the core wrapper and configure SOPS encryption
 
 ```yaml {filename="compositions/apex/docker-compose.yml"}
 name: apex
@@ -40,22 +40,33 @@ include:
   - ../../commons/compositions/apex/docker-compose.yml
 ```
 
-```ini {filename="compositions/apex/apex.env"}
+Configure `.sops.yaml` at the repository root with the node's `age` recipient public key:
+
+```yaml {filename=".sops.yaml"}
+creation_rules:
+  - path_regex: compositions/.*\.enc\.env$
+    age: "age1..."
+```
+
+Encrypt composition settings and secrets into `compositions/apex/.enc.env` using SOPS:
+
+```ini {filename="compositions/apex/.enc.env (unencrypted content)"}
+COMPOSE_PROFILES=adguard,xray,alloy
 APEX_TRAEFIK_DIRECT_IP=198.18.0.10
 APEX_RESTIC_REPOSITORY=s3:<endpoint>/<bucket>/<node>
-COMPOSE_PROFILES=adguard,xray,alloy
-# observability push targets (only when the alloy profile is enabled)
+APEX_RESTIC_PASSWORD=...
+APEX_RESTIC_AWS_ACCESS_KEY_ID=...
+APEX_RESTIC_AWS_SECRET_ACCESS_KEY=...
+APEX_TRAEFIK_CF_DNS_API_TOKEN=...
+APEX_TRAEFIK_ACME_EMAIL=...
+# observability push targets (when the alloy profile is enabled)
 APEX_PROM_PUSH_URL=https://<central-host>/api/v1/push
 APEX_LOKI_PUSH_URL=https://<central-host>/loki/api/v1/push
 APEX_OBS_BASIC_AUTH_USER=<node-user>
-# optional scalars with compose defaults:
-# TZ=Etc/UTC
-# APEX_RESTIC_COMPRESSION=max
-# APEX_RESTIC_AWS_REGION=us-east-1        # set for any non-AWS S3 store
-# APEX_RESTIC_AWS_ENDPOINT=                # e.g. an S3-compatible endpoint URL
+APEX_OBS_BASIC_AUTH_PASS=...
 ```
 
-`apex.env` holds committed non-secret scalars only. `COMPOSE_PROFILES` selects which optional core services this node runs — `adguard`, `xray`, `alloy` (the observability push agent), and `manual` (one-shot backups) — and may be empty. Document the uncommitted secret keys in `compositions/apex/SECRETS.md` so an operator on a fresh host knows what to fill in `.env` (`APEX_RESTIC_PASSWORD`, the S3 access keys, `APEX_TRAEFIK_CF_DNS_API_TOKEN`, `APEX_TRAEFIK_ACME_EMAIL`, and `APEX_OBS_BASIC_AUTH_PASS` when observability is on).
+`COMPOSE_PROFILES` selects which optional core services run on the node (`adguard`, `xray`, `alloy`, `manual`). Document expected variables in `compositions/apex/SECRETS.md`.
 
 ### Ignore what never belongs in git
 
@@ -64,7 +75,6 @@ APEX_OBS_BASIC_AUTH_USER=<node-user>
 **/@tier2
 **/@tier3
 **/.env
-!compositions/apex/apex.env
 __pycache__/
 *.pyc
 ```

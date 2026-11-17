@@ -37,7 +37,7 @@ APEX_GIT_AUTHOR_EMAIL=apex@localhost
 - `APEX_SUBNET` — выделенная подсеть /24 для внутренней сети `direct`. Параметр **обязателен**: без него запуск завершится с кодом 66 (см. [Concept: Fleet addressing scheme](/apex/concepts/addressing)).
 - `APEX_GIT_AUTHOR_NAME` и `APEX_GIT_AUTHOR_EMAIL` — имя и почта сервисного бота capture-up (если не заданы, применяются значения по умолчанию).
 
-### Напишите базовую обёртку и файлы переменных окружения
+### Напишите ядровую обёртку и настройте шифрование SOPS
 
 ```yaml {filename="compositions/apex/docker-compose.yml"}
 name: apex
@@ -45,24 +45,33 @@ include:
   - ../../commons/compositions/apex/docker-compose.yml
 ```
 
-```ini {filename="compositions/apex/apex.env"}
+Создайте `.sops.yaml` в корне репозитория с открытым ключом получателя `age` для узла:
+
+```yaml {filename=".sops.yaml"}
+creation_rules:
+  - path_regex: compositions/.*\.enc\.env$
+    age: "age1..."
+```
+
+Зашифруйте настройки композиции и секреты в файл `compositions/apex/.enc.env` с помощью SOPS:
+
+```ini {filename="compositions/apex/.enc.env (в расшифрованном виде)"}
+COMPOSE_PROFILES=adguard,xray,alloy
 APEX_TRAEFIK_DIRECT_IP=198.18.0.10
 APEX_RESTIC_REPOSITORY=s3:<endpoint>/<bucket>/<node>
-COMPOSE_PROFILES=adguard,xray,alloy
-# цели push-наблюдаемости (только когда включён профиль alloy)
+APEX_RESTIC_PASSWORD=...
+APEX_RESTIC_AWS_ACCESS_KEY_ID=...
+APEX_RESTIC_AWS_SECRET_ACCESS_KEY=...
+APEX_TRAEFIK_CF_DNS_API_TOKEN=...
+APEX_TRAEFIK_ACME_EMAIL=...
+# цели push-наблюдаемости (когда включён профиль alloy)
 APEX_PROM_PUSH_URL=https://<central-host>/api/v1/push
 APEX_LOKI_PUSH_URL=https://<central-host>/loki/api/v1/push
 APEX_OBS_BASIC_AUTH_USER=<node-user>
-# опциональные скаляры со значениями compose по умолчанию:
-# TZ=Etc/UTC
-# APEX_RESTIC_COMPRESSION=max
-# APEX_RESTIC_AWS_REGION=us-east-1        # задайте для любого не-AWS S3-хранилища
-# APEX_RESTIC_AWS_ENDPOINT=                # напр., URL S3-совместимого эндпоинта
+APEX_OBS_BASIC_AUTH_PASS=...
 ```
 
-Файл `apex.env` хранит только публичные параметры конфигурации, которые безопасно коммитить в репозиторий. Переменная `COMPOSE_PROFILES` определяет набор опциональных базовых сервисов: `adguard`, `xray`, `alloy` (агент сбора метрик и логов) и `manual` (разовые запуски бэкапа); список может быть пустым.
-
-Все секреты, которые нельзя хранить в Git, задокументируйте в `compositions/apex/SECRETS.md`. Это поможет при развёртывании нового узла заполнить локальный файл `.env`: пароль `APEX_RESTIC_PASSWORD`, ключи доступа к S3, токен `APEX_TRAEFIK_CF_DNS_API_TOKEN`, почту `APEX_TRAEFIK_ACME_EMAIL`, а также `APEX_OBS_BASIC_AUTH_PASS` (если включён мониторинг).
+Переменная `COMPOSE_PROFILES` определяет набор опциональных базовых сервисов: `adguard`, `xray`, `alloy`, `manual`. Список ожидаемых переменных задокументируйте в `compositions/apex/SECRETS.md`.
 
 ### Настройте правила игнорирования для Git
 
@@ -71,7 +80,6 @@ APEX_OBS_BASIC_AUTH_USER=<node-user>
 **/@tier2
 **/@tier3
 **/.env
-!compositions/apex/apex.env
 __pycache__/
 *.pyc
 ```

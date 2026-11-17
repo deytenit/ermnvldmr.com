@@ -43,7 +43,7 @@ apex --help
 apex tiers/link <tier1-path> <tier2-path> <tier3-path>
 ```
 
-Команда создаёт ссылки `compositions/@tierN` на уровне узла, каталоги уровней и ссылки `@tierN` для каждого проекта, области `shared/`, а также символьную ссылку на `.env` каждого проекта в уровень 1. При успешном выполнении выводится сообщение `@tier setup completed.`.
+Команда создаёт ссылки `compositions/@tierN` на уровне узла, каталоги уровней и ссылки `@tierN` для каждого проекта, а также области `shared/`. При успешном выполнении выводится сообщение `@tier setup completed.`.
 
 ### Заведите пользователей проектов
 
@@ -54,11 +54,14 @@ apex tiers/chown
 
 Команда `tiers/useradd` создаёт по одному системному пользователю `noroot-<project>` для каждой композиции и общую группу `noroot-shared`, а также прописывает `APEX_UID`, `APEX_GID` и `APEX_SHARED_GID` в `.env` каждого проекта. Затем `tiers/chown` выставляет права по матрице владения (см. [Концепция: Многоуровневое хранилище](/apex/concepts/tiered-storage)) и выводит сообщение `Permissions applied.`.
 
-### Заполните базовые секреты
+### Доставьте секреты и окружение
 
-Отредактируйте `compositions/apex/.env` (символьная ссылка в хранилище уровня 1, никогда не коммитится), указав ключи из файла `SECRETS.md` репозитория узла:
+Доставьте расшифрованные файлы `.env` с рабочей станции скриптом `scripts/secrets` или заполните `compositions/apex/.env` напрямую:
 
 ```ini {filename="compositions/apex/.env"}
+COMPOSE_PROFILES=adguard,xray,alloy
+APEX_TRAEFIK_DIRECT_IP=198.18.0.10
+APEX_RESTIC_REPOSITORY=s3:<endpoint>/<bucket>/<node>
 APEX_RESTIC_PASSWORD=...
 APEX_RESTIC_AWS_ACCESS_KEY_ID=...
 APEX_RESTIC_AWS_SECRET_ACCESS_KEY=...
@@ -67,7 +70,7 @@ APEX_TRAEFIK_ACME_EMAIL=...
 APEX_OBS_BASIC_AUTH_PASS=...   # только когда включён профиль наблюдаемости alloy
 ```
 
-Переменные `APEX_UID`, `APEX_GID` и `APEX_SHARED_GID` уже добавлены: `tiers/useradd` сохраняет их между специальными комментариями-маркерами. Несекретные скалярные значения (`APEX_RESTIC_REPOSITORY`, push-URL, `COMPOSE_PROFILES`, `TZ` и др.) хранятся в отслеживаемом файле `compositions/apex/apex.env` (см. [Руководство: Сборка репозитория узла](/apex/guides/node-repository)).
+Секреты и конфигурационные параметры хранятся вместе в `.env` (в Git они версионируются зашифрованными в виде `.enc.env`). Запустите `apex config/env --sync`, чтобы добавить синтезированные переменные узла в управляемый блок.
 
 ### Настройте хост
 

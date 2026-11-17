@@ -84,13 +84,13 @@ Drives the label-driven `resticontainer` core service one-shot (profile `manual
 
 `apex tiers/link <tier1_path> <tier2_path> <tier3_path>`
 
-Builds the whole [tier](/apex/glossary#tier) symlink structure: node-level `compositions/@tierN` links, per-project tier directories, `shared/` areas with back-links, per-project `@tierN` links, and the `.env` symlink into tier 1 (target created when missing). Existing non-symlink paths prompt for confirmation; declining skips that link.
+Builds the whole [tier](/apex/glossary#tier) symlink structure: node-level `compositions/@tierN` links, per-project tier directories, `shared/` areas with back-links, and per-project `@tierN` links. Existing non-symlink paths prompt for confirmation; declining skips that link.
 
 ### tiers/useradd
 
 `apex tiers/useradd`
 
-Ensures the `noroot-shared` group, then one locked `noroot-<project>` system user per composition project (own primary group, no home, `nologin` shell, member of the shared group), and injects `APEX_UID`/`APEX_GID`/`APEX_SHARED_GID` into each project `.env` between managed markers.
+Ensures the `noroot-shared` group, then one locked `noroot-<project>` system user per composition project (own primary group, no home, `nologin` shell, member of the shared group). Automatically creates an empty `.env` file (`0600`) if missing, and injects `APEX_UID`/`APEX_GID`/`APEX_SHARED_GID` between managed markers.
 
 ### tiers/chown
 
@@ -118,7 +118,7 @@ Two passes: (1) [anchor-IP](/apex/glossary#anchor-ip) validation over `compositi
 
 `apex compose [-p <composition>] [--dry-run] <action> [extra...]`
 
-Without a target, visits core first and other compositions alphabetically, reversed for `down`. `-p` selects one composition or `all`; `up` defaults to detached mode. `.env` then `apex.env` are passed per project, with generated identity/path values in the process environment. Remaining arguments pass through to Docker Compose. Wrapper options precede the action; `--dry-run` prints commands without executing them.
+Without a target, visits core first and other compositions alphabetically, reversed for `down`. `-p` selects one composition or `all`; `up` defaults to detached mode. `.env` is passed per project, with generated identity and path values in the process environment. Remaining arguments pass through to Docker Compose. Wrapper options precede the action; `--dry-run` prints commands without executing them.
 
 Compatibility forms include `apex compose restart apex traefik` and `apex compose up -d apex`. Use explicit `-p` to distinguish a composition from a service or option value.
 
@@ -126,9 +126,9 @@ Compatibility forms include `apex compose restart apex traefik` and `apex compo
 
 `apex env [--export | --dotenv | --write <path> | --sync]`
 
-Default output is shell-quoted APEX exports for `eval "$(apex env)"`. `--dotenv` emits dotenv syntax; `--write` writes generated values to a separate file, including a relative filename. These modes do not read composition credentials or merge `apex.env`.
+Default output is shell-quoted APEX exports for `eval "$(apex env)"`. `--dotenv` emits dotenv syntax; `--write` writes generated values to a separate file, including a relative filename. These modes do not read composition credentials.
 
-`--sync` preserves existing `compositions/apex/.env` text and updates only its managed block: committed `apex.env` settings first, generated identity/path values last. This includes non-APEX settings such as `COMPOSE_PROFILES` and `TZ`, allowing bare Docker Compose commands in the core directory. Existing tier symlinks remain intact, and synchronized files use mode `0600`. Resync after changing source settings or tier paths. Malformed managed markers fail without rewriting uncertain content. Shell environment values still have Docker Compose precedence.
+`--sync` preserves existing `compositions/apex/.env` text and updates only its managed block with synthesized identity and tier path values. Synchronized files use mode `0600`. Resync after changing node identity or tier paths. Malformed managed markers fail without rewriting uncertain content. Shell environment values still have Docker Compose precedence.
 
 ---
 

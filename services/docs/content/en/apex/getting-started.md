@@ -43,7 +43,7 @@ The listing shows every [commons](/apex/glossary#commons) action plus any node-
 apex tiers/link <tier1-path> <tier2-path> <tier3-path>
 ```
 
-Creates the node-level `compositions/@tierN` links, the per-project tier directories and `@tierN` links, `shared/` areas, and each project's `.env` symlink into tier 1. Success ends with `@tier setup completed.`
+Creates the node-level `compositions/@tierN` links, the per-project tier directories, `@tierN` links, and `shared/` areas. Success ends with `@tier setup completed.`
 
 ### Provision project users
 
@@ -54,11 +54,14 @@ apex tiers/chown
 
 `tiers/useradd` creates one `noroot-<project>` system user per composition plus the `noroot-shared` group, and injects `APEX_UID`/`APEX_GID`/`APEX_SHARED_GID` into each project `.env`. `tiers/chown` then applies the ownership matrix (see [Concept: Tiered storage](/apex/concepts/tiered-storage)) and ends with `Permissions applied.`
 
-### Fill the core secrets
+### Deploy secrets and environment
 
-Edit `compositions/apex/.env` (a symlink into tier-1 storage, never committed) with the keys documented in the node repository's `SECRETS.md`:
+Deploy the decrypted `.env` files from your workstation using `scripts/secrets`, or populate `compositions/apex/.env` directly:
 
 ```ini {filename="compositions/apex/.env"}
+COMPOSE_PROFILES=adguard,xray,alloy
+APEX_TRAEFIK_DIRECT_IP=198.18.0.10
+APEX_RESTIC_REPOSITORY=s3:<endpoint>/<bucket>/<node>
 APEX_RESTIC_PASSWORD=...
 APEX_RESTIC_AWS_ACCESS_KEY_ID=...
 APEX_RESTIC_AWS_SECRET_ACCESS_KEY=...
@@ -67,7 +70,7 @@ APEX_TRAEFIK_ACME_EMAIL=...
 APEX_OBS_BASIC_AUTH_PASS=...   # only when the alloy observability profile is enabled
 ```
 
-`APEX_UID`/`APEX_GID`/`APEX_SHARED_GID` are already present — `tiers/useradd` maintains them between marker comments. Non-secret scalars (`APEX_RESTIC_REPOSITORY`, the push URLs, `COMPOSE_PROFILES`, `TZ`, …) live in the committed `compositions/apex/apex.env` instead — see [Guide: Build a node repository](/apex/guides/node-repository).
+Both secrets and configuration scalars live together in `.env` (encrypted in Git as `.enc.env`). Run `apex config/env --sync` to append synthesized host variables into the managed block.
 
 ### Configure the host
 
