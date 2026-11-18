@@ -43,7 +43,7 @@ weight: 33
 
 | Переменная | Значение | Примечания |
 |---|---|---|
-| `APEX_UID`, `APEX_GID`, `APEX_SHARED_GID` | Идентификаторы пользователя noroot для проекта | Внедряются автоматически через `tiers/useradd`; обязательны (`?error`). |
+| `APEX_UID`, `APEX_GID`, `APEX_SHARED_GID` | Идентификаторы пользователя noroot для проекта | Внедряются автоматически через `tier/useradd`; обязательны (`?error`). |
 | `APEX_RESTIC_PASSWORD` | Пароль репозитория резервных копий | Обязательна (`?error`). |
 | `APEX_RESTIC_AWS_ACCESS_KEY_ID`, `APEX_RESTIC_AWS_SECRET_ACCESS_KEY` | Учётные данные объектного хранилища | Обязательны (`?error`). |
 | `APEX_TRAEFIK_CF_DNS_API_TOKEN` | Токен DNS-challenge для ACME | Обязательна (`?error`). |
@@ -62,9 +62,11 @@ weight: 33
 | `APEX_SUBNET` | Подсеть узла. |
 | `APEX_COMMONS` | Абсолютный путь к каталогу commons (`$APEX_COMMONS/apex` — лаунчер, используемый в crontab и юнитах systemd). |
 | `APEX_REPO_ROOT` | Абсолютный путь к корню репозитория узла. |
+| `APEX_TIER0` | Каталог уровня `@tier0` основного проекта в репозитории (`compositions/apex/@tier0`). |
 | `APEX_TIER1`, `APEX_TIER2`, `APEX_TIER3` | Каталог данных основного проекта для каждого [уровня хранения](/apex/glossary#tier). |
 | `APEX_TIER1_SHARED`, `APEX_TIER2_SHARED`, `APEX_TIER3_SHARED` | Общая область для каждого уровня. |
-| `APEX_TIER_ROOT1`, `APEX_TIER_ROOT2`, `APEX_TIER_ROOT3` | Корневые каталоги уровней хранения. |
+| `APEX_TIER_ROOT0` | Корень репозиторного уровня хранения `@tier0` (`compositions/@tier0`). |
+| `APEX_TIER_ROOT1`, `APEX_TIER_ROOT2`, `APEX_TIER_ROOT3` | Корневые каталоги внешних уровней хранения. |
 
 > [!NOTE]
 > Для переменных, отмеченных выше как `?error`, проверка выполняется на уровне общей основной композиции: `docker compose` прерывает разбор конфигурации, если хотя бы одна из них не задана. Благодаря этому пропущенный секрет приводит к немедленной и понятной ошибке.

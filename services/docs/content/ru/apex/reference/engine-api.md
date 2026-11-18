@@ -77,7 +77,7 @@ from engine.descriptor import Meta, Arg, Opt, Flag, Rest
 
 ## ctx.paths и ctx.node {#paths}
 
-`ctx.paths`: `repo_root`, `commons`, `proprietaries`, `configs`, `compositions`, `core`, `tier1..3`, `stier1..3`, `root_tier1..3`. `ctx.node`: запись идентичности (`name`, `subnet`, `fqdn`, `host`) или `None` в checkout автономного commons. `ctx.vars()`: окружение шаблонов/compose (см. [Справочник: Переменные окружения](/apex/reference/environment)). `ctx.commons.run(args)`: делегирование затенённому действию commons — допустимо только в переопределяющем проприетарном модуле.
+`ctx.paths`: `repo_root`, `commons`, `proprietaries`, `configs`, `compositions`, `core`, `tier0`, `tier1..3`, `stier1..3`, `root_tier0`, `root_tier1..3`. `ctx.node`: запись идентичности (`name`, `subnet`, `fqdn`, `host`) или `None` в checkout автономного commons. `ctx.vars()`: окружение шаблонов/compose (см. [Справочник: Переменные окружения](/apex/reference/environment)). `ctx.commons.run(args)`: делегирование затенённому действию commons — допустимо только в переопределяющем проприетарном модуле.
 
 ---
 

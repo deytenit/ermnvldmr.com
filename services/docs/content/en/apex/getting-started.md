@@ -40,23 +40,23 @@ The listing shows every [commons](/apex/glossary#commons) action plus any node-
 ### Link the storage tiers
 
 ```bash
-apex tiers/link <tier1-path> <tier2-path> <tier3-path>
+apex tier/link <tier1-path> <tier2-path> <tier3-path>
 ```
 
-Creates the node-level `compositions/@tierN` links, the per-project tier directories, `@tierN` links, and `shared/` areas. Success ends with `@tier setup completed.`
+Provisions `compositions/@tier0` and per-project `@tier0` directories, the node-level `compositions/@tierN` links, the per-project tier directories, `@tierN` links, and `shared/` areas. Success ends with `@tier setup completed.`
 
 ### Provision project users
 
 ```bash
-apex tiers/useradd
-apex tiers/chown
+apex tier/useradd
+apex tier/chown
 ```
 
-`tiers/useradd` creates one `noroot-<project>` system user per composition plus the `noroot-shared` group, and injects `APEX_UID`/`APEX_GID`/`APEX_SHARED_GID` into each project `.env`. `tiers/chown` then applies the ownership matrix (see [Concept: Tiered storage](/apex/concepts/tiered-storage)) and ends with `Permissions applied.`
+`tier/useradd` creates one `noroot-<project>` system user per composition plus the `noroot-shared` group, and injects `APEX_UID`/`APEX_GID`/`APEX_SHARED_GID` into each project `.env`. `tier/chown` then applies the ownership matrix across `@tier0` and external tiers (see [Concept: Tiered storage](/apex/concepts/tiered-storage)) and ends with `Permissions applied.`
 
 ### Deploy secrets and environment
 
-Deploy the decrypted `.env` files from your workstation using `scripts/secrets`, or populate `compositions/apex/.env` directly:
+Deploy the decrypted `.env` and `@tier0` secret files from your workstation using `scripts/secrets`, or populate `compositions/apex/.env` directly:
 
 ```ini {filename="compositions/apex/.env"}
 COMPOSE_PROFILES=adguard,xray,alloy
@@ -94,7 +94,7 @@ The core composition comes up first (it owns the networks), then every servi
 
 - `apex --help` lists actions without warnings on the live host.
 - `docker ps` shows the core containers (`apex-traefik`, `apex-socket-proxy`, plus any profile-enabled services) and each project's anchor.
-- `apex utils/lint-docker-compose` reports `Anchor IP validation passed.`
+- `apex util/lint-docker-compose` reports `Anchor IP validation passed.`
 
 ---
 

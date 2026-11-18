@@ -32,6 +32,6 @@ cascade:
 
 ---
 
-**См. также:**
+**См. также:**
 
 - [GitHub: apex.ermnvldmr.com](https://github.com/deytenit/apex.ermnvldmr.com)

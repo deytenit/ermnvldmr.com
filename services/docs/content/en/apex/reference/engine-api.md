@@ -77,7 +77,7 @@ Usage errors exit `64` instead of argparse's default `2`.
 
 ## ctx.paths and ctx.node {#paths}
 
-`ctx.paths`: `repo_root`, `commons`, `proprietaries`, `configs`, `compositions`, `core`, `tier1..3`, `stier1..3`, `root_tier1..3`. `ctx.node`: the identity record (`name`, `subnet`, `fqdn`, `host`) or `None` in a standalone commons checkout. `ctx.vars()`: the template/compose environment (see [Reference: Environment variables](/apex/reference/environment)). `ctx.commons.run(args)`: delegate to the shadowed commons action — only valid in an overriding proprietary module.
+`ctx.paths`: `repo_root`, `commons`, `proprietaries`, `configs`, `compositions`, `core`, `tier0`, `tier1..3`, `stier1..3`, `root_tier0`, `root_tier1..3`. `ctx.node`: the identity record (`name`, `subnet`, `fqdn`, `host`) or `None` in a standalone commons checkout. `ctx.vars()`: the template/compose environment (see [Reference: Environment variables](/apex/reference/environment)). `ctx.commons.run(args)`: delegate to the shadowed commons action — only valid in an overriding proprietary module.
 
 ---
 

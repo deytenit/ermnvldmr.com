@@ -72,7 +72,7 @@ weight: 40
 
 ---
 
-**См. также:**
+**См. также:**
 
 - [Справочник: CLI](/apex/reference/cli)
 - [Руководство: Эксплуатация узла](/apex/guides/host-operations)

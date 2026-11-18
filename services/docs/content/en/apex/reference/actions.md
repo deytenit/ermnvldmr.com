@@ -56,17 +56,19 @@ Renders every top-level, non-hidden file of `configs/systemd/` into `/etc/syst
 
 Enables `net.ipv4.ip_forward`, installs the fwmark `0x1` → routing-table-100 policy rule and the local default route in that table. Both checks are idempotent — re-runs change nothing.
 
-## sync {#sync}
+## repository {#repository}
 
-### sync/repository
+### repository/sync
 
-`apex sync/repository <telegram_bot_url>`
+`apex repository/sync [telegram_bot_url]`
 
-The [capture-up](/apex/glossary#capture-up) commit: switches to (or creates) `sync/<node>`, stages the whole tree plus the refreshed commons submodule pointer, commits under a bot identity when anything changed, rebases onto `origin/main`, updates submodules, and pushes with `--force-with-lease`. Aborts (exit `1`) when the commons submodule is dirty or `compositions/` is missing; on a rebase conflict it aborts the rebase and pages via Telegram. Success and every failure path notify; a failed success-notification also exits `1`.
+The [capture-up](/apex/glossary#capture-up) action: encrypts modified `.env` and `@tier0` secret files using SOPS, synchronizes each project's `@tier0/.gitignore` to ignore decrypted secrets, enforces `@tier0` guardrails (strict 256 KB limit, no high-churn databases/logs), stages changes, commits under a bot identity when anything changed, rebases onto `origin/main`, updates submodules, and pushes directly to `main`. Aborts (exit `1`) when the commons submodule is dirty, unpinned, or `compositions/` is missing; on a rebase conflict it aborts the rebase and pages via Telegram. Success and every failure path notify when a URL is given.
 
-### sync/packages
+## package {#package}
 
-`apex sync/packages <telegram_bot_url>`
+### package/sync
+
+`apex package/sync [telegram_bot_url]`
 
 Debian-only. Collects pending apt upgrades (`--just-print`) and out-of-date running container images (local RepoDigest vs the registry digest via `skopeo`), then sends one Telegram digest. Read-only with respect to packages and images. Unhandled failures page via Telegram and exit `1`; so does a failed digest delivery.
 
@@ -78,39 +80,39 @@ Debian-only. Collects pending apt upgrades (`--just-print`) and out-of-date run
 
 Drives the label-driven `resticontainer` core service one-shot (profile `manual`): repository reachability check with init-if-needed, then a single `backup` in which resticontainer discovers every service carrying `restic.*` compose labels, runs their pre-hooks, stops any container flagged `restic.backup.stop`, resolves the labeled container mounts to host paths, and snapshots the union in one restic run. The snapshot is stamped `--host <APEX_NODE_HOST>`, `--tag biweekly`, `--compression max`. A guard then proves a fresh snapshot for this host actually landed — if no `restic.*` labels were discovered the backup is a silent no-op, so it refuses to report success. Retention follows via `forget --prune` (7 daily / 4 weekly / 12 monthly). Each restic failure pages and exits `1`; success pages too, and a failed success-notification exits `1`.
 
-## tiers {#tiers}
+## tier {#tier}
 
-### tiers/link
+### tier/link
 
-`apex tiers/link <tier1_path> <tier2_path> <tier3_path>`
+`apex tier/link <tier1_path> <tier2_path> <tier3_path>`
 
-Builds the whole [tier](/apex/glossary#tier) symlink structure: node-level `compositions/@tierN` links, per-project tier directories, `shared/` areas with back-links, and per-project `@tierN` links. Existing non-symlink paths prompt for confirmation; declining skips that link.
+Builds the whole [tier](/apex/glossary#tier) structure: provisions `compositions/@tier0` and per-project `@tier0` directories (linking `compositions/@tier0/<project>` → `../<project>/@tier0`), node-level `compositions/@tierN` links, per-project tier directories, `shared/` areas with back-links, and per-project `@tierN` links. Existing non-symlink paths prompt for confirmation; declining skips that link.
 
-### tiers/useradd
+### tier/useradd
 
-`apex tiers/useradd`
+`apex tier/useradd`
 
 Ensures the `noroot-shared` group, then one locked `noroot-<project>` system user per composition project (own primary group, no home, `nologin` shell, member of the shared group). Automatically creates an empty `.env` file (`0600`) if missing, and injects `APEX_UID`/`APEX_GID`/`APEX_SHARED_GID` between managed markers.
 
-### tiers/chown
+### tier/chown
 
-`apex tiers/chown [tier1_path] [tier2_path] [tier3_path]`
+`apex tier/chown [tier1_path] [tier2_path] [tier3_path]`
 
-Applies the ownership matrix (see [Concept: Tiered storage](/apex/concepts/tiered-storage#ownership)) across the tier roots — defaults are the node-level tier links. Requires `noroot-shared` to exist (exit `1` otherwise); projects with incomplete `.env` identity are skipped with a warning.
+Applies the ownership matrix (see [Concept: Tiered storage](/apex/concepts/tiered-storage#ownership)) across `@tier0` (`adam:adam` on root, `adam:<gid>` on project trees with `u+rwX,g+rwX,o-rwx`, `adam:root` when `.apex-root-owned` is present) and the external tier roots (`APEX_TIER_ROOT1..3`). Requires `noroot-shared` to exist (exit `1` otherwise); projects with incomplete `.env` identity are skipped with a warning.
 
-## utils {#utils}
+## util {#util}
 
-### utils/extract-traefik-certs
+### util/extract-traefik-certs
 
-`apex utils/extract-traefik-certs <source_acme> <dest_dir> [telegram_bot_url]`
+`apex util/extract-traefik-certs <source_acme> <dest_dir> [telegram_bot_url]`
 
 Extracts the ACME store into per-domain `fullchain.pem`/`privkey.pem` via a containerized dumper, then `chmod 600` on the keys and re-owns the output tree to the invoking user. Missing source: exit `1`. Failures inside the extraction page via Telegram when a URL was given.
 
-### utils/lint-docker-compose
+### util/lint-docker-compose
 
-`apex utils/lint-docker-compose [--hook]`
+`apex util/lint-docker-compose [--hook]`
 
-Two passes: (1) [anchor-IP](/apex/glossary#anchor-ip) validation over `compositions/*/docker-compose.yml` — well-formed, unique, inside the node subnet; (2) the `dclint` compose linter with `--fix`, run in a container over the repository (tier links, `.env`, and the commons submodule excluded). `--hook` restricts pass 2 to staged compose files and re-stages what the linter fixed. The exit code reflects both passes.
+Three passes: (1) [anchor-IP](/apex/glossary#anchor-ip) validation over `compositions/*/docker-compose.yml` — well-formed, unique, inside the node subnet; (2) `@tier0` guardrail validation (strict 256 KB size cap, zero high-churn/database files, `.gitignore` tracking for decrypted secrets); (3) the `dclint` compose linter with `--fix`, run in a container over the repository (tier links, `@tier0`, `.env`, and the commons submodule excluded). `--hook` restricts pass 3 to staged compose files and re-stages what the linter fixed. The exit code reflects all three passes.
 
 ## compose {#compose}
 

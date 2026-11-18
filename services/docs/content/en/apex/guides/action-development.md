@@ -79,7 +79,7 @@ The commons test suite is stdlib `unittest`:
 
 Engine changes must keep the suite green. A cheap smoke gate for any action — commons or proprietary — is its parser: `apex <name> --help` must exit `0`, which proves the module parses, its `METADATA` is well-formed, and discovery sees it.
 
-The commons pre-commit hook (wired by `init.sh` via `core.hooksPath`) runs `apex utils/lint-docker-compose --hook` against staged compose files, so composition changes are linted at commit time.
+The commons pre-commit hook (wired by `init.sh` via `core.hooksPath`) runs `apex util/lint-docker-compose --hook` against staged compose files, so composition changes are linted at commit time.
 
 ---
 

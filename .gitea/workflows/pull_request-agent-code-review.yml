@@ -6,6 +6,10 @@ name: 'pull_request: Agent Code Review'
     types: [opened, synchronize, reopened]
   workflow_dispatch: {}
 
+concurrency:
+  group: agent-code-review-${{ github.repository }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -14,4 +18,6 @@ jobs:
     uses: actions/agent-code-review/.gitea/workflows/workflow_call-agent-code-review.yml@main
     with:
       model_tag: 'code-reviewer'
+      exclude_patterns: '.pnpm-lock.yaml, pnpm-lock.yaml'
+      review_mode: 'hybrid'
     secrets: inherit

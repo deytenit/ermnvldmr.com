@@ -42,12 +42,12 @@ those endpoints; their hosting and access policy are deployment choices.
 
 ## Secrets boundary {#secrets}
 
-- Secrets and configuration live together in per-project `.env` files with mode `0600`. They are strictly ignored by `.gitignore` (`**/.env`).
-- In Git, environment files are encrypted with SOPS as `.enc.env` using per-node `age` public keys.
-- Operators deploy `.env` files from a workstation using `scripts/secrets` over an authenticated SSH connection.
+- Secrets and configuration live together in per-project `.env` files with mode `0600` and in `@tier0` declarative files. Unencrypted `.env` and decrypted secret files in `@tier0` are strictly ignored by `.gitignore`.
+- In Git, secret-bearing files are encrypted with SOPS as `.enc.env` and `@tier0/**/*.enc*` using per-node `age` public keys scoped via `.sops.yaml`.
+- Operators deploy `.env` and decrypted `@tier0` files from a workstation using `scripts/secrets` over an authenticated SSH connection with strict permissions (`0600` for keys/secrets, `0644` for `.gitignore`, `0640` for configurations).
 - Each node repository documents its expected keys in `SECRETS.md`; the file documents names, never secret values.
 - The shared composition marks critical secrets with `?error`, so a missing value fails fast during compose config validation.
-- [Capture-up](/apex/glossary#capture-up) commits re-encrypt modified `.env` files back into `.enc.env` using `sops -e` when `.sops.yaml` is present. Unencrypted `.env` files never enter the git index.
+- [Capture-up](/apex/glossary#capture-up) commits re-encrypt modified `.env` and `@tier0` secret files back into `.enc.*` using `sops -e` when `.sops.yaml` is present, auto-maintaining `@tier0/.gitignore` and enforcing strict 256 KB size limits and non-churn guardrails. Unencrypted secrets never enter the git index.
 
 ---
 

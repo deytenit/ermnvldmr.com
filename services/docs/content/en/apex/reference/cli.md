@@ -54,7 +54,7 @@ The repository provides standalone operator scripts under `commons/scripts/`:
 | Script | Purpose |
 |---|---|
 | `scripts/bootstrap` | Configures an initial operator account, keys, and git clone on a fresh node over SSH. |
-| `scripts/secrets` | Decrypts `compositions/*/.enc.env` using local `age` keys and streams `.env` files to the node over SSH stdin. |
+| `scripts/secrets` | Decrypts `compositions/*/.enc.env` and `compositions/*/@tier0/**/*.enc*` using local `age` keys and streams `.env`, `@tier0` files, and `@tier0/.gitignore` to the node over SSH stdin (`--target`, `--repo`, `--node-name`, `--project`). |
 
 ---
 

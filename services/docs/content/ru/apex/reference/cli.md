@@ -54,7 +54,7 @@ weight: 31
 | Скрипт | Назначение |
 |---|---|
 | `scripts/bootstrap` | Настраивает первичную учётную запись оператора, ключи и git clone на чистом узле через SSH. |
-| `scripts/secrets` | Расшифровывает `compositions/*/.enc.env` локальными ключами `age` и передаёт файлы `.env` на узел через stdin SSH. |
+| `scripts/secrets` | Расшифровывает `compositions/*/.enc.env` и `compositions/*/@tier0/**/*.enc*` локальными ключами `age` и передаёт открытые `.env`, файлы `@tier0` и `@tier0/.gitignore` на узел через stdin SSH (флаги `--target`, `--repo`, `--node-name`, `--project`). |
 
 ---
 

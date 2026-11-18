@@ -64,7 +64,7 @@ docker compose restart traefik
 ## Резервные копии {#backups}
 
 ```bash
-apex backup/run "$(cat <path-to-telegram-url-file>)"
+apex backup/run "$(cat @tier0/telegram-send-message-url)"
 ```
 
 Команда запускает [resticontainer](https://github.com/deytenit/resticontainer) в режиме one-shot под профилем compose `manual`. Процесс проходит следующие этапы:
@@ -74,17 +74,17 @@ apex backup/run "$(cat <path-to-telegram-url-file>)"
 3. Создаёт единый снимок restic для всех выбранных путей хоста (`--host` = `APEX_NODE_HOST`, `--compression max`).
 4. Применяет политику хранения (`forget --prune`) и отправляет уведомление.
 
-Если ни один сервис с меткой `restic.*` не сформировал нового снимка, действие завершается с ошибкой. Полный процесс описан в разделе [Concept: Tiered storage](/apex/concepts/tiered-storage#backups). Чтобы резервное копирование и отправка отчётов в Telegram выполнялись автономно, добавьте команду в `configs/cron/crontab`.
+Если ни один сервис с меткой `restic.*` не сформировал нового снимка, действие завершается с ошибкой. Полный процесс описан в разделе [Концепция: Многоуровневое хранилище](/apex/concepts/tiered-storage#backups). Чтобы резервное копирование и отправка отчётов в Telegram выполнялись автономно, добавьте команду в `configs/cron/crontab`.
 
 ## Синхронизация репозитория (capture-up) {#sync}
 
 ```bash
-apex sync/repository <telegram-bot-url>
+apex repository/sync "$(cat @tier0/telegram-send-message-url)"
 ```
 
-Действие фиксирует изменения рабочей копии в ветке `sync/<node>`, выполняет rebase на `origin/main` и отправляет ветку через force-push с lease. Этот механизм (capture-up) сохраняет актуальное состояние узла в репозиторий.
+Действие заново шифрует изменённые файлы `.env` и секреты `@tier0` в файлы `.enc.*`, поддерживает `@tier0/.gitignore`, проверяет лимиты `@tier0`, фиксирует изменения и синхронизирует ветку `main` с `origin/main`. Этот механизм (capture-up) сохраняет актуальное состояние узла в репозиторий.
 
-Действие прерывается с подробным сообщением, если подмодуль commons содержит незакоммиченные изменения или каталог `compositions/` отсутствует. При конфликтах rebase выполнение останавливается для ручного вмешательства. Подробнее архитектурная модель описана в разделе [Concept: Framework architecture](/apex/concepts/architecture#capture-up).
+Действие прерывается с подробным сообщением, если подмодуль commons содержит незакоммиченные изменения или каталог `compositions/` отсутствует. При конфликтах rebase выполнение останавливается для ручного вмешательства. Подробнее архитектурная модель описана в разделе [Концепция: Архитектура фреймворка](/apex/concepts/architecture#capture-up).
 
 ## Мониторинг обновлений {#updates}
 
@@ -97,7 +97,7 @@ apex sync/packages <telegram-bot-url>
 ## Извлечение сертификатов {#certs}
 
 ```bash
-apex utils/extract-traefik-certs <acme.json> <dest-dir> [telegram-bot-url]
+apex util/extract-traefik-certs <acme.json> <dest-dir> [telegram-bot-url]
 ```
 
 Экспортирует сертификаты из ACME-хранилища граничного прокси в пары `fullchain.pem` и `privkey.pem` для каждого домена (с помощью утилиты в контейнере). Скрипт ограничивает права доступа к ключам до `600` и передаёт владение файлами запустившему пользователю. Это нужно сервисам, которым требуются исходные PEM-файлы вместо готового TLS-соединения от прокси.
@@ -106,6 +106,6 @@ apex utils/extract-traefik-certs <acme.json> <dest-dir> [telegram-bot-url]
 
 **См. также:**
 
-- [Getting started with an apex node](/apex/getting-started)
-- [Reference: Actions](/apex/reference/actions)
-- [Docs: Troubleshooting](/apex/troubleshooting)
+- [Начало работы с узлом Apex](/apex/getting-started)
+- [Справочник: Действия](/apex/reference/actions)
+- [Устранение неполадок](/apex/troubleshooting)

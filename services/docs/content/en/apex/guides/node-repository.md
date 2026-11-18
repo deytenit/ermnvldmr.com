@@ -44,7 +44,7 @@ Configure `.sops.yaml` at the repository root with the node's `age` recipien
 
 ```yaml {filename=".sops.yaml"}
 creation_rules:
-  - path_regex: compositions/.*\.enc\.env$
+  - path_regex: ^compositions/[^/]+/(\.enc\.env|@tier0/.*\.enc(\.[^/]+)?)$
     age: "age1..."
 ```
 
@@ -90,7 +90,7 @@ Create `compositions/ADDRESSING.md` with the node's subnet (`APEX_SUBNET`) and
 ### Choose a sync review policy
 
 Decide how to review and integrate the `sync/<node>` branch produced by
-`apex sync/repository`. If you automate integration, configure repository
+`apex repository/sync`. If you automate integration, configure repository
 permissions and submodule access for that workflow. See the
 [capture-up model](/apex/concepts/architecture#capture-up).
 

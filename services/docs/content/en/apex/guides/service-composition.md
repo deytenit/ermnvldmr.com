@@ -24,8 +24,8 @@ services:
     group_add:
       - "${APEX_SHARED_GID?error}"
     volumes:
-      - ./@tier1/<anchor>/config:/config
-      - ./@tier2/<anchor>/data:/data
+      - ./@tier0/<anchor>/config:/config:ro
+      - ./@tier1/<anchor>/data:/data
     networks:
       direct:
         ipv4_address: 198.18.0.20
@@ -55,16 +55,16 @@ Conventions at work:
 - **One anchor per project** holds the static `ipv4_address` on `direct`; sidecars share its network namespace via `network_mode: service:<anchor>`.
 - **Networks are referenced by key** (`direct`, `enclave`, `socket`) with `external: true` — the core composition owns their definitions.
 - **`enclave` membership plus traefik labels** publishes the service through the edge proxy; the proxy discovers it via the socket proxy, never via published ports.
-- **Data paths are tier-relative** (`./@tierN/...`) and resolve through the symlinks created by `tiers/link`.
+- **Data paths are tier-relative** (`./@tierN/...`) and resolve through the symlinks created by `tier/link`.
 - **Backup is opt-in via `restic.*` labels.** `apex backup/run` drives [resticontainer](https://github.com/deytenit/resticontainer), which discovers what to snapshot from compose labels: `restic.enable=true` marks the service, `restic.backup.paths=<container-path>` names the mounts to back up (resticontainer resolves them to host paths). A service with no `restic.*` labels is simply not backed up. Back up config only where the data is regenerable.
-- The `${APEX_UID...}` trio comes from the project `.env` maintained by `tiers/useradd`.
+- The `${APEX_UID...}` trio comes from the project `.env` maintained by `tier/useradd`.
 
 ### Provision storage and identity
 
 ```bash
-apex tiers/link <tier1> <tier2> <tier3>
-apex tiers/useradd
-apex tiers/chown
+apex tier/link <tier1> <tier2> <tier3>
+apex tier/useradd
+apex tier/chown
 ```
 
 Re-running the trio is idempotent; it picks up the new project, creates its tier directories and `.env`, provisions its `noroot-<project>` user, and applies the ownership matrix.
@@ -72,7 +72,7 @@ Re-running the trio is idempotent; it picks up the new project, creates its
 ### Lint
 
 ```bash
-apex utils/lint-docker-compose
+apex util/lint-docker-compose
 ```
 
 Validates every anchor IP (well-formed, unique, inside the node subnet) and runs the compose linter over the repository. The pre-commit hook enforces the same lint on staged compose files.

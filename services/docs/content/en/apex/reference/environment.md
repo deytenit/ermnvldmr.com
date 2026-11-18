@@ -43,7 +43,7 @@ Keys are documented per node in `SECRETS.md`.
 
 | Variable | Meaning | Notes |
 |---|---|---|
-| `APEX_UID`, `APEX_GID`, `APEX_SHARED_GID` | The project's noroot identity | Auto-injected by `tiers/useradd`; required (`?error`). |
+| `APEX_UID`, `APEX_GID`, `APEX_SHARED_GID` | The project's noroot identity | Auto-injected by `tier/useradd`; required (`?error`). |
 | `APEX_RESTIC_PASSWORD` | Backup repository password | Required (`?error`). |
 | `APEX_RESTIC_AWS_ACCESS_KEY_ID`, `APEX_RESTIC_AWS_SECRET_ACCESS_KEY` | Object-storage credentials | Required (`?error`). |
 | `APEX_TRAEFIK_CF_DNS_API_TOKEN` | DNS-challenge token for ACME | Required (`?error`). |
@@ -62,9 +62,11 @@ Computed by the [engine](/apex/glossary#engine) at invocation; exported to `
 | `APEX_SUBNET` | Node subnet. |
 | `APEX_COMMONS` | Absolute commons directory (`$APEX_COMMONS/apex` is the launcher — crontabs and systemd units use it). |
 | `APEX_REPO_ROOT` | Absolute node repository root. |
+| `APEX_TIER0` | Core project in-repository configuration directory (`compositions/apex/@tier0`). |
 | `APEX_TIER1`, `APEX_TIER2`, `APEX_TIER3` | Core project data directory per [tier](/apex/glossary#tier). |
 | `APEX_TIER1_SHARED`, `APEX_TIER2_SHARED`, `APEX_TIER3_SHARED` | Shared area per tier. |
-| `APEX_TIER_ROOT1`, `APEX_TIER_ROOT2`, `APEX_TIER_ROOT3` | Tier storage roots. |
+| `APEX_TIER_ROOT0` | In-repository Tier 0 storage root (`compositions/@tier0`). |
+| `APEX_TIER_ROOT1`, `APEX_TIER_ROOT2`, `APEX_TIER_ROOT3` | External tier storage roots. |
 
 > [!NOTE]
 > Variables marked `?error` above are enforced by the shared core composition: `docker compose` refuses to evaluate the model while they are unset, which turns a forgotten secret into an immediate, explicit failure.

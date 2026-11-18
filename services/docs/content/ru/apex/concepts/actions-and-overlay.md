@@ -104,7 +104,7 @@ def run(ctx, args):
 
 ---
 
-**См. также:**
+**См. также:**
 
 - [Концепция: Архитектура фреймворка](/apex/concepts/architecture)
 - [Концепция: Контекст выполнения](/apex/concepts/execution-context)

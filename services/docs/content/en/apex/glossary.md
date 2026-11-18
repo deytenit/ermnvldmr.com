@@ -16,7 +16,7 @@ Terminology used within the apex fleet operations framework.
 
 ## Capture-up {#capture-up}
 
-**Capture-up** — Recording a host's working state in a `sync/<node>` branch through `apex sync/repository`. The repository's own policy determines review and integration.
+**Capture-up** — Committing a host's working state, re-encrypting modified secrets via SOPS, and synchronizing `main` directly with its remote through `apex repository/sync`.
 
 ## Commons {#commons}
 
@@ -60,7 +60,7 @@ Terminology used within the apex fleet operations framework.
 
 ## Tier {#tier}
 
-**Tier** - One of the three standardized storage classes a node mounts (configuration, valuable data, reproducible data), reached from compositions through the `@tierN` symlink structure.
+**Tier** - One of four standardized storage classes a node organizes (Tier 0 in-repository configuration and secrets, Tier 1 stateful valuable data, Tier 2 cold/bulk storage, Tier 3 ephemeral/reproducible data), reached from compositions through the `@tier0`–`@tier3` structure.
 
 ---
 

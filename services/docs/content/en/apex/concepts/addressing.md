@@ -36,7 +36,7 @@ The compose lint validates anchor IPs across all [compositions](/apex/glossary#
 - **Unique** — the same anchor IP may not appear in two projects; duplicates are reported with both offending projects.
 - **Inside the node subnet** — every anchor must fall within the node's declared `/24`.
 
-Any violation fails the lint with exit code `1` (general error). Passing validation logs `Anchor IP validation passed.` The implementation lives in the `utils/lint-docker-compose` [action](/apex/glossary#action); see [GitHub: apex.ermnvldmr.com](https://github.com/deytenit/apex.ermnvldmr.com).
+Any violation fails the lint with exit code `1` (general error). Passing validation logs `Anchor IP validation passed.` The implementation lives in the `util/lint-docker-compose` [action](/apex/glossary#action); see [GitHub: apex.ermnvldmr.com](https://github.com/deytenit/apex.ermnvldmr.com).
 
 ---
 

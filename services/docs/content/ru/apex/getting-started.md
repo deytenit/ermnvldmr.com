@@ -40,23 +40,23 @@ apex --help
 ### Свяжите уровни хранилища
 
 ```bash
-apex tiers/link <tier1-path> <tier2-path> <tier3-path>
+apex tier/link <tier1-path> <tier2-path> <tier3-path>
 ```
 
-Команда создаёт ссылки `compositions/@tierN` на уровне узла, каталоги уровней и ссылки `@tierN` для каждого проекта, а также области `shared/`. При успешном выполнении выводится сообщение `@tier setup completed.`.
+Команда создаёт структуру `compositions/@tier0` и проектных каталогов `@tier0`, ссылки `compositions/@tierN` на уровне узла, каталоги внешних уровней и ссылки `@tierN` для каждого проекта, а также области `shared/`. При успешном выполнении выводится сообщение `@tier setup completed.`.
 
 ### Заведите пользователей проектов
 
 ```bash
-apex tiers/useradd
-apex tiers/chown
+apex tier/useradd
+apex tier/chown
 ```
 
-Команда `tiers/useradd` создаёт по одному системному пользователю `noroot-<project>` для каждой композиции и общую группу `noroot-shared`, а также прописывает `APEX_UID`, `APEX_GID` и `APEX_SHARED_GID` в `.env` каждого проекта. Затем `tiers/chown` выставляет права по матрице владения (см. [Концепция: Многоуровневое хранилище](/apex/concepts/tiered-storage)) и выводит сообщение `Permissions applied.`.
+Команда `tier/useradd` создаёт по одному системному пользователю `noroot-<project>` для каждой композиции и общую группу `noroot-shared`, а также прописывает `APEX_UID`, `APEX_GID` и `APEX_SHARED_GID` в `.env` каждого проекта. Затем `tier/chown` выставляет права по матрице владения на `@tier0` и внешние уровни (см. [Концепция: Многоуровневое хранилище](/apex/concepts/tiered-storage)) и выводит сообщение `Permissions applied.`.
 
 ### Доставьте секреты и окружение
 
-Доставьте расшифрованные файлы `.env` с рабочей станции скриптом `scripts/secrets` или заполните `compositions/apex/.env` напрямую:
+Доставьте расшифрованные файлы `.env` и секреты `@tier0` с рабочей станции скриптом `scripts/secrets` или заполните `compositions/apex/.env` напрямую:
 
 ```ini {filename="compositions/apex/.env"}
 COMPOSE_PROFILES=adguard,xray,alloy
@@ -94,11 +94,11 @@ apex compose up
 
 - `apex --help` выводит список действий без предупреждений на работающем хосте.
 - `docker ps` показывает базовые контейнеры (`apex-traefik`, `apex-socket-proxy` и дополнительные сервисы активных профилей), а также якорный контейнер каждого проекта.
-- `apex utils/lint-docker-compose` завершается сообщением `Anchor IP validation passed.`.
+- `apex util/lint-docker-compose` завершается сообщением `Anchor IP validation passed.`.
 
 ---
 
-**См. также:**
+**См. также:**
 
 - [Руководство: Сборка репозитория узла](/apex/guides/node-repository)
 - [Концепция: Архитектура фреймворка](/apex/concepts/architecture)

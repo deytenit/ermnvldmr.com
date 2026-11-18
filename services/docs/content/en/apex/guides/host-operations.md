@@ -62,7 +62,7 @@ or replace the full `--sync` bridge. Output modes are mutually exclusive.
 ## Backups {#backups}
 
 ```bash
-apex backup/run "$(cat <path-to-telegram-url-file>)"
+apex backup/run "$(cat @tier0/telegram-send-message-url)"
 ```
 
 Runs [resticontainer](https://github.com/deytenit/resticontainer) one-shot under the `manual` compose profile: init-if-needed, then a label-driven backup that discovers each service's intent from its `restic.*` compose labels (`restic.enable`, `restic.backup.paths`, …), snapshots the union of the resolved host paths in a single restic run (`--host` = `APEX_NODE_HOST`, `--compression max`), applies retention (`forget --prune`), and notifies. It refuses to report success if no `restic.*`-labelled service produced a new snapshot. The full flow is described in [Concept: Tiered storage](/apex/concepts/tiered-storage#backups). Schedule it from `configs/cron/crontab` so the run and its Telegram outcome are unattended.
@@ -70,10 +70,10 @@ Runs [resticontainer](https://github.com/deytenit/resticontainer) one-shot under
 ## Repository sync (capture-up) {#sync}
 
 ```bash
-apex sync/repository <telegram-bot-url>
+apex repository/sync "$(cat @tier0/telegram-send-message-url)"
 ```
 
-Commits the live checkout to `sync/<node>`, rebases onto `origin/main`, and force-pushes with lease. The action refuses to run — with a paged error — when the commons submodule is dirty or the `compositions/` tree is missing, and aborts cleanly on a rebase conflict (manual intervention required). See [Concept: Framework architecture](/apex/concepts/architecture#capture-up) for the model.
+Re-encrypts modified `.env` and `@tier0` secrets, maintains `@tier0/.gitignore`, validates `@tier0` guardrails, commits changes, and synchronizes `main` with `origin/main`. The action refuses to run when the commons submodule is dirty or unpinned, or when rebase conflicts occur. See [Concept: Framework architecture](/apex/concepts/architecture#capture-up) for the model.
 
 ## Update awareness {#updates}
 
@@ -86,7 +86,7 @@ Reports pending apt upgrades and out-of-date container images (local digests co
 ## Certificate extraction {#certs}
 
 ```bash
-apex utils/extract-traefik-certs <acme.json> <dest-dir> [telegram-bot-url]
+apex util/extract-traefik-certs <acme.json> <dest-dir> [telegram-bot-url]
 ```
 
 Dumps the edge proxy's ACME store into per-domain `fullchain.pem`/`privkey.pem` pairs (via a containerized dumper), restricts key permissions to `600`, and re-owns the output to the invoking user — for services that need raw PEM material instead of proxy-terminated TLS.

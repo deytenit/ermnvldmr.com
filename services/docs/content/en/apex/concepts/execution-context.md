@@ -43,9 +43,11 @@ The substitution set is `ctx.vars()` — the full process environment plus t
 | `APEX_COMMONS` | Absolute path of the commons directory (the launcher lives at `$APEX_COMMONS/apex`). |
 | `APEX_REPO_ROOT` | Absolute path of the node repository root. |
 | `APEX_NODE_HOST`, `APEX_NODE_FQDN`, `APEX_SUBNET` | The resolved identity fields. |
+| `APEX_TIER0` | Core project in-repository configuration directory (`compositions/apex/@tier0`). |
 | `APEX_TIER1`…`APEX_TIER3` | The core project's per-[tier](/apex/glossary#tier) data directories. |
 | `APEX_TIER1_SHARED`…`APEX_TIER3_SHARED` | The shared areas inside each tier. |
-| `APEX_TIER_ROOT1`…`APEX_TIER_ROOT3` | The tier storage roots (node-level links). |
+| `APEX_TIER_ROOT0` | In-repository Tier 0 storage root (`compositions/@tier0`). |
+| `APEX_TIER_ROOT1`…`APEX_TIER_ROOT3` | The external tier storage roots (node-level links). |
 
 The full origin/consumer matrix is in [Reference: Environment variables](/apex/reference/environment).
 

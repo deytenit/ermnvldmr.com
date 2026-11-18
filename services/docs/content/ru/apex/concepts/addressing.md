@@ -36,11 +36,11 @@ weight: 17
 - **Уникальность** — один и тот же якорный IP не может использоваться в двух разных проектах; при обнаружении дубликатов выводятся имена обоих конфликтующих проектов.
 - **Принадлежность подсети узла** — каждый якорь должен входить в объявленную подсеть `/24` узла.
 
-При любом нарушении линтер завершается с ошибкой и кодом `1`. При успешной проверке в лог выводится сообщение `Anchor IP validation passed.` Логика проверки реализована в [действии](/apex/glossary#action) `utils/lint-docker-compose`; см. [GitHub: apex.ermnvldmr.com](https://github.com/deytenit/apex.ermnvldmr.com).
+При любом нарушении линтер завершается с ошибкой и кодом `1`. При успешной проверке в лог выводится сообщение `Anchor IP validation passed.` Логика проверки реализована в [действии](/apex/glossary#action) `util/lint-docker-compose`; см. [GitHub: apex.ermnvldmr.com](https://github.com/deytenit/apex.ermnvldmr.com).
 
 ---
 
-**См. также:**
+**См. также:**
 
 - [GitHub: apex.ermnvldmr.com](https://github.com/deytenit/apex.ermnvldmr.com)
 - [RFC 2544: Benchmarking Methodology for Network Interconnect Devices](https://datatracker.ietf.org/doc/html/rfc2544)

@@ -16,7 +16,7 @@ include:
   - ../../commons/compositions/apex/docker-compose.yml
 ```
 
-The shared file is fully `${APEX_*}`-parameterized and contains no relative host paths — every mount resolves through variables the [engine](/apex/glossary#engine) exports at invocation, so the same file is correct on every node.
+The shared file is fully `${APEX_*}`-parameterized and contains no relative host paths — static configurations mount from in-repository Tier 0 (`${APEX_TIER0}` or `./@tier0/...`) while persistent runtime state mounts from external tiers (`${APEX_TIER1..3}` or `./@tier1..3/...`), so the same file is correct on every node.
 
 A structural outlier — a node that genuinely needs to change a core service, such as publishing an extra host port — layers an override through the include path-list form instead of editing the shared file:
 

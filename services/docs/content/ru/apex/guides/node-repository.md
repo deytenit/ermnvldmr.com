@@ -34,7 +34,7 @@ APEX_GIT_AUTHOR_EMAIL=apex@localhost
 
 - `APEX_NODE_FQDN` — FQDN хоста для маршрутизации Traefik по правилу `Host()` (если не указан, движок выведет предупреждение и возьмёт имя хоста из ОС).
 - `APEX_NODE_HOST` — публичный адрес хоста для параметра `--host` резервного копирования и метки `instance` в системе мониторинга и уведомлениях (по умолчанию совпадает с `APEX_NODE_FQDN`). Первая часть FQDN до точки используется как короткое имя (`name`) узла.
-- `APEX_SUBNET` — выделенная подсеть /24 для внутренней сети `direct`. Параметр **обязателен**: без него запуск завершится с кодом 66 (см. [Concept: Fleet addressing scheme](/apex/concepts/addressing)).
+- `APEX_SUBNET` — выделенная подсеть /24 для внутренней сети `direct`. Параметр **обязателен**: без него запуск завершится с кодом 66 (см. [Концепция: Схема адресации флота](/apex/concepts/addressing)).
 - `APEX_GIT_AUTHOR_NAME` и `APEX_GIT_AUTHOR_EMAIL` — имя и почта сервисного бота capture-up (если не заданы, применяются значения по умолчанию).
 
 ### Напишите ядровую обёртку и настройте шифрование SOPS
@@ -49,7 +49,7 @@ include:
 
 ```yaml {filename=".sops.yaml"}
 creation_rules:
-  - path_regex: compositions/.*\.enc\.env$
+  - path_regex: ^compositions/[^/]+/(\.enc\.env|@tier0/.*\.enc(\.[^/]+)?)$
     age: "age1..."
 ```
 
@@ -95,9 +95,9 @@ __pycache__/
 ### Определите правила проверки синхронизации
 
 Решите, как проверять и вливать ветку `sync/<node>`, которую создаёт
-`apex sync/repository`. Для автоматического слияния настройте разрешения
+`apex repository/sync`. Для автоматического слияния настройте разрешения
 репозитория и доступ к субмодулям под выбранный сценарий.
-См. [модель capture-up](/apex/concepts/architecture#capture-up).
+См. [модель capture-up](/apex/concepts/architecture#capture-up).
 
 ### Проверьте работу
 
@@ -118,6 +118,6 @@ __pycache__/
 
 **См. также:**
 
-- [Getting started with an apex node](/apex/getting-started)
-- [Concept: Framework architecture](/apex/concepts/architecture)
-- [Guide: Add a service composition](/apex/guides/service-composition)
+- [Начало работы с узлом apex](/apex/getting-started)
+- [Концепция: Архитектура фреймворка](/apex/concepts/architecture)
+- [Руководство: Добавление сервисной композиции](/apex/guides/service-composition)
